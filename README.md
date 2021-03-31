@@ -16,7 +16,9 @@ This is the fullstack boilerplate for AdonisJs, it comes pre-configured with.
 Use the adonis command to install the blueprint
 
 ```bash
-adonis new yardstick
+adonis new makkuraga
+npm install axios --save
+npm install mysql --save
 ```
 
 or manually clone the repo and then run `npm install`.

@@ -1,0 +1,46 @@
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav slimscrollsidebar">
+        <div class="sidebar-head">
+            <h3><span class="fa-fw open-close"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span> <span class="hide-menu">Navigation</span></h3> </div>
+        <ul class="nav" id="side-menu">
+            
+            <li> 
+                <a href="/" class="waves-effect">
+                    <i class="mdi mdi-av-timer fa-fw" data-icon="v"></i> 
+                    <span class="hide-menu"> 
+                        Dashboard
+                    </span>
+                </a>
+            </li>
+            @each(item in data)
+                <li> 
+                    <a href="{{item.uri}}" class="waves-effect">
+                        <i class="{{item.icon}}" data-icon="v"></i> 
+                        <span class="hide-menu"> 
+                            {{item.name}} 
+                            <span class="fa arrow"></span> 
+                        </span>
+                    </a>
+                    <ul class="nav nav-second-level">
+                        @each(list in item.submenu)
+                            <li> 
+                                <a href="{{ route(list.uri) }}">
+                                    <i class="{{list.icon}}"> &nbsp;</i>
+                                    <span class="hide-menu">{{list.subname}}</span>
+                                </a>
+                            </li>
+                        @endeach
+                    </ul>
+                </li>
+            @endeach
+            <li><a href="{{ route('AuthController.loggingOut') }}" class="waves-effect"><i class="mdi mdi-logout fa-fw"></i> <span class="hide-menu">Log out</span></a></li>
+            <li class="devider"></li>
+            <li>
+                <a href="documentation.html" class="waves-effect">
+                    <i class="fa fa-circle-o text-danger"></i> 
+                    <span class="hide-menu">Documentation</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

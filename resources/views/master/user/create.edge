@@ -1,0 +1,124 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add User</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Username</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                            <input type="text" class="form-control field-add" name="username"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Email</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+                                                            <input type="email" class="form-control field-add" name="email"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">User Tipe</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                            <select class="form-control select2">
+                                                                <option>Pilih</option>
+                                                                @include('_component.options')
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">First Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                            <input type="text" class="form-control field-add" name="nm_depan"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Last Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                            <input type="text" class="form-control field-add" name="nm_belakang"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Phone Number</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                            <input type="text" class="form-control field-add" name="phone"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <label for="">Sex</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                            <select class="form-control select2">
+                                                                <option>Pilih</option>
+                                                                @each(item in sex)
+                                                                <option value="{{item.nilai}}" {{item.selected ? 'selected':''}}>{{item.teks}}</option>
+                                                                @endeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">ID Employee</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                            <select class="form-control select2">
+                                                                <option>Pilih</option>
+                                                                @each(item in sex)
+                                                                <option value="{{item.nilai}}" {{item.selected ? 'selected':''}}>{{item.teks}}</option>
+                                                                @endeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="{{assetsUrl('../plugins/bower_components/dropify/src/images/_def-karyawan.png')}}" /> 
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-option"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

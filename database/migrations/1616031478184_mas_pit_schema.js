@@ -1,0 +1,23 @@
+'use strict'
+
+/** @type {import('@adonisjs/lucid/src/Schema')} */
+const Schema = use('Schema')
+
+class MasPitSchema extends Schema {
+  up () {
+    this.create('mas_pits', (table) => {
+      table.increments()
+      table.string('kode', 5).notNullable()
+      table.string('name', 100).notNullable()
+      table.string('location', 100).defaultTo(null)
+      table.enu('sts', ['Y', 'N']).defaultTo('Y')
+      table.timestamps()
+    })
+  }
+
+  down () {
+    this.drop('mas_pits')
+  }
+}
+
+module.exports = MasPitSchema

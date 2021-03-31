@@ -1,0 +1,20 @@
+<select class="form-control select2" data-pilihan="{{select.option}}" id="agama">
+    <option>Pilih</option>
+    @each(item in select.agama)
+        <option value="{{item.nilai}}" {{item.selected ? 'selected':''}}>{{item.teks}}</option>
+    @endeach
+</select>
+<script>
+    $(function(){
+        $('select.select-options').each(function(){
+            var pilihan = $(this).data('pilihan')
+            var elm = $(this)
+            $(this).children().remove()
+            $.get("/ajax/options?pilihan="+pilihan, function(data){
+                console.log(data)
+                elm.html(data)
+            })
+        })
+    })
+</script>
+

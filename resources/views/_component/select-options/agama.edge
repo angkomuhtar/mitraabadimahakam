@@ -1,0 +1,11 @@
+<select class="form-control select2" data-pilihan="{{select.agama.name}}" id="{{select.agama.name}}">
+    <option>Pilih</option>
+    @each(item in select.agama.list)
+        <option value="{{item.nilai}}" {{item.selected ? 'selected':''}}>{{item.teks}}</option>
+    @endeach
+</select>
+<script>
+    $(function(){
+        alert('ok')
+    })
+</script>

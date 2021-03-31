@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <form action="">
+                    <div class="panel panel-default">
+                        <div class="panel-heading"><i class="ti-settings"></i> Setting Options___</div>
+                        <div class="panel-wrapper collapse in">
+                            <div class="panel-body">
+                                {{ csrfField() }}
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="">Group</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-tasks"></i></div>
+                                            <input type="text" class="form-control field-upd" id="group" name="group" value="{{data.group}}"> 
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="">Teks</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                            <input type="text" class="form-control field-upd" id="teks" name="teks" value="{{data.teks}}"> 
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="">Value</label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                            <input type="text" class="form-control field-upd" id="nilai" name="nilai" value="{{data.nilai}}"> 
+                                            <input type="text" class="form-control field-upd hidden" id="status" name="status" value="{{data.status}}"> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer text-right">
+                                <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-option"> 
+                                    <i class="fa fa-close"></i> <span>Cancel</span>
+                                </button>
+                                <button class="btn btn-warning waves-effect waves-light bt-update" data-id="{{data.id}}" id="bt-update-option"> 
+                                    <i class="fa fa-save"></i> <span>Update</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

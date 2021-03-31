@@ -1,0 +1,92 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<!--  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">  -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<title>Mitra Abadi Mahakam</title>
+<!-- Bootstrap Core CSS -->
+{{ style('bootstrap/dist/css/bootstrap.min') }}
+<!-- animation CSS -->
+{{ style('css/animate') }}
+<!-- Custom CSS -->
+{{ style('css/style') }}
+<!-- color CSS -->
+{{ style('css/colors/default') }}
+
+</head>
+<body>
+<!-- Preloader -->
+<div class="preloader">
+    <div class="cssload-speeding-wheel"></div>
+</div>
+<section id="wrapper" class="new-login-register">
+    <div class="lg-info-panel">
+        <div class="inner-panel">
+            <a href="javascript:void(0)" class="p-20 di">
+                <img src="/logo1.png" style="max-width:60px">
+            </a>
+            <div class="lg-content">
+                    <h5>Enterprice Resource Planning System</h5>
+                    <h2>PT. MITRA ABADI MAHAKAM</h2>
+                    <p class="text-muted">
+                        Visi <br>
+                        Menjadi Perusahaan di Bidang Jasa Pertambangan Yang Bertaraf Nasional Dan Terdepan Dalam Industri Pertambangan
+                    </p>
+            </div>
+        </div>
+    </div>
+    <div class="new-login-box">
+        <div class="white-box" style="border: 1px solid #ddd;">
+            <h3 class="box-title m-b-0">Sign In </h3>
+            <small>Enter your details below</small>
+            <form class="form-horizontal new-lg-form" id="loginform" action="{{ route('AuthController.login') }}" method="POST">
+                {{ csrfField() }}
+                <div class="form-group  m-t-20">
+                    <div class="col-xs-12">
+                    <label>Username</label>
+                    <input class="form-control" type="text" required="" placeholder="Username" name="username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                    <label>Password</label>
+                    <input class="form-control" type="password" required="" placeholder="Password" name="password">
+                    </div>
+                </div>
+                @if(flashMessage('loginError'))
+                <div class="alert alert-danger alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> 
+                    {{flashMessage('loginError')}}
+                </div>
+                @endif
+                <div class="form-group text-center m-t-10">
+                    <div class="col-xs-12">
+                        <button class="btn btn-info btn-block text-uppercase waves-effect waves-light" type="submit">Log In</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>  
+</section>
+<!-- jQuery -->
+{{ script('plugins/bower_components/jquery/dist/jquery.min') }}
+<!-- Bootstrap Core JavaScript -->
+{{ script('bootstrap/dist/js/bootstrap.min') }}
+<!-- Menu Plugin JavaScript -->
+{{ script('plugins/bower_components/sidebar-nav/dist/sidebar-nav.min') }}
+
+<!--slimscroll JavaScript -->
+{{ script('js/jquery.slimscroll') }}
+<!--Wave Effects -->
+{{ script('js/waves') }}
+<!-- Custom Theme JavaScript -->
+{{ script('js/custom.min') }}
+<!--Style Switcher -->
+{{ script('plugins/bower_components/styleswitcher/jQuery.style.switcher') }}
+</body>
+</html>

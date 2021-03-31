@@ -1,0 +1,6 @@
+<select class="form-control select2" data-pilihan="{{select.tipe_identitas.name}}" id="{{select.tipe_identitas.name}}">
+    <option>Pilih</option>
+    @each(item in select.tipe_identitas.list)
+        <option value="{{item.nilai}}" {{item.selected ? 'selected':''}}>{{item.teks}}</option>
+    @endeach
+</select>

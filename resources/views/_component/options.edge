@@ -1,0 +1,7 @@
+@if(select.length > 0)
+    @each(item in select)
+    <option value="{{item.nilai}}" {{item.selected ? 'selected':''}}>{{item.teks}}</option>
+    @endeach
+@else 
+    <option value="">Data tidak ditemukan</option>
+@endif

@@ -1,0 +1,15 @@
+<div class="row">
+    <div class="col-xs-5">
+        <ul class="pagination pagination-sm m-b-0 vertical-middle">
+            @each(page in range(1, list.lastPage + 1))
+                <li class="{{page === list.page ? 'active':''}}">
+                    <a href="?page={{ page }}" class="btn-pagging" data-page="{{page}}">{{page}}</a> 
+                </li>
+            @endeach
+        </ul>
+    </div>
+    <div class="col-xs-7 m-t-20 p-t-10">
+        Page {{list.page}}/{{list.lastPage}}
+        <span class="pull-right" style="color: #FFF">Total {{list.total}} data</span>
+    </div>
+</div>
