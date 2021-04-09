@@ -27,8 +27,8 @@
                                                     <tr>
                                                         <th width="5%" class="text-center">#</th>
                                                         <th width="*" class="vertical-middle">Nama Menu</th>
-                                                        <th width="8%" class="text-center"><i class="ti-link text-info"></i> Link</th>
-                                                        <th width="8%" class="text-center"><i class="ti-user text-success"></i> User</th>
+                                                        <th width="15%" class="text-center text-info"><i class="ti-link "></i> Link</th>
+                                                        <th width="12%" class="text-center text-danger"><i class="ti-user "></i> User</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -38,10 +38,21 @@
                                                             <td>{{item.name}}</td>
                                                             <td class="text-center">
                                                                 <a href="#" class="main-menu" data-id="{{item.id}}">
-                                                                    details
+                                                                    <span class="text-info">
+                                                                        <i class="ti-layout-menu-v text-info"></i>
+                                                                        Details
+                                                                    </span>
                                                                 </a>
                                                             </td>
-                                                            <td class="text-center">akses</td>
+                                                            <td class="text-center">
+                                                                <a href="#" data-toggle="modal" data-target="#menuModal{{item.id}}">
+                                                                    <span class="text-warning">
+                                                                        <i class="icon-people"></i>
+                                                                        Akses
+                                                                    </span>
+                                                                </a>
+                                                                @include('_component.modal-user-akses')
+                                                            </td>
                                                         </tr>
                                                     @endeach
                                                 </tbody>
@@ -59,9 +70,9 @@
                                                         <th width="5%" class="text-center">#</th>
                                                         <th width="45%">Nama Menu Details</th>
                                                         <th width="*">URI</th>
-                                                        <th width="5%">Urut</th>
                                                         <th width="8%" class="text-center"><i class="ti-link text-info"></i></th>
-                                                        <th width="8%" class="text-center"><i class="ti-user text-success"></i></th>
+                                                        <th width="8%" class="text-center"><i class="ti-user text-danger"></i></th>
+                                                        <th width="5%">Urut</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -70,9 +81,18 @@
                                                             <td align="center">{{$loop.index + 1}}</td>
                                                             <td>{{item.subname}}</td>
                                                             <td>{{item.uri}}</td>
+                                                            <td class="text-center">
+                                                                <a href="{{ route(item.uri) }}">
+                                                                    <i class="ti-layout-sidebar-left text-info"></i>
+                                                                </a>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <a href="#" data-toggle="modal" data-target="#submenuModal{{item.id}}">
+                                                                    <i class="icon-people text-warning"></i>
+                                                                </a>
+                                                                @include('_component.modal-user-akses')
+                                                            </td>
                                                             <td class="text-right">{{item.urut}}</td>
-                                                            <td class="text-center">{{item.urut}}</td>
-                                                            <td class="text-center">{{item.urut}}</td>
                                                         </tr>
                                                     @endeach
                                                 </tbody>
@@ -88,9 +108,7 @@
             </div>
             
         </div>
-        <div class="content-module" id="form-create" style="display:none;">
-            @include('setting.sys-options.create')
-        </div>
+        <div class="content-module" id="form-create" style="display:none;"></div>
         <div class="content-module" id="form-show" style="display:none;"></div>
     </div>
 @endsection

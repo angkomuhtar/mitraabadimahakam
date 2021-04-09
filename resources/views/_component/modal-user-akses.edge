@@ -1,0 +1,73 @@
+<div class="modal fade text-left" id="menuModal{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">List User Akses</h4>
+        </div>
+        <div class="modal-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="bg-inverse">
+                        <th width="5%" class="text-center">#</th>
+                        <th width="30*" class="vertical-middle">Username</th>
+                        <th width="20%" class="text-left">Tipe</th>
+                        <th width="*" class="text-left">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @each(item in item.user_menu)
+                        <tr>
+                            <td align="center">{{$loop.index + 1}}</td>
+                            <td>{{item.username}}</td>
+                            <td class="text-center">
+                                {{item.user_tipe}}
+                            </td>
+                            <td class="text-left">
+                                {{item.email}}
+                            </td>
+                        </tr>
+                    @endeach
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade text-left" id="submenuModal{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">List User Akses Submenu</h4>
+        </div>
+        <div class="modal-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="bg-inverse">
+                        <th width="5%" class="text-center">#</th>
+                        <th width="30*" class="vertical-middle">Username</th>
+                        <th width="20%" class="text-left">Tipe</th>
+                        <th width="*" class="text-left">Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @each(item in item.user_menuDetail)
+                        <tr>
+                            <td align="center">{{$loop.index + 1}}</td>
+                            <td>{{item.username}}</td>
+                            <td class="text-center">
+                                {{item.user_tipe}}
+                            </td>
+                            <td class="text-left">
+                                {{item.email}}
+                            </td>
+                        </tr>
+                    @endeach
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+</div>

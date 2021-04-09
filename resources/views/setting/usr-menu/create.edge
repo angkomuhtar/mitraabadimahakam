@@ -1,0 +1,93 @@
+<div class="row">
+    {{ script('ajax/usr-menu/create') }}
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Akses User Menu</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-6 col-lg-6 col-sm-12 b-r">
+                                            <table class="table table-hover">
+                                                <thead class="bg-inverse">
+                                                    <th width="5%" class="text-center">#</th>
+                                                    <th width="*" class="vertical-middle">Username</th>
+                                                    <th width="*" class="vertical-middle">Email</th>
+                                                    <th width="*" class="vertical-middle">Type</th>
+                                                    <th width="15%" class="text-center text-info"><i class="ti-link "></i> Akses</th>
+                                                </thead>
+                                                <tbody>
+                                                    @each(item in user)
+                                                        <tr>
+                                                            <td align="center">{{$loop.index + 1}}</td>
+                                                            <td>{{item.username}}</td>
+                                                            <td>{{item.email}}</td>
+                                                            <td>{{item.user_tipe}}</td>
+                                                            <td class="text-center">
+                                                                <a href="#" class="target-user" data-id="{{item.id}}" data-name="{{item.username}}">
+                                                                    <span class="text-info">
+                                                                        <i class="ti-unlock text-info"></i>
+                                                                        Grant
+                                                                    </span>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    @endeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6 col-lg-6 col-sm-12">
+                                            <h2 id="target-user"></h2>
+                                            <hr class="m-t-5 m-b-5">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h3>Main Menu</h3>
+                                                    <ul style="list-style-type: none;">
+                                                        @each(item in menu)
+                                                            <li>
+                                                                <div class="checkbox checkbox-info">
+                                                                    <input id="cbmenu{{item.id}}" type="checkbox" value="{{item.id}}">
+                                                                    <label for="cbmenu{{item.id}}"> {{item.name}} </label>
+                                                                </div>
+                                                            </li>
+                                                            @endeach
+                                                        </ul>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h3>Sub Menu</h3>
+                                                    <ul style="list-style-type: none;">
+                                                        @each(item in submenu)
+                                                            <li>
+                                                                <div class="checkbox checkbox-success">
+                                                                    <input id="cbsubmenu{{item.id}}" type="checkbox" value="{{item.id}}">
+                                                                    <label for="cbsubmenu{{item.id}}"> {{item.subname}} </label>
+                                                                </div>
+                                                            </li>
+                                                            @endeach
+                                                        </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-employee"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

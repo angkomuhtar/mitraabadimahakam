@@ -49,6 +49,8 @@ Route.group(() => {
     // User Menu
     Route.get('/usr-menu', 'SysMenuController.index').as('set.usr-menu.index')
 
+    Route.get('/usr-menu/create', 'SysMenuController.create').as('set.usr-menu.create')
+
 }).prefix('setting').namespace('setting').middleware(['MM'])
 
 Route.group(() => {

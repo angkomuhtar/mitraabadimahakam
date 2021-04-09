@@ -20,6 +20,6 @@ Factory.blueprint('App/Models/User', async(faker) => {
         username: faker.username(),
         email: faker.email(),
         password: '123',
-        user_tipe: 'administrator'
+        user_tipe: 'operation'
     }
 })
