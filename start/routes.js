@@ -33,7 +33,7 @@ Route.group(() => {
     // Employee
     Route.get('/employee', 'MasEmployeeController.index').as('mas.employee.index')
 
-    Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store')
+    Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store').validator('employee-add')
 
 }).prefix('master').namespace('master').middleware(['MM'])
 
@@ -45,6 +45,9 @@ Route.group(() => {
     Route.get('/sys-options/:id/show', 'SysOptionController.show').as('set.sys-options.show')
 
     Route.post('/sys-options/:id/update', 'SysOptionController.update').as('set.sys-options.update')
+
+    // User Menu
+    Route.get('/usr-menu', 'SysMenuController.index').as('set.usr-menu.index')
 
 }).prefix('setting').namespace('setting').middleware(['MM'])
 

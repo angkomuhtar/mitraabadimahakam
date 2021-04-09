@@ -1,3 +1,5 @@
+
+
 $(function(){
     $('document.body').on('click', 'i.close-msg', function(){
         $('div#panel-message').toggleClass('in')

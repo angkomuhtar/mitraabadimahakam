@@ -9,7 +9,7 @@ class SysMenu extends Model {
     }
 
     user_menu () {
-        return this.belongsToMany("App/Models/User").pivotTable('usr_menus')
+        return this.belongsToMany("App/Models/User", "menu_id", "user_id").pivotTable('usr_menus')
     }
 }
 

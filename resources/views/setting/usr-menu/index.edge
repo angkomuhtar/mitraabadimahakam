@@ -1,0 +1,96 @@
+
+@layout('_layouts.main')
+@section('content')
+    {{ script('ajax/usr-menu/index') }}
+    <div class="container-fluid">
+        <div class="row bg-title">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <h4 class="page-title">User Menu</h4> 
+            </div>
+        </div>
+        <div class="content-module" id="list-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="white-box">
+                        <button class="btn btn-outline btn-warning waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add Akses</span>
+                        </button>
+                        <hr style="margin-bottom: 5px;">
+                        <div class="" id="content-list">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="panel panel-inverse">
+                                        <div class="panel-heading">Main Menu List</div>
+                                        <div class="panel-wrapper collapse in">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%" class="text-center">#</th>
+                                                        <th width="*" class="vertical-middle">Nama Menu</th>
+                                                        <th width="8%" class="text-center"><i class="ti-link text-info"></i> Link</th>
+                                                        <th width="8%" class="text-center"><i class="ti-user text-success"></i> User</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @each(item in menu)
+                                                        <tr>
+                                                            <td align="center">{{$loop.index + 1}}</td>
+                                                            <td>{{item.name}}</td>
+                                                            <td class="text-center">
+                                                                <a href="#" class="main-menu" data-id="{{item.id}}">
+                                                                    details
+                                                                </a>
+                                                            </td>
+                                                            <td class="text-center">akses</td>
+                                                        </tr>
+                                                    @endeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                    <div class="panel panel-inverse">
+                                        <div class="panel-heading">Details Menu List</div>
+                                        <div class="panel-wrapper collapse in">
+                                            <table class="table table-hover" id="tbl-submenu">
+                                                <thead>
+                                                    <tr>
+                                                        <th width="5%" class="text-center">#</th>
+                                                        <th width="45%">Nama Menu Details</th>
+                                                        <th width="*">URI</th>
+                                                        <th width="5%">Urut</th>
+                                                        <th width="8%" class="text-center"><i class="ti-link text-info"></i></th>
+                                                        <th width="8%" class="text-center"><i class="ti-user text-success"></i></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @each(item in submenu)
+                                                        <tr class="submenu{{item.menu.id}} submenu-item">
+                                                            <td align="center">{{$loop.index + 1}}</td>
+                                                            <td>{{item.subname}}</td>
+                                                            <td>{{item.uri}}</td>
+                                                            <td class="text-right">{{item.urut}}</td>
+                                                            <td class="text-center">{{item.urut}}</td>
+                                                            <td class="text-center">{{item.urut}}</td>
+                                                        </tr>
+                                                    @endeach
+                                                </tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="content-module" id="form-create" style="display:none;">
+            @include('setting.sys-options.create')
+        </div>
+        <div class="content-module" id="form-show" style="display:none;"></div>
+    </div>
+@endsection

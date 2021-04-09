@@ -67,6 +67,7 @@
 
 <body class="fix-header">
     {{script('plugins/bower_components/jquery/dist/jquery.min')}}
+    
     <!-- ============================================================== -->
     <!-- Preloader -->
     <!-- ============================================================== -->
@@ -103,6 +104,7 @@
 
     {{--  My Script  --}}
     {{script('ajax/index')}}
+    {{script('plugins/bower_components/js-network-monitor/dist/js-network-monitor')}}
 
     {{--  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>  --}}
     
@@ -161,4 +163,21 @@
 
     
     
+    <script>
+        var options = {
+        url: '../favicon.ico', // default
+        timeout: 3000, // default 3 seconds
+        sleep_delay: 5000, // default 5 seconds
+      };
+      var js_network_monitor = new JsNetworkMonitor(options);
+      js_network_monitor.on('online', function() {
+          console.log('you are online.');
+        }
+      );
+      js_network_monitor.on('offline', function() {
+          console.log('you are offline.');
+        }
+      );
+      js_network_monitor.start();
+    </script>
 </body>

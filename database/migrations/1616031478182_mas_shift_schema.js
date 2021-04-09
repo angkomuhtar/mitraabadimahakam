@@ -8,6 +8,7 @@ class MasShiftSchema extends Schema {
     this.create('mas_shifts', (table) => {
       table.increments()
       table.string('name', 200).notNullable()
+      table.string('kode').notNullable()
       table.float('duration', 4, 1).notNullable()
       table.time('start_shift').notNullable()
       table.time('end_shift').notNullable()

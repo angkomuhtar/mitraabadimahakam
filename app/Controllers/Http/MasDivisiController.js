@@ -1,12 +1,16 @@
 'use strict'
 
-const Menu = use("App/Models/SysMenu")
-const SubMenu = use("App/Models/SysMenuDetail")
+/** @typedef {import('@adonisjs/framework/src/Request')} Request */
+/** @typedef {import('@adonisjs/framework/src/Response')} Response */
+/** @typedef {import('@adonisjs/framework/src/View')} View */
 
-class SysMenuController {
+/**
+ * Resourceful controller for interacting with masdivisis
+ */
+class MasDivisiController {
   /**
-   * Show a list of all sysmenus.
-   * GET sysmenus
+   * Show a list of all masdivisis.
+   * GET masdivisis
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -14,18 +18,11 @@ class SysMenuController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
-    const menu = (await Menu.query().with('user_menu').where({status: 'Y'}).fetch()).toJSON()
-    const submenu = (await SubMenu.query().with('menu').with('user_menuDetail').where({status: 'Y'}).fetch()).toJSON()
-    console.log(menu);
-    return view.render('setting.usr-menu.index', {
-      menu: menu,
-      submenu: submenu
-    })
   }
 
   /**
-   * Render a form to be used for creating a new sysmenu.
-   * GET sysmenus/create
+   * Render a form to be used for creating a new masdivisi.
+   * GET masdivisis/create
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -36,8 +33,8 @@ class SysMenuController {
   }
 
   /**
-   * Create/save a new sysmenu.
-   * POST sysmenus
+   * Create/save a new masdivisi.
+   * POST masdivisis
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -47,8 +44,8 @@ class SysMenuController {
   }
 
   /**
-   * Display a single sysmenu.
-   * GET sysmenus/:id
+   * Display a single masdivisi.
+   * GET masdivisis/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -59,8 +56,8 @@ class SysMenuController {
   }
 
   /**
-   * Render a form to update an existing sysmenu.
-   * GET sysmenus/:id/edit
+   * Render a form to update an existing masdivisi.
+   * GET masdivisis/:id/edit
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -71,8 +68,8 @@ class SysMenuController {
   }
 
   /**
-   * Update sysmenu details.
-   * PUT or PATCH sysmenus/:id
+   * Update masdivisi details.
+   * PUT or PATCH masdivisis/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -82,8 +79,8 @@ class SysMenuController {
   }
 
   /**
-   * Delete a sysmenu with id.
-   * DELETE sysmenus/:id
+   * Delete a masdivisi with id.
+   * DELETE masdivisis/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -93,4 +90,4 @@ class SysMenuController {
   }
 }
 
-module.exports = SysMenuController
+module.exports = MasDivisiController

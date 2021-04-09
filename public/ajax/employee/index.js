@@ -112,8 +112,8 @@ $(function(){
                 }
             },
             error: function(err){
-                console.log(err)
-                swal("Oops", "Insert data failed", "error")
+                console.log(err.responseJSON)
+                swal("Oops", err.responseJSON.message, "error")
             }
         })
     })
