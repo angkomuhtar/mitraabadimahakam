@@ -20,6 +20,7 @@ class MasEquipmentSchema extends Schema {
       table.date('received_hm').defaultTo(null).comment('HM awal pembelian')
       table.text('remark').defaultTo(null).comment('keterangan detail')
       table.string('status').notNullable().comment('status equipment milik sendiri atau sewa')
+      table.string('isMaintenance', ['Y', 'N']).defaultTo('N').comment('status equipment under maintenance atau active')
       table.integer('created_by').unsigned().references('id').inTable('users').onDelete('RESTRICT').onUpdate('CASCADE')
       table.timestamps()
     })

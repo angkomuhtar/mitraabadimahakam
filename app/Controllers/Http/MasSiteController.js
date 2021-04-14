@@ -1,11 +1,16 @@
 'use strict'
 
-const Equipment = use("App/Models/MasEquipment")
+/** @typedef {import('@adonisjs/framework/src/Request')} Request */
+/** @typedef {import('@adonisjs/framework/src/Response')} Response */
+/** @typedef {import('@adonisjs/framework/src/View')} View */
 
-class MasEquipmentController {
+/**
+ * Resourceful controller for interacting with massites
+ */
+class MasSiteController {
   /**
-   * Show a list of all masequipments.
-   * GET masequipments
+   * Show a list of all massites.
+   * GET massites
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -13,12 +18,11 @@ class MasEquipmentController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
-    return view.render('master.equipment.index')
   }
 
   /**
-   * Render a form to be used for creating a new masequipment.
-   * GET masequipments/create
+   * Render a form to be used for creating a new massite.
+   * GET massites/create
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -29,8 +33,8 @@ class MasEquipmentController {
   }
 
   /**
-   * Create/save a new masequipment.
-   * POST masequipments
+   * Create/save a new massite.
+   * POST massites
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -40,8 +44,8 @@ class MasEquipmentController {
   }
 
   /**
-   * Display a single masequipment.
-   * GET masequipments/:id
+   * Display a single massite.
+   * GET massites/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -52,8 +56,8 @@ class MasEquipmentController {
   }
 
   /**
-   * Render a form to update an existing masequipment.
-   * GET masequipments/:id/edit
+   * Render a form to update an existing massite.
+   * GET massites/:id/edit
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -64,8 +68,8 @@ class MasEquipmentController {
   }
 
   /**
-   * Update masequipment details.
-   * PUT or PATCH masequipments/:id
+   * Update massite details.
+   * PUT or PATCH massites/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -75,8 +79,8 @@ class MasEquipmentController {
   }
 
   /**
-   * Delete a masequipment with id.
-   * DELETE masequipments/:id
+   * Delete a massite with id.
+   * DELETE massites/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -86,4 +90,4 @@ class MasEquipmentController {
   }
 }
 
-module.exports = MasEquipmentController
+module.exports = MasSiteController

@@ -1,18 +1,18 @@
 
 @layout('_layouts.main')
 @section('content')
-    {{ script('ajax/set-options') }}
+    {{ script('ajax/mst-equipment') }}
     <div class="container-fluid">
         <div class="row bg-title">
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                <h4 class="page-title">System Options</h4> 
+                <h4 class="page-title">Master Equipment</h4> 
             </div>
         </div>
         <div class="content-module" id="list-content">
-            @include('setting.sys-options.list')
+            @include('master.equipment.list')
         </div>
         <div class="content-module" id="form-create" style="display:none;">
-            @include('setting.sys-options.create')
+            @include('master.equipment.create')
         </div>
         <div class="content-module" id="form-show" style="display:none;"></div>
     </div>

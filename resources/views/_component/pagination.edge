@@ -9,7 +9,7 @@
         </ul>
     </div>
     <div class="col-xs-7 m-t-20 p-t-10">
-        Page {{list.page}}/{{list.lastPage}}
-        <span class="pull-right" style="color: #FFF">Total {{list.total}} data</span>
+        Page {{list.page || 0}}/{{list.lastPage || 0}}
+        <span class="pull-right" style="color: #FFF">Total {{list.total || 0}} data</span>
     </div>
 </div>

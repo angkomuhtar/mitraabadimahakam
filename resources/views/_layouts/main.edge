@@ -39,6 +39,8 @@
     {{ style('plugins/bower_components/bootstrap-daterangepicker/daterangepicker') }}
     <!-- morris CSS -->
     {{ style('plugins/bower_components/morrisjs/morris') }}
+    <!-- jquery.toast -->
+    {{ style('plugins/bower_components/toast-master/css/jquery.toast') }}
     <!-- chartist CSS -->
     {{ style('plugins/bower_components/chartist-js/dist/chartist.min') }}
     {{ style('plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip') }}
@@ -156,6 +158,9 @@
 
     <!-- SweetAlert JS -->
     {{ script('plugins/bower_components/bootstrap-sweetalert/dist/sweetalert') }}
+    <!-- jquery.toast -->
+    {{ script('plugins/bower_components/toast-master/js/jquery.toast') }}
+    {{ script('js/toastr') }}
     
     {{ script('https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min') }}
 
@@ -172,10 +177,27 @@
       var js_network_monitor = new JsNetworkMonitor(options);
       js_network_monitor.on('online', function() {
           console.log('you are online.');
-        }
-      );
-      js_network_monitor.on('offline', function() {
-          console.log('you are offline.');
+          $.toast({
+                  heading: 'Okey,,,',
+                  text: 'Anda sedang online.',
+                  position: 'top-right',
+                  loaderBg: '#FFF',
+                  icon: 'info',
+                  hideAfter: 3500,
+                  stack: 6
+              });
+        });
+        js_network_monitor.on('offline', function() {
+            console.log('you are offline.');
+            $.toast({
+                  heading: 'Peringatan',
+                  text: 'Jaringan internet anda sedang offline.',
+                  position: 'top-right',
+                  loaderBg: '#FFF',
+                  icon: 'warning',
+                  hideAfter: 3500,
+                  stack: 6
+              });
         }
       );
       js_network_monitor.start();

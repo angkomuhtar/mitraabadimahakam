@@ -7,6 +7,7 @@ class MasPitSchema extends Schema {
   up () {
     this.create('mas_pits', (table) => {
       table.increments()
+      table.integer('site_id').unsigned().references('id').inTable('mas_sites').onDelete('CASCADE').onUpdate('CASCADE')
       table.string('kode', 5).notNullable()
       table.string('name', 100).notNullable()
       table.string('location', 100).defaultTo(null)

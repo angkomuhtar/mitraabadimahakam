@@ -44,6 +44,21 @@ a.select2-choice {
 	color: white !important;
 }
 
+tr th.sl {
+	white-space: nowrap !important;
+	vertical-align: middle !important;
+}
+
+.vac {
+	vertical-align: middle !important;
+}
+
+.f12w300 {
+	font-weight: 300 !important;
+    font-size: 12px !important;
+	color: #fff;
+}
+
 
 /* .select2-container--default .select2-selection--multiple {
     background-color: #30323e !important;

@@ -20,6 +20,23 @@ class SysOptionController {
         return view.render('setting.sys-options.index', {list: data})
     }
 
+    async list ({ auth, view, request }) {
+        const req = request.all()
+        const limit = 10
+        const halaman = req.page === undefined ? 1:parseInt(req.page)
+        let data
+        if(!req.keyword){
+            data = (
+                await SysOption.query()
+                    .where('status', 'Y')
+                    .orderBy([{ column: 'group', order: 'asc' }, { column: 'urut', order: 'desc' }])
+                    .paginate(halaman, limit)
+            ).toJSON()
+        }
+        // console.log('data______ ', data)
+        return view.render('setting.sys-options.list', {list: data})
+    }
+
     async create ({ auth, request }) {
         const usr = await auth.getUser()
         const req = request.only(['group', 'teks', 'nilai'])

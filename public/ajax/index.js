@@ -1,9 +1,10 @@
-
-
 $(function(){
     $('document.body').on('click', 'i.close-msg', function(){
         $('div#panel-message').toggleClass('in')
     })
+
+    
+
     $('select.select2').each(function(){
         var group = $(this).data('title')
         var selected = $(this).data('check')

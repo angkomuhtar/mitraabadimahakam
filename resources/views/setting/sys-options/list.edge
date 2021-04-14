@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                <i class="fa fa-plus m-r-5"></i> <span>Add Options</span>
+            </button>
+            <hr style="margin-bottom: 5px;">
+            <div class="" id="content-list">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="12%" class="text-center">Actions</th>
+                                <th width="10%">Group</th>
+                                <th width="*">Text</th>
+                                <th width="20%">Values</th>
+                                <th width="10%" class="text-right">Order</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                                <tr>
+                                    <td class="text-center">
+                                        <form action="#">
+                                        <button class="btn btn-outline btn-warning btn-xs bt-show-form" data-id="{{item.id}}">edit</button>
+                                            {{ csrfField() }}
+                                            <button class="btn btn-outline btn-danger btn-xs bt-delete-form" data-id="{{item.id}}" data-status="{{item.status}}">delete</button>
+                                        </form>
+                                    </td>
+                                    <td>{{item.group}}</td>
+                                    <td>{{item.teks}}</td>
+                                    <td>{{item.nilai}}</td>
+                                    <td class="text-right">{{item.urut}}</td>
+                                </tr>
+                            @endeach
+                            <tr>
+                                <td colspan="5">
+                                    @include('_component.pagination')
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

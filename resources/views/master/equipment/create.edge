@@ -1,0 +1,153 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add Equipment</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">No.Serial</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
+                                                    <input type="email" class="form-control field-add" name="email"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Type</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                    <select class="form-control select2">
+                                                        <option>Pilih</option>
+                                                        @include('_component.options')
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Brand</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                    <select class="form-control select2">
+                                                        <option>Pilih</option>
+                                                        @include('_component.options')
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Fuel Capacity</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control field-add" name="nm_belakang"> 
+                                                    <div class="input-group-addon">Liter</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Equipment Capacity</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                    <input type="text" class="form-control field-add" name="nm_depan"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Satuan</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                    <select class="form-control select2">
+                                                        <option>Pilih</option>
+                                                        @each(item in sex)
+                                                        <option value="{{item.nilai}}" {{item.selected ? 'selected':''}}>{{item.teks}}</option>
+                                                        @endeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Engine Model</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                    <input type="text" class="form-control field-add" name="phone"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Engine Serial No.</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                    <input type="text" class="form-control field-add" name="phone"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Reciving Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control field-add" name="phone"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Reciving HM</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="number" class="form-control field-add" name="phone"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="">Status</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="text" class="form-control field-add" name="phone"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">Title with small <small class="text-muted"> This is the small text...</small></div>
+                                                <div class="panel-wrapper collapse in">
+                                                    <div class="panel-body">
+                                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum tincidunt est vitae ultrices accumsan. Aliquam ornare lacus adipiscing, posuere lectus et, fringilla augue.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-option"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,7 +5,7 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="">
+                    <form action="" id="fm-user-menu">
                         <div class="panel panel-default">
                             <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Akses User Menu</div>
                             <div class="panel-wrapper collapse in">
@@ -43,6 +43,7 @@
                                         </div>
                                         <div class="col-md-6 col-lg-6 col-sm-12">
                                             <h2 id="target-user"></h2>
+                                            <input type="text" class="hidden" name="user_id">
                                             <hr class="m-t-5 m-b-5">
                                             <div class="row">
                                                 <div class="col-md-6">
@@ -51,7 +52,7 @@
                                                         @each(item in menu)
                                                             <li>
                                                                 <div class="checkbox checkbox-info">
-                                                                    <input id="cbmenu{{item.id}}" type="checkbox" value="{{item.id}}">
+                                                                    <input id="cbmenu{{item.id}}" name="menu" type="checkbox" value="{{item.id}}">
                                                                     <label for="cbmenu{{item.id}}"> {{item.name}} </label>
                                                                 </div>
                                                             </li>
@@ -60,16 +61,16 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <h3>Sub Menu</h3>
-                                                    <ul style="list-style-type: none;">
+                                                    <ul style="list-style-type:none;">
                                                         @each(item in submenu)
-                                                            <li>
-                                                                <div class="checkbox checkbox-success">
-                                                                    <input id="cbsubmenu{{item.id}}" type="checkbox" value="{{item.id}}">
-                                                                    <label for="cbsubmenu{{item.id}}"> {{item.subname}} </label>
-                                                                </div>
-                                                            </li>
-                                                            @endeach
-                                                        </ul>
+                                                        <li class="cbmenu{{item.menu.id}}" style="display:none;">
+                                                            <div class="checkbox checkbox-success">
+                                                                <input id="cbsubmenu{{item.id}}" name="submenu" type="checkbox" value="{{item.id}}">
+                                                                <label for="cbsubmenu{{item.id}}"> {{item.menu.name}} - {{item.subname}} </label>
+                                                            </div>
+                                                        </li>
+                                                        @endeach
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -79,7 +80,7 @@
                                     <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
                                         <i class="fa fa-close"></i> <span>Cancel</span>
                                     </button>
-                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-employee"> 
+                                    <button class="btn btn-warning waves-effect waves-light" type="submit" id="bt-save-employee"> 
                                         <i class="fa fa-save"></i> <span>Save</span>
                                     </button>
                                 </div>
