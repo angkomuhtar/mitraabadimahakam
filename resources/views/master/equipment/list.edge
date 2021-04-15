@@ -7,46 +7,72 @@
             <hr style="margin-bottom: 5px;">
             <div class="" id="content-list">
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover table-bordered">
                         <thead>
                             <tr>
                                 <th class="sl text-center">No</th>
                                 <th class="sl text-center">ACT</th>
+                                <th class="sl">Kode Unit</th>
                                 <th class="sl">No.Serial</th>
-                                <th class="sl">Type</th>
+                                <th class="sl">Model</th>
                                 <th class="sl">Brand</th>
                                 <th class="sl">Qty.Cap</th>
                                 <th class="sl">Fuel.Cap</th>
-                                <th class="sl">Satuan</th>
                                 <th class="sl">Engine Model</th>
                                 <th class="sl">Engine Number</th>
                                 <th class="sl">Recived Date</th>
-                                <th class="sl">Recived HM</th>
-                                <th class="sl">Status</th>
-                                <th class="sl">BD</th>
-                                <th class="sl text-right">Order {{list}}</th>
+                                <th class="sl" width="100px">Recived HM</th>
+                                <th class="sl">is Owned</th>
+                                <th class="sl text-center">Warranty</th>
+                                <th class="sl text-center">Dealer</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @each(item in list)
+                            @each(item in list.data)
                                 <tr>
                                     <td>{{$loop.index + 1}}</td>
                                     <td>
                                         <button class="btn btn-outline btn-warning btn-xs">edit</button>
                                     </td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>13</td>
+                                    <td>{{item.kode}}</td>
+                                    <td>{{item.unit_sn ? item.unit_sn : 'unset'}}</td>
+                                    <td>{{item.unit_model}}</td>
+                                    <td class="text-uppercase font-bold">
+                                        {{item.brand}}
+                                    </td>
+                                    <td>
+                                        @if(item.qty_capacity)
+                                            {{item.qty_capacity}} {{item.satuan}}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{item.fuel_capacity}} Liter
+                                    </td>
+                                    <td>{{item.engine_model}}</td>
+                                    <td>{{item.engine_sn}}</td>
+                                    <td class="myDateFormat" data-date="{{item.received_date}}" data-elm="span">
+                                        <span></span>
+                                    </td>
+                                    <td class="text-right">
+                                        {{item.received_hm}} hourMeter
+                                    </td>
+                                    <td class="text-center">
+                                        {{item.is_owned}}
+                                    </td>
+                                    <td  class="text-center">
+                                        @if(item.is_warranty != 'N')
+                                            warranty at 
+                                            <small>
+                                                <br>
+                                                <span class="myDateFormat text-success" data-date="{{item.warranty_date}}">{{item.warranty_date}}</span>
+                                            </small>
+                                          @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="ti-layout-media-center-alt"></i>
+                                    </td>
                                 </tr>
                             @endeach
                         </tbody>

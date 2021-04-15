@@ -33,6 +33,8 @@ Route.group(() => {
     // Equipment Unit
     Route.get('/equipment', 'MasEquipmentController.index').as('mas.equipment.index')
 
+    Route.post('/equipment', 'MasEquipmentController.store').as('mas.equipment.store').validator('Equipment-Post')
+
     // Employee
     Route.get('/employee', 'MasEmployeeController.index').as('mas.employee.index')
 
@@ -72,6 +74,9 @@ Route.group(() => {
 Route.group(() => {
 
     Route.get('/sys-options', 'AjaxOptionController.index').as('set.sys-options.index')
+
+    Route.get('/dealer', 'AjaxDealerController.getDealers').as('dealer.getDealers')
+    Route.get('/dealer/:id', 'AjaxDealerController.getDealerId').as('dealer.getDealerId')
 
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
 

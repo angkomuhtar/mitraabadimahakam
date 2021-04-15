@@ -231,6 +231,7 @@ body.stop-scrolling {
 }
 .sweet-alert {
   background-color: #232832;
+  border: 1px solid;
   width: 478px;
   padding: 17px;
   border-radius: 5px;

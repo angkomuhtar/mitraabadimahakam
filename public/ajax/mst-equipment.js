@@ -10,6 +10,21 @@ $(function(){
     $('body').on('click', 'button#bt-back', function(){
         initDeafult()
     })
+
+    $('select[name="dealer_name"]').on('change', function(){
+        var id = $(this).val()
+        if(id != ''){
+            $.get('/ajax/dealer/'+id, function(data){
+                $('input[name=cp_name]').val(data.cp_name)
+                $('input[name=cp_email]').val(data.cp_email)
+                $('input[name=cp_phone]').val(data.cp_phone)
+                $('textarea[name=dealer_desc]').val(data.dealer_desc)
+            })
+        }else{
+            $('.inpdealer').each(function(){$(this).val('')})
+        }
+    })
+
     function initDeafult(){
         $('div.content-module').each(function(){ $(this).hide() })
         $('div#list-content').show()
@@ -32,12 +47,39 @@ $(function(){
             initShow()
         })
     })
-
     
 
     $('body').on('click', 'button.bt-cancel', function(e){
         e.preventDefault()
         initDeafult()
+    })
+
+    $('form#fm-equipment').on('submit', function(e){
+        e.preventDefault()
+        var data = new FormData(this)
+        
+        $.ajax({
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(data){
+                console.log(data);
+                if(data.success){
+                    swal("Okey,,,!", data.message, "success")
+                }else{
+                    swal("Opps,,,!", data.message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err);
+                const { message } = err.responseJSON
+                swal("Error 404!", message, "error")
+            }
+        })
     })
 
     $('body').on('click', 'a.btn-pagging', function(e){

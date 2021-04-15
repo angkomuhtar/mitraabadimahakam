@@ -2,6 +2,7 @@
 
 /** @type {import('@adonisjs/framework/src/Env')} */
 const Env = use('Env')
+var moment = require('moment')
 
 module.exports = {
 
@@ -219,8 +220,9 @@ module.exports = {
     file: {
       driver: 'file',
       name: 'adonis-app',
-      filename: 'adonis.log',
-      level: 'info'
+      // filename: 'adonis.log',
+      filename: moment().format('DDMMYYYY#hh') + '.log',
+      // level: 'info'
     }
   },
 

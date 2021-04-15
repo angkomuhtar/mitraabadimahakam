@@ -10,6 +10,8 @@ class AjaxOptionController {
         // console.log(list)
         return list
     }
+
+    
 }
 
 module.exports = AjaxOptionController

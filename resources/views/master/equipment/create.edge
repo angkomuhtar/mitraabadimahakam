@@ -4,7 +4,7 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="">
+                    <form action="" id="fm-equipment">
                         <div class="panel panel-default">
                             <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add Equipment</div>
                             <div class="panel-wrapper collapse in">
@@ -13,10 +13,10 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="">No.Serial</label>
+                                                <label for="">Kode</label>
                                                 <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
-                                                    <input type="email" class="form-control field-add" name="email"> 
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control input-sm" name="kode"> 
                                                 </div>
                                             </div>
                                         </div>
@@ -24,11 +24,8 @@
                                             <div class="form-group">
                                                 <label for="">Type</label>
                                                 <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
-                                                    <select class="form-control select2">
-                                                        <option>Pilih</option>
-                                                        @include('_component.options')
-                                                    </select>
+                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                    <select class="form-control input-sm select2" data-title="jenis-unit" data-check id="tipe" name="tipe"></select>
                                                 </div>
                                             </div>
                                         </div>
@@ -36,61 +33,8 @@
                                             <div class="form-group">
                                                 <label for="">Brand</label>
                                                 <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
-                                                    <select class="form-control select2">
-                                                        <option>Pilih</option>
-                                                        @include('_component.options')
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="">Fuel Capacity</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control field-add" name="nm_belakang"> 
-                                                    <div class="input-group-addon">Liter</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="">Equipment Capacity</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-user"></i></div>
-                                                    <input type="text" class="form-control field-add" name="nm_depan"> 
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <label for="">Satuan</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
-                                                    <select class="form-control select2">
-                                                        <option>Pilih</option>
-                                                        @each(item in sex)
-                                                        <option value="{{item.nilai}}" {{item.selected ? 'selected':''}}>{{item.teks}}</option>
-                                                        @endeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="">Engine Model</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-user"></i></div>
-                                                    <input type="text" class="form-control field-add" name="phone"> 
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="">Engine Serial No.</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-user"></i></div>
-                                                    <input type="text" class="form-control field-add" name="phone"> 
+                                                    <div class="input-group-addon"><i class="fa fa-behance-square"></i></div>
+                                                    <select class="form-control input-sm select2" data-title="brand-unit" data-check id="brand" name="brand"></select>
                                                 </div>
                                             </div>
                                         </div>
@@ -99,25 +43,117 @@
                                                 <label for="">Reciving Date</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                    <input type="date" class="form-control field-add" name="phone"> 
+                                                    <input type="date" class="form-control input-sm" data-date="true" name="received_date"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Reciving HM</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-dashboard"></i></div>
+                                                    <input type="number" class="form-control input-sm" name="received_hm"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">is Warranty</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-shield"></i></div>
+                                                    <select class="form-control input-sm select2" name="is_warranty">
+                                                        <option value="Y">Yes</option>
+                                                        <option value="N">No</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Warranty Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control input-sm" data-date="true" name="warranty_date"> 
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="">Reciving HM</label>
+                                                <label for="">is Owned</label>
                                                 <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                    <input type="number" class="form-control field-add" name="phone"> 
+                                                    <div class="input-group-addon"><i class="fa fa-shield"></i></div>
+                                                    <select class="form-control input-sm select2" name="is_owned">
+                                                        <option value="Y">Yes</option>
+                                                        <option value="N">No, is Rental Unit</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-5">
+                                        <div class="col-md-7">
                                             <div class="form-group">
-                                                <label for="">Status</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                    <input type="text" class="form-control field-add" name="phone"> 
+                                                <label for="">Description</label>
+                                                <textarea class="form-control" rows="3" name="remark"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">Details <small class="text-muted"> Equipment Information.</small></div>
+                                                <div class="panel-wrapper collapse in">
+                                                    <div class="panel-body">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Transmission Serial Number</label>
+                                                                <input type="text" class="form-control input-sm input-sm" name="unit_sn"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Unit Model</label>
+                                                                <input type="text" class="form-control input-sm input-sm" name="unit_model"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Engine Serial Number</label>
+                                                                <input type="text" class="form-control input-sm input-sm" name="engine_sn"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Engine Model</label>
+                                                                <input type="text" class="form-control input-sm input-sm" name="engine_model"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Fuel Capacity</label>
+                                                                <div class="input-group">
+                                                                    <input type="number" class="form-control input-sm" name="fuel_capacity"> 
+                                                                    <div class="input-group-addon">Liter</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="">Equipment Bucket Capacity</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                                    <input type="number" class="form-control input-sm" name="qty_capacity"> 
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Satuan</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                                    <select class="form-control input-sm select2" data-title="satuan-unit" data-check id="satuan" name="satuan"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -125,10 +161,39 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="panel panel-default">
-                                                <div class="panel-heading">Detail Info <small class="text-muted"> This is the small text...</small></div>
+                                                <div class="panel-heading">Dealer <small class="text-muted"> Equipment Information.</small></div>
                                                 <div class="panel-wrapper collapse in">
                                                     <div class="panel-body">
-                                                        XXX
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Dealer Name</label>
+                                                                <select class="form-control input-sm select2dealer" data-check id="dealer_name" name="dealer_name"></select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Contact Person</label>
+                                                                <input type="text" class="form-control inpdealer input-sm" name="cp_name"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Email</label>
+                                                                <input type="email" class="form-control inpdealer input-sm" name="cp_email"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Phone</label>
+                                                                <input type="text" class="form-control inpdealer input-sm" name="cp_phone"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="">Dealer Description</label>
+                                                                <textarea class="form-control inpdealer" rows="3" name="dealer_desc"></textarea>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

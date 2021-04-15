@@ -14,12 +14,12 @@ $(function(){
         $('div#list-content').show()
     }
     function initCreate(){
-        $('div.content-module').each(function(){ $(this).hide() })
+        $('body div.content-module').each(function(){ $(this).hide() })
         $('div#form-create').show()
     }
 
     function initShow(){
-        $('div.content-module').each(function(){ $(this).hide() })
+        $('body div.content-module').each(function(){ $(this).hide() })
         $('div#form-show').show()
     }
 
