@@ -6,7 +6,8 @@ class MasDealerController {
     async getDealers ({request}) {
         const req = request.all()
         const dealer = (await Dealer.query().fetch()).toJSON()
-        const list = dealer.map(el => el.id === req.selected ? {...el, selected: 'selected'} : {...el, selected: ''})
+        const list = dealer.map(el => el.id === parseInt(req.selected) ? {...el, selected: 'selected'} : {...el, selected: ''})
+        
         return list
     }
 

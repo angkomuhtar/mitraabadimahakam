@@ -22,10 +22,11 @@ class MasEquipmentSchema extends Schema {
       table.text('remark').defaultTo(null).comment('keterangan detail')
       table.enu('is_owned', ['Y', 'N']).defaultTo('Y').comment('status equipment milik sendiri atau sewa')
       table.string('isMaintenance', ['Y', 'N']).defaultTo('N').comment('status equipment under maintenance atau active')
-      table.string('is_warranty', ['Y', 'N']).defaultTo('N').comment('status equipment warranty')
+      table.enu('is_warranty', ['Y', 'N']).defaultTo('N').comment('status equipment warranty')
       table.date('warranty_date').defaultTo(null)
       table.integer('dealer_id').unsigned().references('id').inTable('mas_dealers').onDelete('RESTRICT').onUpdate('CASCADE')
       table.integer('created_by').unsigned().references('id').inTable('users').onDelete('RESTRICT').onUpdate('CASCADE')
+      table.enu('aktif', ['Y', 'N']).defaultTo('Y').comment('status data')
       table.timestamps()
     })
   }

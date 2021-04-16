@@ -21,15 +21,37 @@ class MasEquipmentController {
     const halaman = req.page === undefined ? 1:parseInt(req.page)
     const usr = await auth.getUser()
     Logger.transport('file').info({get: true, times: jam, user: usr, req: request.all()})
-    const data = await Equipment.query().paginate(halaman, limit)
+    const data = await Equipment.query().where('aktif', 'Y').paginate(halaman, limit)
     return view.render('master.equipment.index', {list: data.toJSON()})
+  }
+
+  async list ({request, view}) {
+    const req = request.all()
+    const limit = 10
+    const halaman = req.page === undefined ? 1:parseInt(req.page)
+    let data
+    if(req.keyword != ''){
+      data = await Equipment.query().where(whe => {
+        whe.where('kode', 'like', `%${req.keyword}%`)
+        whe.orWhere('tipe', 'like', `%${req.keyword}%`)
+        whe.orWhere('brand', 'like', `%${req.keyword}%`)
+        whe.orWhere('unit_sn', 'like', `%${req.keyword}%`)
+        whe.orWhere('unit_model', 'like', `%${req.keyword}%`)
+        whe.orWhere('engine_model', 'like', `%${req.keyword}%`)
+        whe.orWhere('engine_sn', 'like', `%${req.keyword}%`)
+      }).andWhere('aktif', 'Y')
+      .paginate(halaman, limit)
+    }else{
+      data = await Equipment.query().where('aktif', 'Y').paginate(halaman, limit)
+    }
+
+    return view.render('master.equipment.list', {list: data.toJSON()})
   }
 
   async store ({ auth, request, response }) {
     Logger.transport('file').info('-----------------------------------------------------------------------')
     const all = request.all()
     const equip = request.only(['kode', 'tipe', 'brand', 'received_date', 'received_hm', 'is_warranty', 'warranty_date', 'is_owned', 'remark', 'unit_sn', 'unit_model', 'engine_sn', 'engine_model', 'fuel_capacity', 'qty_capacity', 'satuan'])
-    const dealer = request.only(['dealer_name', 'cp_name', 'cp_email', 'cp_phone', 'description'])
     const usr = await auth.getUser()
     
     const equipment = new Equipment()
@@ -53,42 +75,25 @@ class MasEquipmentController {
       }
     }
   }
-  
+
   async show ({ params, request, response, view }) {
+    Logger.transport('file').info('-----------------------------------------------------------------------')
+    const { id } = params
+    const data = await Equipment.query().with('dealer').where('id', id).first()
+    return view.render('master.equipment.show', {list: data.toJSON()})
+
   }
 
-  /**
-   * Render a form to update an existing masequipment.
-   * GET masequipments/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async edit ({ params, request, response, view }) {
+
   }
 
-  /**
-   * Update masequipment details.
-   * PUT or PATCH masequipments/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
   async update ({ params, request, response }) {
+
   }
 
-  /**
-   * Delete a masequipment with id.
-   * DELETE masequipments/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
   async destroy ({ params, request, response }) {
+
   }
 }
 

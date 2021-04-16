@@ -1,0 +1,226 @@
+{{ script('ajax/mst-equipment-show') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-equipment">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Equipment</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Kode</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control input-sm" name="kode" value="{{list.kode}}"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Type</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                    <select class="form-control input-sm select2" data-title="jenis-unit" data-check="{{list.tipe}}" id="tipe" name="tipe"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Brand</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-behance-square"></i></div>
+                                                    <select class="form-control input-sm select2" data-title="brand-unit" data-check="{{list.brand}}" id="brand" name="brand"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Reciving Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control input-sm" data-date="false"  data-value="{{list.received_date}}" name="received_date"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Reciving HM</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-dashboard"></i></div>
+                                                    <input type="number" class="form-control input-sm" name="received_hm" value="{{list.received_hm}}"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">is Warranty</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-shield"></i></div>
+                                                    <select class="form-control input-sm select2" name="is_warranty">
+                                                        <option value="Y" {{list.is_warranty != 'N' ? 'selected' : ''}}>Yes</option>
+                                                        <option value="N" {{list.is_warranty != 'Y' ? 'selected' : ''}}>No</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Warranty Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control input-sm" data-date="false" data-value="{{list.warranty_date}}" name="warranty_date"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">is Owned</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-shield"></i></div>
+                                                    <select class="form-control input-sm select2" name="is_owned">
+                                                        <option value="Y" {{list.is_owned != 'N' ? 'selected' : ''}}>Yes</option>
+                                                        <option value="N" {{list.is_owned != 'Y' ? 'selected' : ''}}>No, is Rental Unit</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <label for="">Description</label>
+                                                <textarea class="form-control" rows="3" name="remark">{{list.remark}}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">Details <small class="text-muted"> Equipment Information.</small></div>
+                                                <div class="panel-wrapper collapse in">
+                                                    <div class="panel-body">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Transmission Serial Number</label>
+                                                                <input type="text" class="form-control input-sm input-sm" name="unit_sn" value="{{list.unit_sn}}"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Unit Model</label>
+                                                                <input type="text" class="form-control input-sm input-sm" name="unit_model" value="{{list.unit_model}}"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Engine Serial Number</label>
+                                                                <input type="text" class="form-control input-sm input-sm" name="engine_sn" value="{{list.engine_sn}}"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Engine Model</label>
+                                                                <input type="text" class="form-control input-sm input-sm" name="engine_model" value="{{list.engine_model}}"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Fuel Capacity</label>
+                                                                <div class="input-group">
+                                                                    <input type="number" class="form-control input-sm" name="fuel_capacity" value="{{list.fuel_capacity}}"> 
+                                                                    <div class="input-group-addon">Liter</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="">Equipment Bucket Capacity</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                                    <input type="number" class="form-control input-sm" name="qty_capacity" value="{{list.qty_capacity}}"> 
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <div class="form-group">
+                                                                <label for="">Satuan</label>
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                                    <select class="form-control input-sm select2" data-title="satuan-unit" data-check="{{list.satuan}}" id="satuan" name="satuan"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">Dealer <small class="text-muted"> Equipment Information.</small></div>
+                                                <div class="panel-wrapper collapse in">
+                                                    <div class="panel-body">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Dealer Name</label>
+                                                                <select class="form-control input-sm select2dealer" data-check="{{list.dealer.id}}" id="dealer_name" name="dealer_name"></select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Contact Person</label>
+                                                                <input type="text" class="form-control inpdealer input-sm" name="cp_name" value="{{list.dealer.cp_name}}"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Email</label>
+                                                                <input type="email" class="form-control inpdealer input-sm" name="cp_email" value="{{list.dealer.cp_email}}"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Phone</label>
+                                                                <input type="text" class="form-control inpdealer input-sm" name="cp_phone" value="{{list.dealer.cp_phone}}"> 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="">Dealer Description</label>
+                                                                <textarea class="form-control inpdealer" rows="3" name="dealer_desc">{{list.dealer.dealer_desc}}</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-danger waves-effect waves-light bt-delete" data-id="{{list.id}}" id="bt-delete-data"> 
+                                            <i class="fa fa-trash-o"></i> <span>Remove</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-md-6 text-right">
+                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                            <i class="fa fa-close"></i> <span>Cancel</span>
+                                        </button>
+                                        <button class="btn btn-warning waves-effect waves-light" id="bt-save-option"> 
+                                            <i class="fa fa-save"></i> <span>Update</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

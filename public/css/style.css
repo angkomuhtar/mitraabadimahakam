@@ -49,6 +49,10 @@ tr th.sl {
 	vertical-align: middle !important;
 }
 
+.single-line {
+	white-space: nowrap !important;
+}
+
 .vac {
 	vertical-align: middle !important;
 }

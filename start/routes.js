@@ -32,8 +32,12 @@ Route.group(() => {
 
     // Equipment Unit
     Route.get('/equipment', 'MasEquipmentController.index').as('mas.equipment.index')
-
+    
     Route.post('/equipment', 'MasEquipmentController.store').as('mas.equipment.store').validator('Equipment-Post')
+    
+    Route.get('/equipment/:id', 'MasEquipmentController.show').as('mas.equipment.show')
+
+    Route.get('/equipment/search', 'MasEquipmentController.list').as('mas.equipment.list')
 
     // Employee
     Route.get('/employee', 'MasEmployeeController.index').as('mas.employee.index')
