@@ -39,6 +39,10 @@ Route.group(() => {
 
     Route.get('/equipment/search', 'MasEquipmentController.list').as('mas.equipment.list')
 
+    Route.post('/equipment/:id/update', 'MasEquipmentController.update').as('mas.equipment.update')
+
+    Route.post('/equipment/:id/delete', 'MasEquipmentController.delete').as('mas.equipment.delete')
+
     // Employee
     Route.get('/employee', 'MasEmployeeController.index').as('mas.employee.index')
 

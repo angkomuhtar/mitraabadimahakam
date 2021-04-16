@@ -76,7 +76,7 @@ class MasEquipmentController {
     }
   }
 
-  async show ({ params, request, response, view }) {
+  async show ({ params, view }) {
     Logger.transport('file').info('-----------------------------------------------------------------------')
     const { id } = params
     const data = await Equipment.query().with('dealer').where('id', id).first()
@@ -84,12 +84,52 @@ class MasEquipmentController {
 
   }
 
-  async edit ({ params, request, response, view }) {
-
+  async update ({ auth, params, request }) {
+    Logger.transport('file').info('-----------------------------------------------------------------------')
+    const usr = await auth.getUser()
+    const { id } = params
+    const req = request.only(['kode', 'tipe', 'brand', 'received_date', 'received_hm', 'is_warranty', 'warranty_date', 'is_owned', 'remark', 'unit_sn', 'unit_model', 'engine_sn', 'engine_model', 'fuel_capacity', 'qty_capacity', 'satuan', 'dealer_id'])
+    const equipment = await Equipment.findOrFail(id)
+    equipment.merge(req)
+    try {
+      await equipment.save()
+      Logger.transport('file').info({post: true, jam: jam, user: usr, req: equipment.toJSON()})
+      return {
+        success: true,
+        message: 'Success update data'
+      }
+    } catch (error) {
+      console.log(error);
+      Logger.transport('file').info({post: true, jam: jam, user: usr, req: error})
+      return {
+        success: false,
+        message: 'Failed update data'
+      }
+    }
   }
 
-  async update ({ params, request, response }) {
-
+  async delete ({ auth, params, request }) {
+    Logger.transport('file').info('-----------------------------------------------------------------------')
+    const usr = await auth.getUser()
+    const { id } = params
+    const equipment = await Equipment.findOrFail(id)
+    const data = {aktif: equipment.aktif === 'Y' ? 'N' : 'Y'}
+    equipment.merge(data)
+    try {
+      await equipment.save()
+      Logger.transport('file').info({post: true, jam: jam, user: usr, req: equipment.toJSON()})
+      return {
+        success: true,
+        message: 'Success update data'
+      }
+    } catch (error) {
+      console.log(error);
+      Logger.transport('file').info({post: true, jam: jam, user: usr, req: error})
+      return {
+        success: false,
+        message: 'Failed update data'
+      }
+    }
   }
 
   async destroy ({ params, request, response }) {

@@ -36,7 +36,6 @@
                                 <th class="sl" width="100px">Recived HM</th>
                                 <th class="sl">is Owned</th>
                                 <th class="sl text-center">Warranty</th>
-                                <th class="sl text-center">Dealer</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,12 +54,12 @@
                                     <td class="text-uppercase font-bold">
                                         {{item.brand}}
                                     </td>
-                                    <td>
+                                    <td class="text-right">
                                         @if(item.qty_capacity)
                                             {{item.qty_capacity}} {{item.satuan}}
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="text-right">
                                         {{item.fuel_capacity}} Liter
                                     </td>
                                     <td>{{item.engine_model}}</td>
@@ -84,9 +83,6 @@
                                           @else
                                             -
                                         @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <i class="ti-layout-media-center-alt"></i>
                                     </td>
                                 </tr>
                             @endeach

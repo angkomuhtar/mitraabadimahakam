@@ -50,6 +50,68 @@ $(function(){
         }
     })
 
-    $('')
+    $('form#fm-equipment-upd').on('submit', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        var data = new FormData(this)
+        $.ajax({
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            url: '/master/equipment/'+id+'/update',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(data){
+                console.log(data);
+                if(data.success){
+                    swal("Okey,,,!", data.message, "success")
+                    initDeafult()
+                }else{
+                    swal("Opps,,,!", data.message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err);
+                const { message } = err.responseJSON
+                swal("Error 404!", message, "error")
+            }
+        })
+    })
+
+    $('button#bt-delete-data').on('click', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        $.ajax({
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            method: 'POST',
+            data: {id: id},
+            dataType: 'json',
+            url: '/master/equipment/'+id+'/delete',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(data){
+                console.log(data);
+                if(data.success){
+                    swal("Okey,,,!", data.message, "success")
+                    window.location.reload()
+                }else{
+                    swal("Opps,,,!", data.message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err);
+                const { message } = err.responseJSON
+                swal("Error 404!", message, "error")
+            }
+        })
+    })
+
+    function initDeafult(){
+        $('div.content-module').each(function(){ $(this).hide() })
+        $('div#list-content').show()
+    }
     
 })
