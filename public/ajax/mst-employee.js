@@ -6,7 +6,7 @@ $(function(){
 
     initDeafult()
 
-    $('#create-form').on('click', function(){
+    $('body').on('click', '#create-form', function(){
         initCreate()
     })
     $('body').on('click', 'button#bt-back', function(){
@@ -14,6 +14,10 @@ $(function(){
     })
     function initDeafult(){
         $('div.content-module').each(function(){ $(this).hide() })
+        $.get('/master/employee/search?keyword=', function(data){
+            $('div#list-content').children().remove()
+            $('div#list-content').append(data)
+        })
         $('div#list-content').show()
     }
     function initCreate(){

@@ -1,0 +1,110 @@
+{{ script('ajax/mst-employee-list') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add Employee</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="inpKeyword" class="form-control" placeholder="Search for...">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button">Go!</button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead style="border-bottom: 2px solid;">
+                        <tr>
+                            <th class="text-center">
+                                ACT <br> &nbsp;
+                            </th>
+                            <th class="sl text-center">
+                                NIK <br>
+                                Nama Lengkap
+                            </th>
+                            <th class="sl text-center">
+                                Alamat Lengkap
+                            </th>
+                            <th class="sl text-center">
+                                Tempat Lahir <br>
+                                Tanggal Lahir
+                            </th>
+                            <th class="sl text-center">
+                                Agama <br>
+                                SEX
+                            </th>
+                            <th class="sl text-center">
+                                Kartu <br>
+                                Identitas
+                            </th>
+                            <th class="sl text-center">
+                                WNI/WNA <br>
+                                STS Kawin
+                            </th>
+                            <th class="sl text-center">
+                                Status <br>
+                                Join Date
+                            </th>
+                            <th class="sl text-center">
+                                Phone/Email
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @each(item in list.data)
+                            <tr>
+                                <td class="text-center">
+                                    <form action="#">
+                                    <button class="btn btn-outline btn-warning btn-xs bt-show-form" data-id="{{item.id}}">edit</button>
+                                        <button class="btn btn-outline btn-danger btn-xs bt-delete-form" data-id="{{item.id}}" data-status="{{item.aktif}}">delete</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <strong>{{item.nik}}</strong> <br>
+                                    {{item.fullname}}
+                                </td>
+                                <td>{{item.alamat}}</td>
+                                <td class="myDateFormat" data-date="{{item.tgl_lahir}}" data-elm="span">
+                                    {{item.t4_lahir}} <br>
+                                    <span></span>
+                                </td>
+                                <td>
+                                    <strong class="text-capitalize">{{item.agama}}</strong> <br>
+                                    @if(item.sex != 'f')
+                                    <small class="text-uppercase">laki-laki</small>
+                                    @else
+                                    <small class="text-uppercase">perempuan</small>
+                                    @endif
+                                </td>
+                                <td>
+                                    <strong>{{item.tipe_idcard}}</strong> {{item.no_idcard}}
+                                </td>
+                                <td>
+                                    {{item.warganegara}} <br>
+                                    <span class="text-capitalize">{{item.sts_kawin}}</span>
+                                </td>
+                                <td class="myDateFormat" data-date="{{item.join_date}}" data-elm="span">
+                                    <span></span> <br>
+                                    <strong class="text-capitalize">{{item.sts_employee}}</strong>
+                                </td>
+                                <td class="text-right">
+                                    {{item.phone}} <br>
+                                    {{item.email}}
+                                </td>
+                            </tr>
+                        @endeach
+                    </tbody>
+                </table>
+            </div>
+            @include('_component.pagination')
+        </div>
+    </div>
+</div>

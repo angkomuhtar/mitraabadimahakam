@@ -7,8 +7,8 @@ class MasEquipmentSchema extends Schema {
   up () {
     this.create('mas_equipments', (table) => {
       table.increments()
-      table.string('kode', 25).notNullable()
-      table.string('unit_sn', 25).notNullable()
+      table.string('kode', 25).notNullable().unique()
+      table.string('unit_sn', 25).notNullable().unique()
       table.string('tipe').notNullable().comment('sys-options jenis-unit')
       table.string('brand').notNullable().comment('sys-options brand-unit')
       table.string('unit_model').notNullable()

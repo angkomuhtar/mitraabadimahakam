@@ -36,7 +36,7 @@ $(function(){
         })
     })
 
-    $('select[name="dealer_name"]').on('change', function(){
+    $('select[name="dealer_id"]').on('change', function(){
         var id = $(this).val()
         if(id != ''){
             $.get('/ajax/dealer/'+id, function(data){

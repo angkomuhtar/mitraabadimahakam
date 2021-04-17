@@ -7,7 +7,7 @@ class MasEmployeeSchema extends Schema {
   up () {
     this.create('mas_employees', (table) => {
       table.increments()
-      table.string('nik', 25).notNullable()
+      table.string('nik', 25).notNullable().unique()
       table.string('fullname').notNullable()
       table.text('alamat').defaultTo(null)
       table.enu('sex', ['m', 'f']).defaultTo('m')
@@ -17,7 +17,7 @@ class MasEmployeeSchema extends Schema {
       table.enu('tipe_idcard', ['KTP', 'SIM', 'PASSPORT']).defaultTo('SIM')
       table.string('no_idcard', 30).defaultTo(null)
       table.string('warganegara').defaultTo(null)
-      table.integer('tingi_bdn').defaultTo(null)
+      table.integer('tinggi_bdn').defaultTo(null)
       table.integer('berat_bdn').defaultTo(null)
       table.string('sts_kawin').defaultTo(null)
       table.string('tipe_employee', 50).defaultTo(null).comment('status penerimaan HO atau SITE')
@@ -25,6 +25,8 @@ class MasEmployeeSchema extends Schema {
       table.date('join_date').defaultTo(null)
       table.string('phone', 25).defaultTo(null)
       table.string('email', 100).defaultTo(null)
+      table.integer('created_by').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
+      table.enu('aktif', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })
   }

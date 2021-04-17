@@ -1,39 +1,44 @@
 'use strict'
 
+
+// CustomClass
+const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
+
+// Collections
 const Options = use("App/Models/SysOption")
+const Employee = use("App/Models/MasEmployee")
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
-/**
- * Resourceful controller for interacting with masemployees
- */
 class MasEmployeeController {
-  /**
-   * Show a list of all masemployees.
-   * GET masemployees
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async index ({ auth, request, response, view }) {
     const usr = await auth.getUser()
-    // console.log(usr)
+    const logger = new Loggerx(request.url(), request.all(), usr, request.method(), true)
+    await logger.tempData()
     return view.render('master.employee.index')
   }
 
-  /**
-   * Render a form to be used for creating a new masemployee.
-   * GET masemployees/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
+  async list ({request, view}) {
+    const req = request.all()
+    const limit = 10
+    const halaman = req.page === undefined ? 1:parseInt(req.page)
+    let data 
+    if(req.keyword != ''){
+      data = await Employee.query().where(whe => {
+        whe.where('nik', 'like', `%${req.keyword}%`)
+        whe.orWhere('fullname', 'like', `%${req.keyword}%`)
+        whe.orWhere('email', 'like', `%${req.keyword}%`)
+        whe.orWhere('phone', 'like', `%${req.keyword}%`)
+        whe.orWhere('no_idcard', 'like', `%${req.keyword}%`)
+        whe.orWhere('alamat', 'like', `%${req.keyword}%`)
+        whe.orWhere('tipe_idcard', 'like', `%${req.keyword}%`)
+      }).andWhere('aktif', 'Y')
+      .paginate(halaman, limit)
+    }else{
+      data = await Employee.query().paginate(halaman, limit)
+    }
+    // console.log(data.toJSON());
+    return view.render('master.employee.list', {list: data.toJSON()})
+  }
+
   async create ({ request, response, view }) {
   }
 
@@ -49,7 +54,27 @@ class MasEmployeeController {
     const usr = await auth.getUser()
     const req = request.all()
     console.log(req)
-    return req
+    
+
+    const employee = new Employee()
+    employee.fill({...req, created_by: usr.id})
+    try {
+      await employee.save()
+      const logger = new Loggerx(request.url(), req, usr, request.method(), true)
+      await logger.tempData()
+      return {
+        success: true,
+        message: 'Okey,,, Insert data success!'
+      }
+    } catch (error) {
+      console.log(error);
+      const logger = new Loggerx(request.url(), req, usr, request.method(), error)
+      await logger.tempData()
+      return {
+        success: false,
+        message: 'Opps,,, Insert data failed!'
+      }
+    }
   }
 
   /**

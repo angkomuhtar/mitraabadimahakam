@@ -4,6 +4,7 @@
 const Model = use('Model')
 
 class UsrMenu extends Model {
+    
 }
 
 module.exports = UsrMenu
