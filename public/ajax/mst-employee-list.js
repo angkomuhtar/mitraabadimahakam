@@ -1,7 +1,23 @@
 'use strict'
 $(function(){
-    // swal("Here's a message!")
     setDateString()
+    $('input#inpKeyword').on('keyup', function(e){
+        var value = $(this).val()
+        if(e.keyCode === 13){
+            searchKeyword(value)
+        }
+    })
+
+    $('button#bt-keyword-search').on('click', function(){
+        var value = $('input#inpKeyword').val()
+        searchKeyword(value)
+    })
+
+    function searchKeyword(value){
+        $.get('/master/employee/search?keyword='+value, function(data){
+            $('body div#list-content').html(data)
+        })
+    }
     
     function setDateString() {
         $('.myDateFormat').each(function(){
@@ -16,6 +32,4 @@ $(function(){
             }
         })
     }
-
-    
 })
