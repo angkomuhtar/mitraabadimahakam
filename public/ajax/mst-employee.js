@@ -39,43 +39,6 @@ $(function(){
         })
     })
 
-    $('button.bt-delete-form').on('click', function(e){
-        e.preventDefault()
-        var id = $(this).data('id')
-        var status = $(this).data('status')
-        swal({
-            title: "Warning!",
-            text: "Are'u sure remove this item ?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonClass: "btn-warning",
-            confirmButtonText: "Yes",
-            closeOnConfirm: false
-        },
-        function(){
-            $.ajax({
-                headers: {'x-csrf-token': $('[name=_csrf]').val()},
-                method: 'POST',
-                url: "/master/employee/"+id+"/update",
-                data: {status: status != 'Y' ? 'Y':'N'},
-                dataType: 'json',
-                success: function(res){
-                    console.log(res)
-                    if(res.success){
-                        swal("Okey", "Delete data success", "success")
-                        window.location.reload()
-                    }else{
-                        swal("Oops", "Insert data failed", "error")
-                    }
-                },
-                error: function(err){
-                    console.log(err.responseJSON)
-                    swal("Oops", "Insert data failed", "error")
-                }
-            })
-        });
-    })
-
     $('body').on('click', 'button.bt-cancel', function(e){
         e.preventDefault()
         initDeafult()
@@ -89,7 +52,6 @@ $(function(){
             names.push($(this).attr("name"))
             values.push($(this).val())
         })
-        console.log(_.object(names, values))
         $.ajax({
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
             method: 'POST',
@@ -121,6 +83,5 @@ $(function(){
             }
         })
     })
-
     
 })

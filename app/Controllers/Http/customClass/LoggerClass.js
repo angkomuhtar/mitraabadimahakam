@@ -2,7 +2,6 @@ var _ = require('underscore')
 var moment = require('moment')
 // const Drive = use('Drive')
 const Logger = use('Logger')
-const jam = moment().format('hh:mm:ss')
 
 class logger {
     constructor(url, data, usr, method, success) {
@@ -12,8 +11,9 @@ class logger {
         this.method = method
         this.success = success
     }
-
+    
     async tempData () {
+        const jam = moment().format('DD-MM-YYYY HH:mm:ss')
         Logger.transport('file').info({'start': jam+'-----------------------------------------------------------------------'})
         Logger.transport('file').info({uri: this.url, data: this.data, user: this.user, method: this.method, success: this.success})
         Logger.transport('file').info({'end': jam+'-------------------------------------------------------------------------'})

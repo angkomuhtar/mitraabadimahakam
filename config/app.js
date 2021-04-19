@@ -221,7 +221,7 @@ module.exports = {
       driver: 'file',
       name: 'adonis-app',
       // filename: 'adonis.log',
-      filename: moment().format('DDMMYYYY#hh') + '.log',
+      filename: moment().format('DDMMYYYY#HH') + '.log',
       // level: 'info'
     }
   },

@@ -1,0 +1,57 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add User</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="inpKeyword" class="form-control" placeholder="Search for...">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" id="bt-keyword-search" type="button">Go!</button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="" id="content-list">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="12%" class="text-center">Actions</th>
+                                <th width="10%">Group</th>
+                                <th width="*">Text</th>
+                                <th width="20%">Values</th>
+                                <th width="10%" class="text-right">Order</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                                <tr>
+                                    <td class="text-center">
+                                        <form action="#">
+                                        <button class="btn btn-outline btn-warning btn-xs bt-show-form" data-id="{{item.id}}">edit</button>
+                                            {{ csrfField() }}
+                                            <button class="btn btn-outline btn-danger btn-xs bt-delete-form" data-id="{{item.id}}" data-status="{{item.status}}">delete</button>
+                                        </form>
+                                    </td>
+                                    <td>{{item.group}}</td>
+                                    <td>{{item.teks}}</td>
+                                    <td>{{item.nilai}}</td>
+                                    <td class="text-right">{{item.urut}}</td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+
+            </div>
+        </div>
+    </div>
+</div>
