@@ -50,6 +50,12 @@ Route.group(() => {
     
     Route.get('/employee/search', 'MasEmployeeController.list').as('mas.employee.list')
 
+    Route.get('/employee/:id/show', 'MasEmployeeController.show').as('mas.employee.show')
+
+    Route.post('/employee/:id/update', 'MasEmployeeController.update').as('mas.employee.update')
+
+    Route.post('/employee/:id/delete', 'MasEmployeeController.delete').as('mas.employee.delete')
+
 }).prefix('master').namespace('master').middleware(['MM'])
 
 // SETTING

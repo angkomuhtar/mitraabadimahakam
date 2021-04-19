@@ -56,7 +56,7 @@ $(function(){
             $.ajax({
                 headers: {'x-csrf-token': $('[name=_csrf]').val()},
                 method: 'POST',
-                url: "/setting/sys-options/"+id+"/update",
+                url: "/master/employee/"+id+"/update",
                 data: {status: status != 'Y' ? 'Y':'N'},
                 dataType: 'json',
                 success: function(res){
@@ -122,34 +122,5 @@ $(function(){
         })
     })
 
-    $("body").on('click', 'button.bt-update', function(e){
-        e.preventDefault()
-        var id = $(this).data('id')
-        const names = []
-        const values = []
-        $('.field-upd').each(function(){
-            names.push($(this).attr("name"))
-            values.push($(this).val())
-        })
-        $.ajax({
-            headers: {'x-csrf-token': $('[name=_csrf]').val()},
-            method: 'POST',
-            url: "/setting/sys-options/"+id+"/update",
-            data: _.object(names, values),
-            dataType: 'json',
-            success: function(res){
-                console.log(res)
-                if(res.success){
-                    swal("Okey!", "Update data success", "success")
-                    window.location.reload()
-                }else{
-                    swal("Oops!", "Update data failed", "error")
-                }
-            },
-            error: function(err){
-                console.log(err.responseJSON)
-                swal("Oops", "Update data failed", "error")
-            }
-        })
-    })
+    
 })

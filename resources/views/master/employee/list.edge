@@ -66,11 +66,8 @@
                         @endif
                         @each(item in list.data)
                             <tr>
-                                <td class="text-center">
-                                    <form action="#">
-                                    <button class="btn btn-outline btn-warning btn-xs bt-show-form" data-id="{{item.id}}">edit</button>
-                                        <button class="btn btn-outline btn-danger btn-xs bt-delete-form" data-id="{{item.id}}" data-status="{{item.aktif}}">delete</button>
-                                    </form>
+                                <td class="single-line text-center">
+                                    <button class="btn btn-outline btn-warning btn-xs bt-show-form" data-id="{{item.id}}">Edit</button>
                                 </td>
                                 <td>
                                     <strong>{{item.nik}}</strong> <br>
@@ -81,7 +78,7 @@
                                     {{item.t4_lahir}} <br>
                                     <span></span>
                                 </td>
-                                <td>
+                                <td class="single-line">
                                     <strong class="text-capitalize">{{item.agama}}</strong> <br>
                                     @if(item.sex != 'f')
                                     <small class="text-uppercase">laki-laki</small>
