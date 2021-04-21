@@ -1,3 +1,4 @@
+{{ script('ajax/mst-user-list') }}
 <div class="row">
     <div class="col-md-12">
         <div class="white-box">
@@ -25,25 +26,31 @@
                             <tr>
                                 <th width="12%" class="text-center">Actions</th>
                                 <th width="10%">Group</th>
-                                <th width="*">Text</th>
-                                <th width="20%">Values</th>
-                                <th width="10%" class="text-right">Order</th>
+                                <th width="*">Username</th>
+                                <th width="20%">Fullname</th>
+                                <th width="20%">Email</th>
+                                <th width="10%" class="text-right">Phone</th>
+                                <th width="10%" class="text-center">Avatar</th>
                             </tr>
                         </thead>
                         <tbody>
                             @each(item in list.data)
                                 <tr>
-                                    <td class="text-center">
-                                        <form action="#">
-                                        <button class="btn btn-outline btn-warning btn-xs bt-show-form" data-id="{{item.id}}">edit</button>
-                                            {{ csrfField() }}
-                                            <button class="btn btn-outline btn-danger btn-xs bt-delete-form" data-id="{{item.id}}" data-status="{{item.status}}">delete</button>
-                                        </form>
+                                    <td class="text-center vac">
+                                        <button class="btn btn-outline btn-warning btn-sm bt-show-form" data-id="{{item.id}}">edit</button>
                                     </td>
-                                    <td>{{item.group}}</td>
-                                    <td>{{item.teks}}</td>
-                                    <td>{{item.nilai}}</td>
-                                    <td class="text-right">{{item.urut}}</td>
+                                    <td class="vac">{{item.user_tipe}}</td>
+                                    <td class="vac">{{item.username}}</td>
+                                    <td class="vac">{{item.nm_lengkap}}</td>
+                                    <td class="vac">{{item.email}}</td>
+                                    <td class="vac text-right">{{item.phone}}</td>
+                                    <td class="vac text-center">
+                                        @if(item.avatar != null)
+                                            <img src="{{assetsUrl(item.avatar)}}" alt="..." class="img-circle" width="50" height="50">
+                                        @else
+                                            <img src="{{assetsUrl('../plugins/bower_components/dropify/src/images/_def-karyawan.png')}}" alt="..." class="img-circle" width="50" height="50">
+                                        @endif
+                                    </td>
                                 </tr>
                             @endeach
                         </tbody>

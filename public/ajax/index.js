@@ -22,7 +22,7 @@ $(function(){
         }
     })
 
-    $('select.select2').each(function(){
+    $('body select.select2 select.custom-option').each(function(){
         var group = $(this).data('title')
         var selected = $(this).data('check')
         var id = $(this).attr('id')

@@ -12,6 +12,7 @@ class ProfileSchema extends Schema {
       table.string('nm_belakang', 30).defaultTo(null)
       table.string('phone', 30).notNullable()
       table.enu('jenkel', ['m', 'f']).defaultTo('m')
+      table.integer('employee_id').unsigned().references('id').inTable('mas_employees').onDelete('CASCADE').onUpdate('CASCADE')
       table.text('avatar').defaultTo('/avatar/avatar-default.png')
       table.timestamps()
     })

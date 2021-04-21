@@ -38,7 +38,7 @@ class MasEmployeeController {
     }else{
       data = await Employee.query().where('aktif', 'Y').paginate(halaman, limit)
     }
-    console.log(data.toJSON());
+    // console.log(data.toJSON());
     return view.render('master.employee.list', {list: data.toJSON()})
   }
 

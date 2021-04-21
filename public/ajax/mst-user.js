@@ -5,44 +5,33 @@ $(function(){
     initDeafult()
     setDateString()
 
-    $('#create-form').on('click', function(){
+    $('body').on('click', 'button#create-form', function(){
         initCreate()
     })
     $('body').on('click', 'button#bt-back', function(){
         initDeafult()
     })
-    function initDeafult(){
-        $('div.content-module').each(function(){ $(this).hide() })
-        $('div#list-content').show()
-    }
-    function initCreate(){
-        $('div.content-module').each(function(){ $(this).hide() })
-        $('div#form-create').show()
-    }
+    
 
-    function initShow(){
-        $('div.content-module').each(function(){ $(this).hide() })
-        $('div#form-show').show()
-    }
+    $('body').on('click', 'button.bt-select-item', function(e){
+        e.preventDefault()
+        var data = $(this).data()
+        var sp = (data.fullname).split(' ')
+        $('input[name="email"]').val(data.email)
+        $('input[name="phone"]').val(data.phone)
+        $('input[name="jenkel"]').val(data.jenkel)
+        $('input[name="nm_depan"]').val(sp[0])
+        $('input[name="nm_belakang"]').val(sp[1] + ' ' + sp[2])
+        $('input[name="employee_id"]').val(data.id)
+        $('div#box-details').show()
+        $('div#panel-footer').show()
+        $('div#box-list').hide()
+    })
 
-    function setDateString() {
-        $('.myDateFormat').each(function(){
-            var date = $(this).data(date)
-            var elm = $(this).data('elm')
-            var dateString = moment(date.date).format('DD-MM-YYYY')
-            console.log(date.date);
-            if(elm != undefined){
-                $(this).find(elm).html(dateString)
-            }else{
-                $(this).html(dateString)
-            }
-        })
-    }
-
-    $('button.bt-show-form').on('click', function(e){
+    $('body').on('click', 'button.bt-show-form', function(e){
         e.preventDefault()
         var id = $(this).data('id')
-        $.get('/setting/sys-options/'+id+'/show', function(data){
+        $.get('/master/user/'+id+'/show', function(data){
             $("div#form-show").html(data)
             initShow()
         })
@@ -53,44 +42,66 @@ $(function(){
         initDeafult()
     })
 
-    $('#bt-save-option').on('click', function(e){
+    $('form#fm-add-user').on('submit', function(e){
         e.preventDefault()
-        const names = []
-        const values = []
-        $('.field-add').each(function(){
-            names.push($(this).attr("name"))
-            values.push($(this).val())
-        })
-        console.log(_.object(names, values))
+        var data = new FormData(this)
         $.ajax({
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/master/user',
             method: 'POST',
-            url: "/setting/sys-options",
-            data: _.object(names, values),
+            data: data,
             dataType: 'json',
-            success: function(res){
-                console.log(res)
-                if(res.success){
-                    swal({
-                        title: "Okey!",
-                        text: "Insert data success, are you finish insert data ?",
-                        type: "success",
-                        showCancelButton: true,
-                        confirmButtonClass: "btn-warning",
-                        confirmButtonText: "Yes",
-                        closeOnConfirm: false
-                    },
-                    function(){
-                        window.location.reload()
-                    });
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(data){
+                console.log(data);
+                if(data.success){
+                    swal("Okey,,,!", data.message, "success")
                 }else{
-                    swal("Oops", "Insert data failed", "error")
+                    swal("Opps,,,!", data.message, "warning")
                 }
             },
             error: function(err){
-                console.log(err.responseJSON)
-                swal("Oops", "Insert data failed", "error")
+                console.log(err);
+                const { message } = err.responseJSON
+                swal("Error 404!", message, "error")
             }
         })
     })
+
+    function initDeafult(){
+        $('div.content-module:not(#list-content)').hide()
+        $('div#list-content').show()
+        searchKeyword()
+    }
+    function initCreate(){
+        $('div.content-module:not(#form-create)').hide()
+        $('div#form-create').show()
+    }
+
+    function initShow(){
+        $('div.content-module:not(#form-show)').hide()
+        $('div#form-show').show()
+    }
+
+    function searchKeyword(value){
+        value = value || ''
+        $.get('/master/user/search?keyword='+value, function(data){
+            $('body div#list-content').html(data)
+        })
+    }
+
+    function setDateString() {
+        $('.myDateFormat').each(function(){
+            var date = $(this).data(date)
+            var elm = $(this).data('elm')
+            var dateString = moment(date.date).format('DD-MM-YYYY')
+            if(elm != undefined){
+                $(this).find(elm).html(dateString)
+            }else{
+                $(this).html(dateString)
+            }
+        })
+    }
 })

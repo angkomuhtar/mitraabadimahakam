@@ -30,6 +30,14 @@ Route.group(() => {
     // User
     Route.get('/user', 'UserController.index').as('mas.user.index')
 
+    Route.post('/user', 'UserController.store').as('mas.user.store')
+
+    Route.get('/user/search', 'UserController.list').as('mas.user.list')
+
+    Route.get('/user/:id/show', 'UserController.show').as('mas.user.show')
+
+    Route.post('/user/:id/update', 'UserController.update').as('mas.user.update')
+
     // Equipment Unit
     Route.get('/equipment', 'MasEquipmentController.index').as('mas.equipment.index')
     

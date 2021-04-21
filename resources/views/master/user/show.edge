@@ -1,0 +1,113 @@
+{{ script('ajax/mst-user-show') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-update-user" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add User</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Username</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                            <input type="text" class="form-control" name="username" value="{{data.username}}" required> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Email</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+                                                            <input type="email" class="form-control" name="email" value="{{data.email}}" readonly> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">First Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                            <input type="text" class="form-control" name="nm_depan" value="{{data.nm_depan}}" readonly> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Last Name</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                            <input type="text" class="form-control" name="nm_belakang" value="{{data.nm_belakang}}" readonly> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Phone Number</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-phone"></i></div>
+                                                            <input type="text" class="form-control" name="phone" value="{{data.phone}}" readonly> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Sex</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                            <input type="text" class="form-control text-uppercase" name="jenkel" value="{{data.jenkel}}" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7">
+                                                    <div class="form-group">
+                                                        <label for="">User Tipe</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-file-text"></i></div>
+                                                            <select class="form-control select2" data-title="user-tipe" data-check="{{data.user_tipe}}" id="user_tipe" name="user_tipe"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Reset Password</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+                                                            <input type="text" class="form-control text-uppercase" name="password">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="file" id="input-file-now-custom-1" class="dropify" name="avatar"
+                                            data-gambar="{{assetsUrl('../plugins/bower_components/dropify/src/images/_def-karyawan.png')}}"
+                                            data-default-file="{{assetsUrl(data.avatar)}}" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-user"> 
+                                        <i class="fa fa-save"></i> <span>Update</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

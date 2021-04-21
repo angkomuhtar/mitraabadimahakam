@@ -1,7 +1,7 @@
 
 @layout('_layouts.main')
 @section('content')
-    {{ script('ajax/mst-equipment') }}
+    {{ script('ajax/mst-user') }}
     <div class="container-fluid">
         <div class="row bg-title">
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="content-module" id="list-content">
-            @include('master.user.list')
+            {{--  @include('master.user.list')  --}}
         </div>
         <div class="content-module" id="form-create" style="display:none;">
             @include('master.user.create')
