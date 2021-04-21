@@ -1,20 +1,20 @@
 $(function(){
-    // alert('its works....')
-    // $('body').on('click', 'button.bt-select-item', function(e){
-    //     e.preventDefault()
-    //     var data = $(this).data()
-    //     var sp = (data.fullname).split(' ')
-    //     $('input[name="email"]').val(data.email)
-    //     $('input[name="phone"]').val(data.phone)
-    //     $('input[name="jenkel"]').val(data.jenkel)
-    //     $('input[name="nm_depan"]').val(sp[0])
-    //     $('input[name="nm_belakang"]').val(sp[1] + ' ' + sp[2])
-    //     $('div#box-details').show()
-    //     $('div#panel-footer').show()
-    //     $('div#box-list').hide()
-    // })
+    
+    $('body select.select2').each(function(){
+        var group = $(this).data('title')
+        var selected = $(this).data('check')
+        var id = $(this).attr('id')
+        var elm = $(this)
+        // console.log('SET DATA OPTION FROM INDEX PUBLIC')
+        if(group != undefined){
+            $.get('/ajax/sys-options?group='+group+'&selected='+selected, function(data){
+                elm.children().remove()
+                const list = data.map(nod => '<option value="'+nod.nilai+'" '+nod.selected+'>'+nod.teks+'</option>')
+                elm.html(list)
+            })
+        }
+    })
 
-    // $('')
     $('input#inpKeyword').on('keyup', function(e){
         var value = $(this).val()
         if(e.keyCode === 13){
