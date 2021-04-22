@@ -52,14 +52,16 @@ class User extends Model {
     return this.belongsToMany("App/Models/SysMenuDetail", "user_id", "submenu_id").pivotTable('usr_menu_details')
   }
 
-  sysgroup_user () {
-    return this.belongsToMany("App/Models/UsersGroup", "user_id", "group_id").pivotTable('sys_users_groups')
-  }
+  // sysgroup_user () {
+  //   return this.belongsToMany("App/Models/UsersGroup", "user_id", "group_id").pivotTable('sys_users_groups')
+  // }
 
-  sysgroup_user_mod () {
-    return this.belongsToMany("App/Models/SysModule", "user_id", "mod_id").pivotTable('sys_users_groups')
-  }
-
+  // sysgroup_user_mod () {
+  //   return this.belongsToMany("App/Models/SysModule", "user_id", "mod_id").pivotTable('sys_users_groups')
+  // }
+tipe_akses(){
+  return this.belongsToMany("App/Models/SysModule", "user_tipe", "mod_id").pivotTable('sys_users_groups')
+}
   
 }
 

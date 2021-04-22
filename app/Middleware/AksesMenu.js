@@ -19,13 +19,14 @@ class AksesMenu {
         const userData = (
           await User.query()
           .with('user_menu', q => {
-            // q.where('id', usr.id)
             q.orderBy('name')
+            // q.where('id', usr.id)
           })
           .with('user_menuDetail', q => {
-            // q.where('id', usr.id)
             q.orderBy('subname')
+            // q.where('id', usr.id)
           })
+          .where('id', usr.id)
           .first()
         ).toJSON()
         const {user_menu, user_menuDetail} = userData

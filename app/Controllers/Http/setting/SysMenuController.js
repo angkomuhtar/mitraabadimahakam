@@ -1,9 +1,8 @@
 'use strict'
 
 
-const Logger = use('Logger')
+const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
 var moment = require('moment')
-const jam = moment().format('hh:mm:ss')
 
 const Db = use('Database')
 const User = use("App/Models/User")
@@ -30,45 +29,46 @@ class SysMenuController {
   }
 
   async store ({ auth, request, response }) {
-    Logger.transport('file').info('-----------------------------------------------------------------------')
     const usr = await auth.getUser()
     const req = request.only(['user_id'])
-    const arrReqMenu = request.only(['menu'])
-    const arrReqSubMenu = request.only(['submenu'])
+    const arrReqMenu = request.collect(['menu'])
+    const arrReqSubMenu = request.collect(['submenu'])
+    // console.log('====================================');
+    // console.log(arrReqMenu);
+    // console.log(arrReqSubMenu);
+    // console.log('====================================');
 
-    const trx = await Db.beginTransaction()
+    const dataMenu = arrReqMenu.map(el => {
+      return{
+        menu_id: el.menu,
+        user_id: req.user_id
+      }
+    })
+
+    const dataSubMenu = arrReqSubMenu.map(el => {
+      return{
+        submenu_id: el.submenu,
+        user_id: req.user_id
+      }
+    })
+
     try {
-      const user = await User.findOrFail(req.user_id)
-      let menux = arrReqMenu.menu.map(async el => {
-        try {
-          await user.user_menu().sync([el])
-          Logger.transport('file').info({post: true, jam: jam, user: usr, req: {user_id: req.user_id, menu_id: el}})
-        } catch (error) {
-          console.log(error);
-          Logger.transport('file').info({post: false, jam: jam, user: usr, error: error})
-          await trx.rollback()
-        }
-      })
-      console.log(menux);
-  
-      let submenux = arrReqSubMenu.submenu.map(async el => {
-        try {
-          await user.user_menuDetail().sync([el])
-          Logger.transport('file').info({post: true, jam: jam, user: usr, req: {user_id: req.user_id, submenu_id: el}})
-        } catch (error) {
-          console.log(error);
-          Logger.transport('file').info({post: false, jam: jam, user: usr, error: error})
-          await trx.rollback()
-        }
-      })
-      console.log(submenux);
-      
-      await trx.commit()
-    } catch (error) {
-      await trx.rollback()
-    }
-    
+      await Db.table('usr_menus').where('user_id', req.user_id).delete()
+      await Db.from('usr_menus').insert(dataMenu)
 
+
+      await Db.table('usr_menu_details').where('user_id', req.user_id).delete()
+      await Db.from('usr_menu_details').insert(dataSubMenu)
+
+      new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
+    } catch (error) {
+      console.log(error)
+      new Loggerx(request.url(), request.all(), usr, request.method(), error).tempData()
+      return {
+        success: false,
+        message: 'Failed grant menu to user...'
+      }
+    }
 
   }
 

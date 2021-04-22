@@ -28,62 +28,68 @@ Route.get('/test/user-module', 'TestingDatumController.userModule')
 // MASTER
 Route.group(() => {
     // User
-    Route.get('/user', 'UserController.index').as('mas.user.index')
+    Route.get('/user', 'UserController.index').as('mas.user.index').middleware('R')
 
-    Route.post('/user', 'UserController.store').as('mas.user.store')
+    Route.post('/user', 'UserController.store').as('mas.user.store').middleware('C')
 
     Route.get('/user/search', 'UserController.list').as('mas.user.list')
 
-    Route.get('/user/:id/show', 'UserController.show').as('mas.user.show')
+    Route.get('/user/:id/show', 'UserController.show').as('mas.user.show').middleware('R')
 
-    Route.post('/user/:id/update', 'UserController.update').as('mas.user.update')
+    Route.post('/user/:id/update', 'UserController.update').as('mas.user.update').middleware('U')
+
+    Route.post('/user/:id/delete', 'UserController.delete').as('mas.user.delete').middleware('D')
 
     // Equipment Unit
-    Route.get('/equipment', 'MasEquipmentController.index').as('mas.equipment.index')
+    Route.get('/equipment', 'MasEquipmentController.index').as('mas.equipment.index').middleware('R')
     
-    Route.post('/equipment', 'MasEquipmentController.store').as('mas.equipment.store').validator('Equipment-Post')
+    Route.post('/equipment', 'MasEquipmentController.store').as('mas.equipment.store').validator('Equipment-Post').middleware('C')
     
-    Route.get('/equipment/:id', 'MasEquipmentController.show').as('mas.equipment.show')
+    Route.get('/equipment/:id', 'MasEquipmentController.show').as('mas.equipment.show').middleware('R')
 
     Route.get('/equipment/search', 'MasEquipmentController.list').as('mas.equipment.list')
 
-    Route.post('/equipment/:id/update', 'MasEquipmentController.update').as('mas.equipment.update')
+    Route.post('/equipment/:id/update', 'MasEquipmentController.update').as('mas.equipment.update').middleware('U')
 
-    Route.post('/equipment/:id/delete', 'MasEquipmentController.delete').as('mas.equipment.delete')
+    Route.post('/equipment/:id/delete', 'MasEquipmentController.delete').as('mas.equipment.delete').middleware('D')
 
     // Employee
-    Route.get('/employee', 'MasEmployeeController.index').as('mas.employee.index')
+    Route.get('/employee', 'MasEmployeeController.index').as('mas.employee.index').middleware('R')
 
-    Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store').validator('Employee-Post')
+    Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store').validator('Employee-Post').middleware('C')
     
     Route.get('/employee/search', 'MasEmployeeController.list').as('mas.employee.list')
 
-    Route.get('/employee/:id/show', 'MasEmployeeController.show').as('mas.employee.show')
+    Route.get('/employee/:id/show', 'MasEmployeeController.show').as('mas.employee.show').middleware('R')
 
-    Route.post('/employee/:id/update', 'MasEmployeeController.update').as('mas.employee.update')
+    Route.post('/employee/:id/update', 'MasEmployeeController.update').as('mas.employee.update').middleware('U')
 
-    Route.post('/employee/:id/delete', 'MasEmployeeController.delete').as('mas.employee.delete')
+    Route.post('/employee/:id/delete', 'MasEmployeeController.delete').as('mas.employee.delete').middleware('D')
 
 }).prefix('master').namespace('master').middleware(['MM'])
 
 // SETTING
 Route.group(() => {
-    Route.get('/sys-options', 'SysOptionController.index').as('set.sys-options.index')
+    Route.get('/sys-options', 'SysOptionController.index').as('set.sys-options.index').middleware('R')
 
-    Route.post('/sys-options', 'SysOptionController.create').as('set.sys-options.create').validator('Options')
+    Route.post('/sys-options', 'SysOptionController.create').as('set.sys-options.create').validator('Options').middleware('C')
 
-    Route.get('/sys-options/list', 'SysOptionController.list').as('set.sys-options.list')
+    Route.get('/sys-options/list', 'SysOptionController.list').as('set.sys-options.list').middleware('R')
 
-    Route.get('/sys-options/:id/show', 'SysOptionController.show').as('set.sys-options.show')
+    Route.get('/sys-options/:id/show', 'SysOptionController.show').as('set.sys-options.show').middleware('R')
 
-    Route.post('/sys-options/:id/update', 'SysOptionController.update').as('set.sys-options.update')
+    Route.post('/sys-options/:id/update', 'SysOptionController.update').as('set.sys-options.update').middleware('U')
+
+    // User Akses
+    Route.get('/usr-akses', 'SysUserAkseController.index').as('set.usr-akses.index').middleware('R')
 
     // User Menu
-    Route.get('/usr-menu', 'SysMenuController.index').as('set.usr-menu.index')
+    Route.get('/usr-menu', 'SysMenuController.index').as('set.usr-menu.index').middleware('R')
 
-    Route.get('/usr-menu/create', 'SysMenuController.create').as('set.usr-menu.create')
+    Route.get('/usr-menu/create', 'SysMenuController.create').as('set.usr-menu.create').middleware('R')
 
-    Route.post('/usr-menu/create', 'SysMenuController.store').as('set.usr-menu.store').validator('UserMenu')
+    Route.post('/usr-menu/create', 'SysMenuController.store').as('set.usr-menu.store').validator('UserMenu').middleware('C')
+
 
 }).prefix('setting').namespace('setting').middleware(['MM'])
 

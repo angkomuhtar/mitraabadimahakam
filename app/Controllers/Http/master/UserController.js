@@ -17,30 +17,29 @@ class UserController {
     async index ({auth, view, request, response}) {
         const usr = await auth.getUser()
 
-        const logger = new Loggerx(request.url(), request.all(), usr, request.method(), true)
-        await logger.tempData()
+        new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
 
         const existingUser = (await VUser.query().where('status', 'Y').fetch()).toJSON()
         const arrEmail = existingUser.map(el => el.email)
         const employee = await Employee.query().whereNotIn('email', arrEmail).andWhere('aktif', 'Y').fetch()
 
 
-        console.log('-'.repeat(92))
-        console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
-        console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
-        console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
-        console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
-        console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
-        console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
-        console.log('='.repeat(92));
-        console.log('#'.repeat(92));
-        console.log('='.repeat(92));
-        console.log('#'.repeat(92));
-        console.log('='.repeat(92));
-        console.log('#'.repeat(92));
-        console.log('='.repeat(92));
-        console.log('#'.repeat(92));
-        console.log('-'.repeat(92))
+        // console.log('-'.repeat(92))
+        // console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
+        // console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
+        // console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
+        // console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
+        // console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
+        // console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
+        // console.log('='.repeat(92));
+        // console.log('#'.repeat(92));
+        // console.log('='.repeat(92));
+        // console.log('#'.repeat(92));
+        // console.log('='.repeat(92));
+        // console.log('#'.repeat(92));
+        // console.log('='.repeat(92));
+        // console.log('#'.repeat(92));
+        // console.log('-'.repeat(92))
         
 
 
@@ -55,8 +54,7 @@ class UserController {
         const limit = 10
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let data 
-        const logger = new Loggerx(request.url(), req, usr, request.method(), true)
-        await logger.tempData()
+        new Loggerx(request.url(), req, usr, request.method(), true).tempData()
         if(req.keyword != ''){
             data = await VUser.query().where(whe => {
                 whe.where('username', 'like', `%${req.keyword}%`)
@@ -68,7 +66,7 @@ class UserController {
         }else{
             data = await VUser.query().where('status', 'Y').paginate(halaman, limit)
         }
-        // console.log(data.toJSON());
+
         return view.render('master.user.list', {list: data.toJSON()})
     }
 
@@ -129,8 +127,7 @@ class UserController {
             await profile.save(trx)
             await trx.commit()
 
-            const logger = new Loggerx(request.url(), req, usr, request.method(), true)
-            await logger.tempData()
+            new Loggerx(request.url(), req, usr, request.method(), true).tempData()
             return {
                 success: true,
                 message: 'Success insert data'
@@ -138,8 +135,7 @@ class UserController {
         } catch (error) {
             console.log(error);
             await trx.rollback()
-            const logger = new Loggerx(request.url(), req, usr, request.method(), error)
-            await logger.tempData()
+            new Loggerx(request.url(), req, usr, request.method(), error).tempData()
             return {
                 success: false,
                 message: 'Oops, Failed insert data'
@@ -150,8 +146,8 @@ class UserController {
     async show ({auth, params, request, view}) {
         const usr = await auth.getUser()
         const { id } = params
-        const logger = new Loggerx(request.url(), params, usr, request.method(), true)
-        await logger.tempData()
+        new Loggerx(request.url(), params, usr, request.method(), true).tempData()
+        // await logger.tempData()
         const user = await VUser.findOrFail(id)
         return view.render('master.user.show', {data: user.toJSON()})
     }
@@ -185,6 +181,32 @@ class UserController {
             return {
                 success: false,
                 message: 'Failed update data'
+            }
+        }
+    }
+
+    async delete ({ auth, params, request }) {
+        const usr = await auth.getUser()
+        const { id } = params
+
+        new Loggerx(request.url(), params, usr, request.method(), true).tempData()
+
+        let user = await User.findOrFail(id)
+        user.status = 'N'
+
+        try {
+            await user.save()
+            return {
+                success: true,
+                message: 'Success delete data'
+            }
+        } catch (error) {
+            console.log(error);
+            const logger = new Loggerx(request.url(), {...req, password: pass.password}, usr, request.method(), error)
+            await logger.tempData()
+            return {
+                success: false,
+                message: 'Failed delete data'
             }
         }
     }

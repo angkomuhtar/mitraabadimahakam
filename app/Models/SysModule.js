@@ -4,8 +4,8 @@
 const Model = use('Model')
 
 class SysModule extends Model {
-    sysgroup_user_mod () {
-        return this.belongsToMany("App/Models/UsersGroup", "mod_id", "group_id").pivotTable('sys_users_groups')
+    tipe_akses () {
+        return this.belongsToMany("App/Models/User", "mod_id", "user_tipe").pivotTable('sys_users_groups')
     }
 }
 

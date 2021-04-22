@@ -40,7 +40,11 @@ const globalMiddleware = [
 const namedMiddleware = {
   auth: 'Adonis/Middleware/Auth',
   guest: 'Adonis/Middleware/AllowGuestOnly',
-  MM: 'App/Middleware/AksesMenu'
+  MM: 'App/Middleware/AksesMenu',
+  C: 'App/Middleware/AksesResourceCreate',
+  R: 'App/Middleware/AksesResourceRead',
+  U: 'App/Middleware/AksesResourceUpdate',
+  D: 'App/Middleware/AksesResourceDelete'
 }
 
 /*

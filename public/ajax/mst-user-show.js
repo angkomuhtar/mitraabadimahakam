@@ -45,4 +45,33 @@ $(function(){
             }
         })
     })
+
+    $('button#bt-delete-user').on('click', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        console.log('/master/user/'+id+'/delete',);
+        $.ajax({
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/master/user/'+id+'/delete',
+            method: 'POST',
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(data){
+                // console.log(data);
+                if(data.success){
+                    swal("Okey,,,!", data.message, "success")
+                    window.location.reload()
+                }else{
+                    swal("Opps,,,!", data.message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err);
+                const { message } = err.responseJSON
+                swal("Error 404!", message, "error")
+            }
+        })
+    })
 })

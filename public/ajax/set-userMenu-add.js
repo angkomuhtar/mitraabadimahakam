@@ -37,7 +37,7 @@ $(function(){
             success: function(res){
                 console.log(res)
                 $('body').find('div.preloader').hide()
-                
+                swal("Okey", "Modify menu success", "success")
             },
             error: function(err){
                 console.log(err)
