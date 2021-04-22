@@ -16,6 +16,10 @@ class AksesResourceUpdate {
     const uri = (request.url()).split('/')
     const usr = await auth.getUser()
     const name = uri[uri.length - 1]
+
+    if(usr.user_tipe === 'administrator'){
+      await next()
+    }
     
     const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'U'}).first()
     if(akses){

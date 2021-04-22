@@ -12,9 +12,11 @@ class AksesResourceCreate {
     const uri = (request.url()).split('/')
     const usr = await auth.getUser()
     const name = uri[2]
+    if(usr.user_tipe === 'administrator'){
+      await next()
+    }
     
     const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'C'}).first()
-    
     if(akses){
       await next()
     }else{
