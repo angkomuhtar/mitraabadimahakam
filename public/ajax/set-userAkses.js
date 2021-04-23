@@ -11,6 +11,14 @@ $(function(){
         }
     })
 
+    $('body').on('click', 'button#create-form', function(){
+        initCreate()
+    })
+
+    $('body').on('click', 'button#bt-back', function(){
+        initDeafult()
+    })
+
     function initDeafult(){
         $('div.content-module:not(#list-content)').hide()
         $('div#list-content').show()
