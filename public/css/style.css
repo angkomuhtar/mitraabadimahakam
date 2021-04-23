@@ -3905,7 +3905,7 @@ ul.common li a:hover {
 }
 
 .vtabs .tabs-vertical {
-	width: 150px;
+	width: 200px;
 	border-right: 1px solid rgba(120, 130, 140, .13);
 	display: table-cell;
 	vertical-align: top

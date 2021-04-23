@@ -83,6 +83,8 @@ Route.group(() => {
     // User Akses
     Route.get('/usr-akses', 'SysUserAkseController.index').as('set.usr-akses.index').middleware('R')
 
+    Route.get('/usr-akses/list', 'SysUserAkseController.list').as('set.usr-akses.list')
+
     // User Menu
     Route.get('/usr-menu', 'SysMenuController.index').as('set.usr-menu.index').middleware('R')
 
