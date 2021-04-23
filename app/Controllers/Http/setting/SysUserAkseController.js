@@ -1,11 +1,17 @@
 'use strict'
 
+const Db = use('Database')
 const v_Akses = use("App/Models/VPrivilege")
 const Options = use("App/Models/SysOption")
+const SysModule = use("App/Models/SysModule")
+const SysUserGrp = use("App/Models/SysUsersGroup")
 
 class SysUserAkseController {
     async index ({ auth, request, view }) {
-        return view.render('setting.usr-akses.index')
+        let option = (await Options.query().where({group: "user-tipe"}).fetch()).toJSON()
+        let sysmodule = (await SysModule.query().orderBy('method', 'asc').fetch()).toJSON()
+        // console.log(sysmodule);
+        return view.render('setting.usr-akses.index', {usertipe: option, listmodule: sysmodule})
     }
 
     async list ({ auth, request, view }) {
@@ -25,6 +31,33 @@ class SysUserAkseController {
         })
         // console.log(akses);
         return view.render('setting.usr-akses.list', {data: option})
+    }
+
+    async store ({ request }) {
+        const req = request.only(['user_tipe'])
+        const reqCol = request.collect(['mod_id'])
+        const data = reqCol.map(el => {
+            return {
+                ...el,
+                user_tipe: req.user_tipe
+            }
+        })
+        try {
+            if(req.user_tipe != null){
+                await Db.table('sys_users_groups').where({user_tipe: req.user_tipe}).delete()
+                await Db.from('sys_users_groups').insert(data)
+                return {
+                    success: true,
+                    message: 'Success Grant User Privilege'
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                success: false,
+                message: 'Failed Grant User Privilege'
+            }
+        }
     }
 }
 

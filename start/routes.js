@@ -83,6 +83,8 @@ Route.group(() => {
     // User Akses
     Route.get('/usr-akses', 'SysUserAkseController.index').as('set.usr-akses.index').middleware('R')
 
+    Route.post('/usr-akses', 'SysUserAkseController.store').as('set.usr-akses.store').middleware('C')
+
     Route.get('/usr-akses/list', 'SysUserAkseController.list').as('set.usr-akses.list')
 
     // User Menu
@@ -107,7 +109,10 @@ Route.group(() => {
 
     Route.get('/sys-options', 'AjaxOptionController.index').as('set.sys-options.index')
 
+    Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
+
     Route.get('/dealer', 'AjaxDealerController.getDealers').as('dealer.getDealers')
+
     Route.get('/dealer/:id', 'AjaxDealerController.getDealerId').as('dealer.getDealerId')
 
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
