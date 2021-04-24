@@ -76,6 +76,7 @@ $(function(){
                 console.log(data);
                 if(data.success){
                     swal("Okey,,,!", data.message, "success")
+                    window.location.reload()
                 }else{
                     swal("Opps,,,!", data.message, "warning")
                 }

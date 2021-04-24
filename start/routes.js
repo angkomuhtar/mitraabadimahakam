@@ -66,6 +66,28 @@ Route.group(() => {
 
     Route.post('/employee/:id/delete', 'MasEmployeeController.delete').as('mas.employee.delete').middleware('D')
 
+    // Site
+    Route.get('/site', 'MasSiteController.index').as('mas.site.index').middleware('R')
+
+    Route.post('/site', 'MasSiteController.store').as('mas.site.store').middleware('C')
+
+    Route.get('/site/:id/show', 'MasSiteController.show').as('mas.site.show').middleware('R')
+
+    Route.post('/site/:id/update', 'MasSiteController.update').as('mas.site.update').middleware('U')
+
+    Route.post('/site/:id/delete', 'MasSiteController.delete').as('mas.site.delete').middleware('D')
+
+    // PIT
+    Route.get('/pit', 'MasPitController.index').as('mas.pit.index').middleware('R')
+
+    Route.post('/pit', 'MasPitController.store').as('mas.pit.store').middleware('C')
+
+    Route.get('/pit/:id/show', 'MasPitController.show').as('mas.pit.show').middleware('R')
+
+    Route.post('/pit/:id/update', 'MasPitController.update').as('mas.pit.update').middleware('U')
+
+    Route.post('/pit/:id/delete', 'MasPitController.delete').as('mas.pit.delete').middleware('D')
+
 }).prefix('master').namespace('master').middleware(['MM'])
 
 // SETTING
@@ -110,6 +132,8 @@ Route.group(() => {
     Route.get('/sys-options', 'AjaxOptionController.index').as('set.sys-options.index')
 
     Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
+
+    Route.get('/site', 'AjaxSiteController.getSites').as('site.getSites')
 
     Route.get('/dealer', 'AjaxDealerController.getDealers').as('dealer.getDealers')
 

@@ -1,0 +1,46 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-site">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add SITE</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Nama Site</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control input-sm" name="name"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label for="">Keterangan</label>
+                                                <textarea class="form-control" name="keterangan" id="keterangan" cols="30" rows="10"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-option"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,12 +5,12 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 /**
- * Resourceful controller for interacting with massites
+ * Resourceful controller for interacting with maspits
  */
-class MasSiteController {
+class MasPitController {
   /**
-   * Show a list of all massites.
-   * GET massites
+   * Show a list of all maspits.
+   * GET maspits
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -18,11 +18,12 @@ class MasSiteController {
    * @param {View} ctx.view
    */
   async index ({ request, response, view }) {
+    return view.render('master.pit.index')
   }
 
   /**
-   * Render a form to be used for creating a new massite.
-   * GET massites/create
+   * Render a form to be used for creating a new maspit.
+   * GET maspits/create
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -33,8 +34,8 @@ class MasSiteController {
   }
 
   /**
-   * Create/save a new massite.
-   * POST massites
+   * Create/save a new maspit.
+   * POST maspits
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -44,8 +45,8 @@ class MasSiteController {
   }
 
   /**
-   * Display a single massite.
-   * GET massites/:id
+   * Display a single maspit.
+   * GET maspits/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -56,8 +57,8 @@ class MasSiteController {
   }
 
   /**
-   * Render a form to update an existing massite.
-   * GET massites/:id/edit
+   * Render a form to update an existing maspit.
+   * GET maspits/:id/edit
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -68,8 +69,8 @@ class MasSiteController {
   }
 
   /**
-   * Update massite details.
-   * PUT or PATCH massites/:id
+   * Update maspit details.
+   * PUT or PATCH maspits/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -79,8 +80,8 @@ class MasSiteController {
   }
 
   /**
-   * Delete a massite with id.
-   * DELETE massites/:id
+   * Delete a maspit with id.
+   * DELETE maspits/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -90,4 +91,4 @@ class MasSiteController {
   }
 }
 
-module.exports = MasSiteController
+module.exports = MasPitController

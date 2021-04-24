@@ -1,0 +1,98 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div data-example-id="togglable-tabs" class="bs-example bs-example-tabs">
+                <ul role="tablist" class="nav nav-tabs" id="myTabs">
+                    <li class="active" role="presentation">
+                        <a aria-expanded="true" aria-controls="site" data-toggle="tab" role="tab" id="site-tab" href="#site">
+                            <i class="ti-world"></i> LIST SITE 
+                        </a>
+                    </li>
+                    <li role="presentation" class="">
+                        <a aria-controls="pit" data-toggle="tab" id="pit-tab" role="tab" href="#pit" aria-expanded="false">
+                            <i class="ti-eye"></i> LIST PIT 
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div aria-labelledby="site-tab" id="site" class="tab-pane fade active in" role="tabpanel">
+                        <button class="btn btn-outline btn-info waves-effect waves-light m-b-10" data-info="site" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add New Site</span>
+                        </button>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead style="border-bottom: 2px solid;">
+                                    <tr>
+                                        <th class="sl text-center" width="20">No</th>
+                                        <th class="sl text-center" width="20">ACT</th>
+                                        <th class="sl" width="150">Nama Site</th>
+                                        <th class="sl">Description</th>
+                                        <th class="sl text-center" width="20">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(site.length < 1)
+                                      <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                                    @endif
+                                    @each(item in site)
+                                        <tr>
+                                            <td>{{$loop.index + 1}}</td>
+                                            <td>
+                                                <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                            </td>
+                                            <td class="single-line">
+                                                {{item.kode}} <br>
+                                                <small>{{item.tipe}}</small>
+                                            </td>
+                                            <td>{{item.unit_sn ? item.unit_sn : 'unset'}}</td>
+                                            <td>{{item.unit_model}}</td>
+                                        </tr>
+                                    @endeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div aria-labelledby="pit-tab" id="pit" class="tab-pane fade" role="tabpanel">
+                        <button class="btn btn-outline btn-info waves-effect waves-light m-b-10" data-info="pit" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add New PIT</span>
+                        </button>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead style="border-bottom: 2px solid;">
+                                    <tr>
+                                        <th class="sl text-center" width="20">No</th>
+                                        <th class="sl text-center" width="20">ACT</th>
+                                        <th class="sl" width="150">Site</th>
+                                        <th class="sl" width="150">Nama PIT</th>
+                                        <th class="sl">Description</th>
+                                        <th class="sl text-center" width="20">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if(site.length < 1)
+                                      <tr><td colspan="6">Data not found or data is not exsist</td></tr>
+                                    @endif
+                                    @each(item in pit)
+                                        <tr>
+                                            <td>{{$loop.index + 1}}</td>
+                                            <td>{{$loop.index + 1}}</td>
+                                            <td>
+                                                <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                            </td>
+                                            <td class="single-line">
+                                                {{item.kode}} <br>
+                                                <small>{{item.tipe}}</small>
+                                            </td>
+                                            <td>{{item.unit_sn ? item.unit_sn : 'unset'}}</td>
+                                            <td>{{item.unit_model}}</td>
+                                        </tr>
+                                    @endeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

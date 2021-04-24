@@ -1,10 +1,12 @@
 'use strict'
 
+// CustomClass
+const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
+
 const Db = use('Database')
 const v_Akses = use("App/Models/VPrivilege")
 const Options = use("App/Models/SysOption")
 const SysModule = use("App/Models/SysModule")
-const SysUserGrp = use("App/Models/SysUsersGroup")
 
 class SysUserAkseController {
     async index ({ auth, request, view }) {
@@ -30,10 +32,12 @@ class SysUserAkseController {
             }
         })
         // console.log(akses);
+        new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
         return view.render('setting.usr-akses.list', {data: option})
     }
 
-    async store ({ request }) {
+    async store ({ auth, request }) {
+        const usr = await auth.getUser()
         const req = request.only(['user_tipe'])
         const reqCol = request.collect(['mod_id'])
         const data = reqCol.map(el => {
@@ -46,6 +50,7 @@ class SysUserAkseController {
             if(req.user_tipe != null){
                 await Db.table('sys_users_groups').where({user_tipe: req.user_tipe}).delete()
                 await Db.from('sys_users_groups').insert(data)
+                new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
                 return {
                     success: true,
                     message: 'Success Grant User Privilege'
@@ -53,6 +58,7 @@ class SysUserAkseController {
             }
         } catch (error) {
             console.log(error)
+            new Loggerx(request.url(), request.all(), usr, request.method(), error).tempData()
             return {
                 success: false,
                 message: 'Failed Grant User Privilege'

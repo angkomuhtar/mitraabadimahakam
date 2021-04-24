@@ -43,8 +43,28 @@ $(function(){
         elm.children().remove()
         elm.append('<option value="">Pilih</option>')
         $.get('/ajax/dealer?selected='+selected, function(data){
-            const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.dealer_name+'</option>')
-            elm.append(list)
+            if(data.length > 0){
+                const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.dealer_name+'</option>')
+                elm.append(list)
+                elm.prepend('<option value="">Pilih</option>')
+            }else{
+                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
+        })
+    })
+    
+    $('body select.select2site').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.get('/ajax/site?selected='+selected, function(data){
+            if(data.length > 0){
+                const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
+                elm.append(list)
+                elm.prepend('<option value="">Pilih</option>')
+            }else{
+                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
         })
     })
 })
