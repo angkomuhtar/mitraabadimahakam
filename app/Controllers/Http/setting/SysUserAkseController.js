@@ -31,7 +31,9 @@ class SysUserAkseController {
                 details: akses.filter(fil => fil.usertipe === el.nilai)
             }
         })
-        // console.log(akses);
+        console.log('====================================');
+        console.log(akses);
+        console.log('====================================');
         new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
         return view.render('setting.usr-akses.list', {data: option})
     }

@@ -10,11 +10,11 @@ $(function(){
         initDeafult()
     })
     function initDeafult(){
-        $('div.content-module').each(function(){ $(this).hide() })
+        $('div.content-module').css('display', 'none')
         $('div#list-content').show()
     }
     function initCreate(){
-        $('div.content-module').each(function(){ $(this).hide() })
+        $('div.content-module').css('display', 'none')
         $.get('/setting/usr-menu/create', function(data){
             $('div#form-create').html(data)
             $('div#form-create').show()
@@ -22,7 +22,7 @@ $(function(){
     }
 
     function initShow(){
-        $('div.content-module').each(function(){ $(this).hide() })
+        $('div.content-module').css('display', 'none')
         $('div#form-show').show()
     }
 

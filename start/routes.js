@@ -69,18 +69,22 @@ Route.group(() => {
     // Site
     Route.get('/site', 'MasSiteController.index').as('mas.site.index').middleware('R')
 
-    Route.post('/site', 'MasSiteController.store').as('mas.site.store').middleware('C')
+    Route.post('/site', 'MasSiteController.store').as('mas.site.store').middleware('C').validator('Site')
+
+    Route.get('/site/list', 'MasSiteController.list').as('mas.site.list').middleware('R')
 
     Route.get('/site/:id/show', 'MasSiteController.show').as('mas.site.show').middleware('R')
 
-    Route.post('/site/:id/update', 'MasSiteController.update').as('mas.site.update').middleware('U')
+    Route.post('/site/:id/update', 'MasSiteController.update').as('mas.site.update').middleware('U').validator('Site')
 
     Route.post('/site/:id/delete', 'MasSiteController.delete').as('mas.site.delete').middleware('D')
 
     // PIT
     Route.get('/pit', 'MasPitController.index').as('mas.pit.index').middleware('R')
 
-    Route.post('/pit', 'MasPitController.store').as('mas.pit.store').middleware('C')
+    Route.post('/pit', 'MasPitController.store').as('mas.pit.store').middleware('C').validator('Pit')
+
+    Route.get('/pit/list', 'MasPitController.list').as('mas.pit.list').middleware('R')
 
     Route.get('/pit/:id/show', 'MasPitController.show').as('mas.pit.show').middleware('R')
 

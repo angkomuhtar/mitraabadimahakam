@@ -15,8 +15,8 @@ class AksesResourceUpdate {
   async handle ({ request, response, auth }, next) {
     const uri = (request.url()).split('/')
     const usr = await auth.getUser()
-    const name = uri[uri.length - 1]
-
+    const name = uri[2]
+    
     if(usr.user_tipe === 'administrator'){
       await next()
     }

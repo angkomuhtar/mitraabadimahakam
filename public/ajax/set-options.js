@@ -10,16 +10,16 @@ $(function(){
         initDeafult()
     })
     function initDeafult(){
-        $('div.content-module').each(function(){ $(this).hide() })
+        $('div.content-module').css('display', 'none')
         $('div#list-content').show()
     }
     function initCreate(){
-        $('body div.content-module').each(function(){ $(this).hide() })
+        $('body div.content-module').css('display', 'none')
         $('div#form-create').show()
     }
 
     function initShow(){
-        $('body div.content-module').each(function(){ $(this).hide() })
+        $('body div.content-module').css('display', 'none')
         $('div#form-show').show()
     }
 

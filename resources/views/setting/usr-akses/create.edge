@@ -23,27 +23,41 @@
                                             </div>
                                         </div>
                                         <div class="col-md-10 b-l">
-                                            @each(list in listmodule)
-                                                <div class="col-md-2">
-                                                    <div class="checkbox checkbox-inverse checkbox-circle">
-                                                        <input class="cb-module-akses" data-tipe="" data-id="{{list.id}}" id="checkbox{{list.id}}" name="mod_id" type="checkbox" value="{{list.id}}">
-                                                        <label for="checkbox{{list.id}}"> 
-                                                            <h4 style="margin-top: -4px;">{{list.name}} </h4>
-                                                            <small>
-                                                                @if(list.method === 'C')
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Grant</th>
+                                                            <th>Descriptions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @each(item in listmodule)
+                                                          <tr>
+                                                            <td>
+                                                                <div class="checkbox checkbox-inverse checkbox-circle">
+                                                                    <input class="cb-module-akses" data-tipe="" data-id="{{item.id}}" id="checkbox{{item.id}}" name="mod_id" type="checkbox" value="{{item.id}}">
+                                                                    <label for="checkbox{{item.id}}"> 
+                                                                        <h4 style="margin-top: -4px;">{{item.name}} </h4>
+                                                                    </label>
+                                                                </div>
+                                                              </td>
+                                                              <td>
+                                                                @if(item.method === 'C')
                                                                     <span class="text-success">user can Create New Data </span>
-                                                                @elseif(list.method === 'R')
+                                                                @elseif(item.method === 'R')
                                                                     <span class="text-info">user can Read List Data</span>
-                                                                @elseif(list.method === 'U')
+                                                                @elseif(item.method === 'U')
                                                                     <span class="text-warning">user can Update Exsisting Data</span>
                                                                 @else
                                                                     <span class="text-danger">user can Delete Exsisting Data</span>
                                                                 @endif
-                                                            </small>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            @endeach
+                                                              </td>
+                                                          </tr>
+                                                        @endeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -29,10 +29,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if(site.length < 1)
+                            @if(list.length < 1)
                               <tr><td colspan="5">Data not found or data is not exsist</td></tr>
                             @endif
-                            @each(item in site)
+                            @each(item in list.data)
                                 <tr>
                                     <td>{{$loop.index + 1}}</td>
                                     <td>
@@ -40,10 +40,10 @@
                                     </td>
                                     <td class="single-line">
                                         {{item.kode}} <br>
-                                        <small>{{item.tipe}}</small>
+                                        <small>{{item.name}}</small>
                                     </td>
-                                    <td>{{item.unit_sn ? item.unit_sn : 'unset'}}</td>
-                                    <td>{{item.unit_model}}</td>
+                                    <td>{{item.location}}</td>
+                                    <td class="text-center">{{item.sts}}</td>
                                 </tr>
                             @endeach
                         </tbody>

@@ -4,44 +4,60 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+// CustomClass
+const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
+
+const Pit = use("App/Models/MasPit")
+
+
 /**
  * Resourceful controller for interacting with maspits
  */
 class MasPitController {
-  /**
-   * Show a list of all maspits.
-   * GET maspits
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+  async index ({ request, auth, view }) {
+    const usr = auth.getUser()
+    new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
     return view.render('master.pit.index')
   }
 
-  /**
-   * Render a form to be used for creating a new maspit.
-   * GET maspits/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async list ({ request, view }) {
+    const req = request.all()
+    const limit = 10
+    const halaman = req.page === undefined ? 1:parseInt(req.page)
+    let data
+    if(req.keyword != ''){
+      data = await Pit.query().where(whe => {
+        whe.where('kode', 'like', `%${req.keyword}%`)
+        whe.orWhere('name', 'like', `%${req.keyword}%`)
+        whe.orWhere('keterangan', 'like', `%${req.keyword}%`)
+      }).andWhere('sts', 'Y')
+      .paginate(halaman, limit)
+    }else{
+      data = await Pit.query().where('sts', 'Y').paginate(halaman, limit)
+    }
+    return view.render('master.pit.list', {list: data.toJSON()})
   }
 
-  /**
-   * Create/save a new maspit.
-   * POST maspits
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store ({ request, response }) {
+  async store ({ request, auth }) {
+    const usr = auth.getUser()
+    const req = request.only(['side_id', 'kode', 'name', 'location'])
+    const pit = new Pit()
+    pit.fill(req)
+    try {
+      await pit.save()
+      new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
+      return {
+        success: true,
+        message: 'Success insert data'
+      }
+    } catch (error) {
+      console.log(error);
+      new Loggerx(request.url(), request.all(), usr, request.method(), error).tempData()
+      return {
+        success: false,
+        message: 'Failed insert data'
+      }
+    }
   }
 
   /**
