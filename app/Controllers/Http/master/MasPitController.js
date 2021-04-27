@@ -60,50 +60,56 @@ class MasPitController {
     }
   }
 
-  /**
-   * Display a single maspit.
-   * GET maspits/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show ({ params, request, response, view }) {
+  async show ({ params, auth, request, view }) {
+    const usr = auth.getUser()
+    const { id } = params
+    const pit = await Pit.findOrFail(id)
+    new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
+    return view.render('master.pit.show', {data: pit.toJSON()})
   }
 
-  /**
-   * Render a form to update an existing maspit.
-   * GET maspits/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async update ({ params, request, auth }) {
+    const usr = auth.getUser()
+    const { id } = params
+    const req = request.only(['site_id', 'kode', 'name', 'location'])
+    const pit = await Pit.findOrFail(id)
+    pit.merge(req)
+    try {
+      await pit.save()
+      new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
+      return {
+        success: true,
+        message: 'Success update data'
+      }
+    } catch (error) {
+      new Loggerx(request.url(), request.all(), usr, request.method(), error).tempData()
+      return {
+        success: false,
+        message: 'Failed update data'
+      }
+    }
   }
 
-  /**
-   * Update maspit details.
-   * PUT or PATCH maspits/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
+  async delete ({ params, request, auth }) {
+    const usr = auth.getUser()
+    const { id } = params
+    const pit = await Pit.findOrFail(id)
+    pit.merge({sts: 'N'})
 
-  /**
-   * Delete a maspit with id.
-   * DELETE maspits/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async destroy ({ params, request, response }) {
+    try {
+      await pit.save()
+      new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
+      return {
+        success: true,
+        message: 'Success delete data'
+      }
+    } catch (error) {
+      new Loggerx(request.url(), request.all(), usr, request.method(), error).tempData()
+      return {
+        success: false,
+        message: 'Failed delete data'
+      }
+    }
   }
 }
 

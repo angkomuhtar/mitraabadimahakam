@@ -1,34 +1,16 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+// CustomClass
+const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
 
-/**
- * Resourceful controller for interacting with masshifts
- */
+
 class MasShiftController {
-  /**
-   * Show a list of all masshifts.
-   * GET masshifts
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+  async index ({ request, auth, view }) {
+    const usr = auth.getUser()
+    new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
+    return view.render('master.shift.index')
   }
 
-  /**
-   * Render a form to be used for creating a new masshift.
-   * GET masshifts/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async create ({ request, response, view }) {
   }
 

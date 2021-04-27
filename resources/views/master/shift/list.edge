@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add New PIT</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="inpKeyword" class="form-control" placeholder="Search for...">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button">Go!</button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="150">Nama Site</th>
+                                <th class="sl">Description</th>
+                                <th class="sl text-center" width="20">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td class="single-line">
+                                        {{item.kode}} <br>
+                                        <small>{{item.name}}</small>
+                                    </td>
+                                    <td>{{item.location}}</td>
+                                    <td class="text-center">{{item.sts}}</td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>

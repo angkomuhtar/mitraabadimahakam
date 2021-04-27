@@ -92,6 +92,19 @@ Route.group(() => {
 
     Route.post('/pit/:id/delete', 'MasPitController.delete').as('mas.pit.delete').middleware('D')
 
+    // Shift Schedule
+    Route.get('/shift', 'MasShiftController.index').as('mas.shift.index').middleware('R')
+
+    Route.post('/shift', 'MasShiftController.store').as('mas.shift.store').middleware('C').validator('Pit')
+
+    Route.get('/shift/list', 'MasShiftController.list').as('mas.shift.list').middleware('R')
+
+    Route.get('/shift/:id/show', 'MasShiftController.show').as('mas.shift.show').middleware('R')
+
+    Route.post('/shift/:id/update', 'MasShiftController.update').as('mas.shift.update').middleware('U')
+
+    Route.post('/shift/:id/delete', 'MasShiftController.delete').as('mas.shift.delete').middleware('D')
+
 }).prefix('master').namespace('master').middleware(['MM'])
 
 // SETTING

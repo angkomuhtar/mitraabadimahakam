@@ -18,9 +18,9 @@ class AksesResourceRead {
     const usr = await auth.getUser()
     const name = uri[2]
     if(usr.user_tipe === 'administrator'){
+      console.log('middleware ', uri);
       await next()
     }
-
     const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'R'}).first()
     if(akses){
       await next()
