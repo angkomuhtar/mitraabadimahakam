@@ -34,7 +34,7 @@ $(function(){
             method: 'GET',
             success: function(result){
                 initShow()
-                $('div#form-show').append(result)
+                $('div#form-show').html(result)
             },
             error: function(err){
                 console.log(err);
@@ -139,7 +139,7 @@ $(function(){
         $.get('/master/site/list?page='+page+'&keyword=', function(data){
             console.log(data);
             $('div#list-content').children().remove()
-            $('div#list-content').append(data)
+            $('div#list-content').html(data)
         })
     })
 
@@ -151,7 +151,7 @@ $(function(){
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
-                $('div#list-content').append(result).show()
+                $('div#list-content').html(result).show()
             },
             error: function(err){
                 console.log(err);
@@ -176,7 +176,7 @@ $(function(){
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
-                $('div#list-content').append(result).show()
+                $('div#list-content').html(result).show()
             },
             error: function(err){
                 console.log(err);

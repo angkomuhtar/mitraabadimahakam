@@ -95,7 +95,7 @@ Route.group(() => {
     // Shift Schedule
     Route.get('/shift', 'MasShiftController.index').as('mas.shift.index').middleware('R')
 
-    Route.post('/shift', 'MasShiftController.store').as('mas.shift.store').middleware('C').validator('Pit')
+    Route.post('/shift', 'MasShiftController.store').as('mas.shift.store').middleware('C').validator('Shift')
 
     Route.get('/shift/list', 'MasShiftController.list').as('mas.shift.list').middleware('R')
 

@@ -4,27 +4,16 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="" id="fm-pit">
+                    <form action="" id="fm-shift">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add PIT</div>
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add Shift</div>
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="">Site</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-location-arrow"></i></div>
-                                                    <select class="form-control input-sm select2site" data-title="site" data-check id="site_id" name="site_id"></select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="">Kode PIT</label>
+                                                <label for="">Kode</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
                                                     <input type="text" class="form-control input-sm" name="kode"> 
@@ -35,19 +24,43 @@
                                     <div class="row">
                                         <div class="col-md-5">
                                             <div class="form-group">
-                                                <label for="">Nama PIT</label>
+                                                <label for="">Nama Shift</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-flag"></i></div>
                                                     <input type="text" class="form-control input-sm" name="name"> 
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-8">
+                                        <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="">Keterangan/Lokasi</label>
-                                                <textarea class="form-control" name="location" id="location" cols="30" rows="10"></textarea>
+                                                <label for="">Duration</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
+                                                    <input type="number" class="form-control input-sm" name="duration"> 
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Start Shift</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
+                                                    <input type="time" class="form-control input-sm" name="start_shift"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">End Shift</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-clock-o"></i></div>
+                                                    <input type="time" class="form-control input-sm" name="end_shift"> 
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                                 <div class="panel-footer text-right">
