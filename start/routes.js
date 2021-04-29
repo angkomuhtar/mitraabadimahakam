@@ -159,7 +159,15 @@ Route.group(() => {
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
 
 
+Route.group(() => {
+
+    // Route.post('/login', 'AuthApiController.login').middleware('auth:session,api')
+    Route.post('/login', 'AuthApiController.login')
+    Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }))
+
+}).prefix('api').namespace('api')
 
 Route.get('/401', ({ view }) => view.render('401'))
 
 Route.any('*', ({ view }) => view.render('404'))
+
