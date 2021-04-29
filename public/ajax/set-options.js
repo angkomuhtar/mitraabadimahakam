@@ -3,7 +3,7 @@ $(function(){
     // swal("Here's a message!")
     initDeafult()
 
-    $('#create-form').on('click', function(){
+    $('body').on('click', 'button#create-form', function(){
         initCreate()
     })
     $('body').on('click', 'button#bt-back', function(){
@@ -23,7 +23,7 @@ $(function(){
         $('div#form-show').show()
     }
 
-    $('button.bt-show-form').on('click', function(e){
+    $('body').on('click', 'button.bt-show-form', function(e){
         e.preventDefault()
         var id = $(this).data('id')
         $.get('/setting/sys-options/'+id+'/show', function(data){
