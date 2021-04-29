@@ -140,6 +140,9 @@ module.exports = {
       sameSite: true,
       path: '/',
       maxAge: 7200
-    }
+    },
+    enable: false,
+    filterUris: ['/api/(.*)'],
+    methods: ['POST', 'PUT', 'DELETE'],
   }
 }
