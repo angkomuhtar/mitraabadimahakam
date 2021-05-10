@@ -7,6 +7,6 @@ class SysUsersGroup extends Model {
     sysusergrp_module () {
         return this.belongsToMany("App/Models/SysModule", "grp_id", "mod_id").pivotTable('user_modules')
     }
-}
+};
 
 module.exports = SysUsersGroup

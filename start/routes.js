@@ -42,9 +42,9 @@ Route.group(() => {
 
     // Equipment Unit
     Route.get('/equipment', 'MasEquipmentController.index').as('mas.equipment.index').middleware('R')
-    
+
     Route.post('/equipment', 'MasEquipmentController.store').as('mas.equipment.store').validator('Equipment-Post').middleware('C')
-    
+
     Route.get('/equipment/:id', 'MasEquipmentController.show').as('mas.equipment.show').middleware('R')
 
     Route.get('/equipment/search', 'MasEquipmentController.list').as('mas.equipment.list')
@@ -57,7 +57,7 @@ Route.group(() => {
     Route.get('/employee', 'MasEmployeeController.index').as('mas.employee.index').middleware('R')
 
     Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store').validator('Employee-Post').middleware('C')
-    
+
     Route.get('/employee/search', 'MasEmployeeController.list').as('mas.employee.list')
 
     Route.get('/employee/:id/show', 'MasEmployeeController.show').as('mas.employee.show').middleware('R')
@@ -164,7 +164,8 @@ Route.group(() => {
     // Route.post('/login', 'AuthApiController.login').middleware('auth:session,api')
     Route.post('/login', 'AuthApiController.login')
     Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }))
-
+    Route.get('/get/stop-operation-reasons', 'UnitStopOperationReasonsController.fetchData');
+    
 }).prefix('api').namespace('api')
 
 Route.get('/401', ({ view }) => view.render('401'))
