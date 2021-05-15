@@ -162,10 +162,19 @@ Route.group(() => {
 Route.group(() => {
 
     // Route.post('/login', 'AuthApiController.login').middleware('auth:session,api')
+    // login
     Route.post('/login', 'AuthApiController.login')
-    Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }))
+
+    // breakdown
     Route.get('/get/stop-operation-reasons', 'UnitStopOperationReasonsController.fetchData');
     
+    // pit
+    Route.get('/get/pit', 'PitApiController.getAllPit');
+    Route.post('/get/fleet', 'PitApiController.getUnitActivitesBasedOnPit');
+    // misc
+    Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }));
+
+
 }).prefix('api').namespace('api')
 
 Route.get('/401', ({ view }) => view.render('401'))
