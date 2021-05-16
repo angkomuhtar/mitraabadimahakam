@@ -105,6 +105,19 @@ Route.group(() => {
 
     Route.post('/shift/:id/delete', 'MasShiftController.delete').as('mas.shift.delete').middleware('D')
 
+    // Activity
+    Route.get('/activity', 'MasActivityController.index').as('mas.activity.index').middleware('R')
+
+    Route.post('/activity', 'MasActivityController.store').as('mas.activity.store').middleware('C').validator('Activity')
+
+    Route.get('/activity/list', 'MasActivityController.list').as('mas.activity.list').middleware('R')
+
+    Route.get('/activity/:id/show', 'MasActivityController.show').as('mas.activity.show').middleware('R')
+
+    Route.post('/activity/:id/update', 'MasActivityController.update').as('mas.activity.update').middleware('U')
+
+    Route.post('/activity/:id/delete', 'MasActivityController.delete').as('mas.activity.delete').middleware('D')
+
 }).prefix('master').namespace('master').middleware(['MM'])
 
 // SETTING

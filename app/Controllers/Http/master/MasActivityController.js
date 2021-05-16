@@ -1,35 +1,28 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+const Activity = use('App/Models/MasActivity')
 
-/**
- * Resourceful controller for interacting with masactivities
- */
 class MasActivityController {
-  /**
-   * Show a list of all masactivities.
-   * GET masactivities
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async index ({ request, response, view }) {
+    return view.render('master.activity.index')
   }
 
-  /**
-   * Render a form to be used for creating a new masactivity.
-   * GET masactivities/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async list ({ request, view }) {
+    const req = request.all()
+    const limit = 10
+    const halaman = req.page === undefined ? 1:parseInt(req.page)
+    let data
+    if(req.keyword != ''){
+      data = await Activity.query().where(whe => {
+        whe.where('kode', 'like', `%${req.keyword}%`)
+        whe.orWhere('name', 'like', `%${req.keyword}%`)
+      }).andWhere('sts', 'Y')
+      .paginate(halaman, limit)
+    }else{
+      data = await Activity.query().where('sts', 'Y').paginate(halaman, limit)
+    }
+    // console.log(data);
+    return view.render('master.activity.list', {list: data.toJSON()})
   }
 
   /**
