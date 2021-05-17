@@ -108,11 +108,11 @@ Route.group(() => {
     // Activity
     Route.get('/activity', 'MasActivityController.index').as('mas.activity.index').middleware('R')
 
-    Route.post('/activity', 'MasActivityController.store').as('mas.activity.store').middleware('C').validator('Activity')
+    Route.post('/activity', 'MasActivityController.store').as('mas.activity.store').middleware('C')
 
     Route.get('/activity/list', 'MasActivityController.list').as('mas.activity.list').middleware('R')
 
-    Route.get('/activity/:id/show', 'MasActivityController.show').as('mas.activity.show').middleware('R')
+    Route.get('/activity/:id/show', 'MasActivityController.show').as('mas.activity.show').middleware('U')
 
     Route.post('/activity/:id/update', 'MasActivityController.update').as('mas.activity.update').middleware('U')
 

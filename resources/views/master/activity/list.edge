@@ -29,7 +29,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if(list.length < 1)
+                            @if(list.data.length < 1)
                               <tr><td colspan="5">Data not found or data is not exsist</td></tr>
                             @endif
                             @each(item in list.data)
@@ -39,11 +39,14 @@
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                     </td>
                                     <td class="single-line">
-                                        {{item.kode}} <br>
-                                        <small>{{item.name}}</small>
+                                        {{item.kode}}
+                                        
                                     </td>
-                                    <td>{{item.keterangan}}</td>
-                                    <td class="text-center">{{item.status}}</td>
+                                    <td>
+                                        <p><strong>{{item.name}}</strong></p>
+                                        {{item.keterangan}}
+                                    </td>
+                                    <td class="text-center">{{item.sts}}</td>
                                 </tr>
                             @endeach
                         </tbody>

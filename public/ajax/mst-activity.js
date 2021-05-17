@@ -38,11 +38,12 @@ $(function(){
             },
             error: function(err){
                 console.log(err);
+                swal("Opps,,,!", err.responseJSON.message, "warning")
             }
         })
     })
 
-    $('form#fm-site').on('submit', function(e){
+    $('form#fm-activity').on('submit', function(e){
         e.preventDefault()
         var data = new FormData(this)
         $.ajax({
@@ -72,7 +73,7 @@ $(function(){
         })
     })
 
-    $('body').on('submit', 'form#fm-site-upd', function(e){
+    $('body').on('submit', 'form#fm-activity-upd', function(e){
         e.preventDefault()
         var id = $(this).data('id')
         var data = new FormData(this)
