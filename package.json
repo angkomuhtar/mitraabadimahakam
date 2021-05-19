@@ -33,9 +33,9 @@
     "faker": "^5.4.0",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
+    "sqlite3": "^5.0.2",
     "underscore": "^1.12.0"
   },
-  "devDependencies": {},
   "autoload": {
     "App": "./app"
   }
