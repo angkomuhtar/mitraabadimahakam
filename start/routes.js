@@ -118,6 +118,19 @@ Route.group(() => {
 
     Route.post('/activity/:id/delete', 'MasActivityController.delete').as('mas.activity.delete').middleware('D')
 
+    // Fleet
+    Route.get('/fleet', 'MasFleetController.index').as('mas.fleet.index').middleware('R')
+
+    Route.post('/fleet', 'MasFleetController.store').as('mas.fleet.store').middleware('C')
+
+    Route.get('/fleet/list', 'MasFleetController.list').as('mas.fleet.list').middleware('R')
+
+    Route.get('/fleet/:id/show', 'MasFleetController.show').as('mas.fleet.show').middleware('U')
+
+    Route.post('/fleet/:id/update', 'MasFleetController.update').as('mas.fleet.update').middleware('U')
+
+    Route.post('/fleet/:id/delete', 'MasFleetController.delete').as('mas.fleet.delete').middleware('D')
+
 }).prefix('master').namespace('master').middleware(['MM'])
 
 // SETTING
@@ -154,6 +167,21 @@ Route.group(() => {
 
     Route.get('/daily-activity', 'DailyActivityController.index').as('opr.daily-activity.index')
 
+    // Daily Fleet
+    Route.get('/daily-fleet', 'DailyFleetController.index').as('opr.daily-fleet.index').middleware('R')
+
+    Route.post('/daily-fleet', 'DailyFleetController.store').as('opr.daily-fleet.store').middleware('C')
+
+    Route.get('/daily-fleet/list', 'DailyFleetController.list').as('opr.daily-fleet.list').middleware('R')
+
+    Route.get('/daily-fleet/create', 'DailyFleetController.create').as('opr.daily-fleet.create').middleware('R')
+
+    Route.get('/daily-fleet/:id/show', 'DailyFleetController.show').as('opr.daily-fleet.show').middleware('U')
+
+    Route.post('/daily-fleet/:id/update', 'DailyFleetController.update').as('opr.daily-fleet.update').middleware('U')
+
+    Route.post('/daily-fleet/:id/delete', 'DailyFleetController.delete').as('opr.daily-fleet.delete').middleware('D')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX
@@ -164,6 +192,18 @@ Route.group(() => {
     Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
 
     Route.get('/site', 'AjaxSiteController.getSites').as('site.getSites')
+
+    Route.get('/pit', 'AjaxPitController.getPits').as('pit.getPits')
+
+    Route.get('/fleet', 'AjaxFleetController.getFleets').as('fleet.getFleets')
+
+    Route.get('/activity', 'AjaxActivityController.getActivities').as('actitivity.getActivities')
+    
+    Route.get('/activity/:id', 'AjaxActivityController.getActivitiesID').as('actitivity.getActivitiesID')
+    
+    Route.get('/shift', 'AjaxShiftController.getShift').as('shift.getShift')
+
+    Route.get('/shift/:id', 'AjaxShiftController.getShiftID').as('shift.getShiftID')
 
     Route.get('/dealer', 'AjaxDealerController.getDealers').as('dealer.getDealers')
 

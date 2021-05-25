@@ -10,7 +10,7 @@ class EquipmentPost {
       engine_sn: 'required',
       engine_model: 'required',
       fuel_capacity: 'required',
-      dealer_name: 'required'
+      dealer_id: 'required'
     }
   }
 
@@ -23,7 +23,7 @@ class EquipmentPost {
       'engine_sn.required': 'Kode Serial Number mesin unit tdk boleh kosong...',
       'engine_model.required': 'Kode Model unit tdk boleh kosong...',
       'fuel_capacity.required': 'Daya tampung BBM unit tdk boleh kosong...',
-      'dealer_name.required': 'Nama Dealer unit tdk boleh kosong...'
+      'dealer_id.required': 'Nama Dealer unit tdk boleh kosong...'
     }
   }
 
