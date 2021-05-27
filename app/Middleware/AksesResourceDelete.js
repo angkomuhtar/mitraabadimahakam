@@ -19,15 +19,17 @@ class AksesResourceDelete {
     
     if(usr.user_tipe === 'administrator'){
       await next()
+    }else{
+      const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'D'}).first()
+      if(akses){
+        await next()
+      }else{
+        // response.redirect('back')
+        response.status(404).json({success: false, message: 'You not authorized....'})
+      }
+
     }
     
-    const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'D'}).first()
-    if(akses){
-      await next()
-    }else{
-      // response.redirect('back')
-      response.status(404).json({success: false, message: 'You not authorized....'})
-    }
   }
 }
 

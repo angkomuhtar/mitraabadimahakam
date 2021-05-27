@@ -95,7 +95,7 @@ Route.group(() => {
     // Shift Schedule
     Route.get('/shift', 'MasShiftController.index').as('mas.shift.index').middleware('R')
 
-    Route.post('/shift', 'MasShiftController.store').as('mas.shift.store').middleware('C').validator('Pit')
+    Route.post('/shift', 'MasShiftController.store').as('mas.shift.store').middleware('C').validator('Shift')
 
     Route.get('/shift/list', 'MasShiftController.list').as('mas.shift.list').middleware('R')
 
@@ -104,6 +104,32 @@ Route.group(() => {
     Route.post('/shift/:id/update', 'MasShiftController.update').as('mas.shift.update').middleware('U')
 
     Route.post('/shift/:id/delete', 'MasShiftController.delete').as('mas.shift.delete').middleware('D')
+
+    // Activity
+    Route.get('/activity', 'MasActivityController.index').as('mas.activity.index').middleware('R')
+
+    Route.post('/activity', 'MasActivityController.store').as('mas.activity.store').middleware('C')
+
+    Route.get('/activity/list', 'MasActivityController.list').as('mas.activity.list').middleware('R')
+
+    Route.get('/activity/:id/show', 'MasActivityController.show').as('mas.activity.show').middleware('U')
+
+    Route.post('/activity/:id/update', 'MasActivityController.update').as('mas.activity.update').middleware('U')
+
+    Route.post('/activity/:id/delete', 'MasActivityController.delete').as('mas.activity.delete').middleware('D')
+
+    // Fleet
+    Route.get('/fleet', 'MasFleetController.index').as('mas.fleet.index').middleware('R')
+
+    Route.post('/fleet', 'MasFleetController.store').as('mas.fleet.store').middleware('C')
+
+    Route.get('/fleet/list', 'MasFleetController.list').as('mas.fleet.list').middleware('R')
+
+    Route.get('/fleet/:id/show', 'MasFleetController.show').as('mas.fleet.show').middleware('U')
+
+    Route.post('/fleet/:id/update', 'MasFleetController.update').as('mas.fleet.update').middleware('U')
+
+    Route.post('/fleet/:id/delete', 'MasFleetController.delete').as('mas.fleet.delete').middleware('D')
 
 }).prefix('master').namespace('master').middleware(['MM'])
 
@@ -141,6 +167,21 @@ Route.group(() => {
 
     Route.get('/daily-activity', 'DailyActivityController.index').as('opr.daily-activity.index')
 
+    // Daily Fleet
+    Route.get('/daily-fleet', 'DailyFleetController.index').as('opr.daily-fleet.index').middleware('R')
+
+    Route.post('/daily-fleet', 'DailyFleetController.store').as('opr.daily-fleet.store').middleware('C')
+
+    Route.get('/daily-fleet/list', 'DailyFleetController.list').as('opr.daily-fleet.list').middleware('R')
+
+    Route.get('/daily-fleet/create', 'DailyFleetController.create').as('opr.daily-fleet.create').middleware('R')
+
+    Route.get('/daily-fleet/:id/show', 'DailyFleetController.show').as('opr.daily-fleet.show').middleware('U')
+
+    Route.post('/daily-fleet/:id/update', 'DailyFleetController.update').as('opr.daily-fleet.update').middleware('U')
+
+    Route.post('/daily-fleet/:id/delete', 'DailyFleetController.delete').as('opr.daily-fleet.delete').middleware('D')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX
@@ -151,6 +192,18 @@ Route.group(() => {
     Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
 
     Route.get('/site', 'AjaxSiteController.getSites').as('site.getSites')
+
+    Route.get('/pit', 'AjaxPitController.getPits').as('pit.getPits')
+
+    Route.get('/fleet', 'AjaxFleetController.getFleets').as('fleet.getFleets')
+
+    Route.get('/activity', 'AjaxActivityController.getActivities').as('actitivity.getActivities')
+    
+    Route.get('/activity/:id', 'AjaxActivityController.getActivitiesID').as('actitivity.getActivitiesID')
+    
+    Route.get('/shift', 'AjaxShiftController.getShift').as('shift.getShift')
+
+    Route.get('/shift/:id', 'AjaxShiftController.getShiftID').as('shift.getShiftID')
 
     Route.get('/dealer', 'AjaxDealerController.getDealers').as('dealer.getDealers')
 
@@ -163,9 +216,73 @@ Route.group(() => {
 
     // Route.post('/login', 'AuthApiController.login').middleware('auth:session,api')
     Route.post('/login', 'AuthApiController.login')
+
+    Route.post('/logout', 'AuthApiController.logout')
+
     Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }))
 
 }).prefix('api').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'PitApiController.index')
+
+    Route.get('/:id/show', 'PitApiController.show')
+
+    Route.post('/:id/update', 'PitApiController.update')
+
+}).prefix('api/pit').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'FleetApiController.index')
+
+    Route.get('/:id/show', 'FleetApiController.show')
+
+    Route.post('/:id/update', 'FleetApiController.update')
+
+}).prefix('api/fleet').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'EquipmentApiController.index')
+
+    Route.get('/:id/show', 'EquipmentApiController.show')
+
+    Route.post('/:id/update', 'EquipmentApiController.update')
+
+}).prefix('api/equipment').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'ActivitiesApiController.index')
+
+    Route.get('/:id/show', 'ActivitiesApiController.show')
+
+    Route.post('/:id/update', 'ActivitiesApiController.update')
+
+}).prefix('api/activities').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'ShiftApiController.index')
+
+    Route.get('/:id/show', 'ShiftApiController.show')
+
+    Route.post('/:id/update', 'ShiftApiController.update')
+
+}).prefix('api/shift').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'DailyFleetApiController.index')
+
+    Route.get('/:id/show', 'DailyFleetApiController.show')
+
+    Route.post('/:id/update', 'DailyFleetApiController.update')
+
+}).prefix('api/daily-fleet').namespace('api')
+
 
 Route.get('/401', ({ view }) => view.render('401'))
 

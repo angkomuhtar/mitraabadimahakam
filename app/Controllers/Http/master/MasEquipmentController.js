@@ -49,7 +49,9 @@ class MasEquipmentController {
     const all = request.all()
     const equip = request.only(['kode', 'tipe', 'brand', 'received_date', 'received_hm', 'is_warranty', 'warranty_date', 'is_owned', 'remark', 'unit_sn', 'unit_model', 'engine_sn', 'engine_model', 'fuel_capacity', 'qty_capacity', 'satuan'])
     const usr = await auth.getUser()
-    
+    console.log('====================================');
+    console.log(all);
+    console.log('====================================');
     const logger = new Loggerx(request.url(), request.all(), usr, request.method(), true)
     await logger.tempData()
 

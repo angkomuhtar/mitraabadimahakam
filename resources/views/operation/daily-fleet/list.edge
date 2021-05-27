@@ -1,0 +1,112 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add New DailyFleet</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="inpKeywordSite" class="form-control" placeholder="Search for...">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="150">Nama PIT</th>
+                                <th class="sl" width="150">Nama Fleet</th>
+                                <th class="sl">Activity</th>
+                                <th class="sl">Shift</th>
+                                <th class="sl" width="100">Date</th>
+                                <th class="sl text-center" width="20">Created</th>
+                                <th class="sl text-center" width="20">Equipment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td class="single-line">
+                                        {{item.pit.name}} <br>
+                                        <small>{{item.pit.site.name}}</small>
+                                    </td>
+                                    <td class="single-line">
+                                        <strong>{{item.fleet.name}}</strong>
+                                    </td>
+                                    <td>
+                                        {{item.activities.kode}} - {{item.activities.name}} <br>
+                                        <small>{{item.activities.keterangan}}</small>
+                                    </td>
+                                    <td>{{item.shift.name}}</td>
+                                    <td class="myDateFormat">{{item.date}}</td>
+                                    <td class="text-center">{{item.user.username}}</td>
+                                    <td class="text-center">
+                                        <!-- Button trigger modal -->
+                                        <button type="button" class="btn btn-default btn-circle" data-toggle="modal" data-target="#{{item.id}}"><i class="fa fa-truck"></i> </button>
+                                        
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                            <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                    <h4 class="modal-title" id="myModalLabel">List Equipment on Fleet</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-stripped" style="background-color:#1f212b;">
+                                                            <thead style="border-bottom: 2px white solid;">
+                                                                <tr>
+                                                                    <th>Kode</th>
+                                                                    <th>Brand</th>
+                                                                    <th>Tipe</th>
+                                                                    <th>Model</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @each(item in item.details)
+                                                                  <tr>
+                                                                      <td class="text-left">{{item.equipment.kode}}</td>
+                                                                      <td class="text-left">{{item.equipment.brand}}</td>
+                                                                      <td class="text-left">{{item.equipment.tipe}}</td>
+                                                                      <td class="text-left">{{item.equipment.unit_model}}</td>
+                                                                  </tr>
+                                                                @endeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>

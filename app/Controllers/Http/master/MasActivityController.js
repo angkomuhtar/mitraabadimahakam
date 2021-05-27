@@ -3,14 +3,11 @@
 // CustomClass
 const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
 
-const Shift = use("App/Models/MasShift")
+const Activity = use('App/Models/MasActivity')
 
-
-class MasShiftController {
-  async index ({ request, auth, view }) {
-    const usr = auth.getUser()
-    new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
-    return view.render('master.shift.index')
+class MasActivityController {
+  async index ({ request, response, view }) {
+    return view.render('master.activity.index')
   }
 
   async list ({ request, view }) {
@@ -19,26 +16,26 @@ class MasShiftController {
     const halaman = req.page === undefined ? 1:parseInt(req.page)
     let data
     if(req.keyword != ''){
-      data = await Shift.query().where(whe => {
+      data = await Activity.query().where(whe => {
         whe.where('kode', 'like', `%${req.keyword}%`)
         whe.orWhere('name', 'like', `%${req.keyword}%`)
-      }).andWhere('status', 'Y')
+      }).andWhere('sts', 'Y')
       .paginate(halaman, limit)
     }else{
-      data = await Shift.query().where('status', 'Y').paginate(halaman, limit)
+      data = await Activity.query().where('sts', 'Y').paginate(halaman, limit)
     }
     // console.log(data);
-    return view.render('master.shift.list', {list: data.toJSON()})
+    return view.render('master.activity.list', {list: data.toJSON()})
   }
 
-  async store ({ request, auth }) {
-    const usr = auth.getUser()
-    const req = request.only(['kode', 'name', 'duration', 'start_shift', 'end_shift'])
+  async store ({ auth, request, response }) {
+    const usr = await auth.getUser()
+    const req = request.only(['kode', 'name', 'keterangan'])
     console.log(req);
-    const shift = new Shift()
-    shift.fill(req)
+    const activity = new Activity()
+    activity.fill(req)
     try {
-      await shift.save()
+      await activity.save()
       new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
       return {
         success: true,
@@ -54,22 +51,23 @@ class MasShiftController {
     }
   }
 
-  async show ({ params, auth, request, view }) {
-    const usr = auth.getUser()
+  async show ({ params, request, view }) {
     const { id } = params
-    const shift = await Shift.findOrFail(id)
-    new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
-    return view.render('master.shift.show', {data: shift.toJSON()})
+    const activity = await Activity.findOrFail(id)
+    return view.render('master.activity.show', {data: activity.toJSON()})
   }
-  
-  async update ({ params, request, auth }) {
-    const usr = auth.getUser()
+
+  async edit ({ params, request, response, view }) {
+  }
+
+  async update ({ auth, params, request }) {
+    const usr = await auth.getUser()
     const { id } = params
-    const req = request.only(['kode', 'name', 'duration', 'start_shift', 'end_shift'])
-    const shift = await Shift.findOrFail(id)
-    shift.merge(req)
+    const req = request.only(['kode', 'name', 'keterangan'])
+    const activity = await Activity.findOrFail(id)
+    activity.merge(req)
     try {
-      await shift.save()
+      await activity.save()
       new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
       return {
         success: true,
@@ -85,15 +83,22 @@ class MasShiftController {
     }
   }
 
+  /**
+   * Delete a masactivity with id.
+   * DELETE masactivities/:id
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
   async delete ({ params, request, auth }) {
-    const usr = auth.getUser()
+    const usr = await auth.getUser()
     const { id } = params
-    const shift = await Shift.findOrFail(id)
-    console.log(shift.toJSON());
-    shift.merge({status: 'N'})
+    const activity = await Activity.findOrFail(id)
+    activity.merge({sts: 'N'})
     try {
-      await shift.save()
-      new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
+      await activity.save()
+      new Loggerx(request.url(), activity.toJSON(), usr, request.method(), true).tempData()
       return {
         success: true,
         message: 'Success delete data'
@@ -109,4 +114,4 @@ class MasShiftController {
   }
 }
 
-module.exports = MasShiftController
+module.exports = MasActivityController

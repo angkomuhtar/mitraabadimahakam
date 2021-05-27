@@ -1,4 +1,3 @@
-{{ script('ajax/mst-shift-list') }}
 <div class="row">
     <div class="col-md-12">
         <div class="white-box">
@@ -6,14 +5,14 @@
                 <div class="row sales-report">
                     <div class="col-md-9 col-sm-9 col-xs-12">
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                            <i class="fa fa-plus m-r-5"></i> <span>Add New Shift</span>
+                            <i class="fa fa-plus m-r-5"></i> <span>Add New Fleet</span>
                         </button>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
                         <div class="input-group">
-                            <input id="inpKeywordShift" class="form-control" placeholder="Search for...">
+                            <input id="inpKeywordSite" class="form-control" placeholder="Search for...">
                             <span class="input-group-btn"> 
-                                <button class="btn btn-info" type="button">Go!</button> 
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
                             </span>
                         </div>
                     </div>
@@ -25,15 +24,12 @@
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="20">ACT</th>
                                 <th class="sl" width="150">Kode</th>
-                                <th class="sl">Nama Shift</th>
-                                <th class="sl" width="30">Durasi Shift</th>
-                                <th class="sl" width="*">Start Shift</th>
-                                <th class="sl" width="*">End Shift</th>
+                                <th class="sl">Fleet Name</th>
                                 <th class="sl text-center" width="20">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if(list.length < 1)
+                            @if(list.data.length < 1)
                               <tr><td colspan="5">Data not found or data is not exsist</td></tr>
                             @endif
                             @each(item in list.data)
@@ -43,14 +39,12 @@
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                     </td>
                                     <td class="single-line">
-                                        {{item.kode}} 
+                                        {{item.kode}}
+                                        
                                     </td>
-                                    <td class="single-line">
-                                        <strong>{{item.name}}</strong>
+                                    <td>
+                                        <p><strong>{{item.name}}</strong>
                                     </td>
-                                    <td class="text-center">{{item.duration}}</td>
-                                    <td>{{item.start_shift}}</td>
-                                    <td>{{item.end_shift}}</td>
                                     <td class="text-center">{{item.status}}</td>
                                 </tr>
                             @endeach

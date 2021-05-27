@@ -30,7 +30,7 @@ $(function(){
         var id = $(this).data('id')
         $.ajax({
             async: true,
-            url: '/master/site/'+id+'/show',
+            url: '/master/fleet/'+id+'/show',
             method: 'GET',
             success: function(result){
                 initShow()
@@ -38,16 +38,17 @@ $(function(){
             },
             error: function(err){
                 console.log(err);
+                swal("Opps,,,!", err.responseJSON.message, "warning")
             }
         })
     })
 
-    $('form#fm-site').on('submit', function(e){
+    $('form#fm-fleet').on('submit', function(e){
         e.preventDefault()
         var data = new FormData(this)
         $.ajax({
             async: true,
-            url: '/master/site',
+            url: '/master/fleet',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -72,13 +73,13 @@ $(function(){
         })
     })
 
-    $('body').on('submit', 'form#fm-site-upd', function(e){
+    $('body').on('submit', 'form#fm-fleet-upd', function(e){
         e.preventDefault()
         var id = $(this).data('id')
         var data = new FormData(this)
         $.ajax({
             async: true,
-            url: '/master/site/'+id+'/update',
+            url: '/master/fleet/'+id+'/update',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -109,7 +110,7 @@ $(function(){
         $.ajax({
             async: true,
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
-            url: '/master/site/'+id+'/delete',
+            url: '/master/fleet/'+id+'/delete',
             method: 'POST',
             dataType: 'json',
             processData: false,
@@ -136,7 +137,7 @@ $(function(){
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        $.get('/master/site/list?page='+page+'&keyword=', function(data){
+        $.get('/master/fleet/list?page='+page+'&keyword=', function(data){
             console.log(data);
             $('div#list-content').children().remove()
             $('div#list-content').html(data)
@@ -147,7 +148,7 @@ $(function(){
         $('div.content-module').css('display', 'none')
         $.ajax({
             async: true,
-            url: '/master/site/list?keyword=',
+            url: '/master/fleet/list?keyword=',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -172,7 +173,7 @@ $(function(){
     function ajaxSearch(value){
         $.ajax({
             async: true,
-            url: '/master/site/list?keyword='+value,
+            url: '/master/fleet/list?keyword='+value,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
