@@ -91,7 +91,9 @@ class DailyFleetApiController {
                     d.orWhere('duration', 'like', `%${req.keyword}%`)
                 })
                 .with('user')
-                .with('details', e => e.with('equipment'))
+                .with('details', e => {
+                    e.with('equipment')
+                })
                 .where({id: id})
                 .first()
         }else{
@@ -102,7 +104,9 @@ class DailyFleetApiController {
                 .with('activities')
                 .with('shift')
                 .with('user')
-                .with('details', e => e.with('equipment'))
+                .with('details', e => {
+                    e.with('equipment')
+                })
                 .where({id: id})
                 .first()
         }
