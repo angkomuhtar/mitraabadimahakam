@@ -1,11 +1,12 @@
 'use strict'
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
-
+const { performance } = require('perf_hooks')
 const Pit = use("App/Models/MasPit")
 
 class PitApiController {
     async index ({ auth, request, response }) {
         var t0 = performance.now()
+        console.log(performance);
         const req = request.only(['keyword'])
         try {
             await auth.authenticator('jwt').getUser()

@@ -1,4 +1,5 @@
 'use strict'
+const { performance } = require('perf_hooks')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
 class AuthApiController {

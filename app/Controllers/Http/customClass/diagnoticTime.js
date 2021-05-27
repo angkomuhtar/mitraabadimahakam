@@ -1,3 +1,4 @@
+const { performance } = require('perf_hooks')
 class diagnoticTime {
     async durasi (begin) { 
         var t1 = performance.now()
