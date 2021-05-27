@@ -216,9 +216,73 @@ Route.group(() => {
 
     // Route.post('/login', 'AuthApiController.login').middleware('auth:session,api')
     Route.post('/login', 'AuthApiController.login')
+
+    Route.post('/logout', 'AuthApiController.logout')
+
     Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }))
 
 }).prefix('api').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'PitApiController.index')
+
+    Route.get('/:id/show', 'PitApiController.show')
+
+    Route.post('/:id/update', 'PitApiController.update')
+
+}).prefix('api/pit').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'FleetApiController.index')
+
+    Route.get('/:id/show', 'FleetApiController.show')
+
+    Route.post('/:id/update', 'FleetApiController.update')
+
+}).prefix('api/fleet').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'EquipmentApiController.index')
+
+    Route.get('/:id/show', 'EquipmentApiController.show')
+
+    Route.post('/:id/update', 'EquipmentApiController.update')
+
+}).prefix('api/equipment').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'ActivitiesApiController.index')
+
+    Route.get('/:id/show', 'ActivitiesApiController.show')
+
+    Route.post('/:id/update', 'ActivitiesApiController.update')
+
+}).prefix('api/activities').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'ShiftApiController.index')
+
+    Route.get('/:id/show', 'ShiftApiController.show')
+
+    Route.post('/:id/update', 'ShiftApiController.update')
+
+}).prefix('api/shift').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'DailyFleetApiController.index')
+
+    Route.get('/:id/show', 'DailyFleetApiController.show')
+
+    Route.post('/:id/update', 'DailyFleetApiController.update')
+
+}).prefix('api/daily-fleet').namespace('api')
+
 
 Route.get('/401', ({ view }) => view.render('401'))
 
