@@ -1,9 +1,11 @@
 'use strict'
 const { performance } = require('perf_hooks')
+const moment = require('moment')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
 const Fleet = use("App/Models/MasFleet")
 const DailyFleet = use("App/Models/DailyFleet")
+const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 
 class DailyFleetApiController {
     async index ({ auth, request, response }) {
@@ -110,6 +112,54 @@ class DailyFleetApiController {
             },
             data: dailyFleet
         })
+    }
+
+    async create ({ auth, request, response }) {
+        const req = request.only(['pit_id', 'fleet_id', 'activity_id', 'shift_id', 'date', 'details'])
+        // const reqDetail = request.collect(['equip_id', 'datetime'])
+        var t0 = performance.now()
+        let durasi
+        try {
+            await auth.authenticator('jwt').getUser()
+            await resData()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        }
+
+        async function resData(){
+            const { details } = req
+            for (const item of details) {
+                const begin = moment(item.datetime).format('YYYY-MM-DD 00:00')
+                const end = moment(item.datetime).format('YYYY-MM-DD 23:59')
+                const cekEquipment = await DailyFleetEquip.query().whereBetween('datetime',  [begin, end]).andWhere('equip_id', item.equip_id).first()
+                if(cekEquipment){
+                    return response.status(200).json({
+                        diagnostic: {
+                            times: durasi, 
+                            error: true
+                        },
+                        data: cekEquipment
+                    })
+                }
+            }
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(200).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false
+                },
+                data: details
+            })
+        }
     }
 }
 

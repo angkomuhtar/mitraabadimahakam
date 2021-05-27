@@ -277,6 +277,8 @@ Route.group(() => {
 
     Route.get('/', 'DailyFleetApiController.index')
 
+    Route.post('/', 'DailyFleetApiController.create')
+
     Route.get('/:id/show', 'DailyFleetApiController.show')
 
     Route.post('/:id/update', 'DailyFleetApiController.update')

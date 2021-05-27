@@ -10,15 +10,23 @@ class FleetApiController {
         const req = request.only(['keyword'])
         try {
             await auth.authenticator('jwt').getUser()
-            let fleet = 
-                await Fleet
-                    .query()
-                    .where(word => {
-                        word.where('kode', 'like', `%${req.keyword}%`)
-                        word.orWhere('name', 'like', `%${req.keyword}%`)
-                    })
-                    .andWhere({status: 'Y'})
-                    .fetch()
+            let fleet
+            if(req.keyword){
+                fleet = 
+                    await Fleet
+                        .query()
+                        .where(word => {
+                            word.where('kode', 'like', `%${req.keyword}%`)
+                            word.orWhere('name', 'like', `%${req.keyword}%`)
+                        })
+                        .andWhere({status: 'Y'})
+                        .fetch()
+            }else{
+                fleet = 
+                    await Fleet
+                        .query().where({status: 'Y'})
+                        .fetch()
+            }
             
             let durasi = await diagnoticTime.durasi(t0)
             return response.status(200).json({
