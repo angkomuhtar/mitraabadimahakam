@@ -211,7 +211,7 @@ Route.group(() => {
 
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
 
-
+//  API MOBILE
 Route.group(() => {
 
     // Route.post('/login', 'AuthApiController.login').middleware('auth:session,api')
