@@ -8,10 +8,12 @@ const Fleet = use("App/Models/MasFleet")
 const DailyFleet = use("App/Models/DailyFleet")
 const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 
+var initString = 'YYYY-MM-DD'
+
 class DailyFleetApiController {
     async index ({ auth, request, response }) {
         var t0 = performance.now()
-        // const req = request.only(['keyword'])
+        const req = request.only(['keyword'])
 
         try {
             await auth.authenticator('jwt').getUser()
@@ -28,15 +30,49 @@ class DailyFleetApiController {
             })
         }
 
-        const dailyFleet = 
+        let dailyFleet
+        if(req.keyword){
+            dailyFleet = 
             await DailyFleet
                 .query()
-                .with('pit')
-                .with('fleet')
-                .with('activities')
-                .with('shift')
+                .with('pit', a => {
+                    a.where('kode', 'like', `%${req.keyword}%`)
+                    a.orWhere('name', 'like', `%${req.keyword}%`)
+                    a.orWhere('location', 'like', `%${req.keyword}%`)
+                })
+                .with('fleet', b => {
+                    b.where('kode', 'like', `%${req.keyword}%`)
+                    b.orWhere('name', 'like', `%${req.keyword}%`)
+                })
+                .with('activities', c => {
+                    c.where('kode', 'like', `%${req.keyword}%`)
+                    c.orWhere('name', 'like', `%${req.keyword}%`)
+                    c.orWhere('keterangan', 'like', `%${req.keyword}%`)
+                })
+                .with('shift', d => {
+                    d.where('kode', 'like', `%${req.keyword}%`)
+                    d.orWhere('name', 'like', `%${req.keyword}%`)
+                    d.orWhere('duration', 'like', `%${req.keyword}%`)
+                })
+                .with('details', e => {
+                    e.with('equipment')
+                })
                 .with('user')
                 .fetch()
+        }else{
+            dailyFleet = 
+                await DailyFleet
+                    .query()
+                    .with('pit')
+                    .with('fleet')
+                    .with('activities')
+                    .with('shift')
+                    .with('details', e => {
+                        e.with('equipment')
+                    })
+                    .with('user')
+                    .fetch()
+        }
 
         let durasi = await diagnoticTime.durasi(t0)
         return response.status(200).json({
@@ -148,7 +184,7 @@ class DailyFleetApiController {
             
             if(cekFleet){
                 durasi = await diagnoticTime.durasi(t0)
-                return response.status(200).json({
+                return response.status(403).json({
                     diagnostic: {
                         times: durasi, 
                         error: true,
@@ -188,15 +224,15 @@ class DailyFleetApiController {
                 })
                 await dailyFleet.save(trx)
 
-                const dailyFleetEquip = new DailyFleetEquip()
                 for (const item of details) {
+                    const dailyFleetEquip = new DailyFleetEquip()
                     dailyFleetEquip.fill({
                         dailyfleet_id: dailyFleet.id,
                         equip_id: item.equip_id,
                         datetime: item.datetime
                     })
+                    await dailyFleetEquip.save(trx)
                 }
-                await dailyFleetEquip.save(trx)
                 await trx.commit()
                 durasi = await diagnoticTime.durasi(t0)
                 return response.status(200).json({
@@ -223,15 +259,45 @@ class DailyFleetApiController {
 
     async update ({auth, params, request, response}) {
         const { id } = params
-        const req = request.only(['pit_id', 'fleet_id', 'activity_id', 'shift_id', 'date', 'details'])
+        const req = request.only(['pit_id', 'fleet_id', 'activity_id', 'shift_id', 'date'])
         var t0 = performance.now()
+        const { pit_id, fleet_id, activity_id, shift_id, date } = req
         let durasi
         try {
             const usr = await auth.authenticator('jwt').getUser()
-            const dailyFleet = await DailyFleet.query().where('id', id).with('details').first()
-
-            // console.log(dailyFleet.toJSON());
-            await resData(usr, req)
+            const cekDailyFleet = await DailyFleet.query().where({pit_id, fleet_id, activity_id, shift_id, date: moment(date).format(initString)}).with('details').first()
+            if(cekDailyFleet){
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(403).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: true,
+                        message: 'duplicated daily fleet...'
+                    },
+                    data: cekDailyFleet
+                })
+            }else{
+                const trx = await db.beginTransaction()
+                try {
+                    let dailyFleet = await DailyFleet.findOrFail(id)
+                    dailyFleet.merge({pit_id, fleet_id, activity_id, shift_id, date})
+                    await dailyFleet.save(trx)
+                    await trx.commit(trx)
+                    durasi = await diagnoticTime.durasi(t0)
+                    // const respData = dailyFleet.toJSON()
+                    return response.status(201).json({
+                        diagnostic: {
+                            times: durasi, 
+                            error: false,
+                            detail_update: '<'+request.hostname()+'>/api/daily-fleet-equipment/<PARAMS>/update'
+                        },
+                        data: dailyFleet
+                    })
+                } catch (error) {
+                    console.log(error)
+                    await trx.rollback(trx)
+                }
+            }
             
         } catch (error) {
             console.log(error)
@@ -243,32 +309,6 @@ class DailyFleetApiController {
                     message: error.message
                 },
                 data: []
-            })
-        }
-
-        async function resData(usr, data){
-            
-            const { pit_id, fleet_id, activity_id, shift_id, date, details } = req
-
-            let dailyFleetEquip
-            for (const item of data.details) {
-                const begin = moment(item.datetime).format('YYYY-MM-DD 00:00')
-                const end = moment(item.datetime).format('YYYY-MM-DD 23:59')
-                dailyFleetEquip = await DailyFleetEquip.query()
-                    .whereBetween('datetime', [begin, end])
-                    .andWhere('equip_id', item.equip_id)
-                    .first()
-
-                console.log(dailyFleetEquip)
-            }
-
-            durasi = await diagnoticTime.durasi(t0)
-            return response.status(403).json({
-                diagnostic: {
-                    times: durasi,
-                    error: false
-                },
-                data: dailyFleetEquip
             })
         }
     }

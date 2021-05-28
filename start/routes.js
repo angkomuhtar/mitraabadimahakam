@@ -285,6 +285,20 @@ Route.group(() => {
 
 }).prefix('api/daily-fleet').namespace('api')
 
+Route.group(() => {
+
+    Route.get('/', 'DailyFleetEquipmentApiController.index')
+
+    Route.post('/', 'DailyFleetEquipmentApiController.create')
+
+    Route.get('/:id/show', 'DailyFleetEquipmentApiController.show')
+
+    Route.post('/:id/update', 'DailyFleetEquipmentApiController.update')
+
+    Route.delete('/:id/destroy', 'DailyFleetEquipmentApiController.destroy')
+
+}).prefix('api/daily-fleet-equipment').namespace('api')
+
 
 Route.get('/401', ({ view }) => view.render('401'))
 
