@@ -45,10 +45,10 @@ Route.group(() => {
     
     Route.post('/equipment', 'MasEquipmentController.store').as('mas.equipment.store').validator('Equipment-Post').middleware('C')
     
-    Route.get('/equipment/:id', 'MasEquipmentController.show').as('mas.equipment.show').middleware('R')
-
-    Route.get('/equipment/search', 'MasEquipmentController.list').as('mas.equipment.list')
-
+    Route.get('/equipment/list', 'MasEquipmentController.list').as('mas.equipment.list')
+    
+    Route.get('/equipment/:id/show', 'MasEquipmentController.show').as('mas.equipment.show').middleware('R')
+    
     Route.post('/equipment/:id/update', 'MasEquipmentController.update').as('mas.equipment.update').middleware('U')
 
     Route.post('/equipment/:id/delete', 'MasEquipmentController.delete').as('mas.equipment.delete').middleware('D')
@@ -246,6 +246,8 @@ Route.group(() => {
 Route.group(() => {
 
     Route.get('/', 'EquipmentApiController.index')
+
+    Route.get('/available-fleet', 'EquipmentApiController.availableForFleet')
 
     Route.get('/:id/show', 'EquipmentApiController.show')
 

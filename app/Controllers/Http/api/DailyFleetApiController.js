@@ -284,7 +284,6 @@ class DailyFleetApiController {
                     await dailyFleet.save(trx)
                     await trx.commit(trx)
                     durasi = await diagnoticTime.durasi(t0)
-                    // const respData = dailyFleet.toJSON()
                     return response.status(201).json({
                         diagnostic: {
                             times: durasi, 

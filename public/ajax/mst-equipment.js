@@ -41,8 +41,20 @@ $(function(){
     })
 
     function initDeafult(){
-        $('div.content-module').each(function(){ $(this).hide() })
-        $('div#list-content').show()
+        $('div.content-module').css('display', 'none')
+        $.ajax({
+            async: true,
+            url: '/master/equipment/list?keyword=',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+        
     }
     function initCreate(){
         $('div.content-module').each(function(){ $(this).hide() })
@@ -101,10 +113,19 @@ $(function(){
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        var url = window.location.pathname+'/list?page='+page
-        $.get(url, function(data){
-            $('div#list-content').children().remove()
-            $('div#list-content').append(data)
+        var keyword = $('#inpKeyword').val()
+        var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword
+        $.ajax({
+            async: true,
+            url: url,
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
         })
     })
 
