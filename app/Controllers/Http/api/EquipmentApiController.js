@@ -1,6 +1,9 @@
 'use strict'
-const { performance } = require('perf_hooks')
+
+// CustomClass
 const moment = require('moment')
+const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
+const { performance } = require('perf_hooks')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
 const MasShift = use("App/Models/MasShift")
@@ -120,6 +123,8 @@ class EquipmentApiController {
             })
         } catch (error) {
             console.log(error)
+            const logger = new Loggerx(null, null, null, null, error)
+            await logger.tempData()
             let durasi = await diagnoticTime.durasi(t0)
             return response.status(404).json({
                 diagnostic: {
