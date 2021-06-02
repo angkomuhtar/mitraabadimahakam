@@ -21,6 +21,7 @@ $(function(){
             $('div#form-show').show()
         })
     })
+    
 
     function setDateString() {
         $('.myDateFormat').each(function(){

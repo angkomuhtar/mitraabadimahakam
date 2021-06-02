@@ -57,6 +57,7 @@ class EquipmentApiController {
     async availableForFleet ({auth, request, response}) {
         var t0 = performance.now()
         const req = request.only(['date', 'shift_id'])
+        
         try {
             await auth.authenticator('jwt').getUser()
         } catch (error) {
@@ -78,24 +79,30 @@ class EquipmentApiController {
         const end = moment(tglx).add(12, 'hours').format('YYYY-MM-DD HH:mm')
         
         let data = []
-        let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
-        for (const item of equipment) {
-            const equip = await DailyFleetEquip.query().whereBetween('datetime', [begin, end]).andWhere('equip_id', item.id).first()
-            if(equip){
-                data.push({...item, on_fleet: true})
-            }else{
-                data.push({...item, on_fleet: false})
+        try {
+            let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
+            
+            for (const item of equipment) {
+                const equip = await DailyFleetEquip.query().whereBetween('datetime', [begin, end]).andWhere('equip_id', item.id).first()
+                
+                if(equip){
+                    data.push({...item, on_fleet: true})
+                }else{
+                    data.push({...item, on_fleet: false})
+                }
             }
+    
+            let durasi = await diagnoticTime.durasi(t0)
+            return response.status(200).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false
+                },
+                data: data
+            })
+        } catch (error) {
+            console.log(error)
         }
-
-        let durasi = await diagnoticTime.durasi(t0)
-        return response.status(200).json({
-            diagnostic: {
-                times: durasi, 
-                error: false
-            },
-            data: data
-        })
     }
 }
 

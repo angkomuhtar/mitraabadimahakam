@@ -4,7 +4,7 @@ $(function(){
     $('.dropify').dropify();
     initDeafult()
 
-    $('#create-form').on('click', function(){
+    $('body').on('click', 'button#create-form', function(){
         initCreate()
     })
     $('body').on('click', 'button#bt-back', function(){
