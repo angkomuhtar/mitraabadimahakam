@@ -119,7 +119,16 @@ class EquipmentApiController {
                 data: data
             })
         } catch (error) {
-            console.log(error);
+            console.log(error)
+            let durasi = await diagnoticTime.durasi(t0)
+            return response.status(404).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error
+                },
+                data: data
+            })
         }
     }
 }
