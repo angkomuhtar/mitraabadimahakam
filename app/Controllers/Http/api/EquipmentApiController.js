@@ -127,7 +127,7 @@ class EquipmentApiController {
                     error: true,
                     message: error
                 },
-                data: data
+                data: []
             })
         }
     }
