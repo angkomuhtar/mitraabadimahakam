@@ -229,7 +229,7 @@ class DailyFleetApiController {
                     dailyFleetEquip.fill({
                         dailyfleet_id: dailyFleet.id,
                         equip_id: item.equip_id,
-                        datetime: item.datetime
+                        datetime:  new Date(date)
                     })
                     await dailyFleetEquip.save(trx)
                 }
