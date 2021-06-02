@@ -5,6 +5,7 @@ const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
 const MasShift = use("App/Models/MasShift")
 const Equipment = use("App/Models/MasEquipment")
+const DailyFleet = use("App/Models/DailyFleet")
 const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 
 class EquipmentApiController {
@@ -56,8 +57,7 @@ class EquipmentApiController {
 
     async availableForFleet ({auth, request, response}) {
         var t0 = performance.now()
-        const req = request.only(['date', 'shift_id'])
-        
+        const dateReq = new Date()
         try {
             await auth.authenticator('jwt').getUser()
         } catch (error) {
@@ -73,25 +73,43 @@ class EquipmentApiController {
             })
         }
         
-        const shiftClock = (await MasShift.query().where({id: req.shift_id, status: 'Y'}).first()).toJSON()
-        const tglx = new Date(`${req.date} ${shiftClock.start_shift}`)
-        const begin = moment(tglx).format('YYYY-MM-DD HH:mm')
-        const end = moment(tglx).add(12, 'hours').format('YYYY-MM-DD HH:mm')
-        
-        let data = []
+        const filterTime = moment(dateReq).format('HH:mm:ss')
         try {
+            const shiftClock = 
+                await MasShift.query()
+                .where(
+                    builder => 
+                    builder.where('start_shift', '<=', filterTime)
+                    .where('end_shift', '>', filterTime)
+                    .where({status: 'Y'}))
+                    .first()
+
+            const dailyFleet = (
+                await DailyFleet.query()
+                    .with('details')
+                    .where('shift_id', shiftClock.id)
+                    .fetch()
+                ).toJSON()
+
+            let equipment_id = []
+
+            for (const item of dailyFleet) {
+                for (const list of item.details) {
+                    equipment_id.push(list.equip_id)
+                }
+            }
+
+
+            let data = []
             let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
-            
             for (const item of equipment) {
-                const equip = await DailyFleetEquip.query().whereBetween('datetime', [begin, end]).andWhere('equip_id', item.id).first()
-                
-                if(equip){
+                if(equipment_id.includes(item.id)){
                     data.push({...item, on_fleet: true})
                 }else{
                     data.push({...item, on_fleet: false})
                 }
             }
-    
+
             let durasi = await diagnoticTime.durasi(t0)
             return response.status(200).json({
                 diagnostic: {
@@ -101,7 +119,7 @@ class EquipmentApiController {
                 data: data
             })
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 }

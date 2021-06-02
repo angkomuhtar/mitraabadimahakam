@@ -38,7 +38,7 @@ $(function(){
     })
 
     function searchKeyword(value){
-        $.get('/master/employee/search?keyword='+value, function(data){
+        $.get('/master/employee/list?keyword='+value, function(data){
             $('body div#list-content').html(data)
         })
     }

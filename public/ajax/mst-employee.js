@@ -14,9 +14,9 @@ $(function(){
     })
     function initDeafult(){
         $('div.content-module').each(function(){ $(this).hide() })
-        $.get('/master/employee/search?keyword=', function(data){
+        $.get('/master/employee/list?keyword=', function(data){
             $('div#list-content').children().remove()
-            $('div#list-content').append(data)
+            $('div#list-content').html(data)
         })
         $('div#list-content').show()
     }
@@ -61,18 +61,8 @@ $(function(){
             success: function(res){
                 console.log(res)
                 if(res.success){
-                    swal({
-                        title: "Okey!",
-                        text: "Insert data success, are you finish insert data ?",
-                        type: "success",
-                        showCancelButton: true,
-                        confirmButtonClass: "btn-warning",
-                        confirmButtonText: "Yes",
-                        closeOnConfirm: false
-                    },
-                    function(){
-                        window.location.reload()
-                    });
+                    swal("Okey!", res.message, "success")
+                    window.location.reload()
                 }else{
                     swal("Oops", "Insert data failed", "error")
                 }
@@ -80,6 +70,25 @@ $(function(){
             error: function(err){
                 console.log(err.responseJSON)
                 swal("Oops", err.responseJSON.message, "error")
+            }
+        })
+    })
+
+    $('body').on('click', 'a.btn-pagging', function(e){
+        e.preventDefault()
+        var page = $(this).data('page')
+        var keyword = $('#inpKeyword').val()
+        var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword
+        $.ajax({
+            async: true,
+            url: url,
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
             }
         })
     })

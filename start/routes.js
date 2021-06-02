@@ -58,7 +58,7 @@ Route.group(() => {
 
     Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store').validator('Employee-Post').middleware('C')
     
-    Route.get('/employee/search', 'MasEmployeeController.list').as('mas.employee.list')
+    Route.get('/employee/list', 'MasEmployeeController.list').as('mas.employee.list')
 
     Route.get('/employee/:id/show', 'MasEmployeeController.show').as('mas.employee.show').middleware('R')
 
@@ -300,6 +300,20 @@ Route.group(() => {
     Route.delete('/:id/destroy', 'DailyFleetEquipmentApiController.destroy')
 
 }).prefix('api/daily-fleet-equipment').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'DailyRitaseApiController.index')
+
+    Route.post('/', 'DailyRitaseApiController.create')
+
+    Route.get('/:id/show', 'DailyRitaseApiController.show')
+
+    Route.post('/:id/update', 'DailyRitaseApiController.update')
+
+    Route.delete('/:id/destroy', 'DailyRitaseApiController.destroy')
+
+}).prefix('api/daily-ritase').namespace('api')
 
 
 Route.get('/401', ({ view }) => view.render('401'))

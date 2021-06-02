@@ -19,7 +19,7 @@ class MasEmployeeController {
   async list ({ auth, request, view }) {
     const usr = await auth.getUser()
     const req = request.all()
-    const limit = 10
+    const limit = 25
     const halaman = req.page === undefined ? 1:parseInt(req.page)
     let data 
     const logger = new Loggerx(request.url(), req, usr, request.method(), true)
@@ -42,9 +42,6 @@ class MasEmployeeController {
     return view.render('master.employee.list', {list: data.toJSON()})
   }
 
-  async create ({ request, response, view }) {
-
-  }
 
   async store ({ auth, request, response }) {
     const usr = await auth.getUser()
@@ -60,7 +57,7 @@ class MasEmployeeController {
       await logger.tempData()
       return {
         success: true,
-        message: 'Okey,,, Insert data success!'
+        message: 'Insert data success!'
       }
     } catch (error) {
       console.log(error);

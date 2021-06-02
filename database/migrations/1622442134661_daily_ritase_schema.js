@@ -7,13 +7,14 @@ class DailyRitaseSchema extends Schema {
   up () {
     this.create('daily_ritases', (table) => {
       table.increments()
-      table.integer('fleet_id').unsigned().references('id').inTable('mas_fleets').onDelete('CASCADE').onUpdate('CASCADE')
+      table.integer('dailyfleet_id').unsigned().references('id').inTable('daily_fleets').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('checker_id').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('spv_id').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
       table.string('material').notNullable()
       table.integer('distance').notNullable()
       table.integer('exac_id').unsigned().references('id').inTable('mas_equipments').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('hauler_id').unsigned().references('id').inTable('mas_equipments').onDelete('CASCADE').onUpdate('CASCADE')
+      table.enu('status', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })
   }
