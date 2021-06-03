@@ -61,7 +61,8 @@ class EquipmentApiController {
     async availableForFleet ({auth, request, response}) {
         var t0 = performance.now()
         const req = request.only(['datetime'])
-        const dateReq = new Date(req.datetime)
+        const dateReq = new Date(req.datetime != undefined ? req.datetime : moment().format('YYYY-MM-DD HH:mm'))
+
 
         try {
             await auth.authenticator('jwt').getUser()
@@ -79,7 +80,6 @@ class EquipmentApiController {
         }
         
         const filterDate = moment(dateReq).format('YYYY-MM-DD')
-        // const filterTime = moment(dateReq).format('HH:mm')
         const listShift = (await MasShift.query().select('id', 'name', 'kode', 'start_shift', 'end_shift').fetch()).toJSON()
         const shiftData = listShift.map(item => {
             var start = `${ filterDate } ${ item.start_shift }`
@@ -101,13 +101,13 @@ class EquipmentApiController {
             }
         })
 
-        const [ShiftFilter] = shiftData.filter(item => item.status)
+        const ShiftFilter = shiftData.filter(item => item.status)
         try {
 
             const dailyFleet = (
                 await DailyFleet.query()
                 .with('details')
-                .where('shift_id', ShiftFilter.id)
+                .where('shift_id', ShiftFilter[0].id)
                 .fetch()
             ).toJSON()
                 
@@ -117,7 +117,6 @@ class EquipmentApiController {
                     equipment_id.push(list.equip_id)
                 }
             }
-                        
                         
             let data = []
             let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
@@ -133,7 +132,7 @@ class EquipmentApiController {
             return response.status(200).json({
                 diagnostic: {
                     times: durasi,
-                    req: dateReq,
+                    req: ShiftFilter,
                     error: false
                 },
                 data: data
