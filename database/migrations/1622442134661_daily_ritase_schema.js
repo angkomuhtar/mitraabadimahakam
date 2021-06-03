@@ -14,6 +14,8 @@ class DailyRitaseSchema extends Schema {
       table.integer('distance').notNullable()
       table.integer('exac_id').unsigned().references('id').inTable('mas_equipments').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('hauler_id').unsigned().references('id').inTable('mas_equipments').onDelete('CASCADE').onUpdate('CASCADE')
+      table.date('tot_ritase').notNullable()
+      table.date('date').notNullable()
       table.enu('status', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })

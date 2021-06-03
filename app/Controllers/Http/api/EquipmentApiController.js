@@ -2,7 +2,6 @@
 
 // CustomClass
 const moment = require('moment')
-const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
 const { performance } = require('perf_hooks')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
@@ -77,6 +76,8 @@ class EquipmentApiController {
         }
         
         const filterTime = moment(dateReq).format('HH:mm:ss')
+        let equipment_id = []
+        let data = []
         try {
             const shiftClock = 
                 await MasShift.query()
@@ -94,7 +95,6 @@ class EquipmentApiController {
                     .fetch()
                 ).toJSON()
 
-            let equipment_id = []
 
             for (const item of dailyFleet) {
                 for (const list of item.details) {
@@ -103,7 +103,6 @@ class EquipmentApiController {
             }
 
 
-            let data = []
             let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
             for (const item of equipment) {
                 if(equipment_id.includes(item.id)){
@@ -123,8 +122,6 @@ class EquipmentApiController {
             })
         } catch (error) {
             console.log(error)
-            const logger = new Loggerx(null, null, null, null, error)
-            await logger.tempData()
             let durasi = await diagnoticTime.durasi(t0)
             return response.status(404).json({
                 diagnostic: {
@@ -132,7 +129,9 @@ class EquipmentApiController {
                     error: true,
                     message: error
                 },
-                data: []
+                data: [],
+                equipment_id: equipment_id,
+                equipment: equipment
             })
         }
     }
