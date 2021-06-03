@@ -315,6 +315,20 @@ Route.group(() => {
 
 }).prefix('api/daily-ritase').namespace('api')
 
+Route.group(() => {
+
+    Route.get('/', 'DailyRitaseDetailApiController.index')
+
+    Route.post('/', 'DailyRitaseDetailApiController.create')
+
+    Route.get('/:id/show', 'DailyRitaseDetailApiController.show')
+
+    Route.post('/:id/update', 'DailyRitaseDetailApiController.update')
+
+    Route.delete('/:id/destroy', 'DailyRitaseDetailApiController.destroy')
+
+}).prefix('api/daily-ritase-details').namespace('api')
+
 
 Route.get('/401', ({ view }) => view.render('401'))
 
