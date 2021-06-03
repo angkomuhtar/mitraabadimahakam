@@ -91,6 +91,58 @@ class DailyFleetEquipmentApiController {
         })
     }
 
+    async create ({ auth, request, response }) {
+        const req = request.only(['equip_id', 'datetime', 'dailyfleet_id'])
+        var t0 = performance.now()
+        const { equip_id, datetime, dailyfleet_id } = req
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+        const trx = await db.beginTransaction()
+        try {
+            const dailyFleetEquip = new DailyFleetEquip()
+            dailyFleetEquip.fill({dailyfleet_id, equip_id, datetime})
+            await dailyFleetEquip.save(trx)
+            await trx.commit(trx)
+            console.log(dailyFleetEquip.toJSON())
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(201).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false
+                },
+                data: dailyFleetEquip
+            })
+        } catch (error) {
+            console.log(error)
+            await trx.rollback(trx)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+    }
+
     async update ({ auth, params, request, response }) {
         const { id } = params
         const req = request.only(['equip_id', 'datetime'])
