@@ -130,8 +130,7 @@ class EquipmentApiController {
                     message: error
                 },
                 data: [],
-                equipment_id: equipment_id,
-                equipment: equipment
+                equipment_id: equipment_id
             })
         }
     }
