@@ -176,6 +176,7 @@ class DailyFleetEquipmentApiController {
         } catch (error) {
             console.log(error)
             await trx.rollback(trx)
+            let durasi = await diagnoticTime.durasi(t0)
             return response.status(403).json({
                 diagnostic: {
                     times: durasi, 
