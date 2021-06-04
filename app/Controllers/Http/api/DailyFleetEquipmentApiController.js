@@ -1,6 +1,7 @@
 'use strict'
 const { performance } = require('perf_hooks')
 const db = use('Database')
+const DailyFleet = use("App/Models/DailyFleet")
 const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 
 const moment = require('moment')
@@ -144,10 +145,10 @@ class DailyFleetEquipmentApiController {
     }
 
     async update ({ auth, params, request, response }) {
+        
         const { id } = params
-        const req = request.only(['equip_id', 'datetime'])
+        const req = request.only(['data'])
         var t0 = performance.now()
-        const { equip_id, datetime } = req
         let durasi
 
         try {
@@ -165,31 +166,37 @@ class DailyFleetEquipmentApiController {
             })
         }
 
-        const trx = await db.beginTransaction()
-        try {
-            const dailyFleetEquip = await DailyFleetEquip.findOrFail(id)
-            dailyFleetEquip.merge({ equip_id, datetime })
-            await dailyFleetEquip.save(trx)
-            await trx.commit(trx)
-            let durasi = await diagnoticTime.durasi(t0)
-            return response.status(201).json({
-                diagnostic: {
-                    times: durasi, 
-                    error: false
-                },
-                data: dailyFleetEquip
-            })
-        } catch (error) {
-            console.log(error)
-            await trx.rollback(trx)
-            return response.status(403).json({
-                diagnostic: {
-                    times: durasi, 
-                    error: false,
-                    message: error.message
-                },
-                data: []
-            })
+        await UPDATE_DATA()
+
+        async function UPDATE_DATA(){
+            try {
+                const dailyFleet = await DailyFleet.findOrFail(id)
+                for (const item of req.data) {
+                    const dailyFleetEquip = await DailyFleetEquip.findOrCreate(
+                        { dailyfleet_id: dailyFleet.id, equip_id: item.equip_id },
+                        { dailyfleet_id: dailyFleet.id, equip_id: item.equip_id, datetime: new Date() }
+                    )
+                    durasi = await diagnoticTime.durasi(t0)
+                    return response.status(201).json({
+                        diagnostic: {
+                            times: durasi, 
+                            error: false
+                        },
+                        data: dailyFleetEquip
+                    })
+                }
+            } catch (error) {
+                console.log(error)
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(403).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: true,
+                        message: error.message
+                    },
+                    data: []
+                })
+            }
         }
     }
 
