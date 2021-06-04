@@ -6,8 +6,24 @@ const Model = use('Model')
 class DailyRitaseDetail extends Model {
     static boot () {
         super.boot()
-        this.addHook('beforeCreate', 'DailyRitaseDetail.beforeInsertData')
-        this.addHook('beforeUpdate', 'DailyRitaseDetail.beforeUpdateData')
+        this.addHook('beforeCreate', 'DailyRitaseDetailHook.beforeInsertData')
+        this.addHook('beforeUpdate', 'DailyRitaseDetailHook.beforeUpdateData')
+    }
+
+    daily_ritase(){
+        return this.belongsTo("App/Models/DailyRitase", "dailyritase_id", "id")
+    }
+
+    checker(){
+        return this.belongsTo("App/Models/User", "checker_id", "id")
+    }
+
+    spv(){
+        return this.belongsTo("App/Models/User", "spv_id", "id")
+    }
+
+    hauler(){
+        return this.belongsTo("App/Models/MasEquipment", "hauler_id", "id")
     }
 }
 

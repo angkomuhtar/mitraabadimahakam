@@ -13,6 +13,8 @@ class DailyRitaseDetailSchema extends Schema {
       table.integer('hauler_id').unsigned().references('id').inTable('mas_equipments').onDelete('CASCADE').onUpdate('CASCADE')
       table.timestamp('check_in').notNullable()
       table.integer('urut').notNullable()
+      table.integer('duration').notNullable()
+      table.string('satuan').defaultTo('menit')
       table.timestamps()
     })
   }
