@@ -172,19 +172,20 @@ class DailyFleetEquipmentApiController {
             try {
                 const dailyFleet = await DailyFleet.findOrFail(id)
                 for (const item of req.data) {
-                    const dailyFleetEquip = await DailyFleetEquip.findOrCreate(
+                    await DailyFleetEquip.findOrCreate(
                         { dailyfleet_id: dailyFleet.id, equip_id: item.equip_id },
                         { dailyfleet_id: dailyFleet.id, equip_id: item.equip_id, datetime: new Date() }
                     )
-                    durasi = await diagnoticTime.durasi(t0)
-                    return response.status(201).json({
-                        diagnostic: {
-                            times: durasi, 
-                            error: false
-                        },
-                        data: dailyFleetEquip
-                    })
                 }
+                const dailyFleetEquip = await DailyFleetEquip.query().where('dailyfleet_id', dailyFleet.id).fetch()
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(201).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false
+                    },
+                    data: dailyFleetEquip
+                })
             } catch (error) {
                 console.log(error)
                 durasi = await diagnoticTime.durasi(t0)
