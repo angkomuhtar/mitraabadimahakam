@@ -33,6 +33,9 @@ class DailyRitaseApiController {
       let dailyRitase
       if (req.keyword) {
         dailyRitase = await DailyRitase.query()
+          .with('daily_fleet', details => {
+            details.with('details', unit => unit.with('equipment'))
+          })
           .where(whe => {
               whe.where('material', 'like', `%${req.keyword}%`)
               whe.orWhere('distance', 'like', `%${req.keyword}%`)
@@ -42,6 +45,9 @@ class DailyRitaseApiController {
           .paginate(halaman, limit)
       } else {
         dailyRitase = await DailyRitase.query()
+          .with('daily_fleet', details => {
+            details.with('details', unit => unit.with('equipment'))
+          })
           .where("status", "Y")
           .paginate(halaman, limit)
       }
@@ -152,7 +158,11 @@ class DailyRitaseApiController {
 
     async function GET_DATA(){
         try {
-          const dailyRitase = await DailyRitase.findOrFail(id)
+          const dailyRitase = await DailyRitase
+            .query()
+            .with('daily_fleet', details => {
+              details.with('details', unit => unit.with('equipment'))
+            }).where('id', id).first()
           durasi = await diagnoticTime.durasi(t0)
           return response.status(201).json({
             diagnostic: {

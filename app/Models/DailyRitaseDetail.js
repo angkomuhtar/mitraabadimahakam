@@ -7,6 +7,8 @@ class DailyRitaseDetail extends Model {
     static boot () {
         super.boot()
         this.addHook('beforeCreate', 'DailyRitaseDetailHook.beforeInsertData')
+        this.addHook('afterCreate', 'DailyRitaseDetailHook.afterInsertData')
+        this.addHook('afterDelete', 'DailyRitaseDetailHook.afterDeleteData')
         this.addHook('beforeUpdate', 'DailyRitaseDetailHook.beforeUpdateData')
     }
 

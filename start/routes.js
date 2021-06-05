@@ -250,8 +250,10 @@ Route.group(() => {
     Route.get('/available-fleet', 'EquipmentApiController.availableForFleet')
 
     Route.get('/:id/show', 'EquipmentApiController.show')
-
+    
     Route.post('/:id/update', 'EquipmentApiController.update')
+    
+    Route.get('/available-fleet/:idfleet/onfleet', 'EquipmentApiController.equipment_onFleet')
 
 }).prefix('api/equipment').namespace('api')
 

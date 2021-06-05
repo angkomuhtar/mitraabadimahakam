@@ -8,6 +8,9 @@ const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
 const MasShift = use("App/Models/MasShift")
 const Equipment = use("App/Models/MasEquipment")
+const Pit = use("App/Models/MasPit")
+const Fleet = use("App/Models/MasFleet")
+const Activity = use("App/Models/MasActivity")
 const DailyFleet = use("App/Models/DailyFleet")
 const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 
@@ -149,6 +152,99 @@ class EquipmentApiController {
                 req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
                 data: []
             })
+        }
+    }
+
+    async equipment_onFleet ({ auth, params, request, response }) {
+        var t0 = performance.now()
+        const { idfleet } = params
+        const req = request.only(['datetime'])
+        const dateReq = new Date(req.datetime != undefined ? req.datetime : moment().format('YYYY-MM-DD HH:mm'))
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+        await GET_DATA_EQUIPMENT_ONFLEET()
+
+        async function GET_DATA_EQUIPMENT_ONFLEET(){
+            let data = []
+            try {
+                const dailyFleet = (
+                    await DailyFleet
+                    .query()
+                    .with('details')
+                    .where('id', idfleet)
+                    .first()
+                ).toJSON()
+                for (const item of dailyFleet.details) {
+                    const unit = (await Equipment.findOrFail(item.equip_id)).toJSON()
+                    const pit = (await Pit.findOrFail(dailyFleet.pit_id)).toJSON()
+                    const fleet = (await Fleet.findOrFail(dailyFleet.fleet_id)).toJSON()
+                    const activity = (await Activity.findOrFail(dailyFleet.activity_id)).toJSON()
+                    let image_uri
+                    switch (unit.tipe) {
+                        case "bulldozer":
+                            image_uri = 'http://offices.mitraabadimahakam.id/equipment/bulldozer.jpg'
+                            break;
+                        case "excavator":
+                            image_uri = 'http://offices.mitraabadimahakam.id/equipment/excavator.jpg'
+                            break;
+                        case "dump truck":
+                            image_uri = 'http://offices.mitraabadimahakam.id/equipment/oht1.jpg'
+                            break;
+                        case "articulated":
+                            image_uri = 'http://offices.mitraabadimahakam.id/equipment/adt.jpg'
+                            break;
+                    
+                        default:
+                            image_uri = 'http://offices.mitraabadimahakam.id/equipment/unnamed.png'
+                            break;
+                    }
+                    data.push({
+                        ...item,
+                        image: image_uri,
+                        equipment_detail: unit,
+                        pit_id: dailyFleet.pit_id,
+                        pit_detail: pit,
+                        fleet_detail: fleet,
+                        activity_detail: activity
+                    })
+                }
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(200).json({
+                    diagnostic: {
+                        times: durasi,
+                        req: dateReq,
+                        error: false
+                    },
+                    data: data
+                })
+            } catch (error) {
+                console.log(error)
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(404).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: true,
+                        message: error
+                    },
+                    req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
+                    data: []
+                })
+            }
         }
     }
 }
