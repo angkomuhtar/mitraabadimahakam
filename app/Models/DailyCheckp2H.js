@@ -4,6 +4,9 @@
 const Model = use('Model')
 
 class DailyCheckp2H extends Model {
+    static get table(){
+        return 'daily_checkp2h'
+    }
 }
 
 module.exports = DailyCheckp2H

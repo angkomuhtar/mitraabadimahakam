@@ -7,6 +7,10 @@ class MasEquipment extends Model {
     dealer () {
         return this.belongsTo("App/Models/MasDealer", "dealer_id", "id")
     }
+
+    daily_smu(){
+        return this.hasMany("App/Models/DailySmuRecord", "id", "equip_id")
+    }
 }
 
 module.exports = MasEquipment

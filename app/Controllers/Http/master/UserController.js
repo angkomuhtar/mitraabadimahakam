@@ -118,7 +118,7 @@ class UserController {
             profile.fill({
                 user_id: addUser.id,
                 nm_depan: req.nm_depan,
-                nm_belakang: req.nm_belakang,
+                nm_belakang: req.nm_belakang || '',
                 phone: req.phone,
                 jenkel: req.jenkel,
                 avatar: uriAvatar,

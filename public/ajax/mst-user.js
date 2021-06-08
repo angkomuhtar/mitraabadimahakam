@@ -18,12 +18,12 @@ $(function(){
         var data = $(this).data()
         var sp = (data.fullname).split(' ')
         var nmDepan = sp[1]
-        var nmBelakang = sp[2] || ''
+        var nmBelakang = sp.length < 2 ? '' : nmDepan+' '+sp[2]
         $('input[name="email"]').val(data.email)
         $('input[name="phone"]').val(data.phone)
         $('input[name="jenkel"]').val(data.jenkel)
         $('input[name="nm_depan"]').val(sp[0])
-        $('input[name="nm_belakang"]').val(nmDepan + ' ' + nmBelakang)
+        $('input[name="nm_belakang"]').val(nmBelakang)
         $('input[name="employee_id"]').val(data.id)
         $('div#box-details').show()
         $('div#panel-footer').show()

@@ -7,6 +7,7 @@ class DailySmuRecordSchema extends Schema {
   up () {
     this.create('daily_smu_records', (table) => {
       table.increments()
+      table.integer('equip_id').unsigned().references('id').inTable('mas_equipments').onDelete('CASCADE').onUpdate('CASCADE')
       table.datetime('start_date').notNullable()
       table.float('start_smu', 8, 2).notNullable()
       table.datetime('end_date').defaultTo(null)

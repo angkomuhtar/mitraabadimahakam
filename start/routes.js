@@ -225,6 +225,28 @@ Route.group(() => {
 
 Route.group(() => {
 
+    Route.get('/', 'UserApiController.index')
+    
+    Route.get('/search', 'UserApiController.search')
+    
+    Route.get('/:id/show', 'UserApiController.show')
+
+}).prefix('api/users').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'MasP2HApiController.index')
+
+    Route.post('/', 'MasP2HApiController.create')
+
+    Route.get('/:id/show', 'MasP2HApiController.show')
+
+    Route.post('/:id/update', 'MasP2HApiController.update')
+
+}).prefix('api/p2h').namespace('api')
+
+Route.group(() => {
+
     Route.get('/', 'PitApiController.index')
 
     Route.get('/:id/show', 'PitApiController.show')
@@ -330,6 +352,22 @@ Route.group(() => {
     Route.delete('/:id/destroy', 'DailyRitaseDetailApiController.destroy')
 
 }).prefix('api/daily-ritase-details').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'TimeSheetApiController.index')
+
+    Route.post('/', 'TimeSheetApiController.create')
+    
+    Route.get('/ranges-date', 'TimeSheetApiController.filterDate')
+    
+    Route.get('/:id/show', 'TimeSheetApiController.show')
+
+    Route.post('/:id/update', 'TimeSheetApiController.update')
+
+    Route.delete('/:id/destroy', 'TimeSheetApiController.destroy')
+
+}).prefix('api/daily-time-sheet').namespace('api')
 
 
 Route.get('/401', ({ view }) => view.render('401'))
