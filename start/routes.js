@@ -247,6 +247,18 @@ Route.group(() => {
 
 Route.group(() => {
 
+    Route.get('/', 'MasEventApiController.index')
+
+    Route.post('/', 'MasEventApiController.create')
+
+    Route.get('/:id/show', 'MasEventApiController.show')
+
+    Route.post('/:id/update', 'MasEventApiController.update')
+
+}).prefix('api/event').namespace('api')
+
+Route.group(() => {
+
     Route.get('/', 'PitApiController.index')
 
     Route.get('/:id/show', 'PitApiController.show')

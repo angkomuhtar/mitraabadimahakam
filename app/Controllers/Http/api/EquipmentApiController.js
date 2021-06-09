@@ -3,7 +3,7 @@
 // CustomClass
 const moment = require('moment')
 const { performance } = require('perf_hooks')
-const { now } = require('underscore')
+const _ = require('underscore')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
 const MasShift = use("App/Models/MasShift")
@@ -87,6 +87,7 @@ class EquipmentApiController {
         const shiftData = listShift.map(item => {
             var start = `${ filterDate } ${ item.start_shift }`
             var end = `${moment(`${filterDate} ${item.start_shift}`).add(12, 'h')}`
+            
             if(new Date(start) < new Date(dateReq) && new Date(end) > new Date(dateReq)){
                 return {
                     ...item,
@@ -104,13 +105,14 @@ class EquipmentApiController {
             }
         })
 
-        const ShiftFilter = shiftData.filter(item => item.status)
+        const [ShiftFilter] = shiftData.filter(item => item.status)
         try {
 
             const dailyFleet = (
                 await DailyFleet.query()
                 .with('details')
-                .where('shift_id', ShiftFilter[0].id)
+                .where('date', moment().format('YYYY-MM-DD'))
+                .andWhere('shift_id', ShiftFilter.id)
                 .fetch()
             ).toJSON()
                 
@@ -120,6 +122,8 @@ class EquipmentApiController {
                     equipment_id.push(list.equip_id)
                 }
             }
+
+            console.log("LIST EQUIPMENT :: ", equipment_id);
                         
             let data = []
             let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
