@@ -113,17 +113,14 @@ class EquipmentApiController {
                 .with('details')
                 .where('date', moment().format('YYYY-MM-DD'))
                 .andWhere('shift_id', ShiftFilter.id)
-                .fetch()
+                .orderBy('id', 'desc')
+                .first()
             ).toJSON()
-                
+            
             let equipment_id = []
-            for (const item of dailyFleet) {
-                for (const list of item.details) {
-                    equipment_id.push(list.equip_id)
-                }
+            for (const list of dailyFleet.details) {
+                equipment_id.push(list.equip_id)
             }
-
-            console.log("LIST EQUIPMENT :: ", equipment_id);
                         
             let data = []
             let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
@@ -139,6 +136,7 @@ class EquipmentApiController {
             return response.status(200).json({
                 diagnostic: {
                     times: durasi,
+                    dailyFleet: dailyFleet,
                     exsistingEquipment: equipment_id,
                     req: ShiftFilter,
                     error: false
