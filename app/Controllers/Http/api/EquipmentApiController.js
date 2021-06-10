@@ -115,62 +115,62 @@ class EquipmentApiController {
         .first()`
 
         response.status(400).json({msg: string})
-        
-        let equipment_id = []
-        const dailyFleet = 
-        (
-            await DailyFleet.query()
-            .with('details')
-            .where('date', moment().format('YYYY-MM-DD'))
-            .andWhere('shift_id', ShiftFilter.id)
-            .orderBy('id', 'desc')
-            .first()
-        ).toJSON()
+
+        // let equipment_id = []
+        // const dailyFleet = 
+        // (
+        //     await DailyFleet.query()
+        //     .with('details')
+        //     .where('date', moment().format('YYYY-MM-DD'))
+        //     .andWhere('shift_id', ShiftFilter.id)
+        //     .orderBy('id', 'desc')
+        //     .first()
+        // ).toJSON()
 
         
-        for (const item of dailyFleet.details) {
-            equipment_id.push(item.equip_id)
-        }
+        // for (const item of dailyFleet.details) {
+        //     equipment_id.push(item.equip_id)
+        // }
 
-        try {    
-            let data = []
-            let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
-            for (const item of equipment) {
-                if(equipment_id.includes(item.id)){
-                    data.push({...item, on_fleet: true})
-                }else{
-                    data.push({...item, on_fleet: false})
-                }
-            }
+        // try {    
+        //     let data = []
+        //     let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
+        //     for (const item of equipment) {
+        //         if(equipment_id.includes(item.id)){
+        //             data.push({...item, on_fleet: true})
+        //         }else{
+        //             data.push({...item, on_fleet: false})
+        //         }
+        //     }
 
-            let durasi = await diagnoticTime.durasi(t0)
-            response.status(200).json({
-                diagnostic: {
-                    times: durasi,
-                    dailyFleet: dailyFleet,
-                    exsistingEquipment: equipment_id,
-                    req: ShiftFilter,
-                    error: false
-                },
-                data: data
-            })
-        } catch (error) {
-            console.log(error)
-            let durasi = await diagnoticTime.durasi(t0)
-            response.status(404).json({
-                diagnostic: {
-                    times: durasi, 
-                    error: true,
-                    stringTest: string,
-                    ShiftFilter: ShiftFilter,
-                    dailyFleet: dailyFleet,
-                    equipment: equipment_id,
-                    message: error
-                },
-                req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
-                data: []
-            })
-        }
+        //     let durasi = await diagnoticTime.durasi(t0)
+        //     response.status(200).json({
+        //         diagnostic: {
+        //             times: durasi,
+        //             dailyFleet: dailyFleet,
+        //             exsistingEquipment: equipment_id,
+        //             req: ShiftFilter,
+        //             error: false
+        //         },
+        //         data: data
+        //     })
+        // } catch (error) {
+        //     console.log(error)
+        //     let durasi = await diagnoticTime.durasi(t0)
+        //     response.status(404).json({
+        //         diagnostic: {
+        //             times: durasi, 
+        //             error: true,
+        //             stringTest: string,
+        //             ShiftFilter: ShiftFilter,
+        //             dailyFleet: dailyFleet,
+        //             equipment: equipment_id,
+        //             message: error
+        //         },
+        //         req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
+        //         data: []
+        //     })
+        // }
     }
 
     async equipment_onFleet ({ auth, params, request, response }) {
