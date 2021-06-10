@@ -116,13 +116,12 @@ class EquipmentApiController {
             .orderBy('id', 'desc')
             .first()
         ).toJSON()
-
-        try {
-            
-            for (const item of dailyFleet.details) {
-                equipment_id.push(item.equip_id)
-            }
-                        
+        
+        for (const item of dailyFleet.details) {
+            equipment_id.push(item.equip_id)
+        }
+        
+        try {    
             let data = []
             let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
             for (const item of equipment) {
@@ -151,6 +150,7 @@ class EquipmentApiController {
                 diagnostic: {
                     times: durasi, 
                     error: true,
+                    ShiftFilter: ShiftFilter,
                     dailyFleet: dailyFleet,
                     equipment: equipment_id,
                     message: error
