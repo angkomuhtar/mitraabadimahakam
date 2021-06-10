@@ -106,6 +106,7 @@ class EquipmentApiController {
         })
 
         const [ShiftFilter] = shiftData.filter(item => item.status)
+        let equipment_id = []
         try {
 
             const dailyFleet = (
@@ -117,7 +118,7 @@ class EquipmentApiController {
                 .first()
             ).toJSON()
             
-            let equipment_id = []
+            
             for (const item of dailyFleet.details) {
                 equipment_id.push(item.equip_id)
             }
