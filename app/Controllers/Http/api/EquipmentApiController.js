@@ -107,6 +107,15 @@ class EquipmentApiController {
 
         const [ShiftFilter] = shiftData.filter(item => item.status)
 
+        const string = `await DailyFleet.query()
+        .with('details')
+        .where('date', ${moment().format('YYYY-MM-DD')})
+        .andWhere('shift_id', ${ShiftFilter.id})
+        .orderBy('id', 'desc')
+        .first()`
+
+        response.status(400).json({msg: string})
+        
         let equipment_id = []
         const dailyFleet = 
         (
@@ -118,14 +127,6 @@ class EquipmentApiController {
             .first()
         ).toJSON()
 
-        const string = `await DailyFleet.query()
-        .with('details')
-        .where('date', ${moment().format('YYYY-MM-DD')})
-        .andWhere('shift_id', ${ShiftFilter.id})
-        .orderBy('id', 'desc')
-        .first()`
-
-        response.status(400).json({msg: string})
         
         for (const item of dailyFleet.details) {
             equipment_id.push(item.equip_id)
