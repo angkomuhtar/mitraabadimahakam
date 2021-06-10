@@ -203,13 +203,12 @@ class DailyFleetApiController {
             for (const item of details) {
                 const begin = moment(item.datetime).format('YYYY-MM-DD 00:00')
                 const end = moment(item.datetime).format('YYYY-MM-DD 23:59')
-                const cekEquipment = (
+                const cekEquipment = 
                     await DailyFleetEquip
                     .query()
                     .whereBetween('datetime',  [begin, end])
                     .andWhere('equip_id', item.equip_id)
                     .first()
-                ).toJSON()
 
                 const isEquipment = await MasEquipment.findOrFail(item.equip_id)
 
