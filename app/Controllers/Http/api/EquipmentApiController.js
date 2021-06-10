@@ -124,6 +124,8 @@ class EquipmentApiController {
         .andWhere('shift_id', ${ShiftFilter.id})
         .orderBy('id', 'desc')
         .first()`
+
+        response.status(400).json({msg: string})
         
         for (const item of dailyFleet.details) {
             equipment_id.push(item.equip_id)
@@ -141,7 +143,7 @@ class EquipmentApiController {
             }
 
             let durasi = await diagnoticTime.durasi(t0)
-            return response.status(200).json({
+            response.status(200).json({
                 diagnostic: {
                     times: durasi,
                     dailyFleet: dailyFleet,
@@ -154,7 +156,7 @@ class EquipmentApiController {
         } catch (error) {
             console.log(error)
             let durasi = await diagnoticTime.durasi(t0)
-            return response.status(404).json({
+            response.status(404).json({
                 diagnostic: {
                     times: durasi, 
                     error: true,
@@ -182,7 +184,7 @@ class EquipmentApiController {
         } catch (error) {
             console.log(error)
             durasi = await diagnoticTime.durasi(t0)
-            return response.status(403).json({
+            response.status(403).json({
                 diagnostic: {
                     times: durasi, 
                     error: true,
@@ -239,7 +241,7 @@ class EquipmentApiController {
                     })
                 }
                 durasi = await diagnoticTime.durasi(t0)
-                return response.status(200).json({
+                response.status(200).json({
                     diagnostic: {
                         times: durasi,
                         req: dateReq,
@@ -250,7 +252,7 @@ class EquipmentApiController {
             } catch (error) {
                 console.log(error)
                 durasi = await diagnoticTime.durasi(t0)
-                return response.status(404).json({
+                response.status(404).json({
                     diagnostic: {
                         times: durasi, 
                         error: true,
