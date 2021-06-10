@@ -109,7 +109,7 @@ class EquipmentApiController {
 
         const string = `await DailyFleet.query()
         .with('details')
-        .where('date', ${moment().format('YYYY-MM-DD')})
+        .where('date', ${filterDate})
         .andWhere('shift_id', ${ShiftFilter.id})
         .orderBy('id', 'desc')
         .first()`
