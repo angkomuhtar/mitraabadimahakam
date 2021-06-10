@@ -106,7 +106,7 @@ class EquipmentApiController {
         })
 
         const [ShiftFilter] = shiftData.filter(item => item.status)
-        
+
         let equipment_id = []
         const dailyFleet = (
             await DailyFleet.query()
@@ -151,6 +151,7 @@ class EquipmentApiController {
                 diagnostic: {
                     times: durasi, 
                     error: true,
+                    dailyFleet: dailyFleet,
                     equipment: equipment_id,
                     message: error
                 },
