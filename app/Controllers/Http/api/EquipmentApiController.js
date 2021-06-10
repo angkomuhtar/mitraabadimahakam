@@ -118,8 +118,8 @@ class EquipmentApiController {
             ).toJSON()
             
             let equipment_id = []
-            for (const list of dailyFleet.details) {
-                equipment_id.push(list.equip_id)
+            for (const item of dailyFleet.details) {
+                equipment_id.push(item.equip_id)
             }
                         
             let data = []
@@ -150,6 +150,7 @@ class EquipmentApiController {
                 diagnostic: {
                     times: durasi, 
                     error: true,
+                    equipment: equipment_id,
                     message: error
                 },
                 req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
