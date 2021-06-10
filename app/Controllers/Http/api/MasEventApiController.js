@@ -1,7 +1,7 @@
 'use strict'
 
 // CustomClass
-const moment = require('moment')
+// const moment = require('moment')
 const { performance } = require('perf_hooks')
 const _ = require('underscore')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")

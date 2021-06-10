@@ -6,6 +6,7 @@ const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 const db = use('Database')
 const Fleet = use("App/Models/MasFleet")
 const DailyFleet = use("App/Models/DailyFleet")
+const MasEquipment = use("App/Models/MasEquipment")
 const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 
 var initString = 'YYYY-MM-DD'
@@ -180,7 +181,11 @@ class DailyFleetApiController {
         async function resData(usr){
             const { details } = req
             const { pit_id, fleet_id, activity_id, shift_id, date } = req
-            const cekFleet = await DailyFleet.query().where({pit_id, fleet_id, activity_id, shift_id, date}).first()
+            const cekFleet = 
+                await DailyFleet
+                    .query()
+                    .where({pit_id, fleet_id, activity_id, shift_id, date: moment(date).format('YYYY-MM-DD')})
+                    .first()
             
             if(cekFleet){
                 durasi = await diagnoticTime.durasi(t0)
@@ -188,6 +193,7 @@ class DailyFleetApiController {
                     diagnostic: {
                         times: durasi, 
                         error: true,
+                        request: { pit_id, fleet_id, activity_id, shift_id, date },
                         message: 'Fleet exsisting...'
                     },
                     data: cekFleet
@@ -197,14 +203,26 @@ class DailyFleetApiController {
             for (const item of details) {
                 const begin = moment(item.datetime).format('YYYY-MM-DD 00:00')
                 const end = moment(item.datetime).format('YYYY-MM-DD 23:59')
-                const cekEquipment = await DailyFleetEquip.query().whereBetween('datetime',  [begin, end]).andWhere('equip_id', item.equip_id).first()
+                const cekEquipment = (
+                    await DailyFleetEquip
+                    .query()
+                    .whereBetween('datetime',  [begin, end])
+                    .andWhere('equip_id', item.equip_id)
+                    .first()
+                ).toJSON()
+
+                const isEquipment = await MasEquipment.findOrFail(item.equip_id)
+
                 if(cekEquipment){
                     durasi = await diagnoticTime.durasi(t0)
                     return response.status(200).json({
                         diagnostic: {
                             times: durasi, 
                             error: true,
-                            message: 'duplicated equipment or datetime'
+                            tgl_begin: begin,
+                            tgl_end: end,
+                            message: 'duplicated equipment ID: '+
+                                isEquipment.id+' or DATETIME: '+ moment().format('YYYY-MM-DD HH:mm')
                         },
                         data: cekEquipment
                     })

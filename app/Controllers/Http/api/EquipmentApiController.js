@@ -139,6 +139,7 @@ class EquipmentApiController {
             return response.status(200).json({
                 diagnostic: {
                     times: durasi,
+                    exsistingEquipment: equipment_id,
                     req: ShiftFilter,
                     error: false
                 },

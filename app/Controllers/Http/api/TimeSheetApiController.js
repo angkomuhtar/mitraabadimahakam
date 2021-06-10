@@ -5,6 +5,7 @@ const moment = require('moment')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 const db = use('Database')
 
+const MasP2H = use("App/Models/MasP2H")
 const DailyCheckp2H = use("App/Models/DailyCheckp2H")
 const DailyChecklist = use("App/Models/DailyChecklist")
 const DailySmuRecord = use("App/Models/DailySmuRecord")
@@ -39,11 +40,13 @@ class TimeSheetApiController {
             if(req.keyword){
                 dailyChecklist = await DailyChecklist
                     .query()
+                    .with('p2h')
                     .where('description', 'like', `${req.keyword}`)
                     .fetch()
             }else{
                 dailyChecklist = await DailyChecklist
                     .query()
+                    .with('p2h')
                     .where('tgl', '>=', new Date(start))
                     .andWhere('tgl', '<=', new Date(end))
                     .fetch()
@@ -184,7 +187,7 @@ class TimeSheetApiController {
                     await trx.commit()
                     const result = await DailyChecklist.query().last()
                     durasi = await diagnoticTime.durasi(t0)
-                    response.status(403).json({
+                    response.status(201).json({
                         diagnostic: {
                             times: durasi, 
                             error: false
@@ -247,6 +250,7 @@ class TimeSheetApiController {
                         b.with('activities')
                         b.with('shift')
                     })
+                    .with('p2h')
                     .where('id', id)
                     .first()
                 ).toJSON()
@@ -269,6 +273,108 @@ class TimeSheetApiController {
                     data: []
                 })
             }
+        }
+    }
+
+    async update ({ auth, params, request, response }) {
+        var t0 = performance.now()
+        const { id } = params
+        const req = request.only(['user_chk', 'user_spv', 'unit_id', 'dailyfleet_id', 'tgl', 'description', 'begin_smu', 'end_smu', 'p2h'])
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        }
+
+        await UPDATE_DATA()
+
+        async function UPDATE_DATA(){
+            const trx = await db.beginTransaction()
+            try {
+                const { p2h } = req
+                const dailyChecklist = await DailyChecklist.findOrFail(id)
+                
+                dailyChecklist.merge({
+                    user_chk: req.user_chk, 
+                    user_spv: req.user_spv, 
+                    unit_id: req.unit_id, 
+                    dailyfleet_id: req.dailyfleet_id,
+                    tgl: req.tgl, 
+                    description: req.description, 
+                    begin_smu: req.begin_smu,
+                    end_smu: req.end_smu,
+                    used_smu: parseFloat(req.end_smu) - parseFloat(req.begin_smu)
+                })
+                await dailyChecklist.save(trx)
+
+                await dailyChecklist.p2h().detach()
+                for (const item of p2h) {
+                    let p2h_item = await MasP2H.findOrFail(item.p2h_id)
+                    let dailyCheckp2H = new DailyCheckp2H()
+                    dailyCheckp2H.fill({ 
+                        checklist_id: dailyChecklist.id, 
+                        p2h_id: p2h_item.id, 
+                        is_check: item.is_check, 
+                        description: item.description 
+                    })
+                    await dailyCheckp2H.save(trx)
+                }
+
+                await trx.commit(trx)
+
+                const dataDailyChecklist = (
+                    await DailyChecklist
+                    .query()
+                    .with('userCheck')
+                    .with('spv')
+                    .with('lead')
+                    .with('equipment', a => {
+                        a.with('daily_smu', whe => whe.limit(10).orderBy('id', 'desc'))
+                    })
+                    .with('dailyFleet', b => {
+                        b.with('pit')
+                        b.with('fleet')
+                        b.with('activities')
+                        b.with('shift')
+                    })
+                    .with('p2h')
+                    .where({id: id})
+                    .first()
+                ).toJSON()
+
+                durasi = await diagnoticTime.durasi(t0)
+                response.status(201).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false
+                    },
+                    data: dataDailyChecklist
+                })
+            } catch (error) {
+                console.log(error)
+                await trx.rollback(trx)
+                durasi = await diagnoticTime.durasi(t0)
+                response.status(403).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false,
+                        message: error
+                    },
+                    data: []
+                })
+            }
+
         }
     }
 }
