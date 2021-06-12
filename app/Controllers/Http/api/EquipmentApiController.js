@@ -151,8 +151,8 @@ class EquipmentApiController {
                 diagnostic: {
                     times: durasi, 
                     error: true,
-                    ShiftFilter: ShiftFilter,
-                    dailyFleet: dailyFleet,
+                    // ShiftFilter: ShiftFilter,
+                    // dailyFleet: dailyFleet,
                     equipment: equipment_id,
                     message: error
                 },
