@@ -65,13 +65,13 @@ class EquipmentApiController {
         var t0 = performance.now()
         const req = request.only(['datetime'])
         const dateReq = new Date(req.datetime != undefined ? req.datetime : moment().format('YYYY-MM-DD HH:mm'))
-
+        let durasi
 
         try {
             await auth.authenticator('jwt').getUser()
         } catch (error) {
             console.log(error)
-            let durasi = await diagnoticTime.durasi(t0)
+            durasi = await diagnoticTime.durasi(t0)
             return response.status(403).json({
                 diagnostic: {
                     times: durasi, 
@@ -108,8 +108,8 @@ class EquipmentApiController {
         const [ShiftFilter] = shiftData.filter(item => item.status)
 
         
+        let equipment_id = []
         try {    
-            let equipment_id = []
             const dailyFleet = 
             (
                 await DailyFleet.query()
@@ -125,6 +125,20 @@ class EquipmentApiController {
                 equipment_id.push(item.equip_id)
             }
 
+            if(equipment_id){
+                durasi = await diagnoticTime.durasi(t0)
+                response.status(404).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: true,
+                        equipment: equipment_id,
+                        message: 'List Equipment not available...'
+                    },
+                    req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
+                    data: []
+                })
+            }
+
             let data = []
             let equipment = (await Equipment.query().where({aktif: 'Y'}).fetch()).toJSON()
             for (const item of equipment) {
@@ -135,7 +149,7 @@ class EquipmentApiController {
                 }
             }
 
-            let durasi = await diagnoticTime.durasi(t0)
+            durasi = await diagnoticTime.durasi(t0)
             response.status(200).json({
                 diagnostic: {
                     times: durasi,
@@ -146,13 +160,11 @@ class EquipmentApiController {
             })
         } catch (error) {
             console.log(error)
-            let durasi = await diagnoticTime.durasi(t0)
+            durasi = await diagnoticTime.durasi(t0)
             response.status(404).json({
                 diagnostic: {
                     times: durasi, 
                     error: true,
-                    // ShiftFilter: ShiftFilter,
-                    // dailyFleet: dailyFleet,
                     equipment: equipment_id,
                     message: error
                 },
