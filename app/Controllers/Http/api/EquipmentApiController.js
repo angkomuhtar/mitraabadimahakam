@@ -107,15 +107,6 @@ class EquipmentApiController {
 
         const [ShiftFilter] = shiftData.filter(item => item.status)
 
-        // const string = `await DailyFleet.query()
-        // .with('details')
-        // .where('date', ${filterDate})
-        // .andWhere('shift_id', ${ShiftFilter.id})
-        // .orderBy('id', 'desc')
-        // .first()`
-
-        // response.status(400).json({msg: string})
-
         
         try {    
             let equipment_id = []
@@ -148,9 +139,7 @@ class EquipmentApiController {
             response.status(200).json({
                 diagnostic: {
                     times: durasi,
-                    dailyFleet: dailyFleet,
                     exsistingEquipment: equipment_id,
-                    req: ShiftFilter,
                     error: false
                 },
                 data: data
@@ -162,7 +151,6 @@ class EquipmentApiController {
                 diagnostic: {
                     times: durasi, 
                     error: true,
-                    stringTest: string,
                     ShiftFilter: ShiftFilter,
                     dailyFleet: dailyFleet,
                     equipment: equipment_id,

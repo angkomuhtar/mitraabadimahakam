@@ -6,6 +6,7 @@ const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 const db = use('Database')
 
 const MasP2H = use("App/Models/MasP2H")
+const DailyFleet = use("App/Models/DailyFleet")
 const DailyCheckp2H = use("App/Models/DailyCheckp2H")
 const DailyChecklist = use("App/Models/DailyChecklist")
 const DailySmuRecord = use("App/Models/DailySmuRecord")
@@ -112,7 +113,7 @@ class TimeSheetApiController {
         } catch (error) {
             console.log(error)
             durasi = await diagnoticTime.durasi(t0)
-            response.status(403).json({
+            return response.status(403).json({
                 diagnostic: {
                     times: durasi, 
                     error: true,
@@ -121,93 +122,96 @@ class TimeSheetApiController {
                 data: {}
             })
         }
+        
+        const cekDuplicated = 
+            await DailyChecklist
+                .query()
+                .where({
+                    unit_id: req.unit_id, 
+                    dailyfleet_id: req.dailyfleet_id, 
+                    tgl: moment(req.tgl).format('YYYY-MM-DD')
+            }).first()
 
-        await SAVE_DATA()
+        if(cekDuplicated){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(422).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: 'Duplicated Data...'
+                },
+                data: cekDuplicated
+            })
+        }else{
+            await SAVE_DATA()
+        }
 
         async function SAVE_DATA(){
-            let dailySmuRecord
-            dailySmuRecord = await DailySmuRecord.query().where('equip_id', req.unit_id).last()
-            if(!dailySmuRecord){
-                dailySmuRecord = new DailySmuRecord()
-                dailySmuRecord.fill({
-                    equip_id: req.unit_id, 
-                    start_date: new Date(), 
-                    start_smu: req.begin_smu,
-                    end_date: new Date(), 
-                    end_smu: req.begin_smu
-                })
-                try {
-                    await dailySmuRecord.save()
-                } catch (error) {
-                    console.log(error);
+            let last_smu
+            last_smu = await DailyChecklist.query().where('unit_id', req.unit_id).orderBy('id', 'desc').first()
+            // console.log(last_smu);
+            if(last_smu){
+                if(last_smu?.end_smu != req.begin_smu){
+                    durasi = await diagnoticTime.durasi(t0)
+                    return response.status(403).json({
+                        diagnostic: {
+                            times: durasi, 
+                            error: true,
+                            message: 'Data SMU Equipment Unit tidak sesuai dengan data terakhir'
+                        },
+                        data: last_smu
+                    })
                 }
             }
 
-            if(req.begin_smu != dailySmuRecord.end_smu){
+            const trx = await db.beginTransaction()
+            const { user_chk, user_spv, unit_id, dailyfleet_id, tgl, description, begin_smu, p2h } = req
+            var tgl_ = new Date(tgl)
+            try {
+                const dailyChecklist = new DailyChecklist()
+                dailyChecklist.fill({
+                    user_chk, 
+                    user_spv, 
+                    unit_id, 
+                    dailyfleet_id, 
+                    description, 
+                    begin_smu,
+                    tgl: tgl_,
+                    approved_at: new Date()
+                })
+                await dailyChecklist.save(trx)
+
+                let p2hDetails = []
+                for (const item of p2h) {
+                    if(item.description === null && item.is_check === 'N'){
+                        throw new Error('ID ::'+item.p2h_id+' Status Uncheck but no description...')
+                    }else{
+                        p2hDetails.push({...item, checklist_id: dailyChecklist.id})
+                    }
+                }
+                await DailyCheckp2H.createMany(p2hDetails, trx)
+                await trx.commit()
+                const result = await DailyChecklist.query().last()
+                durasi = await diagnoticTime.durasi(t0)
+                response.status(201).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false
+                    },
+                    data: result
+                })
+            } catch (error) {
+                console.log(error)
+                await trx.rollback()
                 durasi = await diagnoticTime.durasi(t0)
                 response.status(403).json({
                     diagnostic: {
                         times: durasi, 
                         error: true,
-                        message: 'Data SMU Equipment Unit tidak sesuai dengan data terakhir'
+                        message: error.message
                     },
-                    data: dailySmuRecord
+                    data: []
                 })
-            }else{
-                const trx = await db.beginTransaction()
-                const { user_chk, user_spv, unit_id, dailyfleet_id, tgl, description, begin_smu, p2h } = req
-                var tgl_ = new Date(tgl)
-                try {
-                    const dailyChecklist = new DailyChecklist()
-                    dailyChecklist.fill({
-                        user_chk, 
-                        user_spv, 
-                        unit_id, 
-                        dailyfleet_id, 
-                        description, 
-                        begin_smu,
-                        tgl: tgl_,
-                        approved_at: new Date()
-                    })
-
-                    await dailyChecklist.save(trx)
-
-                    let p2hDetails = []
-                    for (const item of p2h) {
-                        if(item.description != null){
-                            console.log(item.description)
-                            p2hDetails.push({...item, checklist_id: dailyChecklist.id})
-                        }else{
-                            throw new Error('ID ::'+item.p2h_id+' Status Uncheck but no description...')
-                            
-                        }
-                    }
-
-                    await DailyCheckp2H.createMany(p2hDetails, trx)
-                    await trx.commit()
-                    const result = await DailyChecklist.query().last()
-                    durasi = await diagnoticTime.durasi(t0)
-                    response.status(201).json({
-                        diagnostic: {
-                            times: durasi, 
-                            error: false
-                        },
-                        data: result
-                    })
-                } catch (error) {
-                    console.log(error)
-                    await trx.rollback()
-                    durasi = await diagnoticTime.durasi(t0)
-                    response.status(403).json({
-                        diagnostic: {
-                            times: durasi, 
-                            error: true,
-                            message: error.message
-                        },
-                        data: []
-                    })
-                }
-
             }
         }
     }
@@ -297,25 +301,51 @@ class TimeSheetApiController {
             })
         }
 
+        const cekDailyFleet = await DailyFleet.find(req.dailyfleet_id)
+        if(!cekDailyFleet){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(412).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: 'DailyFleet not found...'
+                },
+                data: {}
+            })
+        }
+
         await UPDATE_DATA()
 
         async function UPDATE_DATA(){
             const trx = await db.beginTransaction()
             try {
                 const { p2h } = req
-                const dailyChecklist = await DailyChecklist.findOrFail(id)
-                
-                dailyChecklist.merge({
+                const dailyChecklist = await DailyChecklist.find(id)
+
+                if(!dailyChecklist){
+                    durasi = await diagnoticTime.durasi(t0)
+                    return response.status(412).json({
+                        diagnostic: {
+                            times: durasi, 
+                            error: true,
+                            message: 'ID Time Sheet not found...'
+                        },
+                        data: {}
+                    })
+                }
+
+                const dataMerge = {
                     user_chk: req.user_chk, 
                     user_spv: req.user_spv, 
                     unit_id: req.unit_id, 
                     dailyfleet_id: req.dailyfleet_id,
                     tgl: req.tgl, 
                     description: req.description, 
-                    begin_smu: req.begin_smu,
-                    end_smu: req.end_smu,
-                    used_smu: parseFloat(req.end_smu) - parseFloat(req.begin_smu)
-                })
+                    begin_smu: dailyChecklist.begin_smu,
+                    end_smu: req.end_smu
+                }
+
+                dailyChecklist.merge(dataMerge)
                 await dailyChecklist.save(trx)
 
                 await dailyChecklist.p2h().detach()

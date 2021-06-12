@@ -4,6 +4,12 @@
 const Model = use('Model')
 
 class DailyChecklist extends Model {
+    static boot () {
+        super.boot()
+        this.addHook('beforeCreate', 'DailyChecklistHook.beforeADD')
+        this.addHook('beforeUpdate', 'DailyChecklistHook.beforeUPDATE')
+    }
+
     userCheck(){
         return this.belongsTo("App/Models/User", "user_chk", "id")
     }
