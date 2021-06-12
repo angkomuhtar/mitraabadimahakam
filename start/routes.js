@@ -289,6 +289,8 @@ Route.group(() => {
     
     Route.get('/available-fleet/:idfleet/onfleet', 'EquipmentApiController.equipment_onFleet')
 
+    Route.post('/available-fleet/:idfleet/stop-all', 'EquipmentApiController.equipmentStopAll')
+
 }).prefix('api/equipment').namespace('api')
 
 Route.group(() => {

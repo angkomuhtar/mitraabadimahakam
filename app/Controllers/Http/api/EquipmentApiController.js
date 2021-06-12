@@ -4,14 +4,17 @@
 const moment = require('moment')
 const { performance } = require('perf_hooks')
 const _ = require('underscore')
+const Db = use('Database')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
-const MasShift = use("App/Models/MasShift")
-const Equipment = use("App/Models/MasEquipment")
 const Pit = use("App/Models/MasPit")
 const Fleet = use("App/Models/MasFleet")
+const MasShift = use("App/Models/MasShift")
 const Activity = use("App/Models/MasActivity")
+const DailyEvent = use("App/Models/DailyEvent")
 const DailyFleet = use("App/Models/DailyFleet")
+const Equipment = use("App/Models/MasEquipment")
+const DailyChecklist = use("App/Models/DailyChecklist")
 const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 
 class EquipmentApiController {
@@ -261,6 +264,151 @@ class EquipmentApiController {
                         message: error
                     },
                     req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
+                    data: []
+                })
+            }
+        }
+    }
+
+    async equipmentStopAll ({ auth, params, request, response }) {
+        var t0 = performance.now()
+        const { idfleet } = params
+        const req = request.only(['tgl', 'event_id', 'user_id', 'description', 'begin_at', 'end_at', 'total'])
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+        await STOP_ALL_EQUIPMENT()
+
+        async function STOP_ALL_EQUIPMENT(){
+            const trx = await Db.beginTransaction()
+            try {
+                const dailyChecklist = 
+                    (
+                        await DailyChecklist
+                        .query()
+                        .where('dailyfleet_id', idfleet)
+                        .andWhere('tgl', moment(req.tgl).format("YYYY-MM-DD"))
+                        .fetch()
+                    ).toJSON()
+
+                let data = []
+                for (const item of dailyChecklist) {
+                    data.push({
+                        timesheet_id: item.id,
+                        event_id: req.event_id,
+                        user_id: req.user_id,
+                        equip_id: item.unit_id,
+                        description: req.description,
+                        begin_at: req.begin_at || null,
+                    })
+                }
+                const result = await DailyEvent.createMany(data, trx)
+                await trx.commit()
+
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(201).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false
+                    },
+                    data: result
+                })
+            } catch (error) {
+                console.log(error)
+                await trx.rollback()
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(403).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false,
+                        message: error.message
+                    },
+                    data: []
+                })
+            }
+        }
+    }
+
+    async equipmentStartAll ({ auth, params, request, response }) {
+        var t0 = performance.now()
+        const { idfleet } = params
+        const req = request.only(['tgl', 'user_id', 'end_at'])
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+        await START_ALL_EQUIPMENT()
+
+        async function START_ALL_EQUIPMENT(){
+            const trx = await Db.beginTransaction()
+            try {
+                const dailyChecklist = 
+                    (
+                        await DailyChecklist
+                        .query()
+                        .where('dailyfleet_id', idfleet)
+                        .andWhere('tgl', moment(req.tgl).format("YYYY-MM-DD"))
+                        .fetch()
+                    ).toJSON()
+
+                let data = []
+                for (const item of dailyChecklist) {
+                    data.push({
+                        timesheet_id: item.id,
+                        event_id: req.event_id,
+                        user_id: req.user_id,
+                        description: req.description,
+                        begin_at: req.begin_at || null,
+                    })
+                }
+                const result = await DailyEvent.createMany(data, trx)
+                await trx.commit()
+
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(201).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false
+                    },
+                    data: result
+                })
+            } catch (error) {
+                console.log(error)
+                await trx.rollback()
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(403).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false,
+                        message: error.message
+                    },
                     data: []
                 })
             }
