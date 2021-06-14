@@ -217,6 +217,8 @@ Route.group(() => {
     // Route.post('/login', 'AuthApiController.login').middleware('auth:session,api')
     Route.post('/login', 'AuthApiController.login')
 
+    Route.post('/update-password', 'AuthApiController.updatePassword')
+
     Route.post('/logout', 'AuthApiController.logout')
 
     Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }))
@@ -232,6 +234,18 @@ Route.group(() => {
     Route.get('/:id/show', 'UserApiController.show')
 
 }).prefix('api/users').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'ProfileApiController.index')
+    
+    Route.get('/:id/show', 'ProfileApiController.show')
+
+    Route.post('/:id/update', 'ProfileApiController.update')
+
+    Route.post('/:id/update-avatar', 'ProfileApiController.uploadAvatar')
+
+}).prefix('api/profile').namespace('api')
 
 Route.group(() => {
 
@@ -289,7 +303,11 @@ Route.group(() => {
     
     Route.get('/available-fleet/:idfleet/onfleet', 'EquipmentApiController.equipment_onFleet')
 
-    Route.post('/available-fleet/:idfleet/stop-all', 'EquipmentApiController.equipmentStopAll')
+    Route.post('/available-fleet/:idfleet/event-all-equipment', 'EquipmentApiController.equipmentEventAll')
+
+    Route.delete('/daily-event/:dailyevent_id/destroy', 'EquipmentApiController.destroyEquipmentEventId')
+    
+    Route.post('/available-fleet/:idfleet/equipment/:idequip', 'EquipmentApiController.equipmentEventId')
 
 }).prefix('api/equipment').namespace('api')
 

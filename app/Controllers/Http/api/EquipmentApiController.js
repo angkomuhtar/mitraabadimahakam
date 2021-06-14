@@ -9,6 +9,7 @@ const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
 const Pit = use("App/Models/MasPit")
 const Fleet = use("App/Models/MasFleet")
+const Event = use("App/Models/MasEvent")
 const MasShift = use("App/Models/MasShift")
 const Activity = use("App/Models/MasActivity")
 const DailyEvent = use("App/Models/DailyEvent")
@@ -270,10 +271,10 @@ class EquipmentApiController {
         }
     }
 
-    async equipmentStopAll ({ auth, params, request, response }) {
+    async equipmentEventAll ({ auth, params, request, response }) {
         var t0 = performance.now()
         const { idfleet } = params
-        const req = request.only(['tgl', 'event_id', 'user_id', 'description', 'begin_at', 'end_at', 'total'])
+        const req = request.only(['tgl', 'event_id', 'user_id', 'description', 'time_duration', 'total_smu'])
         let durasi
 
         try {
@@ -291,9 +292,9 @@ class EquipmentApiController {
             })
         }
 
-        await STOP_ALL_EQUIPMENT()
+        await SAVE_EVENT_ALL_EQUIPMENT()
 
-        async function STOP_ALL_EQUIPMENT(){
+        async function SAVE_EVENT_ALL_EQUIPMENT(){
             const trx = await Db.beginTransaction()
             try {
                 const dailyChecklist = 
@@ -313,11 +314,21 @@ class EquipmentApiController {
                         user_id: req.user_id,
                         equip_id: item.unit_id,
                         description: req.description,
-                        begin_at: req.begin_at || null,
+                        time_duration: req.time_duration || null,
+                        total_smu: req.total_smu || null
                     })
                 }
-                const result = await DailyEvent.createMany(data, trx)
+                let result = await DailyEvent.createMany(data, trx)
                 await trx.commit()
+
+                const xresult = await DailyEvent.query()
+                    .with('timesheet')
+                    .with('event')
+                    .with('equipment')
+                    .with('createdby')
+                    .whereIn('id', result.map(item => item.id))
+                    .fetch()
+                console.log(xresult);
 
                 durasi = await diagnoticTime.durasi(t0)
                 return response.status(201).json({
@@ -325,7 +336,7 @@ class EquipmentApiController {
                         times: durasi, 
                         error: false
                     },
-                    data: result
+                    data: xresult
                 })
             } catch (error) {
                 console.log(error)
@@ -343,10 +354,10 @@ class EquipmentApiController {
         }
     }
 
-    async equipmentStartAll ({ auth, params, request, response }) {
+    async equipmentEventId ({ auth, params, request, response }) {
         var t0 = performance.now()
-        const { idfleet } = params
-        const req = request.only(['tgl', 'user_id', 'end_at'])
+        const { idfleet, idequip } = params
+        const req = request.only(['tgl', 'event_id', 'user_id', 'description', 'time_duration', 'total_smu'])
         let durasi
 
         try {
@@ -364,31 +375,32 @@ class EquipmentApiController {
             })
         }
 
-        await START_ALL_EQUIPMENT()
+        await SAVE_EVENT_EQUIPMENT_ID()
 
-        async function START_ALL_EQUIPMENT(){
+        async function SAVE_EVENT_EQUIPMENT_ID(){
             const trx = await Db.beginTransaction()
             try {
                 const dailyChecklist = 
                     (
                         await DailyChecklist
-                        .query()
-                        .where('dailyfleet_id', idfleet)
+                        .query(trx)
+                        .where(whe => whe.where('dailyfleet_id', idfleet).andWhere('unit_id', idequip))
                         .andWhere('tgl', moment(req.tgl).format("YYYY-MM-DD"))
-                        .fetch()
+                        .first()
                     ).toJSON()
 
-                let data = []
-                for (const item of dailyChecklist) {
-                    data.push({
-                        timesheet_id: item.id,
-                        event_id: req.event_id,
-                        user_id: req.user_id,
-                        description: req.description,
-                        begin_at: req.begin_at || null,
-                    })
-                }
-                const result = await DailyEvent.createMany(data, trx)
+                const dailyEvent = new DailyEvent()
+                dailyEvent.fill({
+                    timesheet_id: dailyChecklist.id,
+                    event_id: req.event_id,
+                    user_id: req.user_id,
+                    equip_id: dailyChecklist.unit_id,
+                    description: req.description,
+                    time_duration: req.time_duration || null,
+                    total_smu: req.total_smu || null
+                })
+                await dailyEvent.save(trx)
+                
                 await trx.commit()
 
                 durasi = await diagnoticTime.durasi(t0)
@@ -397,7 +409,60 @@ class EquipmentApiController {
                         times: durasi, 
                         error: false
                     },
-                    data: result
+                    data: dailyEvent
+                })
+            } catch (error) {
+                console.log(error)
+                await trx.rollback()
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(403).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false,
+                        message: error.message
+                    },
+                    data: []
+                })
+            }
+        }
+    }
+
+    async destroyEquipmentEventId ({ auth, params, response }) {
+        var t0 = performance.now()
+        const { dailyevent_id } = params
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+        await DELETE_EVENT_EQUIPMENT_ID()
+
+        async function DELETE_EVENT_EQUIPMENT_ID(){
+            const trx = await Db.beginTransaction()
+            try {
+                const dailyEvent = await DailyEvent.findOrFail(dailyevent_id, trx)
+                await dailyEvent.delete(trx)
+                await trx.commit()
+
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(201).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false
+                    },
+                    data: dailyEvent
                 })
             } catch (error) {
                 console.log(error)
