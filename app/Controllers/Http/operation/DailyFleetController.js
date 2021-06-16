@@ -28,6 +28,7 @@ class DailyFleetController {
           whe.orWhere('name', 'like', `%${req.keyword}%`)
         })
         .andWhere('status', 'Y')
+        .orderBy('date', 'desc')
         .paginate(halaman, limit)
     }else{
       data = await DailyFleet.query()
@@ -37,7 +38,9 @@ class DailyFleetController {
       .with('shift')
       .with('user')
       .with('details', eq => eq.with('equipment'))
-      .where('status', 'Y').paginate(halaman, limit)
+      .where('status', 'Y')
+      .orderBy('date', 'desc')
+      .paginate(halaman, limit)
     }
 
     

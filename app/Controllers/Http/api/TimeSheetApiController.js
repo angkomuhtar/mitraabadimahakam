@@ -41,12 +41,14 @@ class TimeSheetApiController {
             if(req.keyword){
                 dailyChecklist = await DailyChecklist
                     .query()
+                    .with('equipment')
                     .with('p2h')
                     .where('description', 'like', `${req.keyword}`)
                     .fetch()
             }else{
                 dailyChecklist = await DailyChecklist
                     .query()
+                    .with('equipment')
                     .with('p2h')
                     .where('tgl', '>=', new Date(start))
                     .andWhere('tgl', '<=', new Date(end))
@@ -58,6 +60,45 @@ class TimeSheetApiController {
                 diagnostic: {
                     times: durasi, 
                     error: false
+                },
+                data: dailyChecklist
+            })
+        }
+    }
+
+    async allTimeSheet ({ auth, request, response }) {
+        var t0 = performance.now()
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        }
+
+        await GET_ALL_DATA()
+
+        async function GET_ALL_DATA(){
+            const dailyChecklist = await DailyChecklist
+            .query()
+            .with('equipment')
+            .with('p2h')
+            .fetch()
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    // message: error.message
                 },
                 data: dailyChecklist
             })
@@ -90,6 +131,7 @@ class TimeSheetApiController {
         async function GET_DATA(){
             const dailyChecklist = await DailyChecklist
                     .query()
+                    .with('equipment')
                     .where('tgl', '>=', new Date(begin_date))
                     .andWhere('tgl', '<=', new Date(end_date))
                     .fetch()

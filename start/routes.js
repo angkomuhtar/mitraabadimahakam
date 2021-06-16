@@ -182,6 +182,21 @@ Route.group(() => {
 
     Route.post('/daily-fleet/:id/delete', 'DailyFleetController.delete').as('opr.daily-fleet.delete').middleware('D')
 
+    // Daily TimeSheet
+    Route.get('/daily-timesheet', 'DailyFleetController.index').as('opr.daily-timesheet.index').middleware('R')
+
+    Route.post('/daily-timesheet', 'DailyFleetController.store').as('opr.daily-timesheet.store').middleware('C')
+
+    Route.get('/daily-timesheet/list', 'DailyFleetController.list').as('opr.daily-timesheet.list').middleware('R')
+
+    Route.get('/daily-timesheet/create', 'DailyFleetController.create').as('opr.daily-timesheet.create').middleware('R')
+
+    Route.get('/daily-timesheet/:id/show', 'DailyFleetController.show').as('opr.daily-timesheet.show').middleware('U')
+
+    Route.post('/daily-timesheet/:id/update', 'DailyFleetController.update').as('opr.daily-timesheet.update').middleware('U')
+
+    Route.post('/daily-timesheet/:id/delete', 'DailyFleetController.delete').as('opr.daily-timesheet.delete').middleware('D')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX
@@ -391,6 +406,8 @@ Route.group(() => {
 
     Route.post('/', 'TimeSheetApiController.create')
     
+    Route.get('/all', 'TimeSheetApiController.allTimeSheet')
+
     Route.get('/ranges-date', 'TimeSheetApiController.filterDate')
     
     Route.get('/:id/show', 'TimeSheetApiController.show')
