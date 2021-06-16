@@ -3,6 +3,7 @@
 const { performance } = require('perf_hooks')
 const moment = require('moment')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
+const TimeSheet = use("App/Controllers/Http/Helpers/TimeSheet")
 const db = use('Database')
 
 const MasP2H = use("App/Models/MasP2H")
@@ -85,24 +86,15 @@ class TimeSheetApiController {
             })
         }
 
-        await GET_ALL_DATA()
-
-        async function GET_ALL_DATA(){
-            const dailyChecklist = await DailyChecklist
-            .query()
-            .with('equipment')
-            .with('p2h')
-            .fetch()
-            durasi = await diagnoticTime.durasi(t0)
-            response.status(403).json({
-                diagnostic: {
-                    times: durasi, 
-                    error: true,
-                    // message: error.message
-                },
-                data: dailyChecklist
-            })
-        }
+        const data = await TimeSheet.ALL(response)
+        durasi = await diagnoticTime.durasi(t0)
+        return response.status(200).json({
+            diagnostic: {
+                times: durasi, 
+                error: false,
+            },
+            data: data
+        })
     }
 
     async filterDate ({ auth, request, response }) {

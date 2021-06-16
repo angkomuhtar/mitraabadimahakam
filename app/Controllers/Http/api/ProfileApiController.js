@@ -11,7 +11,7 @@ class ProfileApiController {
     async index ({ auth, request, response }) {
         var t0 = performance.now()
         const req = request.only(['keyword', 'page'])
-        const limit = 5
+        const limit = 20
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let durasi
 

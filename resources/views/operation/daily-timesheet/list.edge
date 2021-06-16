@@ -6,7 +6,7 @@
                 <div class="row sales-report">
                     <div class="col-md-9 col-sm-9 col-xs-12">
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                            <i class="fa fa-plus m-r-5"></i> <span>Add New DailyFleet</span>
+                            <i class="fa fa-plus m-r-5"></i> <span>New TimeSheet</span>
                         </button>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
@@ -24,13 +24,14 @@
                             <tr>
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="20">ACT</th>
-                                <th class="sl" width="150">Nama PIT</th>
-                                <th class="sl" width="150">Nama Fleet</th>
+                                <th class="sl" width="250">Description</th>
                                 <th class="sl">Activity</th>
-                                <th class="sl">Shift</th>
                                 <th class="sl" width="100">Date</th>
-                                <th class="sl text-center" width="20">Created</th>
+                                <th class="sl text-right" width="100">START SMU</th>
+                                <th class="sl text-right" width="100">END SMU</th>
+                                <th class="sl text-right" width="100">USED SMU</th>
                                 <th class="sl text-center" width="20">Equipment</th>
+                                <th class="sl text-center" width="20">Checker/SPV</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,61 +45,25 @@
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                     </td>
                                     <td class="single-line">
-                                        {{item.pit.name}} <br>
-                                        <small>{{item.pit.site.name}}</small>
+                                        <strong>{{item.dailyFleet.fleet.name}} </strong> <br>
+                                        <small class="text-success">{{item.dailyFleet.pit.name}}</small><br>
+                                        <small class="text-info">{{item.dailyFleet.shift.name}}</small>
                                     </td>
                                     <td class="single-line">
-                                        <strong>{{item.fleet.name}}</strong>
+                                        <strong>{{item.dailyFleet.activities.name}}</strong><br>
+                                        <small>{{item.description}}</small>
                                     </td>
+                                    <td class="myDateFormat" data-date="{{item.approved_at}}"></td>
+                                    <td class="text-right">{{item.begin_smu}}</td>
+                                    <td class="text-right">{{item.end_smu ? item.end_smu : 0}}</td>
+                                    <td class="text-right">{{item.used_smu ? item.used_smu : 0}}</td>
                                     <td>
-                                        {{item.activities.kode}} - {{item.activities.name}} <br>
-                                        <small>{{item.activities.keterangan}}</small>
+                                        <strong class="text-warning">{{item.equipment.kode}}</strong> <br>
+                                        <small>{{item.equipment.tipe}}</small>
                                     </td>
-                                    <td>{{item.shift.name}}</td>
-                                    <td class="myDateFormat" data-date="{{item.date}}"></td>
-                                    <td class="text-center">{{item.user.username}}</td>
                                     <td class="text-center">
-                                        <!-- Button trigger modal -->
-                                        <button type="button" class="btn btn-default btn-circle" data-toggle="modal" data-target="#{{item.id}}"><i class="fa fa-truck"></i> </button>
-                                        
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                            <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title" id="myModalLabel">List Equipment on Fleet</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="table-responsive">
-                                                        <table class="table table-stripped" style="background-color:#1f212b;">
-                                                            <thead style="border-bottom: 2px white solid;">
-                                                                <tr>
-                                                                    <th>Kode</th>
-                                                                    <th>Brand</th>
-                                                                    <th>Tipe</th>
-                                                                    <th>Model</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @each(item in item.details)
-                                                                  <tr>
-                                                                      <td class="text-left">{{item.equipment.kode}}</td>
-                                                                      <td class="text-left">{{item.equipment.brand}}</td>
-                                                                      <td class="text-left">{{item.equipment.tipe}}</td>
-                                                                      <td class="text-left">{{item.equipment.unit_model}}</td>
-                                                                  </tr>
-                                                                @endeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
+                                        {{item.userCheck.username}} <br>
+                                        {{item.spv.username}} <br>
                                     </td>
                                 </tr>
                             @endeach

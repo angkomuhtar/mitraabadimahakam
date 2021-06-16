@@ -183,19 +183,19 @@ Route.group(() => {
     Route.post('/daily-fleet/:id/delete', 'DailyFleetController.delete').as('opr.daily-fleet.delete').middleware('D')
 
     // Daily TimeSheet
-    Route.get('/daily-timesheet', 'DailyFleetController.index').as('opr.daily-timesheet.index').middleware('R')
+    Route.get('/daily-timesheet', 'DailyTimesheetController.index').as('opr.daily-timesheet.index').middleware('R')
 
-    Route.post('/daily-timesheet', 'DailyFleetController.store').as('opr.daily-timesheet.store').middleware('C')
+    Route.post('/daily-timesheet', 'DailyTimesheetController.store').as('opr.daily-timesheet.store').middleware('C')
 
-    Route.get('/daily-timesheet/list', 'DailyFleetController.list').as('opr.daily-timesheet.list').middleware('R')
+    Route.get('/daily-timesheet/list', 'DailyTimesheetController.list').as('opr.daily-timesheet.list').middleware('R')
 
-    Route.get('/daily-timesheet/create', 'DailyFleetController.create').as('opr.daily-timesheet.create').middleware('R')
+    Route.get('/daily-timesheet/create', 'DailyTimesheetController.create').as('opr.daily-timesheet.create').middleware('R')
 
-    Route.get('/daily-timesheet/:id/show', 'DailyFleetController.show').as('opr.daily-timesheet.show').middleware('U')
+    Route.get('/daily-timesheet/:id/show', 'DailyTimesheetController.show').as('opr.daily-timesheet.show').middleware('U')
 
-    Route.post('/daily-timesheet/:id/update', 'DailyFleetController.update').as('opr.daily-timesheet.update').middleware('U')
+    Route.post('/daily-timesheet/:id/update', 'DailyTimesheetController.update').as('opr.daily-timesheet.update').middleware('U')
 
-    Route.post('/daily-timesheet/:id/delete', 'DailyFleetController.delete').as('opr.daily-timesheet.delete').middleware('D')
+    Route.post('/daily-timesheet/:id/delete', 'DailyTimesheetController.delete').as('opr.daily-timesheet.delete').middleware('D')
 
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
