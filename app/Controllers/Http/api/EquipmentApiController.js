@@ -99,16 +99,28 @@ class EquipmentApiController {
         
         let equipment_id = []
         try {    
-            const dailyFleet = 
-            (
-                await DailyFleet.query()
+            const checkDailyFleet = await DailyFleet.query()
                 .with('details')
                 .where('date', filterDate)
                 .andWhere('shift_id', ShiftFilter.id)
                 .orderBy('id', 'desc')
                 .first()
-            ).toJSON()
-    
+
+            if(!checkDailyFleet){
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(404).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: true,
+                        equipment: equipment_id,
+                        message: 'Daily Fleet not available...'
+                    },
+                    req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
+                    data: []
+                })
+            }
+
+            const dailyFleet = checkDailyFleet.toJSON()
             
             for (const item of dailyFleet.details) {
                 equipment_id.push(item.equip_id)
@@ -116,7 +128,7 @@ class EquipmentApiController {
 
             if(equipment_id){
                 durasi = await diagnoticTime.durasi(t0)
-                response.status(404).json({
+                return response.status(404).json({
                     diagnostic: {
                         times: durasi, 
                         error: true,
@@ -139,7 +151,7 @@ class EquipmentApiController {
             }
 
             durasi = await diagnoticTime.durasi(t0)
-            response.status(200).json({
+            return response.status(200).json({
                 diagnostic: {
                     times: durasi,
                     exsistingEquipment: equipment_id,
@@ -150,7 +162,7 @@ class EquipmentApiController {
         } catch (error) {
             console.log(error)
             durasi = await diagnoticTime.durasi(t0)
-            response.status(404).json({
+            return response.status(404).json({
                 diagnostic: {
                     times: durasi, 
                     error: true,
@@ -190,13 +202,27 @@ class EquipmentApiController {
         async function GET_DATA_EQUIPMENT_ONFLEET(){
             let data = []
             try {
-                const dailyFleet = (
-                    await DailyFleet
+                const checkDailyFleet = await DailyFleet
                     .query()
                     .with('details')
                     .where('id', idfleet)
                     .first()
-                ).toJSON()
+
+                if(!checkDailyFleet){
+                    durasi = await diagnoticTime.durasi(t0)
+                    return response.status(404).json({
+                        diagnostic: {
+                            times: durasi, 
+                            error: true,
+                            message: 'Daily Fleet not available...'
+                        },
+                        req: moment(dateReq).format('YYYY-MM-DD HH:mm:ss'),
+                        data: []
+                    })
+                }
+
+                const dailyFleet = checkDailyFleet.toJSON()
+
                 for (const item of dailyFleet.details) {
                     const unit = (await Equipment.findOrFail(item.equip_id)).toJSON()
                     const pit = (await Pit.findOrFail(dailyFleet.pit_id)).toJSON()
@@ -232,7 +258,7 @@ class EquipmentApiController {
                     })
                 }
                 durasi = await diagnoticTime.durasi(t0)
-                response.status(200).json({
+                return response.status(200).json({
                     diagnostic: {
                         times: durasi,
                         req: dateReq,
@@ -243,7 +269,7 @@ class EquipmentApiController {
             } catch (error) {
                 console.log(error)
                 durasi = await diagnoticTime.durasi(t0)
-                response.status(404).json({
+                return response.status(404).json({
                     diagnostic: {
                         times: durasi, 
                         error: true,
