@@ -4,6 +4,7 @@ $(function(){
     })
 
     $('input[type="date"]').each(function(){
+        console.log('input date ::');
         var isNow = $(this).data('date')
         if(isNow){
             $(this).val(moment().format('YYYY-MM-DD'))
@@ -139,6 +140,30 @@ $(function(){
                 elm.append(list)
             }else{
                 elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
+        })
+    })
+
+    $('body select.select2equipment').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/equipment?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                console.log(data);
+                if(data.length > 0){
+                    elm.prepend('<option value="">Pilih</option>')
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.kode+' --|-- '+nod.unit_model+'</option>')
+                    elm.append(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
             }
         })
     })

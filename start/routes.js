@@ -224,6 +224,10 @@ Route.group(() => {
 
     Route.get('/dealer/:id', 'AjaxDealerController.getDealerId').as('dealer.getDealerId')
 
+    Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
+
+    Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
+
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
 
 //  API MOBILE

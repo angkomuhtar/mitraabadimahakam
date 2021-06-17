@@ -6,6 +6,7 @@ const { performance } = require('perf_hooks')
 const _ = require('underscore')
 const Db = use('Database')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
+const EquipmentHelpers = use("App/Controllers/Http/Helpers/Equipment")
 
 const Pit = use("App/Models/MasPit")
 const Fleet = use("App/Models/MasFleet")
@@ -37,23 +38,7 @@ class EquipmentApiController {
             })
         }
 
-        let equipment
-        if(req.keyword){
-            equipment = 
-                await Equipment
-                    .query()
-                    .where(word => {
-                        word.where('kode', 'like', `%${req.keyword}%`)
-                        word.orWhere('brand', 'like', `%${req.keyword}%`)
-                        word.orWhere('tipe', 'like', `%${req.keyword}%`)
-                        word.orWhere('unit_model', 'like', `%${req.keyword}%`)
-                    })
-                    .andWhere({aktif: 'Y'})
-                    .fetch()
-        }else{
-            equipment = 
-                await Equipment.query().where({aktif: 'Y'}).fetch()
-        }
+        const equipment = await EquipmentHelpers.ALL(req)
 
         let durasi = await diagnoticTime.durasi(t0)
         return response.status(200).json({

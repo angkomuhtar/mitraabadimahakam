@@ -1,0 +1,73 @@
+{{ script('ajax/index') }}
+{{ script('ajax/opr-dailytimesheet-show') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-dailyfleet-upd" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <!--<div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Time Sheet</div>-->
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="col-md-2">
+                                            <label for="tgl">TANGGAL</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control input-sm" data-date="{{data.tgl}}" name="tgl" id="tgl">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">UNIT ID</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                    <select class="form-control input-sm select2equipment" name="unit_id" id="unit_id" data-check="{{data.unit_id}}"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all">
+                                        <div class="col-md-12 p-20">
+                                            <h5>DAILY CHECK LIST OPERATOR</h5>
+                                            <small>
+                                                Perikasa saat P2H unit pada posisi aman dan rata 
+                                                ( Rem parkir terpasang, Transmisi Netral/Hydraulic lock ON implament berada dilandasan ) <br>
+                                                Beri tanda check bila tidak normal / ada kerusakan dan jelaskan dalam kolom "keterangan"
+                                            </small>
+                                        </div>
+                                        <div class="col-md-12" id="list-option" style="display:none">
+                                            xxx
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button class="btn btn-danger waves-effect waves-light bt-delete" data-id="{{data.id}}" id="bt-delete-data"> 
+                                                <i class="fa fa-trash-o"></i> <span>Remove</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button type="submit" class="btn btn-warning waves-effect waves-light" id="bt-update-data"> 
+                                                <i class="fa fa-save"></i> <span>Update</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
