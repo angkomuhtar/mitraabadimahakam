@@ -24,8 +24,9 @@ class MasEquipmentController {
 
   async list ({request, view}) {
     const req = request.all()
-    const limit = 10
+    const limit = 25
     const halaman = req.page === undefined ? 1:parseInt(req.page)
+    console.log(halaman);
     let data
     if(req.keyword != ''){
       data = await Equipment.query().where(whe => {
@@ -46,10 +47,8 @@ class MasEquipmentController {
   }
 
   async store ({ auth, request, response }) {
-    const all = request.all()
     const equip = request.only(['kode', 'tipe', 'brand', 'received_date', 'received_hm', 'is_warranty', 'warranty_date', 'is_owned', 'remark', 'unit_sn', 'unit_model', 'engine_sn', 'engine_model', 'fuel_capacity', 'qty_capacity', 'satuan'])
     const usr = await auth.getUser()
-    
     const logger = new Loggerx(request.url(), request.all(), usr, request.method(), true)
     await logger.tempData()
 

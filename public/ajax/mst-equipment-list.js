@@ -1,9 +1,11 @@
 'use strict'
 $(function(){
+    setDateString()
+
     $('input#inpKeyword').on('keydown', function(e){
         if(e.keyCode === 13){
             var search = $(this).val()
-            $.get('/master/equipment/search?keyword='+search, function(data){
+            $.get('/master/equipment/list?keyword='+search, function(data){
                 $('div#list-content').children().remove()
                 $('div#list-content').html(data)
                 setDateString()
@@ -13,12 +15,13 @@ $(function(){
 
     $('button.bt-edit-data').on('click', function(){
         var id = $(this).data('id')
-        $.get('/master/equipment/'+id, function(data){
+        $.get('/master/equipment/'+id+'/show', function(data){
             $('div#list-content').hide()
             $('div#form-show').html(data)
             $('div#form-show').show()
         })
     })
+    
 
     function setDateString() {
         $('.myDateFormat').each(function(){

@@ -9,6 +9,7 @@ class MasActivitySchema extends Schema {
       table.increments()
       table.string('kode', 5).notNullable()
       table.string('name', 100).notNullable()
+      table.text('keterangan').defaultTo(null)
       table.enu('sts', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })

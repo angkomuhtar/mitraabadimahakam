@@ -4,11 +4,26 @@ $(function(){
     $('.dropify').dropify();
     initDeafult()
 
-    $('#create-form').on('click', function(){
+    $('body').on('click', 'button#create-form', function(){
         initCreate()
     })
     $('body').on('click', 'button#bt-back', function(){
         initDeafult()
+    })
+
+    $('select.select2').each(function(){
+        var group = $(this).data('title')
+        var selected = $(this).data('check')
+        var id = $(this).attr('id')
+        var elm = $(this)
+        // console.log('SET DATA OPTION FROM INDEX PUBLIC')
+        if(group != undefined){
+            $.get('/ajax/sys-options?group='+group+'&selected='+selected, function(data){
+                elm.children().remove()
+                const list = data.map(nod => '<option value="'+nod.nilai+'" '+nod.selected+'>'+nod.teks+'</option>')
+                elm.html(list)
+            })
+        }
     })
 
     $('select[name="dealer_id"]').on('change', function(){
@@ -26,8 +41,20 @@ $(function(){
     })
 
     function initDeafult(){
-        $('div.content-module').each(function(){ $(this).hide() })
-        $('div#list-content').show()
+        $('div.content-module').css('display', 'none')
+        $.ajax({
+            async: true,
+            url: '/master/equipment/list?keyword=',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+        
     }
     function initCreate(){
         $('div.content-module').each(function(){ $(this).hide() })
@@ -86,10 +113,19 @@ $(function(){
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        var url = window.location.pathname+'/list?page='+page
-        $.get(url, function(data){
-            $('div#list-content').children().remove()
-            $('div#list-content').append(data)
+        var keyword = $('#inpKeyword').val()
+        var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword
+        $.ajax({
+            async: true,
+            url: url,
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
         })
     })
 

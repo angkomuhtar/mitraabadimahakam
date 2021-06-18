@@ -9,6 +9,7 @@ class DailyCheckp2HSchema extends Schema {
       table.increments()
       table.integer('checklist_id').unsigned().references('id').inTable('daily_checklists').onDelete('RESTRICT').onUpdate('CASCADE')
       table.integer('p2h_id').unsigned().references('id').inTable('mas_p2h').onDelete('RESTRICT').onUpdate('CASCADE')
+      table.enu('is_check', ['Y', 'N']).defaultTo('N')
       table.text('description').defaultTo(null)
       table.timestamps()
     })

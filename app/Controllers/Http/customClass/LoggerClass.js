@@ -13,9 +13,10 @@ class logger {
     }
     
     async tempData () { 
+        const dataLog = {uri: this.url, method: this.method, user: this.user, data: this.data, success: this.success}
         const jam = moment().format('DD-MM-YYYY HH:mm:ss')
         Logger.transport('file').info({'start': jam+'-----------------------------------------------------------------------'})
-        Logger.transport('file').info({uri: this.url, method: this.method, user: this.user, data: this.data, success: this.success})
+        Logger.transport('file').info(dataLog)
         Logger.transport('file').info({'end': jam+'-------------------------------------------------------------------------'})
 
     }
