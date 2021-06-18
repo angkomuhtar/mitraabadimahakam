@@ -1,13 +1,13 @@
 'use strict'
 
-const EquipUnit = use("App/models/MasEquipment")
+const MasEquipment = use("App/Models/MasEquipment")
 
 class EquipmentList {
     async ALL (req) {
         let equipment
         if(req.keyword){
             equipment = 
-                await EquipUnit
+                await MasEquipment
                     .query()
                     .where(word => {
                         word.where('kode', 'like', `%${req.keyword}%`)
@@ -18,7 +18,7 @@ class EquipmentList {
                     .andWhere({aktif: 'Y'})
                     .fetch()
         }else{
-            equipment = await EquipUnit.query().where({aktif: 'Y'}).fetch()
+            equipment = await MasEquipment.query().where({aktif: 'Y'}).fetch()
         }
         
         return equipment
