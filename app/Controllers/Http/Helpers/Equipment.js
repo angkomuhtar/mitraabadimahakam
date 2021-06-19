@@ -1,6 +1,7 @@
 'use strict'
 
 const MasEquipment = use("App/Models/MasEquipment")
+const DailyTimeSheet = use("App/Models/DailyChecklist")
 
 class EquipmentList {
     async ALL (req) {
@@ -21,6 +22,16 @@ class EquipmentList {
             equipment = await MasEquipment.query().where({aktif: 'Y'}).fetch()
         }
         
+        return equipment
+    }
+
+    async LAST_SMU (req) {
+        const equipment = await DailyTimeSheet.query()
+            .with('equipment')
+            .with('userCheck')
+            .where('unit_id', req)
+            .orderBy('end_smu', 'desc')
+            .first()
         return equipment
     }
 }

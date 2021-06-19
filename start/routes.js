@@ -189,6 +189,8 @@ Route.group(() => {
 
     Route.get('/daily-timesheet/list', 'DailyTimesheetController.list').as('opr.daily-timesheet.list').middleware('R')
 
+    Route.get('/daily-timesheet/list-p2h', 'DailyTimesheetController.listP2H').as('opr.daily-timesheet.listP2H').middleware('R')
+
     Route.get('/daily-timesheet/create', 'DailyTimesheetController.create').as('opr.daily-timesheet.create').middleware('R')
 
     Route.get('/daily-timesheet/:id/show', 'DailyTimesheetController.show').as('opr.daily-timesheet.show').middleware('U')
@@ -317,6 +319,8 @@ Route.group(() => {
     Route.get('/available-fleet', 'EquipmentApiController.availableForFleet')
 
     Route.get('/:id/show', 'EquipmentApiController.show')
+
+    Route.get('/:idequip/last-smu', 'EquipmentApiController.lastEquipmentSMU')
     
     Route.post('/:id/update', 'EquipmentApiController.update')
     

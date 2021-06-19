@@ -6,7 +6,7 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="" id="fm-dailyfleet-upd" data-id="{{data.id}}">
+                    <form action="" class="" id="fm-timesheeet-upd" data-id="{{data.id}}">
                         <div class="panel panel-default">
                             <!--<div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Time Sheet</div>-->
                             <div class="panel-wrapper collapse in">
@@ -33,7 +33,7 @@
                                         </div>
                                     </div>
                                     <div class="row b-all">
-                                        <div class="col-md-12 p-20">
+                                        <div class="col-md-10 p-20">
                                             <h5>DAILY CHECK LIST OPERATOR</h5>
                                             <small>
                                                 Perikasa saat P2H unit pada posisi aman dan rata 
@@ -41,10 +41,223 @@
                                                 Beri tanda check bila tidak normal / ada kerusakan dan jelaskan dalam kolom "keterangan"
                                             </small>
                                         </div>
-                                        <div class="col-md-12" id="list-option" style="display:none">
-                                            xxx
+                                        <div class="col-md-2 p-20 text-right">
+                                            <h1 class="text-muted" id="noberkas" data-berkas="{{data.id}}">NOMOR</h1>
                                         </div>
                                     </div>
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped table-bordered" id="editable-datatable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>No</th>
+                                                            <th>Tugas tugas pemeriksaan</th>
+                                                            <th class="text-center">Check Point</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="list-p2h"></tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td class="text-center" width="*">Jumlah Fuel yang diisi</td>
+                                                        <td class="text-center" width="50">SMU</td>
+                                                        <td class="text-center" width="150">Waktu</td>
+                                                        <td class="text-center" width="150">OPR Fuel Tank</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <input type="number" class="inp-noborder" placeholder="_____">
+                                                            <label for="">Satuan Liter</label>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <input type="number" class="inp-noborder" placeholder="_____">
+                                                            <label for="">HM</label>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <input type="text" class="inp-noborder" placeholder="_____">
+                                                            <label for="">Waktu Pengisian Unit</label>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <input type="text" class="inp-noborder" placeholder="_____">
+                                                            <label for="">Nama Operator</label>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <label for="">Jumlah Fuel yang diisi</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control" placeholder="Recipient's username">
+                                                                <span class="input-group-addon" id="basic-addon2">Lt</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">SMU</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control" placeholder="Qty HM">
+                                                                <span class="input-group-addon">HM</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">Waktu</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control" placeholder="Qty HM">
+                                                                <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">Nama Operator</label>
+                                                            <select class="form-control" data-check="" name="activity_id"></select>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">Nama Operator</label>
+                                                            <select class="form-control" data-check="" name="activity_id"></select>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="9">
+                                                                <h5>MECHINE SMU RECORD / JAM KERJA ALAT</h5>
+                                                                <small>
+                                                                    <em>
+                                                                        ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                    </em>
+                                                                </small>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center v-middle" width="150" rowspan="2">Operator Unit</th>
+                                                            <th class="text-center" colspan="4">SMU Jam Kerja</th>
+                                                            <th class="text-center v-middle" width="100" rowspan="2">Pencapaian <br> SMU</th>
+                                                            <th class="text-center v-middle" width="150" rowspan="2">Lokasi</th>
+                                                            <th class="text-center v-middle" width="150" rowspan="2">Kegiatan</th>
+                                                            <th class="text-center v-middle" width="*" rowspan="2">Keterangan</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" width="100">SMU Mulai</th>
+                                                            <th class="text-center" width="100">SMU Akhir</th>
+                                                            <th class="text-center" width="100">Waktu Mulai</th>
+                                                            <th class="text-center" width="100">Waktu Akhir</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <select class="form-control" data-check="" name="activity_id"></select>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="HM">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="HM">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="HM">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="HM">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="HM">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="Lokasi">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="Activity">
+                                                            </td>
+                                                            <td>
+                                                                <textarea class="form-control" name="" id="" cols="30" rows="3"></textarea>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td colspan="9">
+                                                            <h5>MECHINE SMU RECORD / JAM KERJA ALAT</h5>
+                                                            <small>
+                                                                <em>
+                                                                    ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                </em>
+                                                            </small>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <label for="">Operator</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control" placeholder="Recipient's username">
+                                                                <span class="input-group-addon" id="basic-addon2">Lt</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">SMU Jam Kerja</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control" placeholder="Qty HM">
+                                                                <span class="input-group-addon">HM</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">Pencapaian</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control" placeholder="Qty HM">
+                                                                <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">Lokasi</label>
+                                                            <select class="form-control" data-check="" name="activity_id"></select>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">Kegiatan</label>
+                                                            <select class="form-control" data-check="" name="activity_id"></select>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <label for="">Keterangan</label>
+                                                            <textarea class="form-control" name="" id="" cols="80" rows="2"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div> -->
                                 </div>
                                 <div class="panel-footer">
                                     <div class="row">
@@ -71,3 +284,23 @@
         </div>
     </div>
 </div>
+<!--
+    before
+.checkbox-warning input[type=checkbox]:checked+label::before {
+    background-color: #ffc36d;
+    border-color: #ffc36d;
+    font-size: 24px;
+    height: 24px;
+    width: 24px;
+}
+
+after
+.checkbox input[type=checkbox]:checked+label::after {
+    content: "\f00c";
+    font-family: FontAwesome;
+    font-size: 18px;
+}
+.checkbox-warning input[type=checkbox]:checked+label::after {
+    color: #fff;
+}
+-->

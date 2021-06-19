@@ -282,6 +282,51 @@ class EquipmentApiController {
         }
     }
 
+    async lastEquipmentSMU ({ auth, params, response }) {
+        var t0 = performance.now()
+        const { idequip } = params
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+        const equipment = await Equipment.findOrFail(idequip)
+        if(!equipment){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false,
+                    message: 'Equipment Unit Not Found...'
+                },
+                data: []
+            })
+        }
+
+        const result = (await EquipmentHelpers.LAST_SMU(idequip)).toJSON()
+        durasi = await diagnoticTime.durasi(t0)
+        return response.status(201).json({
+            diagnostic: {
+                times: durasi, 
+                error: false
+            },
+            data: result
+        })
+        
+    }
+
     async equipmentEventAll ({ auth, params, request, response }) {
         var t0 = performance.now()
         const { idfleet } = params
@@ -392,13 +437,23 @@ class EquipmentApiController {
             const trx = await Db.beginTransaction()
             try {
                 const dailyChecklist = 
-                    (
-                        await DailyChecklist
+                    await DailyChecklist
                         .query(trx)
                         .where(whe => whe.where('dailyfleet_id', idfleet).andWhere('unit_id', idequip))
                         .andWhere('tgl', moment(req.tgl).format("YYYY-MM-DD"))
                         .first()
-                    ).toJSON()
+
+                if(!dailyChecklist){
+                    durasi = await diagnoticTime.durasi(t0)
+                    return response.status(404).json({
+                        diagnostic: {
+                            times: durasi, 
+                            error: false,
+                            message: 'Data Timesheet tdk ditemukan,,,, masa mau isi event tapi blum ada timesheet nya....'
+                        },
+                        data: dailyEvent
+                    })
+                }
 
                 const dailyEvent = new DailyEvent()
                 dailyEvent.fill({

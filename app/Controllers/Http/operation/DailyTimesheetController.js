@@ -1,6 +1,7 @@
 'use strict'
 
 const TimeSheet = use("App/Controllers/Http/Helpers/TimeSheet")
+const P2Hhelpers = use("App/Controllers/Http/Helpers/P2H")
 
 class DailyTimesheetController {
     async index ({ view }) {
@@ -11,6 +12,15 @@ class DailyTimesheetController {
         const req = request.all()
         const data = (await TimeSheet.ALL(req)).toJSON()
         return view.render('operation.daily-timesheet.list', {list: data, keyword: req.keyword})
+    }
+
+    async listP2H ({ view, request }){
+        const req = request.only(['keyword', 'page'])
+        const p2hItems = (await P2Hhelpers.ALL(req)).toJSON()
+        console.log('====================================p2hItems');
+        console.log(p2hItems);
+        console.log('====================================');
+        return view.render('_component.list-p2h', {list: p2hItems})
     }
 
     async show ({ view, request, params, auth }) {

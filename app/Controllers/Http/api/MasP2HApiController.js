@@ -3,6 +3,7 @@
 const { performance } = require('perf_hooks')
 const moment = require('moment')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
+const P2Hhelpers = use("App/Controllers/Http/Helpers/P2H")
 
 const MasP2H = use("App/Models/MasP2H")
 
@@ -29,23 +30,24 @@ class MasP2HApiController {
             })
         }
 
-        let p2hItems
-        if(req.keyword){
-            p2hItems = 
-            await MasP2H
-                .query()
-                .where('task', 'like', `%${req.keyword}%`)
-                .andWare('sts', 'Y')
-                .fetch()
-                // .paginate(halaman, limit)
-        }else{
-            p2hItems = 
-                await MasP2H
-                    .query()
-                    .where('sts', 'Y')
-                    .fetch()
-                    // .paginate(halaman, limit)
-        }
+        // let p2hItems
+        // if(req.keyword){
+        //     p2hItems = 
+        //     await MasP2H
+        //         .query()
+        //         .where('task', 'like', `%${req.keyword}%`)
+        //         .andWare('sts', 'Y')
+        //         .fetch()
+        //         // .paginate(halaman, limit)
+        // }else{
+        //     p2hItems = 
+        //         await MasP2H
+        //             .query()
+        //             .where('sts', 'Y')
+        //             .fetch()
+        //             // .paginate(halaman, limit)
+        // }
+        const p2hItems = (await P2Hhelpers.ALL(req)).toJSON()
 
         durasi = await diagnoticTime.durasi(t0)
         return response.status(200).json({

@@ -1,0 +1,23 @@
+@each(item in list)
+    <tr>
+        <td class="text-center" style="vertical-align: middle;">
+            <h1>{{$loop.index + 1}}</h1>
+        </td>
+        <td>
+            <p class="text-warning">
+                {{item.task}}
+            </p>
+            <label>Keterangan & Informasi</label>
+            <div class="form-group m-b-0" style="width: -webkit-fill-available;">
+                <textarea class="form-control" name="description" id="description{{$loop.index + 1}}" rows="3" style="width: -webkit-fill-available;"></textarea>
+            </div>
+        </td>
+        <td style="vertical-align: middle;">
+            Status
+            <select class="form-control input-sm" name="is_check" id="is_check{{$loop.index + 1}}" style="width: -webkit-fill-available;">
+                <option value="Y">OK</option>
+                <option value="N">NO</option>
+            </select>
+        </td>
+    </tr>
+@endeach
