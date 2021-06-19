@@ -48,7 +48,7 @@
                                     <div class="row b-all">
                                         <div class="white-box">
                                             <div class="table-responsive">
-                                                <table class="table table-striped table-bordered" id="editable-datatable">
+                                                <table class="table table-bordered" id="">
                                                     <thead>
                                                         <tr>
                                                             <th>No</th>
@@ -66,39 +66,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--
-                                    <div class="row b-all">
-                                        <div class="white-box">
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered">
-                                                    <tr>
-                                                        <td class="text-center" width="*">Jumlah Fuel yang diisi</td>
-                                                        <td class="text-center" width="50">SMU</td>
-                                                        <td class="text-center" width="150">Waktu</td>
-                                                        <td class="text-center" width="150">OPR Fuel Tank</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center">
-                                                            <input type="number" class="inp-noborder" placeholder="_____">
-                                                            <label for="">Satuan Liter</label>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <input type="number" class="inp-noborder" placeholder="_____">
-                                                            <label for="">HM</label>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <input type="text" class="inp-noborder" placeholder="_____">
-                                                            <label for="">Waktu Pengisian Unit</label>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <input type="text" class="inp-noborder" placeholder="_____">
-                                                            <label for="">Nama Operator</label>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div> -->
                                     <div class="row b-all">
                                         <div class="white-box">
                                             <div class="table-responsive">
@@ -180,10 +147,10 @@
                                                                 <input type="text" class="form-control" placeholder="HM">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM">
+                                                                <input type="text" class="form-control" placeholder="Waktu">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM">
+                                                                <input type="text" class="form-control" placeholder="Waktu">
                                                             </td>
                                                             <td>
                                                                 <input type="text" class="form-control" placeholder="HM">
@@ -198,66 +165,90 @@
                                                                 <textarea class="form-control" name="" id="" cols="30" rows="3"></textarea>
                                                             </td>
                                                         </tr>
+                                                        <tr>
+                                                            <td class="text-center" colspan="9">
+                                                                <h5>BREAKDOWN / STAND BY</h5>
+                                                                <small>
+                                                                    <em>
+                                                                        ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                    </em>
+                                                                </small>
+                                                            </td>
+                                                        </tr>
                                                     </tbody>
-                                                    
                                                 </table>
                                             </div>
                                         </div>
                                     </div>
-                                    <!--
                                     <div class="row b-all">
                                         <div class="white-box">
                                             <div class="table-responsive">
                                                 <table class="table table-bordered">
-                                                    <tr>
-                                                        <td colspan="9">
-                                                            <h5>MECHINE SMU RECORD / JAM KERJA ALAT</h5>
-                                                            <small>
-                                                                <em>
-                                                                    ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
-                                                                </em>
-                                                            </small>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="text-center">
-                                                            <label for="">Operator</label>
-                                                            <div class="input-group m-b-30">
-                                                                <input type="text" class="form-control" placeholder="Recipient's username">
-                                                                <span class="input-group-addon" id="basic-addon2">Lt</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <label for="">SMU Jam Kerja</label>
-                                                            <div class="input-group m-b-30">
-                                                                <input type="text" class="form-control" placeholder="Qty HM">
-                                                                <span class="input-group-addon">HM</span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <label for="">Pencapaian</label>
-                                                            <div class="input-group m-b-30">
-                                                                <input type="text" class="form-control" placeholder="Qty HM">
-                                                                <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
-                                                            </div>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <label for="">Lokasi</label>
-                                                            <select class="form-control" data-check="" name="activity_id"></select>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <label for="">Kegiatan</label>
-                                                            <select class="form-control" data-check="" name="activity_id"></select>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <label for="">Keterangan</label>
-                                                            <textarea class="form-control" name="" id="" cols="80" rows="2"></textarea>
-                                                        </td>
-                                                    </tr>
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="9">
+                                                                <h5>BREAKDOWN / STAND BY</h5>
+                                                                <small>
+                                                                    <em>
+                                                                        ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                    </em>
+                                                                </small>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" width="150">Waktu Mulai</th>
+                                                            <th class="text-center" width="150">Waktu Akhir</th>
+                                                            <th class="text-center" width="100">SMU</th>
+                                                            <th class="text-center" width="*">Keterangan / Event</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <select class="form-control" data-check="" name="activity_id"></select>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="HM">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="HM">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="Waktu">
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
                                                 </table>
                                             </div>
                                         </div>
-                                    </div> -->
+                                    </div>
+                                    <div class="row b-all p-t-20 m-t-20">
+                                        <div class="col-md-8">
+                                            <label for="">Catatan Tambahan</label>
+                                            <div class="form-group">
+                                                <textarea class="form-control" name="description" id="description" rows="5">{{data.description}}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="">Tanda Tangan</label>
+                                            <div class="row p-t-10">
+                                                <div class="col-md-12">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <th class="text-center">Nama Operator</th>
+                                                            <th class="text-center">Nama Pengawas</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="text-center">XXXXX</td>
+                                                                <td class="text-center">ZZZZZ</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="panel-footer">
                                     <div class="row">

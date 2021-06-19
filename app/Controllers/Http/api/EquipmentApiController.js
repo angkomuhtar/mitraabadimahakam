@@ -126,7 +126,7 @@ class EquipmentApiController {
                 equipment_id.push(item.equip_id)
             }
 
-            if(equipment_id){
+            if(equipment_id.length === 0){
                 durasi = await diagnoticTime.durasi(t0)
                 return response.status(404).json({
                     diagnostic: {
