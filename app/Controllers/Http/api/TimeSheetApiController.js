@@ -42,6 +42,7 @@ class TimeSheetApiController {
             if(req.keyword){
                 dailyChecklist = await DailyChecklist
                     .query()
+                    .with('operator_unit')
                     .with('equipment')
                     .with('p2h')
                     .where('description', 'like', `${req.keyword}`)
@@ -49,6 +50,7 @@ class TimeSheetApiController {
             }else{
                 dailyChecklist = await DailyChecklist
                     .query()
+                    .with('operator_unit')
                     .with('equipment')
                     .with('p2h')
                     .where('tgl', '>=', new Date(start))
@@ -123,6 +125,7 @@ class TimeSheetApiController {
         async function GET_DATA(){
             const dailyChecklist = await DailyChecklist
                     .query()
+                    .with('operator_unit')
                     .with('equipment')
                     .where('tgl', '>=', new Date(begin_date))
                     .andWhere('tgl', '<=', new Date(end_date))
@@ -199,13 +202,14 @@ class TimeSheetApiController {
             }
 
             const trx = await db.beginTransaction()
-            const { user_chk, user_spv, unit_id, dailyfleet_id, tgl, description, begin_smu, p2h } = req
+            const { user_chk, user_spv, operator, unit_id, dailyfleet_id, tgl, description, begin_smu, p2h } = req
             var tgl_ = new Date(tgl)
             try {
                 const dailyChecklist = new DailyChecklist()
                 dailyChecklist.fill({
                     user_chk, 
                     user_spv, 
+                    operator,
                     unit_id, 
                     dailyfleet_id, 
                     description, 
@@ -279,6 +283,7 @@ class TimeSheetApiController {
                     .with('userCheck')
                     .with('spv')
                     .with('lead')
+                    .with('operator_unit')
                     .with('equipment', a => {
                         a.with('daily_smu', whe => whe.limit(10).orderBy('id', 'desc'))
                     })
@@ -317,7 +322,7 @@ class TimeSheetApiController {
     async update ({ auth, params, request, response }) {
         var t0 = performance.now()
         const { id } = params
-        const req = request.only(['user_chk', 'user_spv', 'unit_id', 'dailyfleet_id', 'tgl', 'description', 'begin_smu', 'end_smu', 'p2h'])
+        const req = request.only(['user_chk', 'user_spv', 'operator', 'unit_id', 'dailyfleet_id', 'tgl', 'description', 'begin_smu', 'end_smu', 'p2h'])
         let durasi
 
         try {
@@ -371,6 +376,7 @@ class TimeSheetApiController {
                 const dataMerge = {
                     user_chk: req.user_chk, 
                     user_spv: req.user_spv, 
+                    operator: req.operator, 
                     unit_id: req.unit_id, 
                     dailyfleet_id: req.dailyfleet_id,
                     tgl: req.tgl, 

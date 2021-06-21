@@ -22,6 +22,10 @@ class DailyChecklist extends Model {
         return this.belongsTo("App/Models/User", "user_lead", "id")
     }
 
+    operator_unit(){
+        return this.belongsTo("App/Models/MasEmployee", "operator", "id")
+    }
+
     equipment(){
         return this.belongsTo("App/Models/MasEquipment", "unit_id", "id")
     }

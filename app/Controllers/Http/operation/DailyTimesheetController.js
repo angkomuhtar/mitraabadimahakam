@@ -17,9 +17,6 @@ class DailyTimesheetController {
     async listP2H ({ view, request }){
         const req = request.only(['keyword', 'page'])
         const p2hItems = (await P2Hhelpers.ALL(req)).toJSON()
-        console.log('====================================p2hItems');
-        console.log(p2hItems);
-        console.log('====================================');
         return view.render('_component.list-p2h', {list: p2hItems})
     }
 

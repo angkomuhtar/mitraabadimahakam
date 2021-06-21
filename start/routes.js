@@ -199,6 +199,8 @@ Route.group(() => {
 
     Route.post('/daily-timesheet/:id/delete', 'DailyTimesheetController.delete').as('opr.daily-timesheet.delete').middleware('D')
 
+    
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX
@@ -218,6 +220,10 @@ Route.group(() => {
     
     Route.get('/activity/:id', 'AjaxActivityController.getActivitiesID').as('actitivity.getActivitiesID')
     
+    Route.get('/employee', 'AjaxEmployeeController.all').as('employee.all')
+
+    Route.get('/employee/operator', 'AjaxEmployeeController.operator').as('employee.operator')
+
     Route.get('/shift', 'AjaxShiftController.getShift').as('shift.getShift')
 
     Route.get('/shift/:id', 'AjaxShiftController.getShiftID').as('shift.getShiftID')
@@ -291,6 +297,20 @@ Route.group(() => {
     Route.post('/:id/update', 'MasEventApiController.update')
 
 }).prefix('api/event').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'EmployeeApiController.index')
+
+    Route.post('/', 'EmployeeApiController.create')
+    
+    Route.get('/operator', 'EmployeeApiController.operator')
+
+    Route.get('/:id/show', 'EmployeeApiController.show')
+
+    Route.post('/:id/update', 'EmployeeApiController.update')
+
+}).prefix('api/employee').namespace('api')
 
 Route.group(() => {
 
@@ -423,6 +443,28 @@ Route.group(() => {
     Route.post('/:id/update', 'TimeSheetApiController.update')
 
     Route.delete('/:id/destroy', 'TimeSheetApiController.destroy')
+
+}).prefix('api/daily-time-sheet').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/event', 'DailyEventApiController.index')
+
+    Route.post('/:id/event', 'DailyEventApiController.store')
+    
+    Route.get('/:timesheetID/event/time-sheet', 'DailyEventApiController.timesheetID')
+
+    Route.get('/:equipmentID/event/equipment', 'DailyEventApiController.equipmentID')
+    
+    // Route.get('/all', 'TimeSheetApiController.allTimeSheet')
+
+    // Route.get('/ranges-date', 'TimeSheetApiController.filterDate')
+    
+    // Route.get('/:id/show', 'TimeSheetApiController.show')
+
+    // Route.post('/:id/update', 'TimeSheetApiController.update')
+
+    // Route.delete('/:id/destroy', 'TimeSheetApiController.destroy')
 
 }).prefix('api/daily-time-sheet').namespace('api')
 

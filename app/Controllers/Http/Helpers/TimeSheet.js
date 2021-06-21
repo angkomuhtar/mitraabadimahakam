@@ -40,6 +40,7 @@ class TimeSheet {
                 .with('userCheck')
                 .with('spv')
                 .with('lead')
+                .with('operator_unit')
                 .with('equipment')
                 .with('p2h')
                 .orderBy('tgl', 'desc')
@@ -49,7 +50,23 @@ class TimeSheet {
     }
 
     async GET_ID (params){
-        const dailyChecklist = await DailyChecklist.findOrFail(params.id)
+        // const dailyChecklist = await DailyChecklist.findOrFail(params.id)
+        const dailyChecklist = await DailyChecklist
+            .query()
+            .with('dailyFleet', d => {
+                d.with('fleet')
+                d.with('pit')
+                d.with('activities')
+                d.with('shift')
+            })
+            .with('userCheck')
+            .with('spv')
+            .with('lead')
+            .with('operator_unit')
+            .with('equipment')
+            .with('p2h')
+            .where('id', params.id)
+            .first()
         return dailyChecklist
     }
 }

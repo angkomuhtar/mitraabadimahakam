@@ -10,6 +10,7 @@ class DailyChecklistSchema extends Schema {
       table.integer('user_chk').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('user_spv').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('user_lead').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
+      table.integer('operator').unsigned().references('id').inTable('mas_employees').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('unit_id').unsigned().references('id').inTable('mas_equipments').onDelete('CASCADE').onUpdate('CASCADE')
       // table.integer('shift_id').unsigned().references('id').inTable('mas_shifts').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('dailyfleet_id').unsigned().references('id').inTable('daily_fleets').onDelete('CASCADE').onUpdate('CASCADE')

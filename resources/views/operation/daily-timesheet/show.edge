@@ -125,8 +125,7 @@
                                                             <th class="text-center" colspan="4">SMU Jam Kerja</th>
                                                             <th class="text-center v-middle" width="100" rowspan="2">Pencapaian <br> SMU</th>
                                                             <th class="text-center v-middle" width="150" rowspan="2">Lokasi</th>
-                                                            <th class="text-center v-middle" width="150" rowspan="2">Kegiatan</th>
-                                                            <th class="text-center v-middle" width="*" rowspan="2">Keterangan</th>
+                                                            <th class="text-center v-middle" width="250" rowspan="2">Kegiatan</th>
                                                         </tr>
                                                         <tr>
                                                             <th class="text-center" width="100">SMU Mulai</th>
@@ -138,31 +137,28 @@
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <select class="form-control" data-check="" name="activity_id"></select>
+                                                                <select class="form-control select2operator" data-check="{{data.operator}}" name="operator"></select>
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM">
+                                                                <input type="text" class="form-control" placeholder="HM" value="{{data.begin_smu}}">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM">
+                                                                <input type="text" class="form-control" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="Waktu">
+                                                                <input type="datetime-local" class="form-control" placeholder="Waktu">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="Waktu">
+                                                                <input type="datetime-local" class="form-control" placeholder="Waktu">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM">
+                                                                <input type="text" class="form-control" placeholder="HM" value="{{data.used_smu != null ? data.used_smu : '-'}}">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="Lokasi">
+                                                                <input type="text" class="form-control" placeholder="Lokasi" value="{{data.dailyFleet.pit.name}}" readonly>
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="Activity">
-                                                            </td>
-                                                            <td>
-                                                                <textarea class="form-control" name="" id="" cols="30" rows="3"></textarea>
+                                                                <select class="form-control select2activities" data-check="{{data.dailyFleet.activities.id}}" name="activity_id"></select>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -205,16 +201,16 @@
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <select class="form-control" data-check="" name="activity_id"></select>
+                                                                <input type="datetime-local" class="form-control">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM">
+                                                                <input type="datetime-local" class="form-control">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM">
+                                                                <input type="text" class="form-control">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="Waktu">
+                                                                <input type="text" class="form-control" placeholder="Keterangan">
                                                             </td>
                                                         </tr>
                                                     </tbody>
