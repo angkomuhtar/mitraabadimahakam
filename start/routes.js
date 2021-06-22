@@ -448,25 +448,17 @@ Route.group(() => {
 
 Route.group(() => {
 
-    Route.get('/event', 'DailyEventApiController.index')
+    Route.get('/', 'DailyEventApiController.index')
 
-    Route.post('/:id/event', 'DailyEventApiController.store')
+    Route.post('/:id/time-sheet', 'DailyEventApiController.store')
     
-    Route.get('/:timesheetID/event/time-sheet', 'DailyEventApiController.timesheetID')
+    Route.get('/:timesheetID/time-sheet', 'DailyEventApiController.timesheetID')
 
-    Route.get('/:equipmentID/event/equipment', 'DailyEventApiController.equipmentID')
-    
-    // Route.get('/all', 'TimeSheetApiController.allTimeSheet')
+    Route.get('/:equipmentID/equipment', 'DailyEventApiController.equipmentID')
 
-    // Route.get('/ranges-date', 'TimeSheetApiController.filterDate')
-    
-    // Route.get('/:id/show', 'TimeSheetApiController.show')
+    Route.delete('/:dailyEventID/destroy', 'DailyEventApiController.destroy')
 
-    // Route.post('/:id/update', 'TimeSheetApiController.update')
-
-    // Route.delete('/:id/destroy', 'TimeSheetApiController.destroy')
-
-}).prefix('api/daily-time-sheet').namespace('api')
+}).prefix('api/daily-event').namespace('api')
 
 
 Route.get('/401', ({ view }) => view.render('401'))

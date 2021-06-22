@@ -185,6 +185,50 @@ class DailyEventApiController {
             })
         }
     }
+
+    async destroy ({ auth, params, response }) {
+        var t0 = performance.now()
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        }
+
+        try {
+            const data = await EventTimeSheetHelpers.DELETE(params)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(201).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false,
+                    message: 'Delete data success...'
+                },
+                data: data
+            })
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+    }
 }
 
 

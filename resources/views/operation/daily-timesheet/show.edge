@@ -146,10 +146,10 @@
                                                                 <input type="text" class="form-control" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control" placeholder="Waktu">
+                                                                <input type="datetime-local" class="form-control set-datetime" data-datetime="{{data.approved_at}}">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control" placeholder="Waktu">
+                                                                <input type="datetime-local" class="form-control set-datetime" data-datetime="{{data.finish_at}}">
                                                             </td>
                                                             <td>
                                                                 <input type="text" class="form-control" placeholder="HM" value="{{data.used_smu != null ? data.used_smu : '-'}}">
@@ -159,16 +159,6 @@
                                                             </td>
                                                             <td>
                                                                 <select class="form-control select2activities" data-check="{{data.dailyFleet.activities.id}}" name="activity_id"></select>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-center" colspan="9">
-                                                                <h5>BREAKDOWN / STAND BY</h5>
-                                                                <small>
-                                                                    <em>
-                                                                        ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
-                                                                    </em>
-                                                                </small>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -183,7 +173,11 @@
                                                     <thead>
                                                         <tr>
                                                             <th colspan="9">
-                                                                <h5>BREAKDOWN / STAND BY</h5>
+                                                                <h5>
+                                                                    BREAKDOWN / STAND BY
+                                                                    <span class="pull-right">
+                                                                        <button class="fcbtn btn btn-warning btn-outline btn-1f">Tambah Event</button>
+                                                                </h5>
                                                                 <small>
                                                                     <em>
                                                                         ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
@@ -192,27 +186,65 @@
                                                             </th>
                                                         </tr>
                                                         <tr>
+                                                            <th class="text-center" width="50">No</th>
                                                             <th class="text-center" width="150">Waktu Mulai</th>
                                                             <th class="text-center" width="150">Waktu Akhir</th>
                                                             <th class="text-center" width="100">SMU</th>
                                                             <th class="text-center" width="*">Keterangan / Event</th>
+                                                            <th class="text-center" width="50">ACT</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <input type="datetime-local" class="form-control">
-                                                            </td>
-                                                            <td>
-                                                                <input type="datetime-local" class="form-control">
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" class="form-control">
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" class="form-control" placeholder="Keterangan">
-                                                            </td>
-                                                        </tr>
+                                                        @if(data.dailyEvent.length > 0)
+                                                            @each(item in data.dailyEvent)
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <h3>{{$loop.index + 1}}</h3>
+                                                                    <input type="hidden" class="form-control" value="{{item.id}}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="datetime-local" class="form-control set-datetime" data-datetime="{{item.start_at}}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="datetime-local" class="form-control set-datetime" data-datetime="{{item.end_at}}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" class="form-control text-right" value="{{item.total_smu}}">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control" placeholder="Keterangan" value="{{item.description}}">
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn btn-danger btn-sm">
+                                                                        <i class="ti-close"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                            @endeach
+                                                        @else
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <h3>{{$loop.index + 1}}</h3>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="datetime-local" class="form-control init-datetime">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="datetime-local" class="form-control init-datetime">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" class="form-control text-right">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control" placeholder="Keterangan">
+                                                                </td>
+                                                                <td>
+                                                                    <button class="btn btn-danger btn-sm">
+                                                                        <i class="ti-close"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        @endif
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -236,8 +268,8 @@
                                                         </thead>
                                                         <tbody>
                                                             <tr>
-                                                                <td class="text-center">XXXXX</td>
-                                                                <td class="text-center">ZZZZZ</td>
+                                                                <td class="text-center">{{data.operator_unit.fullname}}</td>
+                                                                <td class="text-center">{{data.spv.profile.nm_depan}}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -271,23 +303,3 @@
         </div>
     </div>
 </div>
-<!--
-    before
-.checkbox-warning input[type=checkbox]:checked+label::before {
-    background-color: #ffc36d;
-    border-color: #ffc36d;
-    font-size: 24px;
-    height: 24px;
-    width: 24px;
-}
-
-after
-.checkbox input[type=checkbox]:checked+label::after {
-    content: "\f00c";
-    font-family: FontAwesome;
-    font-size: 18px;
-}
-.checkbox-warning input[type=checkbox]:checked+label::after {
-    color: #fff;
-}
--->

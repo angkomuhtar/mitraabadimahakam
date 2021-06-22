@@ -45,6 +45,7 @@ class TimeSheetApiController {
                     .with('operator_unit')
                     .with('equipment')
                     .with('p2h')
+                    .with('dailyEvent')
                     .where('description', 'like', `${req.keyword}`)
                     .fetch()
             }else{
@@ -127,6 +128,7 @@ class TimeSheetApiController {
                     .query()
                     .with('operator_unit')
                     .with('equipment')
+                    .with('dailyEvent')
                     .where('tgl', '>=', new Date(begin_date))
                     .andWhere('tgl', '<=', new Date(end_date))
                     .fetch()
@@ -271,51 +273,16 @@ class TimeSheetApiController {
                 },
                 data: {}
             })
-        }
-
-        await GET_DATA()
-
-        async function GET_DATA(){
-            try {
-                const dailyChecklist = (
-                    await DailyChecklist
-                    .query()
-                    .with('userCheck')
-                    .with('spv')
-                    .with('lead')
-                    .with('operator_unit')
-                    .with('equipment', a => {
-                        a.with('daily_smu', whe => whe.limit(10).orderBy('id', 'desc'))
-                    })
-                    .with('dailyFleet', b => {
-                        b.with('pit')
-                        b.with('fleet')
-                        b.with('activities')
-                        b.with('shift')
-                    })
-                    .with('p2h')
-                    .where('id', id)
-                    .first()
-                ).toJSON()
-                durasi = await diagnoticTime.durasi(t0)
-                response.status(200).json({
-                    diagnostic: {
-                        times: durasi, 
-                        error: false
-                    },
-                    data: dailyChecklist
-                })
-            } catch (error) {
-                console.log(error)
-                response.status(400).json({
-                    diagnostic: {
-                        times: durasi, 
-                        error: true,
-                        message: error.message
-                    },
-                    data: []
-                })
-            }
+        } finally {
+            const data = await TimeSheet.GET_ID(params)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(200).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false,
+                },
+                data: data
+            })
         }
     }
 
@@ -324,7 +291,7 @@ class TimeSheetApiController {
         const { id } = params
         const req = request.only(['user_chk', 'user_spv', 'operator', 'unit_id', 'dailyfleet_id', 'tgl', 'description', 'begin_smu', 'end_smu', 'p2h'])
         let durasi
-
+        console.log(req);
         try {
             await auth.authenticator('jwt').getUser()
         } catch (error) {
@@ -353,98 +320,40 @@ class TimeSheetApiController {
             })
         }
 
-        await UPDATE_DATA()
+        const dailyChecklist = await DailyChecklist.find(id)
+        if(!dailyChecklist){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(412).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: 'ID Time Sheet not found...'
+                },
+                data: {}
+            })
+        }
 
-        async function UPDATE_DATA(){
-            const trx = await db.beginTransaction()
-            try {
-                const { p2h } = req
-                const dailyChecklist = await DailyChecklist.find(id)
-
-                if(!dailyChecklist){
-                    durasi = await diagnoticTime.durasi(t0)
-                    return response.status(412).json({
-                        diagnostic: {
-                            times: durasi, 
-                            error: true,
-                            message: 'ID Time Sheet not found...'
-                        },
-                        data: {}
-                    })
-                }
-
-                const dataMerge = {
-                    user_chk: req.user_chk, 
-                    user_spv: req.user_spv, 
-                    operator: req.operator, 
-                    unit_id: req.unit_id, 
-                    dailyfleet_id: req.dailyfleet_id,
-                    tgl: req.tgl, 
-                    description: req.description, 
-                    begin_smu: dailyChecklist.begin_smu,
-                    end_smu: req.end_smu
-                }
-
-                dailyChecklist.merge(dataMerge)
-                await dailyChecklist.save(trx)
-
-                await dailyChecklist.p2h().detach()
-                for (const item of p2h) {
-                    let p2h_item = await MasP2H.findOrFail(item.p2h_id)
-                    let dailyCheckp2H = new DailyCheckp2H()
-                    dailyCheckp2H.fill({ 
-                        checklist_id: dailyChecklist.id, 
-                        p2h_id: p2h_item.id, 
-                        is_check: item.is_check, 
-                        description: item.description 
-                    })
-                    await dailyCheckp2H.save(trx)
-                }
-
-                await trx.commit(trx)
-
-                const dataDailyChecklist = (
-                    await DailyChecklist
-                    .query()
-                    .with('userCheck')
-                    .with('spv')
-                    .with('lead')
-                    .with('equipment', a => {
-                        a.with('daily_smu', whe => whe.limit(10).orderBy('id', 'desc'))
-                    })
-                    .with('dailyFleet', b => {
-                        b.with('pit')
-                        b.with('fleet')
-                        b.with('activities')
-                        b.with('shift')
-                    })
-                    .with('p2h')
-                    .where({id: id})
-                    .first()
-                ).toJSON()
-
-                durasi = await diagnoticTime.durasi(t0)
-                response.status(201).json({
-                    diagnostic: {
-                        times: durasi, 
-                        error: false
-                    },
-                    data: dataDailyChecklist
-                })
-            } catch (error) {
-                console.log(error)
-                await trx.rollback(trx)
-                durasi = await diagnoticTime.durasi(t0)
-                response.status(403).json({
-                    diagnostic: {
-                        times: durasi, 
-                        error: false,
-                        message: error
-                    },
-                    data: []
-                })
-            }
-
+        try {
+            const data = await TimeSheet.UPDATE(params, req)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(201).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false
+                },
+                data: data
+            })
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false,
+                    message: error
+                },
+                data: []
+            })
         }
     }
 }

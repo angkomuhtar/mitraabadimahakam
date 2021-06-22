@@ -127,6 +127,16 @@ class DailyEventTimeSheet {
         await eventTimeSheet.save()
         return eventTimeSheet
     }
+
+    async DELETE(params){
+        const eventTimeSheet = await EventTimeSheet.find(params.dailyEventID)
+        if(eventTimeSheet){
+            await eventTimeSheet.delete()
+            return eventTimeSheet
+        }else{
+            throw new Error('Data daily event ID ::'+params.dailyEventID+' not found...')
+        }
+    }
 }
 
 module.exports = new DailyEventTimeSheet()

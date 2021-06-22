@@ -17,4 +17,8 @@ DailyChecklistHook.beforeUPDATE = async (dailychecklist) => {
     if(smu_awal <= smu_akhir){
         dailychecklist.used_smu = smu_akhir - smu_awal
     }
+
+    if(dailychecklist.end_smu){
+        dailychecklist.finish_at = new Date()
+    }
 }
