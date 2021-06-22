@@ -1,8 +1,8 @@
 'use strict'
 
-const EventTimeSheet = use("App/models/DailyEvent")
-const TimeSheet = use("App/models/DailyChecklist")
-const Event = use("App/models/MasEvent")
+const EventTimeSheet = use("App/Models/DailyEvent")
+const TimeSheet = use("App/Models/DailyChecklist")
+const Event = use("App/Models/MasEvent")
 
 class DailyEventTimeSheet {
     async ALL (req) {
