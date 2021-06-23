@@ -98,17 +98,18 @@ class TimeSheet {
             await dailyChecklist.save(trx)
             
             await dailyChecklist.p2h().detach()
+            let arrP2H = []
             for (const item of p2h) {
-                let p2h_item = await MasP2H.findOrFail(item.p2h_id)
-                let dailyCheckp2H = new DailyCheckp2H()
-                dailyCheckp2H.fill({ 
+                let p2h_item = await MasP2H.findOrFail(item.p2h_id, trx)
+                arrP2H.push({
                     checklist_id: dailyChecklist.id, 
                     p2h_id: p2h_item.id, 
                     is_check: item.is_check, 
-                    description: item.description 
+                    description: item.description
                 })
-                await dailyCheckp2H.save(trx)
             }
+            await DailyCheckp2H.createMany(arrP2H, trx)
+
             await trx.commit(trx)
 
             return await DailyChecklist

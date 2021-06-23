@@ -4,7 +4,6 @@ $(function(){
     })
 
     $('input[type="date"]').each(function(){
-        console.log('input date ::');
         var isNow = $(this).data('date')
         if(isNow){
             $(this).val(moment().format('YYYY-MM-DD'))
@@ -20,10 +19,14 @@ $(function(){
     $('input[type="datetime-local"].set-datetime').each(function(){
         var data = $(this).data('datetime')
         var now = new Date(data)
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset())
-        $(this).val(now.toISOString().slice(0,16))
-        // console.log(now.toISOString());
-        // console.log(now.toISOString().slice(0,16));
+        console.log('DATA ::', data != 'undefined' || data != 'null');
+        if(data != 'undefined' || data){
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset())
+            $(this).val(now.toISOString().slice(0,16))
+        }else{
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset())
+            $(this).val(now.toISOString().slice(0,16))
+        }
     })
 
     $('.myDateFormat').each(function(){
@@ -191,4 +194,29 @@ $(function(){
             }
         })
     })
+
+    $('body select.select2event').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/event?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                console.log(data);
+                if(data.length > 0){
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.engine+' | '+nod.narasi+'</option>')
+                    elm.append('<option value="" selected>Pilih</option>')
+                    elm.append(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
 })
+

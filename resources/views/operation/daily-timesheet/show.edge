@@ -18,7 +18,7 @@
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                    <input type="date" class="form-control input-sm" data-date="{{data.tgl}}" name="tgl" id="tgl">
+                                                    <input type="date" class="form-control input-sm inp-timesheet" data-date="{{data.tgl}}" name="tgl" id="tgl">
                                                 </div>
                                             </div>
                                         </div>
@@ -27,7 +27,7 @@
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-truck"></i></div>
-                                                    <select class="form-control input-sm select2equipment" name="unit_id" id="unit_id" data-check="{{data.unit_id}}"></select>
+                                                    <select class="form-control input-sm select2equipment inp-timesheet" name="unit_id" id="unit_id" data-check="{{data.unit_id}}"></select>
                                                 </div>
                                             </div>
                                         </div>
@@ -79,31 +79,31 @@
                                                         <td class="text-center" width="200">
                                                             <label for="">Jumlah Fuel yang diisi</label>
                                                             <div class="input-group m-b-30">
-                                                                <input type="text" class="form-control" name="topup" id="topup" placeholder="Satuan Liter">
+                                                                <input type="text" class="form-control inp-dailyrefuel" name="topup" id="topup" placeholder="Satuan Liter">
                                                                 <span class="input-group-addon" id="basic-addon2">Lt</span>
                                                             </div>
                                                         </td>
                                                         <td class="text-center" width="200">
                                                             <label for="">SMU</label>
                                                             <div class="input-group m-b-30">
-                                                                <input type="text" class="form-control" name="smu" id="smu" placeholder="Qty HM">
+                                                                <input type="text" class="form-control inp-dailyrefuel" name="smu" id="smu" placeholder="Qty HM">
                                                                 <span class="input-group-addon">HM</span>
                                                             </div>
                                                         </td>
                                                         <td class="text-center" width="250">
                                                             <label for="">Waktu</label>
                                                             <div class="input-group m-b-30">
-                                                                <input type="datetime-local" class="form-control init-datetime" name="fueling_at" id="fueling_at" placeholder="Qty HM">
+                                                                <input type="datetime-local" class="form-control init-datetime inp-dailyrefuel" name="fueling_at" id="fueling_at" placeholder="Qty HM">
                                                                 <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
                                                             </div>
                                                         </td>
                                                         <td class="text-center" width="200">
                                                             <label for="">Nama Operator</label>
-                                                            <select class="form-control select2operator" data-check="" name="operator" id="operator_onfuel" required></select>
+                                                            <select class="form-control select2operator inp-dailyrefuel" data-check="" name="operator" id="operator_onfuel" required></select>
                                                         </td>
                                                         <td class="text-center" width="*">
                                                             <label for="">Fuelman</label>
-                                                            <input type="text" class="form-control" name="fuelman" id="fuelman" id="fuelman_onfuel" placeholder="Pengisi Bahan Bakar" required>
+                                                            <input type="text" class="form-control inp-dailyrefuel" name="fuelman" id="fuelman" id="fuelman_onfuel" placeholder="Pengisi Bahan Bakar" required>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -142,28 +142,28 @@
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <select class="form-control select2operator" data-check="{{data.operator}}" name="operator" id="operator" required></select>
+                                                                <select class="form-control select2operator inp-timesheet" data-check="{{data.operator}}" name="operator" id="operator" required></select>
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" name="begin_smu" id="begin_smu" placeholder="HM" value="{{data.begin_smu}}">
+                                                                <input type="text" class="form-control inp-timesheet" name="begin_smu" id="begin_smu" placeholder="HM" value="{{data.begin_smu}}">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" name="end_smu" id="end_smu" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
+                                                                <input type="text" class="form-control inp-timesheet" name="end_smu" id="end_smu" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control set-datetime" name="approved_at" id="approved_at" data-datetime="{{data.approved_at}}">
+                                                                <input type="datetime-local" class="form-control set-datetime inp-timesheet" name="approved_at" id="approved_at" data-datetime="{{data.approved_at}}">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control set-datetime" name="finish_at" id="finish_at" data-datetime="{{data.finish_at}}">
+                                                                <input type="datetime-local" class="form-control set-datetime inp-timesheet" name="finish_at" id="finish_at" data-datetime="{{data.finish_at ? data.finish_at : data.approved_at}}">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM" name="used_smu" id="used_smu" value="{{data.used_smu != null ? data.used_smu : '-'}}">
+                                                                <input type="text" class="form-control inp-timesheet" placeholder="HM" name="used_smu" id="used_smu" value="{{data.used_smu != null ? data.used_smu : '-'}}">
                                                             </td>
                                                             <td>
                                                                 <input type="text" class="form-control" placeholder="Lokasi" value="{{data.dailyFleet.pit.name}}" readonly>
                                                             </td>
                                                             <td>
-                                                                <select class="form-control select2activities" data-check="{{data.dailyFleet.activities.id}}" name="activity_id"></select>
+                                                                <select class="form-control select2activities inp-timesheet" data-check="{{data.dailyFleet.activities.id}}" name="activity_id"></select>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -205,19 +205,20 @@
                                                             <tr class="item-event" id="TR{{$loop.index + 1}}" data-id="{{$loop.index + 1}}">
                                                                 <td class="text-center">
                                                                     <h3>{{$loop.index + 1}}</h3>
-                                                                    <input type="hidden" class="form-control" id="id{{$loop.index + 1}}" name="id" value="{{item.id}}">
+                                                                    <input type="hidden" class="form-control inp-dailyevent" id="id{{$loop.index + 1}}" name="id" value="{{item.id}}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="datetime-local" class="form-control set-datetime" id="start_at{{$loop.index + 1}}" name="start_at" data-datetime="{{item.start_at}}">
+                                                                    <input type="datetime-local" class="form-control set-datetime inp-dailyevent" data-id="{{$loop.index + 1}}" id="start_at{{$loop.index + 1}}" name="start_at" data-datetime="{{item.start_at}}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="datetime-local" class="form-control set-datetime" id="end_at{{$loop.index + 1}}" name="end_at" data-datetime="{{item.end_at}}">
+                                                                    <input type="datetime-local" class="form-control set-datetime inp-dailyevent" data-id="{{$loop.index + 1}}" id="end_at{{$loop.index + 1}}" name="end_at" data-datetime="{{item.end_at}}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="number" class="form-control text-right" value="{{item.total_smu}}">
+                                                                    <input type="number" class="form-control text-right inp-dailyevent" data-id="{{$loop.index + 1}}" value="{{item.total_smu}}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control" placeholder="Keterangan" id="description{{$loop.index + 1}}" name="description" value="{{item.description}}">
+                                                                    <select class="form-control select2event inp-dailyevent" data-id="{{$loop.index + 1}}" data-check="{{item.event_id}}" name="event_id" id="event_id{{$loop.index + 1}}"></select>
+                                                                    <input type="text" class="form-control m-t-10 inp-dailyevent" data-id="{{$loop.index + 1}}" id="description{{$loop.index + 1}}" name="description" value="{{item.description}}">
                                                                 </td>
                                                                 <td>
                                                                     <button class="btn btn-danger btn-sm bt-remove-event" data-id="{{$loop.index + 1}}">
@@ -234,16 +235,17 @@
                                                                     <h3>1</h3>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="datetime-local" class="form-control init-datetime" id="start_at1" name="start_at" >
+                                                                    <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="1" id="start_at1" name="start_at" >
                                                                 </td>
                                                                 <td>
-                                                                    <input type="datetime-local" class="form-control init-datetime" id="end_at1" name="end_at" >
+                                                                    <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="1" id="end_at1" name="end_at" >
                                                                 </td>
                                                                 <td>
-                                                                    <input type="number" class="form-control text-right">
+                                                                    <input type="number" class="form-control text-right inp-dailyevent" data-id="1" name="smu_event" id="smu_event1">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control" placeholder="Keterangan">
+                                                                    <select class="form-control select2event inp-dailyevent" data-check="" name="event_id" id="event_id1"></select>
+                                                                    <input type="text" class="form-control m-t-10 inp-dailyevent" data-id="1" id="description1" name="description" placeholder="Deskipsi Tambahan...">
                                                                 </td>
                                                                 <td>
                                                                     <button class="btn btn-danger btn-sm bt-remove-event" data-id="1">
@@ -261,7 +263,7 @@
                                         <div class="col-md-8">
                                             <label for="">Catatan Tambahan</label>
                                             <div class="form-group">
-                                                <textarea class="form-control" name="description" id="description" rows="5">{{data.description}}</textarea>
+                                                <textarea class="form-control inp-timesheet" name="description" id="description" rows="5">{{data.description}}</textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-4">

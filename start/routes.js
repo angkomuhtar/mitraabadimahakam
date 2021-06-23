@@ -232,6 +232,8 @@ Route.group(() => {
 
     Route.get('/dealer/:id', 'AjaxDealerController.getDealerId').as('dealer.getDealerId')
 
+    Route.get('/event', 'AjaxEventController.getALL').as('event.getALL')
+
     Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')

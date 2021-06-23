@@ -20,6 +20,7 @@ class DailyChecklistSchema extends Schema {
       table.float('end_smu', 8, 2).defaultTo(0)
       table.float('used_smu', 8, 2).defaultTo(0)
       table.datetime('approved_at').notNullable()
+      table.datetime('finish_at').defaultTo(null)
       table.timestamps()
     })
   }
