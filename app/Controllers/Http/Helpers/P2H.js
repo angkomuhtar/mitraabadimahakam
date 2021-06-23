@@ -1,6 +1,8 @@
 'use strict'
 
 const MasP2H = use("App/Models/MasP2H")
+const DailyCheckp2H = use("App/Models/DailyCheckp2H")
+
 
 class P2H {
     async ALL (req) {
@@ -17,6 +19,20 @@ class P2H {
         }
         
         return masP2H
+    }
+
+    async WITH_TIMESHEET_ID (req) {
+        const masP2H = (await MasP2H.query().where({sts: 'Y'}).fetch()).toJSON()
+        let result = []
+        for (const item of masP2H) {
+            const dailyp2h = await DailyCheckp2H.query().where({checklist_id: req.id, p2h_id: item.id}).first()
+            if(dailyp2h){
+                result.push({...item, is_check: dailyp2h.is_check, description: dailyp2h.description})
+            }else{
+                result.push({...item, is_check: 'Y', description: ''})
+            }
+        }
+        return result
     }
 }
 

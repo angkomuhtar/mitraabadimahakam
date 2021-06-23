@@ -9,14 +9,21 @@
             </p>
             <label>Keterangan & Informasi</label>
             <div class="form-group m-b-0" style="width: -webkit-fill-available;">
-                <textarea class="form-control" name="description" id="description{{$loop.index + 1}}" rows="3" style="width: -webkit-fill-available;"></textarea>
+                <textarea 
+                    class="form-control" 
+                    name="descriptionp2h" 
+                    id="descriptionp2h{{$loop.index + 1}}" 
+                    rows="3" 
+                    data-id="{{$loop.index + 1}}" 
+                    style="width: -webkit-fill-available;">{{item.description ? item.description : ''}}
+                </textarea>
             </div>
         </td>
         <td style="vertical-align: middle;">
             Status
-            <select class="form-control input-sm" name="is_check" id="is_check{{$loop.index + 1}}" style="width: -webkit-fill-available;">
-                <option value="Y">OK</option>
-                <option value="N">NO</option>
+            <select class="form-control input-sm check-status-p2h" name="is_check" id="is_check{{$loop.index + 1}}" data-id="{{$loop.index + 1}}" style="width: -webkit-fill-available;">
+                <option value="Y" {{item.is_check === 'Y' ? 'selected' : ''}}>OK</option>
+                <option value="N" {{item.is_check === 'N' ? 'selected' : ''}}>NO</option>
             </select>
         </td>
     </tr>

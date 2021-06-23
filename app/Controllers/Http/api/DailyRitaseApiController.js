@@ -42,6 +42,7 @@ class DailyRitaseApiController {
               whe.orWhere('date', 'like', `%${req.keyword}%`)
           })
           .andWhere("status", "Y")
+          .orderBy('created_at', 'desc')
           .paginate(halaman, limit)
       } else {
         dailyRitase = await DailyRitase.query()
@@ -49,6 +50,7 @@ class DailyRitaseApiController {
             details.with('details', unit => unit.with('equipment'))
           })
           .where("status", "Y")
+          .orderBy('created_at', 'desc')
           .paginate(halaman, limit)
       }
       let durasi = await diagnoticTime.durasi(t0)

@@ -57,11 +57,6 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody id="list-p2h"></tbody>
-                                                    <tfoot>
-                                                        <tr>
-                                                            
-                                                        </tr>
-                                                    </tfoot>
                                                 </table>
                                             </div>
                                         </div>
@@ -71,34 +66,44 @@
                                             <div class="table-responsive">
                                                 <table class="table table-bordered">
                                                     <tr>
-                                                        <td class="text-center">
+                                                        <th colspan="9">
+                                                            <h5>UNIT REFUEL / PENGISIAN BAHAN BAKAR</h5>
+                                                            <small>
+                                                                <em>
+                                                                    ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                </em>
+                                                            </small>
+                                                        </th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center" width="200">
                                                             <label for="">Jumlah Fuel yang diisi</label>
                                                             <div class="input-group m-b-30">
-                                                                <input type="text" class="form-control" placeholder="Recipient's username">
+                                                                <input type="text" class="form-control" name="topup" id="topup" placeholder="Satuan Liter">
                                                                 <span class="input-group-addon" id="basic-addon2">Lt</span>
                                                             </div>
                                                         </td>
-                                                        <td class="text-center">
+                                                        <td class="text-center" width="200">
                                                             <label for="">SMU</label>
                                                             <div class="input-group m-b-30">
-                                                                <input type="text" class="form-control" placeholder="Qty HM">
+                                                                <input type="text" class="form-control" name="smu" id="smu" placeholder="Qty HM">
                                                                 <span class="input-group-addon">HM</span>
                                                             </div>
                                                         </td>
-                                                        <td class="text-center">
+                                                        <td class="text-center" width="250">
                                                             <label for="">Waktu</label>
                                                             <div class="input-group m-b-30">
-                                                                <input type="text" class="form-control" placeholder="Qty HM">
+                                                                <input type="datetime-local" class="form-control init-datetime" name="fueling_at" id="fueling_at" placeholder="Qty HM">
                                                                 <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
                                                             </div>
                                                         </td>
-                                                        <td class="text-center">
+                                                        <td class="text-center" width="200">
                                                             <label for="">Nama Operator</label>
-                                                            <select class="form-control" data-check="" name="activity_id"></select>
+                                                            <select class="form-control select2operator" data-check="" name="operator" id="operator_onfuel" required></select>
                                                         </td>
-                                                        <td class="text-center">
-                                                            <label for="">Nama Operator</label>
-                                                            <select class="form-control" data-check="" name="activity_id"></select>
+                                                        <td class="text-center" width="*">
+                                                            <label for="">Fuelman</label>
+                                                            <input type="text" class="form-control" name="fuelman" id="fuelman" id="fuelman_onfuel" placeholder="Pengisi Bahan Bakar" required>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -121,7 +126,7 @@
                                                             </th>
                                                         </tr>
                                                         <tr>
-                                                            <th class="text-center v-middle" width="150" rowspan="2">Operator Unit</th>
+                                                            <th class="text-center v-middle" width="200" rowspan="2">Operator Unit</th>
                                                             <th class="text-center" colspan="4">SMU Jam Kerja</th>
                                                             <th class="text-center v-middle" width="100" rowspan="2">Pencapaian <br> SMU</th>
                                                             <th class="text-center v-middle" width="150" rowspan="2">Lokasi</th>
@@ -130,29 +135,29 @@
                                                         <tr>
                                                             <th class="text-center" width="100">SMU Mulai</th>
                                                             <th class="text-center" width="100">SMU Akhir</th>
-                                                            <th class="text-center" width="100">Waktu Mulai</th>
-                                                            <th class="text-center" width="100">Waktu Akhir</th>
+                                                            <th class="text-center" width="80">Waktu Mulai</th>
+                                                            <th class="text-center" width="80">Waktu Akhir</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <select class="form-control select2operator" data-check="{{data.operator}}" name="operator"></select>
+                                                                <select class="form-control select2operator" data-check="{{data.operator}}" name="operator" id="operator" required></select>
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM" value="{{data.begin_smu}}">
+                                                                <input type="text" class="form-control" name="begin_smu" id="begin_smu" placeholder="HM" value="{{data.begin_smu}}">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
+                                                                <input type="text" class="form-control" name="end_smu" id="end_smu" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control set-datetime" data-datetime="{{data.approved_at}}">
+                                                                <input type="datetime-local" class="form-control set-datetime" name="approved_at" id="approved_at" data-datetime="{{data.approved_at}}">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control set-datetime" data-datetime="{{data.finish_at}}">
+                                                                <input type="datetime-local" class="form-control set-datetime" name="finish_at" id="finish_at" data-datetime="{{data.finish_at}}">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control" placeholder="HM" value="{{data.used_smu != null ? data.used_smu : '-'}}">
+                                                                <input type="text" class="form-control" placeholder="HM" name="used_smu" id="used_smu" value="{{data.used_smu != null ? data.used_smu : '-'}}">
                                                             </td>
                                                             <td>
                                                                 <input type="text" class="form-control" placeholder="Lokasi" value="{{data.dailyFleet.pit.name}}" readonly>
@@ -176,7 +181,7 @@
                                                                 <h5>
                                                                     BREAKDOWN / STAND BY
                                                                     <span class="pull-right">
-                                                                        <button class="fcbtn btn btn-warning btn-outline btn-1f">Tambah Event</button>
+                                                                        <button class="fcbtn btn btn-warning btn-outline btn-1f" id="bt-add-event">Tambah Event</button>
                                                                 </h5>
                                                                 <small>
                                                                     <em>
@@ -194,43 +199,45 @@
                                                             <th class="text-center" width="50">ACT</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
-                                                        @if(data.dailyEvent.length > 0)
+                                                    @if(data.dailyEvent.length > 0)
+                                                        <tbody class="item-event">
                                                             @each(item in data.dailyEvent)
-                                                            <tr>
+                                                            <tr class="item-event" id="TR{{$loop.index + 1}}" data-id="{{$loop.index + 1}}">
                                                                 <td class="text-center">
                                                                     <h3>{{$loop.index + 1}}</h3>
-                                                                    <input type="hidden" class="form-control" value="{{item.id}}">
+                                                                    <input type="hidden" class="form-control" id="id{{$loop.index + 1}}" name="id" value="{{item.id}}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="datetime-local" class="form-control set-datetime" data-datetime="{{item.start_at}}">
+                                                                    <input type="datetime-local" class="form-control set-datetime" id="start_at{{$loop.index + 1}}" name="start_at" data-datetime="{{item.start_at}}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="datetime-local" class="form-control set-datetime" data-datetime="{{item.end_at}}">
+                                                                    <input type="datetime-local" class="form-control set-datetime" id="end_at{{$loop.index + 1}}" name="end_at" data-datetime="{{item.end_at}}">
                                                                 </td>
                                                                 <td>
                                                                     <input type="number" class="form-control text-right" value="{{item.total_smu}}">
                                                                 </td>
                                                                 <td>
-                                                                    <input type="text" class="form-control" placeholder="Keterangan" value="{{item.description}}">
+                                                                    <input type="text" class="form-control" placeholder="Keterangan" id="description{{$loop.index + 1}}" name="description" value="{{item.description}}">
                                                                 </td>
                                                                 <td>
-                                                                    <button class="btn btn-danger btn-sm">
+                                                                    <button class="btn btn-danger btn-sm bt-remove-event" data-id="{{$loop.index + 1}}">
                                                                         <i class="ti-close"></i>
                                                                     </button>
                                                                 </td>
                                                             </tr>
                                                             @endeach
-                                                        @else
-                                                            <tr>
+                                                        </tbody>
+                                                    @else
+                                                        <tbody class="item-event">
+                                                            <tr class="item-event" id="TR1" data-id="1">
                                                                 <td class="text-center">
-                                                                    <h3>{{$loop.index + 1}}</h3>
+                                                                    <h3>1</h3>
                                                                 </td>
                                                                 <td>
-                                                                    <input type="datetime-local" class="form-control init-datetime">
+                                                                    <input type="datetime-local" class="form-control init-datetime" id="start_at1" name="start_at" >
                                                                 </td>
                                                                 <td>
-                                                                    <input type="datetime-local" class="form-control init-datetime">
+                                                                    <input type="datetime-local" class="form-control init-datetime" id="end_at1" name="end_at" >
                                                                 </td>
                                                                 <td>
                                                                     <input type="number" class="form-control text-right">
@@ -239,13 +246,13 @@
                                                                     <input type="text" class="form-control" placeholder="Keterangan">
                                                                 </td>
                                                                 <td>
-                                                                    <button class="btn btn-danger btn-sm">
+                                                                    <button class="btn btn-danger btn-sm bt-remove-event" data-id="1">
                                                                         <i class="ti-close"></i>
                                                                     </button>
                                                                 </td>
                                                             </tr>
-                                                        @endif
-                                                    </tbody>
+                                                        </tbody>
+                                                    @endif
                                                 </table>
                                             </div>
                                         </div>

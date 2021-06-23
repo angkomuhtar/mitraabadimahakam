@@ -179,8 +179,8 @@ $(function(){
             success: function(data){
                 console.log(data);
                 if(data.length > 0){
-                    elm.prepend('<option value="">Pilih</option>')
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.fullname+'</option>')
+                    elm.append('<option value="" selected>Pilih</option>')
                     elm.append(list)
                 }else{
                     elm.prepend('<option value="">Belum ada data pilihan...</option>')

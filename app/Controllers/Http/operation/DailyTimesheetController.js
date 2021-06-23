@@ -15,9 +15,13 @@ class DailyTimesheetController {
     }
 
     async listP2H ({ view, request }){
-        const req = request.only(['keyword', 'page'])
-        const p2hItems = (await P2Hhelpers.ALL(req)).toJSON()
-        return view.render('_component.list-p2h', {list: p2hItems})
+        const req = request.only(['id', 'keyword', 'page'])
+        try {
+            const p2hItems = await P2Hhelpers.WITH_TIMESHEET_ID(req)
+            return view.render('_component.list-p2h', {list: p2hItems})
+        } catch (error) {
+            throw new Error('Tidak dapat load data...')
+        }
     }
 
     async show ({ view, request, params, auth }) {
