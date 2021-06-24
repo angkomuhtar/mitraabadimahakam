@@ -51,9 +51,12 @@
                                     </td>
                                     <td class="single-line">
                                         <strong>{{item.dailyFleet.activities.name}}</strong><br>
-                                        <small>{{item.description}}</small>
+                                        <small>{{item.description}}</small><br>
                                     </td>
-                                    <td class="myDateFormat" data-date="{{item.approved_at}}"></td>
+                                    <td class="myDateFormat" data-date="{{item.approved_at}}" data-elm="h5">
+                                        <h5></h5>
+                                        <small class="text-warning nomor-berkas" data-id="{{item.id}}"></small>
+                                    </td>
                                     <td class="text-right">{{item.begin_smu}}</td>
                                     <td class="text-right">{{item.end_smu ? item.end_smu : 0}}</td>
                                     <td class="text-right">{{item.used_smu ? item.used_smu : 0}}</td>

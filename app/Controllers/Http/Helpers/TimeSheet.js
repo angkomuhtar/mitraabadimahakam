@@ -2,7 +2,9 @@
 
 const db = use('Database')
 const MasP2H = use("App/Models/MasP2H")
+const DailyEvent = use("App/Models/DailyEvent")
 const DailyCheckp2H = use("App/Models/DailyCheckp2H")
+const DailyRefueling = use("App/Models/DailyRefueling")
 const DailyChecklist = use("App/Models/DailyChecklist")
 
 class TimeSheet {
@@ -30,7 +32,7 @@ class TimeSheet {
                     w.where('description', 'like', `%${req.keyword}%`)
                     .orWhere('tgl', 'like', `${req.keyword}`)
                 })
-                .orderBy('tgl', 'desc')
+                .orderBy('created_at', 'desc')
                 .paginate(halaman, limit)
         }else{
             dailyChecklist = await DailyChecklist
@@ -48,7 +50,7 @@ class TimeSheet {
                 .with('equipment')
                 .with('p2h')
                 .with('dailyEvent')
-                .orderBy('tgl', 'desc')
+                .orderBy('created_at', 'desc')
                 .paginate(halaman, limit)
         }
         return dailyChecklist
@@ -71,6 +73,7 @@ class TimeSheet {
             .with('equipment')
             .with('p2h')
             .with('dailyEvent')
+            .with('dailyRefueling')
             .where('id', params.id)
             .first()
         return dailyChecklist
@@ -79,8 +82,16 @@ class TimeSheet {
     async UPDATE (params, req) {
         const trx = await db.beginTransaction()
         try {
-            const { p2h } = req
+            const { p2h, event, refueling } = req
             const dailyChecklist = await DailyChecklist.find(params.id)
+
+            if(refueling.topup === '' || refueling.topup < 0){
+                throw new Error('Jumlah Topup Fuel tdk valid...')
+            }
+
+            if(refueling.smu === '' || refueling.topup < 0){
+                throw new Error('Input SMU Refuel Unit tdk valid...')
+            }
     
             const dataMerge = {
                 user_chk: req.user_chk, 
@@ -96,8 +107,17 @@ class TimeSheet {
     
             dailyChecklist.merge(dataMerge)
             await dailyChecklist.save(trx)
+
+            let dailyRefueling = await DailyRefueling.query().where({timesheet_id: params.id, equip_id: refueling.equip_id}).first()
+            if(dailyRefueling){
+                dailyRefueling.merge(refueling)
+            }else{
+                dailyRefueling = new DailyRefueling()
+                dailyRefueling.fill(refueling)
+            }
+            await dailyRefueling.save(trx)
             
-            await dailyChecklist.p2h().detach()
+            await dailyChecklist.p2h().detach(null, null, trx)
             let arrP2H = []
             for (const item of p2h) {
                 let p2h_item = await MasP2H.findOrFail(item.p2h_id, trx)
@@ -109,6 +129,16 @@ class TimeSheet {
                 })
             }
             await DailyCheckp2H.createMany(arrP2H, trx)
+            
+            
+            await DailyEvent.query(trx).where('timesheet_id', params.id).delete()
+            for (const item of event) {
+                delete item['id']
+                const dailyEvent = new DailyEvent()
+                dailyEvent.fill(item)
+                await dailyEvent.save(trx)
+            }
+
 
             await trx.commit(trx)
 
@@ -134,6 +164,7 @@ class TimeSheet {
             
         } catch (error) {
             console.log(error);
+            await trx.rollback(trx)
             return error
         }
     }

@@ -208,6 +208,8 @@ Route.group(() => {
 
     Route.get('/sys-options', 'AjaxOptionController.index').as('set.sys-options.index')
 
+    Route.get('/usr', 'AjaxUserAkseController.getOptionUsers').as('set.sys-options.getOptionUsers')
+    
     Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
 
     Route.get('/site', 'AjaxSiteController.getSites').as('site.getSites')

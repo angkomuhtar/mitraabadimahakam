@@ -56,6 +56,24 @@ $(function(){
         }
     })
 
+    $('body select.select2user').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.get('/ajax/usr?selected='+selected, function(data){
+            console.log(data);
+            if(data.length > 0){
+                const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.nm_lengkap+'</option>')
+                if(!selected){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }
+                elm.append(list)
+            }else{
+                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
+        })
+    })
+
     $('body select.select2dealer').each(function(){
         var selected = $(this).data('check')
         var elm = $(this)
@@ -180,7 +198,7 @@ $(function(){
             url: '/ajax/employee/operator?selected='+selected,
             method: 'GET',
             success: function(data){
-                console.log(data);
+                // console.log(data);
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.fullname+'</option>')
                     elm.append('<option value="" selected>Pilih</option>')
@@ -204,7 +222,6 @@ $(function(){
             url: '/ajax/event?selected='+selected,
             method: 'GET',
             success: function(data){
-                console.log(data);
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.engine+' | '+nod.narasi+'</option>')
                     elm.append('<option value="" selected>Pilih</option>')

@@ -34,7 +34,6 @@ class P2H {
                     result.push({...item, p2h_id: item.id, is_check: 'Y', description: ''})
                 }
             }
-            console.log(result);
             return result
         } catch (error) {
             console.log(error);

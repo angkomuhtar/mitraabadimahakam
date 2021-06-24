@@ -1,14 +1,14 @@
 'use strict'
 
 const moment = require('moment')
-const DailyChecklistHook = exports = module.exports = {}
+const DailyEventHook = exports = module.exports = {}
 
-DailyChecklistHook.beforeADD = async (dailychecklist) => {
-    await PARSEDATA_TIME(dailychecklist)
+DailyEventHook.beforeADD = async (dailyevent) => {
+    await PARSEDATA_TIME(dailyevent)
 }
 
-DailyChecklistHook.beforeUPDATE = async (dailychecklist) => {
-    await PARSEDATA_TIME(dailychecklist)
+DailyEventHook.beforeUPDATE = async (dailyevent) => {
+    await PARSEDATA_TIME(dailyevent)
 }
 
 async function PARSEDATA_TIME(data){

@@ -56,10 +56,52 @@ $(function(){
         })
     }
 
+    function setOptionUser(no){
+        var selected = $('select#event_id'+no).data('check')
+        var elm = $('select#user_id'+no)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/usr?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                console.log(data);
+                if(data.length > 0){
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.nm_lengkap+'</option>')
+                    if(!selected){
+                        elm.prepend('<option value="" selected>Pilih</option>')
+                    }
+                    elm.append(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
+
     function GET_INPUT_DATA_TIMESHEET(){
         var keys = []
         var values = []
         $('.inp-timesheet').each(function(){
+            keys.push($(this).attr('name'))
+            values.push($(this).val())
+        })
+        return _.object(keys, values)
+    }
+
+    function GET_INPUT_DATA_REFUEL(){
+        var keys = []
+        var values = []
+        keys.push('timesheet_id')
+        values.push($('form#fm-timesheeet-upd').data('id'))
+        
+        keys.push('equip_id')
+        values.push($('select#unit_id').val())
+
+        $('.inp-dailyrefuel').each(function(){
             keys.push($(this).attr('name'))
             values.push($(this).val())
         })
@@ -85,23 +127,62 @@ $(function(){
         return arr
     }
 
+    function GET_INPUT_DATA_EVENT(){
+        var arr = []
+        $('tr.item-event').each(function(){
+            var id = $(this).data('id')
+            var names = []
+            var values = []
+            $('.inp-dailyevent').each(function(){
+                if($(this).attr('name')){
+                    var attribute = $(this).attr('name')
+                    names.push(attribute)
+                    values.push($('#'+attribute+id).val() != '' ? $('#'+attribute+id).val() : null)
+                }
+            })
+            arr.push(_.object(names, values))
+        })
+        console.log(arr);
+        return arr
+    }
+
     function itemEventHTML(no){
         return '<tr class="item-event" id="TR'+no+'" data-id="'+no+'">'+
-        '   <td class="text-center"><h3>'+no+'<h3></td>'+
-        '   <td>'+
-        '       <input type="datetime-local" class="form-control init-datetime" data-id="'+no+'" id="start_at'+no+'" name="start_at">'+
+        '   <td class="text-center">'+
+        '   <h1>'+no+'<h1>'+
+        '   <input type="hidden" class="form-control inp-dailyevent" id="id'+no+'" name="id">'+
         '   </td>'+
         '   <td>'+
-        '       <input type="datetime-local" class="form-control init-datetime" data-id="'+no+'" id="end_at'+no+'" name="end_at">'+
+        '       <label for="tgl">Waktu Mulai</label>'+
+        '       <div class="form-group m-b-5">'+
+        '           <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="'+no+'" id="start_at'+no+'" name="start_at" data-id="'+no+'">'+
+        '       </div>'+
+        '       <label for="tgl">Waktu Akhir</label>'+
+        '       <div class="form-group m-b-5">'+
+        '           <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="'+no+'" id="end_at'+no+'" name="end_at" data-id="'+no+'">'+
+        '       </div>'+
         '   </td>'+
         '   <td>'+
-        '       <input type="number" class="form-control text-right" data-id="'+no+'" name="smu_event" id="smu_event1">'+
+        '       <label for="tgl">Used</label>'+
+        '       <div class="form-group m-b-5">'+
+        '           <input type="text" class="form-control text-right inp-dailyevent" data-id="'+no+'" name="smu_event" id="smu_event'+no+'" data-id="'+no+'" disabled>'+
+        '       </div>'+
+        '       <label for="tgl">CreatedBy</label>'+
+        '       <div class="form-group m-b-5">'+
+        '           <select class="form-control select2user inp-dailyevent" data-id="'+no+'" data-check="" name="user_id" id="user_id'+no+'" data-id="'+no+'" required></select>'+
+        '       </div>'+
         '   </td>'+
         '   <td>'+
-        '       <select class="form-control select2event" data-check="" name="event_id" id="event_id'+no+'"></select>'+
-        '       <input type="text" class="form-control m-t-10" data-id="'+no+'" id="description'+no+'" name="description" placeholder="Deskipsi Tambahan...">'+
+        '       <label for="tgl">Pilih Event</label>'+
+        '       <div class="form-group m-b-5">'+
+        '           <select class="form-control select2event inp-dailyevent" data-check="" name="event_id" id="event_id'+no+'" data-id="'+no+'" required></select>'+
+        '       </div>'+
+        '       <label for="tgl">Penjelasan</label>'+
+        '       <div class="form-group m-b-5">'+
+        '           <input type="text" class="form-control inp-dailyevent" data-id="'+no+'" id="description'+no+'" name="description" placeholder="xDeskipsi Tambahan...">'+
+        '       </div>'+
         '   </td>'+
-        '   <td>'+
+        '   <td style="vertical-align: middle;">'+
         '       <button class="btn btn-danger btn-sm bt-remove-event" data-id="'+no+'">'+
         '           <i class="ti-close"></i>'+
         '       </button>'+
@@ -114,6 +195,7 @@ $(function(){
         const last = $('body').find('tbody.item-event tr.item-event').last().data('id') || 0
         $('body').find('tbody.item-event').append(itemEventHTML(last + 1))
         setOptionEvent(last + 1)
+        setOptionUser(last + 1)
     })
 
     $('body').on('change', 'input[name="start_at"]', function(e){
@@ -140,6 +222,15 @@ $(function(){
         $('input#smu_event'+id).val(parseSmu.toFixed(2))
     })
 
+    $('body').on('change', 'select[name="event_id"]', function(){
+        var id = $(this).data('id')
+        var values = $(this).val()
+        var isRequired = values != ''
+        $('input#smu_event'+id).prop('required', isRequired)
+        $('input#start_at'+id).prop('required', isRequired)
+        $('input#end_at'+id).prop('required', isRequired)
+    })
+
     $('body').on('click', 'button.bt-remove-event', function(e){
         e.preventDefault()
         var id = $(this).data('id')
@@ -162,8 +253,14 @@ $(function(){
         var id = $(this).data('id')
         var DATA_TIMESHEET = GET_INPUT_DATA_TIMESHEET()
         var DATA_P2H = GET_INPUT_DATA_P2H()
-        var SUM_DATA = {...DATA_TIMESHEET, p2h: DATA_P2H}
-        // console.log(JSON.stringify(SUM_DATA))
+        var DATA_EVENT = GET_INPUT_DATA_EVENT()
+        var DATA_REFUELING = GET_INPUT_DATA_REFUEL()
+        var SUM_DATA = {
+            ...DATA_TIMESHEET, 
+            p2h: DATA_P2H,
+            event: DATA_EVENT,
+            refueling: DATA_REFUELING
+        }
         $.ajax({
             async: true,
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
@@ -176,18 +273,17 @@ $(function(){
             contentType: false,
             success: function(result){
                 console.log(result)
-                // const { message } = result
-                // if(result.success){
-                //     alert(result.message)
-                //     window.location.reload()
-                // }else{
-                //     alert(result.message)
-                // }
+                if(result.success){
+                    swal("Okey,,,!", result.message, "success")
+                    window.location.reload()
+                }else{
+                    alert(result.message)
+                }
             },
             error: function(err){
                 console.log(err)
-                // const { message } = err.responseJSON
-                // alert(result.message)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
             }
         })
     })

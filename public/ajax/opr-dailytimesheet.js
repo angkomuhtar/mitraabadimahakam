@@ -47,12 +47,21 @@ $(function(){
             success: function(result){
                 $('div#list-content').children().remove()
                 $('div#list-content').html(result).show()
+                listNoBerkas()
             },
             error: function(err){
                 console.log(err);
             }
         })
     })
+
+    function listNoBerkas(){
+        $('small.nomor-berkas').each(function(){
+            var no = $(this).data('id')
+            var str = '0'.repeat(5 - (no.toString()).length) + no
+            $(this).html('No : '+str)
+        })
+    }
 
     function searchKeyword(){
         var keyword = $('input#keywordTimeSheet').val()
@@ -64,6 +73,7 @@ $(function(){
             success: function(result){
                 $('div#list-content').children().remove()
                 $('div#list-content').html(result).show()
+                listNoBerkas()
             },
             error: function(err){
                 console.log(err);
@@ -80,6 +90,7 @@ $(function(){
             success: function(result){
                 $('div#list-content').children().remove()
                 $('div#list-content').html(result).show()
+                listNoBerkas()
             },
             error: function(err){
                 console.log(err);
