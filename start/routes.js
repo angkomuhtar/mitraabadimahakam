@@ -243,6 +243,7 @@ Route.group(() => {
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
 
 //  API MOBILE
+
 Route.group(() => {
 
     // Route.post('/login', 'AuthApiController.login').middleware('auth:session,api')
@@ -255,6 +256,11 @@ Route.group(() => {
     Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }))
 
 }).prefix('api').namespace('api')
+
+Route.group(() => {
+    Route.get('/', 'ApiWeatherController.getWeather')
+
+}).prefix('api/weather').namespace('api')
 
 Route.group(() => {
 
