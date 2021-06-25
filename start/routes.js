@@ -260,6 +260,8 @@ Route.group(() => {
 Route.group(() => {
     Route.get('/', 'ApiWeatherController.getWeather')
 
+    Route.get('/city', 'ApiWeatherController.getWeatherCity')
+
 }).prefix('api/weather').namespace('api')
 
 Route.group(() => {
