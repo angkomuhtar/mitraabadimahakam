@@ -11,6 +11,58 @@ class ApiWeatherController {
     async getWeather () {
         const uri = 'https://api.openweathermap.org/data/2.5/weather?q=samarinda&appid=c47c30511efe1a9cd1131af21d913aea'
         
+        async function formatIcon(ico){
+            let icons
+            switch (ico) {
+                case '01d':
+                    icons = 'sunny-outline'
+                    break;
+                case '02d':
+                    icons = 'ios-partly-sunny-outline'
+                    break;
+                case '03d':
+                    icons = 'cloudy-outline'
+                    break;
+                case '04d':
+                    icons = 'cloudy-outline'
+                    break;
+                case '09d':
+                    icons = 'ios-rainy-outline'
+                    break;
+                case '10d':
+                    icons = 'ios-rainy-outline'
+                    break;
+                case '11d':
+                    icons = 'ios-thunderstorm-outline'
+                    break;
+                case '01n':
+                    icons = 'ios-moon-outline'
+                    break;
+                case '02n':
+                    icons = 'ios-cloudy-night-outline'
+                    break;
+                case '03n':
+                    icons = 'ios-cloudy-night-outline'
+                    break;
+                case '04n':
+                    icons = 'cloudy-outline'
+                    break;
+                case '09n':
+                    icons = 'ios-rainy-outline'
+                    break;
+                case '10n':
+                    icons = 'ios-rainy-outline'
+                    break;
+                case '11n':
+                    icons = 'ios-thunderstorm-outline'
+                    break;
+                default:
+                    icons = 'ios-partly-sunny-outline'
+                    break;
+            }
+            return icons
+        }
+
         axios.get(uri)
         .then(async function (response) {
             const {data} = response
@@ -19,9 +71,10 @@ class ApiWeatherController {
                 const mamWeather = new MamWeather()
                 mamWeather.fill({
                     kota: (data.name).toLowerCase(),
+                    weather: data.weather[0].main,
                     description: data.weather[0].description,
-                    icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
-                    temp: (parseFloat(data.main.temp) - parseFloat('273.15')).toFixed(1),
+                    icon: await formatIcon(data.weather[0].icon),
+                    temp: (parseFloat(data.main.temp) - parseFloat('273.15')).toFixed(0),
                     long: data.coord.lon,
                     lat: data.coord.lat
                 })
@@ -29,7 +82,6 @@ class ApiWeatherController {
             } catch (error) {
                 console.log(error);
             }
-            
         })
         .catch(function (error) {
           console.log(error);
