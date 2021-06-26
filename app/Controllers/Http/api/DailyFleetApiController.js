@@ -159,7 +159,7 @@ class DailyFleetApiController {
     }
 
     async create ({ auth, request, response }) {
-        const req = request.only(['pit_id', 'fleet_id', 'activity_id', 'shift_id', 'date', 'details'])
+        const req = request.only(['pit_id', 'fleet_id', 'activity_id', 'shift_id', 'date', 'tipe', 'details'])
         var t0 = performance.now()
         let durasi
         try {
@@ -180,7 +180,7 @@ class DailyFleetApiController {
 
         async function resData(usr){
             const { details } = req
-            const { pit_id, fleet_id, activity_id, shift_id, date } = req
+            const { pit_id, fleet_id, activity_id, shift_id, tipe, date } = req
             const cekFleet = 
                 await DailyFleet
                     .query()
@@ -235,7 +235,8 @@ class DailyFleetApiController {
                     pit_id, 
                     fleet_id, 
                     activity_id, 
-                    shift_id, 
+                    shift_id,
+                    tipe,
                     user_id: usr.id,
                     date: new Date(date)
                 })
@@ -276,9 +277,9 @@ class DailyFleetApiController {
 
     async update ({auth, params, request, response}) {
         const { id } = params
-        const req = request.only(['pit_id', 'fleet_id', 'activity_id', 'shift_id', 'date'])
+        const req = request.only(['pit_id', 'fleet_id', 'activity_id', 'shift_id', 'tipe', 'date'])
         var t0 = performance.now()
-        const { pit_id, fleet_id, activity_id, shift_id, date } = req
+        const { pit_id, fleet_id, activity_id, shift_id, tipe, date } = req
         let durasi
         try {
             const usr = await auth.authenticator('jwt').getUser()
@@ -297,7 +298,7 @@ class DailyFleetApiController {
                 const trx = await db.beginTransaction()
                 try {
                     let dailyFleet = await DailyFleet.findOrFail(id)
-                    dailyFleet.merge({pit_id, fleet_id, activity_id, shift_id, date})
+                    dailyFleet.merge({pit_id, fleet_id, activity_id, shift_id, tipe, date})
                     await dailyFleet.save(trx)
                     await trx.commit(trx)
                     durasi = await diagnoticTime.durasi(t0)

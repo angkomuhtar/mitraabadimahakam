@@ -13,6 +13,7 @@ class MasFleetSchema extends Schema {
       table.integer('shift_id').unsigned().references('id').inTable('mas_shifts').onDelete('RESTRICT').onUpdate('CASCADE')
       table.integer('user_id').unsigned().references('id').inTable('users').onDelete('RESTRICT').onUpdate('CASCADE')
       table.date('date').notNullable()
+      table.enu('tipe', ['MF', 'SF']).defaultTo('MF').comment('MF=Main-Fleet, SF=Support-Fleet')
       table.enu('status', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })
