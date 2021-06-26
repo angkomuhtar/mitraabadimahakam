@@ -301,6 +301,18 @@ Route.group(() => {
 
 Route.group(() => {
 
+    Route.get('/', 'MaterialApiController.index')
+
+    Route.post('/', 'MaterialApiController.create')
+
+    Route.get('/:id/show', 'MaterialApiController.show')
+
+    Route.post('/:id/update', 'MaterialApiController.update')
+
+}).prefix('api/material').namespace('api')
+
+Route.group(() => {
+
     Route.get('/', 'MasEventApiController.index')
 
     Route.post('/', 'MasEventApiController.create')
