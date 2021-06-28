@@ -10,7 +10,7 @@ const DailyChecklist = use("App/Models/DailyChecklist")
 class TimeSheet {
     async ALL (req) { 
         console.log('req', req);
-        const limit = 10
+        const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let dailyChecklist
         if(req.keyword){

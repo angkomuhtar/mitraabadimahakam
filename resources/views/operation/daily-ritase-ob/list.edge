@@ -1,0 +1,168 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>New Daily-Ritase</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <!--
+                        <div class="input-group">
+                            <input id="keywordTimeSheet" class="form-control" placeholder="Search for..." value="{{keyword}}">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                            </span>
+                        </div>
+                        -->
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="150">PIT Name</th>
+                                <th class="sl" width="150">Fleet Name</th>
+                                <th class="sl" width="150">Work Shift</th>
+                                <th class="sl">Description</th>
+                                <th class="sl" width="100">Date</th>
+                                <th class="sl text-right" width="100">Distance</th>
+                                <th class="sl text-right" width="100">Total Ritase</th>
+                                <th class="sl text-center" width="100">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td class="single-line">
+                                        <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.pit.id}}" data-search="pit">
+                                            <span class="text-mute">{{item.daily_fleet.pit.name}} </span>
+                                        </a>
+                                    </td>
+                                    <td class="single-line">
+                                        <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.fleet.id}}" data-search="fleet">
+                                            <span>{{item.daily_fleet.fleet.name}} </span>
+                                        </a>
+                                    </td>
+                                    <td class="">
+                                        <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.shift.id}}" data-search="shift">
+                                            <span class="text-info">{{item.daily_fleet.shift.name}} </span>
+                                        </a>
+                                    </td>
+                                    <td class="single-line">
+                                        <strong>{{item.material_details.kode}}</strong> -
+                                        <span>{{item.material_details.name}}</span>
+                                    </td>
+                                    <td class="myDateFormat" data-date="{{item.created_at}}"></td>
+                                    <td class="text-right">{{item.distance}} Meter</td>
+                                    <td class="text-right">{{item.tot_ritase}} Ritase</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-default btn-circle" data-toggle="modal" data-target="#{{item.id}}">
+                                            <i class="ti-control-shuffle"></i> 
+                                        </button>
+                                        <div class="modal fade bs-example-modal-lg" id="{{item.id}}" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog modal-lg">
+                                              <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <span class="pull-left">Details Ritase</span>
+                                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                  </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    @if(item.ritase_details.length > 0)
+                                                        <div class="table-responsive">
+                                                            <table class="table table-hover">
+                                                                <thead style="background-color: #1e2228">
+                                                                    <th class="text-center">No</th>
+                                                                    <th>Checker/SPV</th>
+                                                                    <th>Hauler Unit</th>
+                                                                    <th>CheckIn</th>
+                                                                </thead>
+                                                                <tbody style="background-color: #262831;">
+                                                                    @each(item in item.ritase_details)
+                                                                    <tr>
+                                                                        <td>
+                                                                            <h3>{{$loop.index + 1}}</h3>
+                                                                        </td>
+                                                                        <td class="text-left">
+                                                                            <strong>
+                                                                                {{item.checker.profile.nm_depan}} {{item.checker.profile.nm_belakang ? item.checker.profile.nm_belakang : ''}} <br>
+                                                                            </strong>
+                                                                            {{item.spv.profile.nm_depan}} {{item.spv.profile.nm_belakang ? item.spv.profile.nm_belakang : ''}}
+                                                                        </td>
+                                                                        <td class="text-left">
+                                                                            <strong class="text-warning">{{item.hauler.kode}}</strong><br>
+                                                                            <span>{{item.hauler.brand}}</span>
+                                                                        </td>
+                                                                        <td class="text-left text-info">
+                                                                            <strong class="text-success">
+                                                                                <i class="ti-control-shuffle"></i>  Ritase Ke - {{item.urut}} <br>
+                                                                            </strong>
+                                                                            @if(item.duration > 0)
+                                                                                    <span class="text-warning"><i class="ti-timer"></i>  {{item.duration}} Menit</span>
+                                                                                @else
+                                                                                    <span class="text-muted">uncount</span>
+                                                                                @endif
+                                                                        </td>
+                                                                    </tr>
+                                                                    @endeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    @else
+                                                      <h3>Data tidak ditemukan</h3>
+                                                    @endif
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger waves-effect text-left" data-dismiss="modal">Close</button>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('body').on('click', 'a.btn-pagging', function(e){
+            e.preventDefault()
+            var page = $(this).data('page')
+            // var keyword = $('#keywordTimeSheet').val()
+            console.log(window.location.pathname);
+            var url = window.location.pathname+'/list?page='+page
+            $.ajax({
+                async: true,
+                url: url,
+                method: 'GET',
+                success: function(result){
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+    })
+</script>

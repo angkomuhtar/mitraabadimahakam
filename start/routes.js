@@ -182,6 +182,27 @@ Route.group(() => {
 
     Route.post('/daily-fleet/:id/delete', 'DailyFleetController.delete').as('opr.daily-fleet.delete').middleware('D')
 
+    // Daily Ritase
+    Route.get('/daily-ritase-ob', 'DailyRitaseController.index').as('opr.daily-ritase-ob.index').middleware('R')
+
+    Route.post('/daily-ritase-ob', 'DailyRitaseController.store').as('opr.daily-ritase-ob.store').middleware('C')
+
+    Route.get('/daily-ritase-ob/list', 'DailyRitaseController.list').as('opr.daily-ritase-ob.list').middleware('R')
+
+    Route.get('/daily-ritase-ob/create', 'DailyRitaseController.create').as('opr.daily-ritase-ob.create').middleware('R')
+
+    Route.get('/daily-ritase-ob/:id/show', 'DailyRitaseController.show').as('opr.daily-ritase-ob.show').middleware('U')
+    
+    Route.post('/daily-ritase-ob/:id/update', 'DailyRitaseController.update').as('opr.daily-ritase-ob.update').middleware('U')
+    
+    Route.post('/daily-ritase-ob/:id/delete', 'DailyRitaseController.delete').as('opr.daily-ritase-ob.delete').middleware('D')
+    
+    Route.get('/daily-ritase-ob/list/pit/:pit_id', 'DailyRitaseController.listByPIT').as('opr.daily-ritase-ob.listByPIT').middleware('R')
+
+    Route.get('/daily-ritase-ob/list/fleet/:fleet_id', 'DailyRitaseController.listByFLEET').as('opr.daily-ritase-ob.listByFLEET').middleware('R')
+
+    Route.get('/daily-ritase-ob/list/shift/:shift_id', 'DailyRitaseController.listBySHIFT').as('opr.daily-ritase-ob.listBySHIFT').middleware('R')
+
     // Daily TimeSheet
     Route.get('/daily-timesheet', 'DailyTimesheetController.index').as('opr.daily-timesheet.index').middleware('R')
 

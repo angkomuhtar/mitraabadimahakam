@@ -2,6 +2,7 @@
 
 const { performance } = require("perf_hooks")
 const moment = require("moment")
+const DailyRitaseHelpers = use("App/Controllers/Http/Helpers/DailyRitase")
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
 const db = use("Database")
@@ -11,8 +12,6 @@ class DailyRitaseApiController {
   async index({ auth, request, response }) {
     var t0 = performance.now()
     const req = request.only(["keyword", "page"])
-    const limit = 10
-    const halaman = req.page === undefined ? 1 : parseInt(req.page)
 
     try {
       await auth.authenticator("jwt").getUser()
@@ -30,29 +29,7 @@ class DailyRitaseApiController {
     }
 
     try {
-      let dailyRitase
-      if (req.keyword) {
-        dailyRitase = await DailyRitase.query()
-          .with('daily_fleet', details => {
-            details.with('details', unit => unit.with('equipment'))
-          })
-          .where(whe => {
-              whe.where('material', 'like', `%${req.keyword}%`)
-              whe.orWhere('distance', 'like', `%${req.keyword}%`)
-              whe.orWhere('date', 'like', `%${req.keyword}%`)
-          })
-          .andWhere("status", "Y")
-          .orderBy('created_at', 'desc')
-          .paginate(halaman, limit)
-      } else {
-        dailyRitase = await DailyRitase.query()
-          .with('daily_fleet', details => {
-            details.with('details', unit => unit.with('equipment'))
-          })
-          .where("status", "Y")
-          .orderBy('created_at', 'desc')
-          .paginate(halaman, limit)
-      }
+      const dailyRitase = await DailyRitaseHelpers.ALL(req)
       let durasi = await diagnoticTime.durasi(t0)
       return response.status(200).json({
         diagnostic: {
@@ -162,6 +139,7 @@ class DailyRitaseApiController {
         try {
           const dailyRitase = await DailyRitase
             .query()
+            .with('material_details')
             .with('daily_fleet', details => {
               details.with('details', unit => unit.with('equipment'))
             }).where('id', id).first()

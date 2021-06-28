@@ -41,6 +41,30 @@ $(function(){
         }
     })
 
+    $('.myTimeFormat').each(function(){
+        var date = $(this).data(date)
+        var elm = $(this).data('elm')
+        var dateString = moment(date.date).format('HH:mm')
+        console.log(date.date);
+        if(elm != undefined){
+            $(this).find(elm).html(dateString)
+        }else{
+            $(this).html(dateString)
+        }
+    })
+
+    $('.myDateTimeFormat').each(function(){
+        var date = $(this).data(date)
+        var elm = $(this).data('elm')
+        var dateString = moment(date.date).format('DD-MM-YYYY HH:mm')
+        console.log(date.date);
+        if(elm != undefined){
+            $(this).find(elm).html(dateString)
+        }else{
+            $(this).html(dateString)
+        }
+    })
+
     $('body select.select2 select.custom-option').each(function(){
         var group = $(this).data('title')
         var selected = $(this).data('check')
