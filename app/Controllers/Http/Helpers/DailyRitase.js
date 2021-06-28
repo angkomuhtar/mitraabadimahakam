@@ -1,7 +1,7 @@
 'use strict'
 
-const DailyRitase = use("App/models/DailyRitase")
-const DailyRitaseDetail = use("App/models/DailyRitaseDetail")
+const DailyRitase = use("App/Models/DailyRitase")
+const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 
 class Ritase {
     async ALL (req) { 

@@ -1,6 +1,6 @@
 'use strict'
 
-const DailyFleet = use("App/models/DailyFleet")
+const DailyFleet = use("App/Models/DailyFleet")
 
 class TimeSheet {
     async GET_ID (params) { 
