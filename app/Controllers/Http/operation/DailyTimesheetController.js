@@ -46,7 +46,7 @@ class DailyTimesheetController {
             }
         })
         
-        // console.log(req);
+        console.log(req);
         try {
             await TimeSheet.UPDATE(params, req)
             return {

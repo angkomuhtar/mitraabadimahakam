@@ -289,9 +289,9 @@ class TimeSheetApiController {
     async update ({ auth, params, request, response }) {
         var t0 = performance.now()
         const { id } = params
-        const req = request.only(['user_chk', 'user_spv', 'operator', 'unit_id', 'dailyfleet_id', 'tgl', 'description', 'begin_smu', 'end_smu', 'p2h', 'refueling'])
+        const req = request.only(['user_chk', 'user_spv', 'operator', 'unit_id', 'dailyfleet_id', 'tgl', 'description', 'begin_smu', 'end_smu', 'p2h', 'event', 'refueling'])
         let durasi
-        console.log(req.refueling);
+        console.log(req);
         try {
             await auth.authenticator('jwt').getUser()
         } catch (error) {
