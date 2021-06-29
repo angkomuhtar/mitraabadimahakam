@@ -61,65 +61,46 @@ $(function(){
         })
     })
 
-    // $('body').on('submit', 'form#fm-fleet-upd', function(e){
-    //     e.preventDefault()
-    //     var id = $(this).data('id')
-    //     var data = new FormData(this)
-    //     $.ajax({
-    //         async: true,
-    //         url: '/operation/daily-fleet/'+id+'/update',
-    //         method: 'POST',
-    //         data: data,
-    //         dataType: 'json',
-    //         processData: false,
-    //         mimeType: "multipart/form-data",
-    //         contentType: false,
-    //         success: function(result){
-    //             console.log(result)
-    //             const { message } = result
-    //             if(result.success){
-    //                 swal("Okey,,,!", message, "success")
-    //                 initDeafult()
-    //             }else{
-    //                 swal("Opps,,,!", message, "warning")
-    //             }
-    //         },
-    //         error: function(err){
-    //             console.log(err)
-    //             const { message } = err.responseJSON
-    //             swal("Opps,,,!", message, "warning")
-    //         }
-    //     })
-    // })
-
     $('body').on('click', 'button#bt-delete-data', function(e){
         e.preventDefault()
         var id = $(this).data('id')
-        $.ajax({
-            async: true,
-            headers: {'x-csrf-token': $('[name=_csrf]').val()},
-            url: '/operation/daily-fleet/'+id+'/delete',
-            method: 'POST',
-            dataType: 'json',
-            processData: false,
-            mimeType: "multipart/form-data",
-            contentType: false,
-            success: function(result){
-                console.log(result)
-                const { message } = result
-                if(result.success){
-                    swal("Okey,,,!", message, "success")
-                    initDeafult()
-                }else{
-                    swal("Opps,,,!", message, "warning")
-                }
-            },
-            error: function(err){
-                console.log(err)
-                const { message } = err.responseJSON
-                swal("Opps,,,!", message, "warning")
-            }
-        })
+        swal({
+            title: "Are you sure?",
+            text: "Your will not be able to recover this data file!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: false
+          },
+          function(){
+              $.ajax({
+                  async: true,
+                  headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                  url: '/operation/daily-fleet/'+id+'/delete',
+                  method: 'POST',
+                  dataType: 'json',
+                  processData: false,
+                  mimeType: "multipart/form-data",
+                  contentType: false,
+                  success: function(result){
+                      console.log(result)
+                      const { message } = result
+                      if(result.success){
+                          swal("Okey,,,!", message, "success")
+                          initDeafult()
+                      }else{
+                          swal("Opps,,,!", message, "warning")
+                      }
+                  },
+                  error: function(err){
+                      console.log(err)
+                      const { message } = err.responseJSON
+                      swal("Opps,,,!", message, "warning")
+                  }
+              })
+            // swal("Deleted!", "Your imaginary file has been deleted.", "success");
+          });
     })
 
     $('body').on('click', 'a.btn-pagging', function(e){
