@@ -86,17 +86,17 @@ class TimeSheet {
             const { p2h, event, refueling } = req
             const dailyChecklist = await DailyChecklist.find(params.id)
 
-            if(refueling){
-                throw new Error('Data Pengisian Bahan Bakar tdk valid...')
-            }
+            // if(!refueling){
+            //     throw new Error('Data Pengisian Bahan Bakar tdk valid...')
+            // }
     
-            if(refueling.topup === '' || refueling.topup < 0){
-                throw new Error('Jumlah Topup Fuel tdk valid...')
-            }
+            // if(refueling.topup === '' || refueling.topup < 0){
+            //     throw new Error('Jumlah Topup Fuel tdk valid...')
+            // }
     
-            if(refueling.smu === '' || refueling.topup < 0){
-                throw new Error('Input SMU Refuel Unit tdk valid...')
-            }
+            // if(refueling.smu === '' || refueling.topup < 0){
+            //     throw new Error('Input SMU Refuel Unit tdk valid...')
+            // }
             
     
             const dataMerge = {
