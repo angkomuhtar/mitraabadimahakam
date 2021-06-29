@@ -289,9 +289,9 @@ class TimeSheetApiController {
     async update ({ auth, params, request, response }) {
         var t0 = performance.now()
         const { id } = params
-        const req = request.only(['user_chk', 'user_spv', 'operator', 'unit_id', 'dailyfleet_id', 'tgl', 'description', 'begin_smu', 'end_smu', 'p2h'])
+        const req = request.only(['user_chk', 'user_spv', 'operator', 'unit_id', 'dailyfleet_id', 'tgl', 'description', 'begin_smu', 'end_smu', 'p2h', 'refueling'])
         let durasi
-        console.log(req);
+        console.log(req.refueling);
         try {
             await auth.authenticator('jwt').getUser()
         } catch (error) {
@@ -328,6 +328,42 @@ class TimeSheetApiController {
                     times: durasi, 
                     error: true,
                     message: 'ID Time Sheet not found...'
+                },
+                data: {}
+            })
+        }
+
+        if(!req.refueling){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(412).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: 'Data Pengisian Bahan Bakar tdk valid...'
+                },
+                data: {}
+            })
+        }
+
+        if(!req.refueling.topup){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(412).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: 'Jumlah Topup Fuel tdk valid...'
+                },
+                data: {}
+            })
+        }
+
+        if(!req.refueling.smu === '' || !req.refueling.topup < 0){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(412).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: 'Input SMU Refuel Unit tdk valid...'
                 },
                 data: {}
             })

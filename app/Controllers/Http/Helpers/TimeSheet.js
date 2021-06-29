@@ -82,16 +82,22 @@ class TimeSheet {
     async UPDATE (params, req) {
         const trx = await db.beginTransaction()
         try {
+            
             const { p2h, event, refueling } = req
             const dailyChecklist = await DailyChecklist.find(params.id)
 
+            if(refueling){
+                throw new Error('Data Pengisian Bahan Bakar tdk valid...')
+            }
+    
             if(refueling.topup === '' || refueling.topup < 0){
                 throw new Error('Jumlah Topup Fuel tdk valid...')
             }
-
+    
             if(refueling.smu === '' || refueling.topup < 0){
                 throw new Error('Input SMU Refuel Unit tdk valid...')
             }
+            
     
             const dataMerge = {
                 user_chk: req.user_chk, 
@@ -165,7 +171,7 @@ class TimeSheet {
         } catch (error) {
             console.log(error);
             await trx.rollback(trx)
-            return error
+            return error.message
         }
     }
 }

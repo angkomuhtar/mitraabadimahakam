@@ -45,6 +45,7 @@ class DailyTimesheetController {
                 equip_id: req.unit_id
             }
         })
+        
         // console.log(req);
         try {
             await TimeSheet.UPDATE(params, req)
