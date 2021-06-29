@@ -333,17 +333,17 @@ class TimeSheetApiController {
             })
         }
 
-        if(!req.refueling){
-            durasi = await diagnoticTime.durasi(t0)
-            return response.status(412).json({
-                diagnostic: {
-                    times: durasi, 
-                    error: true,
-                    message: 'Data Pengisian Bahan Bakar tdk valid...'
-                },
-                data: {}
-            })
-        }
+        // if(!req.refueling){
+        //     durasi = await diagnoticTime.durasi(t0)
+        //     return response.status(412).json({
+        //         diagnostic: {
+        //             times: durasi, 
+        //             error: true,
+        //             message: 'Data Pengisian Bahan Bakar tdk valid...'
+        //         },
+        //         data: {}
+        //     })
+        // }
 
         if(!req.refueling.topup){
             durasi = await diagnoticTime.durasi(t0)
