@@ -357,7 +357,7 @@ class TimeSheetApiController {
             })
         }
 
-        if(!req.refueling.smu === '' || !req.refueling.topup < 0){
+        if(req.refueling.smu === '' || req.refueling.topup < 0){
             durasi = await diagnoticTime.durasi(t0)
             return response.status(412).json({
                 diagnostic: {
