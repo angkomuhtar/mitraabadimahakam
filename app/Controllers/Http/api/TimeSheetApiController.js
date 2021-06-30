@@ -233,8 +233,8 @@ class TimeSheetApiController {
 
                 const dailyRefueling = new DailyRefueling()
                 dailyRefueling.fill({...refueling, timesheet_id: dailyChecklist.id})
-                await DailyRefueling.save(trx)
-                
+                await dailyRefueling.save(trx)
+
                 await trx.commit()
                 const result = await DailyChecklist.query().last()
                 durasi = await diagnoticTime.durasi(t0)

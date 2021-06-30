@@ -204,18 +204,49 @@
             "use strict";
 
             const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-
-            const random = Math.floor(Math.random() * months.length);
-            // console.log(random*random, months[random]-random, random, months[random], random+random, months[random]+random);
-            var data1 = [random*random, months[random]-random, random, months[random], random+random, months[random]+random]
-            var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
-            var data3 = [random*random+3, months[random-2]*random, random-1, months[random-5], random+random, months[random+7]+random]
-            var data4 = [random*random+8, months[random-3]*random, random-9, months[random-1], random+random, months[random+5]+random]
+            var random = Math.floor(Math.random() * months.length);
+                // console.log(random*random, months[random]-random, random, months[random], random+random, months[random]+random);
+                var data1 = [random*random, months[random]-random, random, months[random], random+random, months[random]+random]
+                var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
+                var data3 = [random*random+3, months[random-2]*random, random-1, months[random-5], random+random, months[random+7]+random]
+                var data4 = [random*random+8, months[random-3]*random, random-9, months[random-1], random+random, months[random+5]+random]
+                var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
+            
 
             SET_MTD_OB()
 
             setInterval(() => {
+                var random = Math.floor(Math.random() * months.length);
+                var data1 = [random*random, months[random]-random, random, months[random], random+random, months[random]+random]
+                var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
+                var data3 = [random*random+3, months[random-2]*random, random-1, months[random-5], random+random, months[random+7]+random]
+                var data4 = [random*random+8, months[random-3]*random, random-9, months[random-1], random+random, months[random+5]+random]
+                var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
                 SET_MTD_OB()
+                var data = {
+                labels: ['OHT001', 'OHT002', 'OHT003', 'OHT004', 'OHT005', 'OHT006'],
+                    series: [
+                        [5, 4, 3, 7, 5, 10],
+                        data2
+                    ]
+                };
+
+                var options = {
+                    seriesBarDistance: 10
+                };
+
+                var responsiveOptions = [
+                    ['screen and (max-width: 640px)', {
+                        seriesBarDistance: 5,
+                        axisX: {
+                        labelInterpolationFnc: function (value) {
+                            return value[0];
+                        }
+                        }
+                    }]
+                ];
+
+                new Chartist.Bar('#sparkline10', data, options, responsiveOptions);
             }, 5 * 1000);
             
             function SET_MTD_OB(){
@@ -273,28 +304,8 @@
                 low: 0,
                 showArea: true
             });
-            var data = {
-                labels: ['OHT001', 'OHT002', 'OHT003', 'OHT004', 'OHT005', 'OHT006', 'OHT007', 'OHT008', 'OHT009', 'OHT010', 'OHT011', 'OHT012'],
-                    series: [
-                        [5, 4, 3, 7, 5, 10, 3, 4, 8, 10, 6, 8],
-                    ]
-                };
-
-                var options = {
-                    seriesBarDistance: 10
-                };
-
-                var responsiveOptions = [
-                    ['screen and (max-width: 640px)', {
-                        seriesBarDistance: 5,
-                        axisX: {
-                        labelInterpolationFnc: function (value) {
-                            return value[0];
-                        }
-                        }
-                    }]
-                ];
-            new Chartist.Bar('#sparkline10', data, options, responsiveOptions);
+            
+            
 
             // new Chartist.Line('#sparkline10', {
             //     labels: [1, 2, 3, 4, 5, 6, 7, 8],
