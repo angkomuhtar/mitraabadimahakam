@@ -86,7 +86,7 @@
                         <small id="subtitle-monthly-ob" class="pull-right m-t-10 text-success">
                             18% High then last month
                         </small>
-                        Monthly OB Productivity
+                        Monthly OB Production
                     </h3>
                     <div class="stats-row">
                         <div class="stat-item">
@@ -119,7 +119,12 @@
             </div>
             <div class="col-lg-6 col-md-6">
                 <div class="white-box">
-                    <h3 class="box-title"><small class="pull-right m-t-10 text-success"><i class="fa fa-sort-asc"></i> 18% High then last month</small> Last Day Productivity</h3>
+                    <h3 class="box-title">
+                        <small class="pull-right m-t-10 text-success">
+                            30 June 2021
+                        </small> 
+                        Equipment Unit OB Ritase
+                    </h3>
                     <div class="stats-row">
                         <div class="stat-item">
                             <h6>Overall Growth</h6> <b>80.40%</b></div>
@@ -211,7 +216,7 @@
 
             setInterval(() => {
                 SET_MTD_OB()
-            }, 10 * 1000);
+            }, 5 * 1000);
             
             function SET_MTD_OB(){
                 $.ajax({
@@ -258,6 +263,7 @@
             //     low: 0,
             //     showArea: true,
             // });
+
             new Chartist.Line('#sparkline9', {
                 labels: [1, 2, 3, 4, 5, 6, 7, 8],
                 series: [
@@ -267,15 +273,38 @@
                 low: 0,
                 showArea: true
             });
-            new Chartist.Line('#sparkline10', {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8],
-                series: [
-                    data3
-                ]
-                }, {
-                low: 0,
-                showArea: true
-            });
+            var data = {
+                labels: ['OHT001', 'OHT002', 'OHT003', 'OHT004', 'OHT005', 'OHT006', 'OHT007', 'OHT008', 'OHT009', 'OHT010', 'OHT011', 'OHT012'],
+                    series: [
+                        [5, 4, 3, 7, 5, 10, 3, 4, 8, 10, 6, 8],
+                    ]
+                };
+
+                var options = {
+                    seriesBarDistance: 10
+                };
+
+                var responsiveOptions = [
+                    ['screen and (max-width: 640px)', {
+                        seriesBarDistance: 5,
+                        axisX: {
+                        labelInterpolationFnc: function (value) {
+                            return value[0];
+                        }
+                        }
+                    }]
+                ];
+            new Chartist.Bar('#sparkline10', data, options, responsiveOptions);
+
+            // new Chartist.Line('#sparkline10', {
+            //     labels: [1, 2, 3, 4, 5, 6, 7, 8],
+            //     series: [
+            //         data3
+            //     ]
+            //     }, {
+            //     low: 0,
+            //     showArea: true
+            // });
             new Chartist.Line('#sparkline11', {
                 labels: [1, 2, 3, 4, 5, 6, 7, 8],
                 series: [
