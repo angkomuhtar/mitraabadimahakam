@@ -65,6 +65,32 @@ $(function(){
         }
     })
 
+    $('.myDateTimeFormatLong').each(function(){
+        var date = $(this).data(date)
+        var elm = $(this).data('elm')
+        var dateString = moment(date.date).format('MMMM Do YYYY, h:mm:ss a')
+        var weekly = moment(date.date).week()
+        console.log(weekly);
+        if(elm != undefined){
+            $(this).find(elm).html(dateString)
+        }else{
+            $(this).html(dateString)
+        }
+    })
+
+    $('.myMonthlyFormat').each(function(){
+        var date = $(this).data(date)
+        var elm = $(this).data('elm')
+        var dateString = moment(date.date).format('MMMM YYYY')
+        var weekly = moment(date.date).week()
+        console.log(weekly);
+        if(elm != undefined){
+            $(this).find(elm).html(dateString)
+        }else{
+            $(this).html(dateString)
+        }
+    })
+
     $('body select.select2 select.custom-option').each(function(){
         var group = $(this).data('title')
         var selected = $(this).data('check')

@@ -1,0 +1,106 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>New Monthly Plan</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <!--
+                        <div class="input-group">
+                            <input id="keywordTimeSheet" class="form-control" placeholder="Search for..." value="{{keyword}}">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                            </span>
+                        </div>
+                        -->
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="100">ACT</th>
+                                <th class="sl" width="250">PIT</th>
+                                <th class="sl" width="20">Tipe</th>
+                                <th class="sl" width="200">Monthly</th>
+                                <th class="sl text-right" width="200">Estimate</th>
+                                <th class="sl text-right" width="200">Actual</th>
+                                <th class="sl text-center" width="*">Persentase</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                                <tr class="persentase" align="left" data-actual="{{item.actual}}" data-estimate="{{item.estimate}}">
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                        <button class="btn btn-outline btn-success btn-xs bt-view-data" data-id="{{item.id}}">view</button>
+                                    </td>
+                                    <td class="single-line">
+                                        {{item.pit.name}}
+                                    </td>
+                                    <td class="single-line">
+                                        {{item.tipe}}
+                                    </td>
+                                    <td class="single-line myMonthlyFormat" data-date="{{item.month}}" data-elm="span">
+                                        <strong>
+                                            <span></span>
+                                        </strong>
+                                    </td>
+                                    <td class="text-right text-warning">
+                                        <strong>{{(item.estimate).toLocaleString('ID')}} {{item.tipe === 'OB' ? 'BCM' : 'MT'}}</strong>
+                                    </td>
+                                    <td class="text-right {{item.actual > item.estimate ? 'text-success' : 'text-warning'}}">
+                                        <strong>{{(item.actual).toLocaleString('ID')}} {{item.tipe === 'OB' ? 'BCM' : 'MT'}}</strong>
+                                    </td>
+                                    <td class="persentase">
+                                        <div class="progress progress-lg">
+                                            <div class="progress-bar progress-bar-success" role="progressbar" style="" role="progressbar"> 75% </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('tr.persentase').each(function(){
+            var act = $(this).data('actual')
+            var est = $(this).data('estimate')
+            var persen = (parseFloat(act)/parseFloat(est))*100
+            $(this).find('div.progress-bar-success').attr('style', 'width: '+persen.toFixed(2)+'%').html(persen.toFixed(2)+'%')
+        })
+
+        $('body').on('click', 'a.btn-pagging', function(e){
+            e.preventDefault()
+            var page = $(this).data('page')
+            // var keyword = $('#keywordTimeSheet').val()
+            console.log(window.location.pathname);
+            var url = window.location.pathname+'/list?page='+page
+            $.ajax({
+                async: true,
+                url: url,
+                method: 'GET',
+                success: function(result){
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+    })
+</script>

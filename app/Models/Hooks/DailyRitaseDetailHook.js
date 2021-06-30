@@ -1,7 +1,9 @@
 'use strict'
 
 const moment = require('moment')
+const DailyPlan = use("App/Models/DailyPlan")
 const DailyRitase = use("App/Models/DailyRitase")
+const MasEquipment = use("App/Models/MasEquipment")
 const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 
 const DailyRitaseDetailHook = exports = module.exports = {}
@@ -30,6 +32,17 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
     const totalRitase = await DailyRitaseDetail.query().where('dailyritase_id', dailyritasedetail.dailyritase_id).getCount()
     dailyRitase.merge({tot_ritase: totalRitase})
     await dailyRitase.save()
+
+    /* GET CAPACITY HAULER */
+    const hauler = await MasEquipment.findOrFail(dailyritasedetail.hauler_id)
+
+    /* GET PLAN DATE */
+    const date = moment(dailyritasedetail.check_in).format('YYYY-MM-DD')
+    const dailyPlan = await DailyPlan.query().where('current_date', date).first()
+    dailyPlan.merge({
+        actual: parseFloat(dailyPlan.actual) + parseFloat(hauler.qty_capacity)
+    })
+    await dailyPlan.save()
 }
 
 DailyRitaseDetailHook.afterDeleteData = async (dailyritasedetail) => {
@@ -38,6 +51,17 @@ DailyRitaseDetailHook.afterDeleteData = async (dailyritasedetail) => {
     const totalRitase = await DailyRitaseDetail.query().where('dailyritase_id', dailyritasedetail.dailyritase_id).getCount()
     dailyRitase.merge({tot_ritase: totalRitase})
     await dailyRitase.save()
+
+    /* GET CAPACITY HAULER */
+    const hauler = await MasEquipment.findOrFail(dailyritasedetail.hauler_id)
+
+    /* GET PLAN DATE */
+    const date = moment(dailyritasedetail.check_in).format('YYYY-MM-DD')
+    const dailyPlan = await DailyPlan.query().where('current_date', date).first()
+    dailyPlan.merge({
+        actual: parseFloat(dailyPlan.actual) - parseFloat(hauler.qty_capacity)
+    })
+    await dailyPlan.save()
 }
 
 
@@ -52,4 +76,5 @@ DailyRitaseDetailHook.beforeUpdateData = async (dailyritasedetail) => {
     const totalRitase = await DailyRitaseDetail.query().where('dailyritase_id', dailyritasedetail.dailyritase_id).getCount()
     dailyRitase.merge({tot_ritase: totalRitase})
     await dailyRitase.save()
+
 }

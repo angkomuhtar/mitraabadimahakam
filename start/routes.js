@@ -220,7 +220,12 @@ Route.group(() => {
 
     Route.post('/daily-timesheet/:id/delete', 'DailyTimesheetController.delete').as('opr.daily-timesheet.delete').middleware('D')
 
-    
+    // Monthly Plan
+    Route.get('/monthly-plan', 'MonthlyPlanController.index').as('opr.monthly-plan.index').middleware('R')
+
+    Route.get('/monthly-plan/list', 'MonthlyPlanController.listBulanan').as('opr.monthly-plan.listBulanan').middleware('R')
+
+    Route.get('/monthly-plan/list-daily', 'MonthlyPlanController.listHarian').as('opr.monthly-plan.listHarian').middleware('R')
 
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
@@ -505,6 +510,18 @@ Route.group(() => {
     Route.delete('/:dailyEventID/destroy', 'DailyEventApiController.destroy')
 
 }).prefix('api/daily-event').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'MonthlyPlanApiController.index')
+
+    Route.post('/', 'MonthlyPlanApiController.create')
+
+    Route.post('/:id/update', 'MonthlyPlanApiController.update')
+
+    Route.delete('/:id/destroy', 'MonthlyPlanApiController.destroy')
+
+}).prefix('api/monthly-plan').namespace('api')
 
 
 Route.get('/401', ({ view }) => view.render('401'))
