@@ -59,6 +59,7 @@ class DailyFleetApiController {
                     e.with('equipment')
                 })
                 .with('user')
+                .orderBy('date')
                 .fetch()
         }else{
             dailyFleet = 
@@ -72,6 +73,7 @@ class DailyFleetApiController {
                         e.with('equipment')
                     })
                     .with('user')
+                    .orderBy('date')
                     .fetch()
         }
 
