@@ -10,7 +10,7 @@ const MasP2H = use("App/Models/MasP2H")
 const DailyFleet = use("App/Models/DailyFleet")
 const DailyCheckp2H = use("App/Models/DailyCheckp2H")
 const DailyChecklist = use("App/Models/DailyChecklist")
-const DailySmuRecord = use("App/Models/DailySmuRecord")
+const DailyRefueling = use("App/Models/DailyRefueling")
 
 class TimeSheetApiController {
     async index ({ auth, request, response }){
@@ -204,7 +204,7 @@ class TimeSheetApiController {
             }
 
             const trx = await db.beginTransaction()
-            const { user_chk, user_spv, operator, unit_id, dailyfleet_id, tgl, description, begin_smu, p2h } = req
+            const { user_chk, user_spv, operator, unit_id, dailyfleet_id, tgl, description, begin_smu, p2h, refueling } = req
             var tgl_ = new Date(tgl)
             try {
                 const dailyChecklist = new DailyChecklist()
@@ -230,6 +230,11 @@ class TimeSheetApiController {
                     }
                 }
                 await DailyCheckp2H.createMany(p2hDetails, trx)
+
+                const dailyRefueling = new DailyRefueling()
+                dailyRefueling.fill({...refueling, timesheet_id: dailyChecklist.id})
+                await DailyRefueling.save(trx)
+                
                 await trx.commit()
                 const result = await DailyChecklist.query().last()
                 durasi = await diagnoticTime.durasi(t0)

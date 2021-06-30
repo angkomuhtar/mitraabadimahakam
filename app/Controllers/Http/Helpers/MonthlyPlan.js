@@ -14,6 +14,33 @@ class MonthlyPlan {
         return data
     }
 
+    async CHARTIST_MONTHLY () {
+        try {
+            const dailyPlans = (await DailyPlans.query().with('monthly_plan').where('current_date', 'like', `${moment().format('YYYY-MM')}%`).fetch()).toJSON()
+            const data = {
+                monthly_plan: dailyPlans[0].monthly_plan,
+                labels: dailyPlans.map(item => moment(item.current_date).format('DD MMM')),
+                actual: dailyPlans.map(item => parseFloat(item.actual))
+            }
+            data.monthly_plan.month = moment(data.monthly_plan.month).format('MMMM YYYY')
+            return data
+        } catch (error) {
+            const currentMonthDates = Array.from({length: moment().daysInMonth()}, 
+            (x, i) => moment().startOf('month').add(i, 'days').format('YYYY-MM-DD'))
+
+            return {
+                monthly_plan: {
+                    month: moment().format('MMMM YYYY'),
+                    satuan: 'BCM',
+                    estimate: 0,
+                    actual: 0
+                },
+                labels: currentMonthDates,
+                actual: []
+            }
+        }
+    }
+
     async ALL_DAILY (req) {
         const limit = 31
         const halaman = req.page === undefined ? 1:parseInt(req.page)

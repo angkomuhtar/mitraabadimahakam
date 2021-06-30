@@ -3,6 +3,27 @@
 @import "spinners.css";
 @import "icons/material-design-iconic-font/css/materialdesignicons.min.css";
 
+.ct-grids .ct-horizontal {
+	/* Colour of your points */
+	stroke: rgb(68, 64, 42);
+}
+
+.ct-grids .ct-vertical {
+	/* Colour of your points */
+	stroke: rgb(68, 64, 42);
+}
+
+span.ct-label {
+	color: #fff;
+}
+
+.ct-series-a .ct-line {
+	/* Set the colour of this series line */
+	stroke: rgb(226, 196, 23);
+	/* Control the thikness of your lines */
+	stroke-width: 2px;
+  }
+
 div .level1 {
 	margin-left: 10px;
 	padding: 10px !important;

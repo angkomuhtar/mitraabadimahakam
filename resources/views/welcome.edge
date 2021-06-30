@@ -82,14 +82,25 @@
         <div class="row">
             <div class="col-lg-6 col-md-6">
                 <div class="white-box">
-                    <h3 class="box-title"><small class="pull-right m-t-10 text-success"><i class="fa fa-sort-asc"></i> 18% High then last month</small> Monthly Site Productivity</h3>
+                    <h3 class="box-title">
+                        <small id="subtitle-monthly-ob" class="pull-right m-t-10 text-success">
+                            18% High then last month
+                        </small>
+                        Monthly OB Productivity
+                    </h3>
                     <div class="stats-row">
                         <div class="stat-item">
-                            <h6>Overall Growth</h6> <b>80.40%</b></div>
+                            <h6>Estimate Plan</h6> 
+                            <b id="ob_plan">234.155 BCM</b>
+                        </div>
                         <div class="stat-item">
-                            <h6>Montly</h6> <b>15.40%</b></div>
+                            <h6>Actual</h6> 
+                            <b id="ob_actual">21.883 BCM</b>
+                        </div>
                         <div class="stat-item">
-                            <h6>Day</h6> <b>5.50%</b></div>
+                            <h6>Persentase</h6> 
+                            <b id="ob_persen">5.50%</b>
+                        </div>
                     </div>
                     <div id="sparkline8" class="grafik-chartis"></div>
                 </div>
@@ -190,25 +201,63 @@
             const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
             const random = Math.floor(Math.random() * months.length);
-            console.log(random*random, months[random]-random, random, months[random], random+random, months[random]+random);
+            // console.log(random*random, months[random]-random, random, months[random], random+random, months[random]+random);
             var data1 = [random*random, months[random]-random, random, months[random], random+random, months[random]+random]
             var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
             var data3 = [random*random+3, months[random-2]*random, random-1, months[random-5], random+random, months[random+7]+random]
             var data4 = [random*random+8, months[random-3]*random, random-9, months[random-1], random+random, months[random+5]+random]
 
+            SET_MTD_OB()
+
+            setInterval(() => {
+                SET_MTD_OB()
+            }, 10 * 1000);
+            
+            function SET_MTD_OB(){
+                $.ajax({
+                    async: true,
+                    url: '/ajax/grafik-mtd-ob',
+                    method: 'GET',
+                    success: function(result){
+                        var current_month = result.monthly_plan.month
+                        var satuan = result.monthly_plan.satuan
+                        var estimasi = result.monthly_plan.estimate
+                        var actual = result.monthly_plan.actual
+                        var persen = (parseFloat(actual) / parseFloat(estimasi)) * 100
+                        $('small#subtitle-monthly-ob').html(current_month)
+                        $('b#ob_plan').html((estimasi).toLocaleString('ID') +' '+satuan)
+                        $('b#ob_actual').html((actual).toLocaleString('ID') +' '+satuan)
+                        $('b#ob_persen').html((persen).toFixed(2)+'%')
+                        new Chartist.Line('#sparkline8', {
+                            labels: result.labels,
+                            series: [
+                                result.actual
+                            ]
+                            }, {
+                            low: 0,
+                            showArea: true,
+                        });
+                    },
+                    error: function(err){
+                        console.log(err);
+                        swal("Opps,,,!", err.responseJSON.message, "warning")
+                    }
+                })
+            }
+
             $('.vcarousel').carousel({
                 interval: 3000
             })
 
-            new Chartist.Line('#sparkline8', {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8],
-                series: [
-                    data1
-                ]
-                }, {
-                low: 0,
-                showArea: true
-            });
+            // new Chartist.Line('#sparkline8', {
+            //     labels: [1, 2, 3, 4, 5, 6, 7, 8],
+            //     series: [
+            //         data1
+            //     ]
+            //     }, {
+            //     low: 0,
+            //     showArea: true,
+            // });
             new Chartist.Line('#sparkline9', {
                 labels: [1, 2, 3, 4, 5, 6, 7, 8],
                 series: [
