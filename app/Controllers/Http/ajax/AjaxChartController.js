@@ -4,8 +4,9 @@ const MonthlyPlanHelpers = use("App/Controllers/Http/Helpers/MonthlyPlan")
 const moment = require('moment')
 
 class AjaxChartController {
-    async grafik_OB_MTD () {
-        const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY()
+    async grafik_OB_MTD ({ request }) {
+        const req = request.all()
+        const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY(req)
         return grafik1
     }
 

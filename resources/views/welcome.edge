@@ -83,23 +83,32 @@
             <div class="col-lg-6 col-md-6">
                 <div class="white-box">
                     <h3 class="box-title">
-                        <small id="subtitle-monthly-ob" class="pull-right m-t-10 text-success">
-                            18% High then last month
-                        </small>
+                        <div class="form-group col-sm-4 pull-right">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span> 
+                                <select class="form-control input-sm" id="opt-chart1">
+                                    @each(item in monthItem)
+                                        <option value="{{item.values}}" {{item.selected}}>{{item.name}}</option>
+                                    @endeach
+                                </select>
+                            </div>
+                        </div>
                         Monthly OB Production
                     </h3>
                     <div class="stats-row">
                         <div class="stat-item">
                             <h6>Estimate Plan</h6> 
-                            <b id="ob_plan">234.155 BCM</b>
+                            <b id="ob_plan">0 BCM</b>
                         </div>
                         <div class="stat-item">
                             <h6>Actual</h6> 
-                            <b id="ob_actual">21.883 BCM</b>
+                            <b id="ob_actual">0 BCM</b>
                         </div>
                         <div class="stat-item">
                             <h6>Persentase</h6> 
-                            <b id="ob_persen">5.50%</b>
+                            <b id="ob_persen">0%</b>
                         </div>
                     </div>
                     <div id="sparkline8" class="grafik-chartis"></div>
@@ -205,18 +214,24 @@
         $(document).ready(function () {
             "use strict";
 
-            const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-            var random = Math.floor(Math.random() * months.length);
-                // console.log(random*random, months[random]-random, random, months[random], random+random, months[random]+random);
-                var data1 = [random*random, months[random]-random, random, months[random], random+random, months[random]+random]
-                var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
-                var data3 = [random*random+3, months[random-2]*random, random-1, months[random-5], random+random, months[random+7]+random]
-                var data4 = [random*random+8, months[random-3]*random, random-9, months[random-1], random+random, months[random+5]+random]
-                var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
-            
-
             G1_MTD_OB()
             G2_MTD_OB()
+
+            const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+            var random = Math.floor(Math.random() * months.length);
+            // console.log(random*random, months[random]-random, random, months[random], random+random, months[random]+random);
+            var data1 = [random*random, months[random]-random, random, months[random], random+random, months[random]+random]
+            var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
+            var data3 = [random*random+3, months[random-2]*random, random-1, months[random-5], random+random, months[random+7]+random]
+            var data4 = [random*random+8, months[random-3]*random, random-9, months[random-1], random+random, months[random+5]+random]
+            var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
+            
+            $('select#opt-chart1').on('change', function(e){
+                e.preventDefault()
+                console.log($(this).val());
+                G1_MTD_OB()
+            })
+            
 
             setInterval(() => {
                 G1_MTD_OB()
@@ -224,9 +239,11 @@
             }, 5 * 1000);
             
             function G1_MTD_OB(){
+                var bulan = $('select#opt-chart1').val()
+                console.log('bulan::', bulan);
                 $.ajax({
                     async: true,
-                    url: '/ajax/grafik1',
+                    url: '/ajax/grafik1?periode='+bulan,
                     method: 'GET',
                     success: function(result){
                         var current_month = result.monthly_plan.month
