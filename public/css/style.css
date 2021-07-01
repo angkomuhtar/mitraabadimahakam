@@ -22,7 +22,12 @@ span.ct-label {
 	stroke: rgb(226, 196, 23);
 	/* Control the thikness of your lines */
 	stroke-width: 2px;
-  }
+}
+
+.ct-bar {
+    fill: none;
+    stroke-width: 35px !important;
+}
 
 div .level1 {
 	margin-left: 10px;

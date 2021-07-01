@@ -266,7 +266,9 @@ Route.group(() => {
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
 
-    Route.get('/grafik-mtd-ob', 'AjaxChartController.grafik_OB_MTD')
+    Route.get('/grafik1', 'AjaxChartController.grafik_OB_MTD')
+
+    Route.get('/grafik2', 'AjaxChartController.grafik_OB_RITASE_EQUIPMENT')
 
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
 

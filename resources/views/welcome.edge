@@ -47,7 +47,7 @@
                     <h3 class="box-title">NEW SITE</h3>
                     <ul class="list-inline two-part">
                         <li><i class="icon-people text-info"></i></li>
-                        <li class="text-right"><span class="counter">3</span></li>
+                        <li class="text-right"><span class="counter">2</span></li>
                     </ul>
                 </div>
             </div>
@@ -56,7 +56,7 @@
                     <h3 class="box-title">TOT FLEET</h3>
                     <ul class="list-inline two-part">
                         <li><i class="icon-folder text-purple"></i></li>
-                        <li class="text-right"><span class="counter">16</span></li>
+                        <li class="text-right"><span class="counter">7</span></li>
                     </ul>
                 </div>
             </div>
@@ -105,7 +105,13 @@
                     <div id="sparkline8" class="grafik-chartis"></div>
                 </div>
                 <div class="white-box">
-                    <h3 class="box-title"><small class="pull-right m-t-10 text-danger"><i class="fa fa-sort-desc"></i> 18% High then last month</small>Monthly Fuel Consumtions</h3>
+                    <h3 class="box-title">
+                        <small class="pull-right m-t-10 text-danger">
+                            <i class="fa fa-sort-desc"></i> 
+                            18% High then last month
+                        </small>
+                        Monthly Coal Production
+                    </h3>
                     <div class="stats-row">
                         <div class="stat-item">
                             <h6>Overall Growth</h6> <b>80.40%</b></div>
@@ -120,18 +126,13 @@
             <div class="col-lg-6 col-md-6">
                 <div class="white-box">
                     <h3 class="box-title">
-                        <small class="pull-right m-t-10 text-success">
-                            30 June 2021
-                        </small> 
                         Equipment Unit OB Ritase
                     </h3>
                     <div class="stats-row">
                         <div class="stat-item">
-                            <h6>Overall Growth</h6> <b>80.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Montly</h6> <b>15.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Day</h6> <b>5.50%</b></div>
+                            <h6>Current Ritase</h6> 
+                            <b id="current-ritase"></b>
+                        </div>
                     </div>
                     <div id="sparkline10" class="grafik-chartis">
                     </div>
@@ -150,9 +151,10 @@
                 </div>
             </div>
         </div>
+        <!--
         <div class="row">
             <div class="col-md-12 col-lg-6">
-                <div class="white-box bg-theme-alt m-b-0">
+                <div class="white-box m-b-0">
                     <h3 class="box-title text-white">Coal Production / Hours</h3>
                     <div class="demo-container" style="height:300px;">
                         <div id="placeholder" class="demo-placeholder"></div>
@@ -196,8 +198,8 @@
                     <div id="diagram" style="width:100%;height:100%;padding-top:0px;padding-bottom:57px"></div>
                 </div>
             </div>
-            <!-- col-md-3 -->
         </div>
+        -->
     </div>
     <script>
         $(document).ready(function () {
@@ -213,48 +215,18 @@
                 var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
             
 
-            SET_MTD_OB()
+            G1_MTD_OB()
+            G2_MTD_OB()
 
             setInterval(() => {
-                var random = Math.floor(Math.random() * months.length);
-                var data1 = [random*random, months[random]-random, random, months[random], random+random, months[random]+random]
-                var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
-                var data3 = [random*random+3, months[random-2]*random, random-1, months[random-5], random+random, months[random+7]+random]
-                var data4 = [random*random+8, months[random-3]*random, random-9, months[random-1], random+random, months[random+5]+random]
-                var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
-                SET_MTD_OB()
-                var data = {
-                labels: ['FLEET01', 'FLEET02', 'FLEET03', 'FLEET04', 'FLEET05', 'FLEET06'],
-                    series: [
-                        [5, 4, 3, 7, 5, 10],
-                        data2,
-                        data3,
-                        data4
-                    ]
-                };
-
-                var options = {
-                    seriesBarDistance: 10
-                };
-
-                var responsiveOptions = [
-                    ['screen and (max-width: 640px)', {
-                        seriesBarDistance: 5,
-                        axisX: {
-                        labelInterpolationFnc: function (value) {
-                            return value[0];
-                        }
-                        }
-                    }]
-                ];
-
-                new Chartist.Bar('#sparkline10', data, options, responsiveOptions);
+                G1_MTD_OB()
+                G2_MTD_OB()
             }, 5 * 1000);
             
-            function SET_MTD_OB(){
+            function G1_MTD_OB(){
                 $.ajax({
                     async: true,
-                    url: '/ajax/grafik-mtd-ob',
+                    url: '/ajax/grafik1',
                     method: 'GET',
                     success: function(result){
                         var current_month = result.monthly_plan.month
@@ -278,7 +250,42 @@
                     },
                     error: function(err){
                         console.log(err);
-                        swal("Opps,,,!", err.responseJSON.message, "warning")
+                    }
+                })
+            }
+
+            function G2_MTD_OB(){
+                $.ajax({
+                    async: true,
+                    url: '/ajax/grafik2',
+                    method: 'GET',
+                    success: function(result){
+                        console.log(result);
+                        var data = {
+                        labels: result.labels,
+                            series: [result.data]
+                        };
+
+                        var options = {
+                            seriesBarDistance: 5
+                        };
+
+                        var responsiveOptions = [
+                            ['screen and (max-width: 640px)', {
+                                seriesBarDistance: 2,
+                                axisX: {
+                                labelInterpolationFnc: function (value) {
+                                    return value[0];
+                                }
+                                }
+                            }]
+                        ];
+                        new Chartist.Bar('#sparkline10', data, options, responsiveOptions);
+                        $('b#current-ritase').html(result.date)
+                        
+                    },
+                    error: function(err){
+                        console.log(err);
                     }
                 })
             }
@@ -286,16 +293,6 @@
             $('.vcarousel').carousel({
                 interval: 3000
             })
-
-            // new Chartist.Line('#sparkline8', {
-            //     labels: [1, 2, 3, 4, 5, 6, 7, 8],
-            //     series: [
-            //         data1
-            //     ]
-            //     }, {
-            //     low: 0,
-            //     showArea: true,
-            // });
 
             new Chartist.Line('#sparkline9', {
                 labels: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -306,18 +303,7 @@
                 low: 0,
                 showArea: true
             });
-            
-            
 
-            // new Chartist.Line('#sparkline10', {
-            //     labels: [1, 2, 3, 4, 5, 6, 7, 8],
-            //     series: [
-            //         data3
-            //     ]
-            //     }, {
-            //     low: 0,
-            //     showArea: true
-            // });
             new Chartist.Line('#sparkline11', {
                 labels: [1, 2, 3, 4, 5, 6, 7, 8],
                 series: [
@@ -328,158 +314,158 @@
                 showArea: true
             });
 
-            Highcharts.chart('diagram', {
-                chart: {
-                    type: 'pie',
-                    backgroundColor: '#2f323e',
-                    options3d: {
-                        enabled: true,
-                        alpha: 45,
-                        beta: 0
-                    }
-                },
-                title: {
-                    text: 'Browser market shares at a specific website, 2014',
-                },
-                accessibility: {
-                    point: {
-                        valueSuffix: '%'
-                    }
-                },
-                tooltip: {
-                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        depth: 35,
-                        dataLabels: {
-                            enabled: true,
-                            format: '{point.name}'
-                        }
-                    }
-                },
-                series: [{
-                    type: 'pie',
-                    name: 'Browser share',
-                    data: [
-                        {
-                            name: 'OHT-01',
-                            y: Math.random() * 10,
-                            sliced: true,
-                            selected: true
-                        },
-                        {
-                            name: 'OHT-02',
-                            y: Math.random() * 10
-                        },
-                        {
-                            name: 'OHT-03',
-                            y: Math.random() * 10
-                        },
-                        {
-                            name: 'OHT-04',
-                            y: Math.random() * 10
-                        },
-                    ]
-                }]
-            });
+            // Highcharts.chart('diagram', {
+            //     chart: {
+            //         type: 'pie',
+            //         backgroundColor: '#2f323e',
+            //         options3d: {
+            //             enabled: true,
+            //             alpha: 45,
+            //             beta: 0
+            //         }
+            //     },
+            //     title: {
+            //         text: 'Browser market shares at a specific website, 2014',
+            //     },
+            //     accessibility: {
+            //         point: {
+            //             valueSuffix: '%'
+            //         }
+            //     },
+            //     tooltip: {
+            //         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            //     },
+            //     plotOptions: {
+            //         pie: {
+            //             allowPointSelect: true,
+            //             cursor: 'pointer',
+            //             depth: 35,
+            //             dataLabels: {
+            //                 enabled: true,
+            //                 format: '{point.name}'
+            //             }
+            //         }
+            //     },
+            //     series: [{
+            //         type: 'pie',
+            //         name: 'Browser share',
+            //         data: [
+            //             {
+            //                 name: 'OHT-01',
+            //                 y: Math.random() * 10,
+            //                 sliced: true,
+            //                 selected: true
+            //             },
+            //             {
+            //                 name: 'OHT-02',
+            //                 y: Math.random() * 10
+            //             },
+            //             {
+            //                 name: 'OHT-03',
+            //                 y: Math.random() * 10
+            //             },
+            //             {
+            //                 name: 'OHT-04',
+            //                 y: Math.random() * 10
+            //             },
+            //         ]
+            //     }]
+            // });
     
-            Highcharts.chart('placeholder', {
-                chart: {
-                    type: 'spline',
-                    backgroundColor: '#ff7676',
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
-                            // set up the updating of the chart each second
-                            var series = this.series[0];
-                            setInterval(function () {
-                                var x = (new Date()).getTime(), // current time
-                                    y = Math.random();
-                                series.addPoint([x, y], true, true);
-                            }, 1000);
-                        }
-                    }
-                },
+            // Highcharts.chart('placeholder', {
+            //     chart: {
+            //         type: 'spline',
+            //         backgroundColor: '#2f323e',
+            //         animation: Highcharts.svg, // don't animate in old IE
+            //         marginRight: 10,
+            //         events: {
+            //             load: function () {
+            //                 // set up the updating of the chart each second
+            //                 var series = this.series[0];
+            //                 setInterval(function () {
+            //                     var x = (new Date()).getTime(), // current time
+            //                         y = Math.random();
+            //                     series.addPoint([x, y], true, true);
+            //                 }, 1000);
+            //             }
+            //         }
+            //     },
     
-                time: {
-                    useUTC: false
-                },
-                title: {
-                    text: '',
-                    style: {
-                        color: '#FFF',
-                        font: 'bold 16px "Trebuchet MS", Verdana, sans-serif'
-                    }
-                },
-                accessibility: {
-                    announceNewData: {
-                        enabled: true,
-                        minAnnounceInterval: 15000,
-                        announcementFormatter: function (allSeries, newSeries, newPoint) {
-                            if (newPoint) {
-                                return 'New point added. Value: ' + newPoint.y;
-                            }
-                            return false;
-                        }
-                    }
-                },
+            //     time: {
+            //         useUTC: false
+            //     },
+            //     title: {
+            //         text: '',
+            //         style: {
+            //             color: '#d70206',
+            //             font: 'bold 16px "Trebuchet MS", Verdana, sans-serif'
+            //         }
+            //     },
+            //     accessibility: {
+            //         announceNewData: {
+            //             enabled: true,
+            //             minAnnounceInterval: 15000,
+            //             announcementFormatter: function (allSeries, newSeries, newPoint) {
+            //                 if (newPoint) {
+            //                     return 'New point added. Value: ' + newPoint.y;
+            //                 }
+            //                 return false;
+            //             }
+            //         }
+            //     },
     
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150
-                },
+            //     xAxis: {
+            //         type: 'datetime',
+            //         tickPixelInterval: 150
+            //     },
     
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
+            //     yAxis: {
+            //         title: {
+            //             text: 'Value'
+            //         },
+            //         plotLines: [{
+            //             value: 0,
+            //             width: 1,
+            //             color: '#d70206'
+            //         }]
+            //     },
     
-                tooltip: {
-                    headerFormat: '<b>{series.name}</b><br/>',
-                    pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
-                },
+            //     tooltip: {
+            //         headerFormat: '<b>{series.name}</b><br/>',
+            //         pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
+            //     },
     
-                legend: {
-                    enabled: false
-                },
+            //     legend: {
+            //         enabled: false
+            //     },
     
-                exporting: {
-                    enabled: false
-                },
-                plotOptions: {
-                    series: {
-                        color: '#FFF'
-                    }
-                },
+            //     exporting: {
+            //         enabled: false
+            //     },
+            //     plotOptions: {
+            //         series: {
+            //             color: '#d70206'
+            //         }
+            //     },
     
-                series: [{
-                    name: 'Random data',
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                            time = (new Date()).getTime(),
-                            i;
+            //     series: [{
+            //         name: 'Random data',
+            //         data: (function () {
+            //             // generate an array of random data
+            //             var data = [],
+            //                 time = (new Date()).getTime(),
+            //                 i;
     
-                        for (i = -19; i <= 0; i += 1) {
-                            data.push({
-                                x: time + i * 1000,
-                                y: Math.random()
-                            });
-                        }
-                        return data;
-                    }())
-                }]
-            });
+            //             for (i = -19; i <= 0; i += 1) {
+            //                 data.push({
+            //                     x: time + i * 1000,
+            //                     y: Math.random()
+            //                 });
+            //             }
+            //             return data;
+            //         }())
+            //     }]
+            // });
         })
     </script>
 @endsection
