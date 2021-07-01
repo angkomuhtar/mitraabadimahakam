@@ -6,9 +6,6 @@ const moment = require('moment')
 class AjaxChartController {
     async grafik_OB_MTD () {
         const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY()
-        console.log('====================================');
-        console.log(grafik1);
-        console.log('====================================');
         return grafik1
     }
 

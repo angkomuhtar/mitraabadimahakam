@@ -18,19 +18,27 @@ class MonthlyPlan {
     }
 
     async CHARTIST_MONTHLY () {
+        let currentMonthDates = Array.from({length: moment().daysInMonth()}, 
+        (x, i) => moment().startOf('month').add(i, 'days').format('DD'))
+        let awalBulan = moment().startOf('month').format('YYYY-MM-DD')
+        // let akhirBulan = moment().endOf('month').format('YYYY-MM-DD')
         try {
-            const dailyPlans = (await DailyPlans.query().with('monthly_plan').where('current_date', 'like', `${moment().format('YYYY-MM')}%`).fetch()).toJSON()
+            const dailyPlans = (
+                    await DailyPlans
+                    .query()
+                    .with('monthly_plan')
+                    .where('current_date', '<=', awalBulan)
+                    .andWhere('current_date', '>=', `${moment().format('YYYY-MM')}`)
+                    .fetch()
+                ).toJSON()
             const data = {
                 monthly_plan: dailyPlans[0].monthly_plan,
-                labels: dailyPlans.map(item => moment(item.current_date).format('DD')),
+                labels: currentMonthDates,
                 actual: dailyPlans.map(item => parseFloat(item.actual))
             }
             data.monthly_plan.month = moment(data.monthly_plan.month).format('MMMM YYYY')
             return data
         } catch (error) {
-            const currentMonthDates = Array.from({length: moment().daysInMonth()}, 
-            (x, i) => moment().startOf('month').add(i, 'days').format('DD'))
-
             return {
                 monthly_plan: {
                     month: moment().format('MMMM YYYY'),
