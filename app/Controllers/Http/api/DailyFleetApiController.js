@@ -87,8 +87,8 @@ class DailyFleetApiController {
         })
     }
 
-    /** get daily fleet based on current date from client */
-    async getByCurrentDate ({ auth, response, request }) {
+    /** get daily fleet based on request date from client */
+    async filterByDate ({ auth, response, request }) {
 
         var t0 = performance.now();
         const { date } = request.only(['date']);

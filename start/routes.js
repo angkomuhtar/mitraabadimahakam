@@ -437,7 +437,7 @@ Route.group(() => {
 
     Route.get('/:id/show', 'DailyFleetApiController.show')
 
-    Route.post('/filter-date', 'DailyFleetApiController.getByCurrentDate')
+    Route.post('/filter-date', 'DailyFleetApiController.filterByDate')
 
     Route.post('/:id/update', 'DailyFleetApiController.update')
 
@@ -466,6 +466,8 @@ Route.group(() => {
     Route.get('/:id/show', 'DailyRitaseApiController.show')
 
     Route.post('/:id/update', 'DailyRitaseApiController.update')
+
+    Route.post('/filter-date', 'DailyRitaseApiController.filterByDate')
 
     Route.delete('/:id/destroy', 'DailyRitaseApiController.destroy')
 
