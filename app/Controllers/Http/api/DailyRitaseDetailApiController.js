@@ -173,7 +173,6 @@ class DailyRitaseDetailApiController {
         data: [],
       })
     }
-
     await GET_BY_ID()
 
     async function GET_BY_ID(){
@@ -207,6 +206,8 @@ class DailyRitaseDetailApiController {
         })
       }
     }
+
+    
   }
 
   async update ({ auth, params, request, response }) {

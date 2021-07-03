@@ -52,6 +52,70 @@ class DailyRitaseApiController {
     }
   }
 
+  /** get daily ritase based on request date from client */
+  async filterByDate ({ auth, request, response }) {
+    var t0 = performance.now()
+    const { date } = request.only(["date"])
+
+    try {
+      await auth.authenticator("jwt").getUser()
+    } catch (error) {
+      console.log(error)
+      let durasi = await diagnoticTime.durasi(t0)
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: [],
+      })
+    }
+
+    await FILTER_DATE();
+
+    async function FILTER_DATE() {
+      try {
+        const dailyRitase = await DailyRitase
+              .query()
+                .with('material_details')
+                .with('daily_fleet', details => {
+                    details.with('details', unit => unit.with('equipment'))
+                    details.with('shift')
+                    details.with('activities')
+                    details.with('fleet')
+                    details.with('pit')
+                })
+                .where("status", "Y")
+                .andWhere({ date : date })
+                .orderBy('created_at', 'desc')
+                .fetch()
+
+        let durasi = await diagnoticTime.durasi(t0)
+        return response.status(200).json({
+          diagnostic: {
+            times: durasi,
+            error: false,
+          },
+          data: dailyRitase,
+        })
+      } catch (error) {
+        console.log(error)
+        let durasi = await diagnoticTime.durasi(t0)
+        return response.status(403).json({
+          diagnostic: {
+            times: durasi,
+            error: true,
+            message: error
+          },
+          data: [],
+        })
+      }
+    }
+  }
+
+
+
   async create({ auth, request, response }) {
     var t0 = performance.now()
     const req = request.only([
