@@ -12,11 +12,11 @@ class Ritase {
             dailyRitase = await DailyRitase
                 .query()
                 .with('material_details')
-                .with('ritase_details', item => {
-                    item.with('checker', b => b.with('profile'))
-                    item.with('spv', b => b.with('profile'))
-                    item.with('hauler')
-                })
+                // .with('ritase_details', item => {
+                //     item.with('checker', b => b.with('profile'))
+                //     item.with('spv', b => b.with('profile'))
+                //     item.with('hauler')
+                // })
                 .with('daily_fleet', details => {
                     details.with('details', unit => unit.with('equipment'))
                     details.with('shift')
@@ -36,12 +36,12 @@ class Ritase {
             dailyRitase = await DailyRitase
                 .query()
                 .with('material_details')
-                .with('ritase_details', item => {
-                    item.with('checker', b => b.with('profile'))
-                    item.with('spv', b => b.with('profile'))
-                    item.with('hauler')
-                    item.orderBy('created_at', 'desc')
-                })
+                // .with('ritase_details', item => {
+                //     item.with('checker', b => b.with('profile'))
+                //     item.with('spv', b => b.with('profile'))
+                //     item.with('hauler')
+                //     item.orderBy('created_at', 'desc')
+                // })
                 .with('daily_fleet', details => {
                     details.with('details', unit => unit.with('equipment'))
                     details.with('shift')

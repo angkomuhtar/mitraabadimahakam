@@ -154,63 +154,6 @@ class DailyRitaseDetailApiController {
     }
   }
 
-  async getByRitaseId ({ params, response, auth }) {
-    const { id } = params;
-
-    var t0 = performance.now();
-    let durasi;
-    
-    try {
-      await auth.authenticator('jwt').getUser()
-    } catch(error) {
-      console.log(error)
-      durasi = await diagnoticTime.durasi(t0)
-      return response.status(403).json({
-        diagnostic: {
-          times: durasi,
-          error: true,
-          message: error.message,
-        },
-        data: [],
-      })
-    }
-
-    await GET_BY_RITASE_ID();
-
-    /** get ritase detail by ritase id */
-    async function GET_BY_RITASE_ID() {
-      try {
-        const dailyRitaseDetail = await DailyRitaseDetail
-              .query()
-              .with('checker', (wh) => wh.with('profile'))
-              .with('spv', (wh) => wh.with('profile'))
-              .with('hauler')
-              .orderBy('created_at', 'desc')
-              .where('dailyritase_id', id)
-              .fetch()
-        durasi = await diagnoticTime.durasi(t0);
-        return response.status(200).json({
-          diagnostic : {
-            times : durasi,
-            error : false
-          },
-          data : dailyRitaseDetail
-        })
-      } catch (error) {
-        console.log(error)
-        durasi = await diagnoticTime.durasi(t0)
-        return response.status(400).json({
-          diagnostic: {
-            times: durasi,
-            error: true,
-            message: error.message,
-          },
-          data: [],
-        })
-      }
-    }
-  }
-
   async show ({ params, response, auth }) {
     const { id } = params
     var t0 = performance.now()

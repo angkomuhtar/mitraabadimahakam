@@ -437,6 +437,8 @@ Route.group(() => {
 
     Route.get('/:id/show', 'DailyFleetApiController.show')
 
+    Route.post('/filter-date', 'DailyFleetApiController.getByCurrentDate')
+
     Route.post('/:id/update', 'DailyFleetApiController.update')
 
 }).prefix('api/daily-fleet').namespace('api')
@@ -476,8 +478,6 @@ Route.group(() => {
     Route.post('/', 'DailyRitaseDetailApiController.create')
 
     Route.get('/:id/show', 'DailyRitaseDetailApiController.show')
-
-    Route.get('/:id/show/ritase-id', 'DailyRitaseDetailApiController.getByRitaseId')
 
     Route.post('/:id/update', 'DailyRitaseDetailApiController.update')
 

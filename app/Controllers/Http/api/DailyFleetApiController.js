@@ -87,6 +87,65 @@ class DailyFleetApiController {
         })
     }
 
+    /** get daily fleet based on current date from client */
+    async getByCurrentDate ({ auth, response, request }) {
+
+        var t0 = performance.now();
+        const { date } = request.only(['date']);
+        let durasi;
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            let durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        }
+
+        await FILTER_DATE();
+        
+        async function FILTER_DATE() {
+
+            try {
+            const dailyFleet = await DailyFleet
+                .query()
+                .with('pit', site => site.with('site'))
+                .with('fleet')
+                .with('activities')
+                .with('shift')
+                .with('user')
+                .where('date', date)
+                .fetch()
+            durasi = await diagnoticTime.durasi(t0);
+            return response.status(200).json({
+              diagnostic : {
+                times : durasi,
+                error : false
+              },
+              data : dailyFleet
+            })
+          } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(400).json({
+              diagnostic: {
+                times: durasi,
+                error: true,
+                message: error.message,
+              },
+              data: [],
+            })
+          }
+        }
+    }
+
     async show ({ auth, params, request, response }) {
         const { id } = params
         const req = request.only(['keyword'])
