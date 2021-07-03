@@ -80,23 +80,38 @@ class DailyRitaseApiController {
       })
     }
 
+    
     await SAVE_DATA()
-
+    
     async function SAVE_DATA() {
       const trx = await db.beginTransaction()
       const dailyRitase = new DailyRitase()
       dailyRitase.fill(req)
       try {
-          await dailyRitase.save(trx)
-          await trx.commit(trx)
-          durasi = await diagnoticTime.durasi(t0)
-          return response.status(201).json({
-            diagnostic: {
-              times: durasi,
-              error: false,
-            },
-            data: dailyRitase,
+        const checkDailyRitase = 
+          await DailyRitase
+          .query(trx)
+          .where({
+            dailyfleet_id: req.dailyfleet_id,
+            material: req.material,
+            distance: req.distance
           })
+          .first()
+          
+        if(checkDailyRitase){
+          throw new Error('Duplicate Data daily ritase...')
+        }
+        
+        await dailyRitase.save(trx)
+        await trx.commit(trx)
+        durasi = await diagnoticTime.durasi(t0)
+        return response.status(201).json({
+          diagnostic: {
+            times: durasi,
+            error: false,
+          },
+          data: dailyRitase,
+        })
       } catch (error) {
           console.log(error)
           await trx.rollback(trx)

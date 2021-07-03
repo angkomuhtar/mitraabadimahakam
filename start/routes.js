@@ -372,10 +372,22 @@ Route.group(() => {
     Route.get('/', 'PitApiController.index')
 
     Route.get('/:id/show', 'PitApiController.show')
-
+    
     Route.post('/:id/update', 'PitApiController.update')
 
 }).prefix('api/pit').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'MasSeamApiController.index')
+
+    Route.get('/:id/show', 'MasSeamApiController.show')
+
+    Route.post('/:id/update', 'MasSeamApiController.update')
+
+    Route.get('/:pit_id/pit', 'MasSeamApiController.getSeamByPit')
+
+}).prefix('api/seam').namespace('api')
 
 Route.group(() => {
 
@@ -469,6 +481,7 @@ Route.group(() => {
 
 }).prefix('api/daily-ritase').namespace('api')
 
+
 Route.group(() => {
 
     Route.get('/', 'DailyRitaseDetailApiController.index')
@@ -482,6 +495,34 @@ Route.group(() => {
     Route.delete('/:id/destroy', 'DailyRitaseDetailApiController.destroy')
 
 }).prefix('api/daily-ritase-details').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'DailyRitaseCoalApiController.index')
+
+    Route.post('/', 'DailyRitaseCoalApiController.create')
+
+    Route.get('/:id/show', 'DailyRitaseCoalApiController.show')
+
+    Route.post('/:id/update', 'DailyRitaseCoalApiController.update')
+
+    Route.delete('/:id/destroy', 'DailyRitaseCoalApiController.destroy')
+
+}).prefix('api/daily-ritase-coal').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'DailyRitaseCoalDetailApiController.index')
+
+    Route.post('/', 'DailyRitaseCoalDetailApiController.create')
+
+    Route.get('/:id/show', 'DailyRitaseCoalDetailApiController.show')
+
+    Route.post('/:id/update', 'DailyRitaseCoalDetailApiController.update')
+
+    Route.delete('/:id/destroy', 'DailyRitaseCoalDetailApiController.destroy')
+
+}).prefix('api/daily-ritase-coal-details').namespace('api')
 
 Route.group(() => {
 
