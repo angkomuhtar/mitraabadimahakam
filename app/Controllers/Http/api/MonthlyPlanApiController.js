@@ -10,17 +10,13 @@ class MonthlyPlanApiController {
 
   
   async create ({ request, response, view }) {
-
-    const req = {
-      pit_id: 1, 
-      // start_plan: moment().startOf('month'), 
-      // end_plan: moment().endOf('month'), 
-      month: '2021-06-01 00:01', 
-      estimate: 122400, 
-      actual: 0
-    }
-
-    await MonthlyPlanHelpers.POST(req)
+    const req = request.all()
+   try {
+     const data = await MonthlyPlanHelpers.POST(req)
+     return data
+   } catch (error) {
+     console.log(error);
+   }
   }
   
   async show ({ params, request, response, view }) {

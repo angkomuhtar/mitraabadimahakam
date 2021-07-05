@@ -4,6 +4,11 @@
 const Model = use('Model')
 
 class MonthlyPlan extends Model {
+    static boot () {
+        super.boot()
+        this.addHook('afterCreate', 'MonthlyPlanHook.afterCreate')
+    }
+
     pit () {
         return this.belongsTo("App/Models/MasPit", "pit_id", "id")
     }

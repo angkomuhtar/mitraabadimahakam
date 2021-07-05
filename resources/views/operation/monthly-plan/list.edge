@@ -46,7 +46,7 @@
                                         {{item.pit.name}}
                                     </td>
                                     <td class="single-line">
-                                        {{item.tipe}}
+                                        {{item.tipe != 'OB' ? 'COAL':'OB'}}
                                     </td>
                                     <td class="single-line myMonthlyFormat" data-date="{{item.month}}" data-elm="span">
                                         <strong>

@@ -43,13 +43,20 @@ $(function(){
 
     $('.myTimeFormat').each(function(){
         var date = $(this).data(date)
-        var elm = $(this).data('elm')
-        var dateString = moment(date.date).format('HH:mm')
-        console.log(date.date);
-        if(elm != undefined){
-            $(this).find(elm).html(dateString)
+        if(date.date != null){
+            var elm = $(this).data('elm')
+            var dateString = moment(date.date).format('HH:mm')
+            if(elm != undefined){
+                $(this).find(elm).html(dateString)
+            }else{
+                $(this).html(dateString)
+            }
         }else{
-            $(this).html(dateString)
+            if(elm != undefined){
+                $(this).find(elm).html('unset')
+            }else{
+                $(this).html('unset')
+            }
         }
     })
 
@@ -68,7 +75,7 @@ $(function(){
     $('.myDateTimeFormatLong').each(function(){
         var date = $(this).data(date)
         var elm = $(this).data('elm')
-        var dateString = moment(date.date).format('MMMM Do YYYY, h:mm:ss a')
+        var dateString = moment(date.date).format('MMMM Do YYYY, hh:mm:ss a')
         var weekly = moment(date.date).week()
         console.log(weekly);
         if(elm != undefined){

@@ -182,7 +182,7 @@ Route.group(() => {
 
     Route.post('/daily-fleet/:id/delete', 'DailyFleetController.delete').as('opr.daily-fleet.delete').middleware('D')
 
-    // Daily Ritase
+    // Daily Ritase OB
     Route.get('/daily-ritase-ob', 'DailyRitaseController.index').as('opr.daily-ritase-ob.index').middleware('R')
 
     Route.post('/daily-ritase-ob', 'DailyRitaseController.store').as('opr.daily-ritase-ob.store').middleware('C')
@@ -202,6 +202,27 @@ Route.group(() => {
     Route.get('/daily-ritase-ob/list/fleet/:fleet_id', 'DailyRitaseController.listByFLEET').as('opr.daily-ritase-ob.listByFLEET').middleware('R')
 
     Route.get('/daily-ritase-ob/list/shift/:shift_id', 'DailyRitaseController.listBySHIFT').as('opr.daily-ritase-ob.listBySHIFT').middleware('R')
+
+    // Daily Ritase COAL
+    Route.get('/daily-ritase-coal', 'DailyRitaseCoalController.index').as('opr.daily-ritase-coal.index').middleware('R')
+
+    Route.post('/daily-ritase-coal', 'DailyRitaseCoalController.store').as('opr.daily-ritase-coal.store').middleware('C')
+
+    Route.get('/daily-ritase-coal/list', 'DailyRitaseCoalController.list').as('opr.daily-ritase-coal.list').middleware('R')
+
+    Route.get('/daily-ritase-coal/create', 'DailyRitaseCoalController.create').as('opr.daily-ritase-coal.create').middleware('R')
+
+    Route.get('/daily-ritase-coal/:id/show', 'DailyRitaseCoalController.show').as('opr.daily-ritase-coal.show').middleware('U')
+    
+    Route.post('/daily-ritase-coal/:id/update', 'DailyRitaseCoalController.update').as('opr.daily-ritase-coal.update').middleware('U')
+    
+    Route.post('/daily-ritase-coal/:id/delete', 'DailyRitaseCoalController.delete').as('opr.daily-ritase-coal.delete').middleware('D')
+    
+    Route.get('/daily-ritase-coal/list/pit/:pit_id', 'DailyRitaseCoalController.listByPIT').as('opr.daily-ritase-coal.listByPIT').middleware('R')
+
+    Route.get('/daily-ritase-coal/list/fleet/:fleet_id', 'DailyRitaseCoalController.listByFLEET').as('opr.daily-ritase-coal.listByFLEET').middleware('R')
+
+    Route.get('/daily-ritase-coal/list/shift/:shift_id', 'DailyRitaseCoalController.listBySHIFT').as('opr.daily-ritase-coal.listBySHIFT').middleware('R')
 
     // Daily TimeSheet
     Route.get('/daily-timesheet', 'DailyTimesheetController.index').as('opr.daily-timesheet.index').middleware('R')

@@ -6,7 +6,7 @@ const Model = use('Model')
 class DailyPlan extends Model {
     static boot () {
         super.boot()
-        this.addHook('afterSave', 'DailyPlanHook.afterSave')
+        this.addHook('afterUpdate', 'DailyPlanHook.afterUpdate')
     }
 
     monthly_plan () {

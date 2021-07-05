@@ -29,6 +29,14 @@ span.ct-label {
     stroke-width: 35px !important;
 }
 
+.text-white {
+	color: #fff !important;
+}
+
+.text-red {
+	color: #eb7344 !important;
+}
+
 div .level1 {
 	margin-left: 10px;
 	padding: 10px !important;
@@ -426,6 +434,10 @@ hr {
 
 .m-r-40 {
 	margin-right: 40px!important
+}
+
+.m-t-3 {
+	margin-top: 3px!important
 }
 
 .m-t-5 {

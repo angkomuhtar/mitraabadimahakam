@@ -150,6 +150,131 @@ class DailyRitaseCoalApiController {
             })
         }
     }
+
+    async update ({ auth, params, request, response }) {
+        var t0 = performance.now()
+        const req = request.only(["dailyfleet_id", "checker_id", "shift_id", "distance", "block", "date"])
+        let durasi
+    
+        try {
+            await auth.authenticator("jwt").getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: error.message,
+                },
+                data: [],
+            })
+        }
+
+        const isDailyFleet = await db.table('daily_fleets').where('id', req.dailyfleet_id).first()
+        if(!isDailyFleet){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: 'Daily Fleet undefined...',
+                },
+                data: [],
+            })
+        }
+        const isDailyRitaseCoal = await db.table('daily_ritase_coals').where('id', params.id).first()
+        if(!isDailyRitaseCoal){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: 'Daily Ritase Coal undefined...',
+                },
+                data: [],
+            })
+        }
+
+        try {
+            const data = await DailyRitaseCoalHelpers.UPDATE(params, req)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(200).json({
+                diagnostic: {
+                    times: durasi,
+                    error: false,
+                },
+                data: data,
+            })
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: error
+                },
+                data: [],
+            })
+        }
+    }
+
+    async destroy ({ auth, params, response }) {
+        var t0 = performance.now()
+        let durasi
+    
+        try {
+            await auth.authenticator("jwt").getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: error.message,
+                },
+                data: [],
+            })
+        }
+
+        const isDailyRitaseCoal = await db.table('daily_ritase_coals').where('id', params.id).first()
+        if(!isDailyRitaseCoal){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: 'Daily Ritase Coal undefined...',
+                },
+                data: [],
+            })
+        }
+
+        try {
+            const data = await DailyRitaseCoalHelpers.DELETE(params)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(200).json({
+                diagnostic: {
+                    times: durasi,
+                    error: false,
+                },
+                data: data,
+            })
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: error
+                },
+                data: [],
+            })
+        }
+    }
 }
 
 module.exports = DailyRitaseCoalApiController

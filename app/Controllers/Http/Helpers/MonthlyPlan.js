@@ -13,7 +13,7 @@ class MonthlyPlan {
         const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
 
-        const data = await MonthlyPlans.query().with('pit').paginate(halaman, limit)
+        const data = await MonthlyPlans.query().with('pit').orderBy('created_at', 'desc').paginate(halaman, limit)
         return data
     }
 
@@ -96,36 +96,17 @@ class MonthlyPlan {
     }
 
     async POST (req) { 
+        
         const { pit_id, tipe, month, estimate, actual } = req
         const satuan = tipe != 'BB' ? 'BCM':'MT'
-
-        const currentMonthDates = Array.from({length: moment().daysInMonth()}, 
-        (x, i) => moment().startOf('month').add(i, 'days').format('YYYY-MM-DD'))
-
-        let array = []
-        for (const item of currentMonthDates) {
-            array.push({
-                current_date: item,
-                estimate: estimate / currentMonthDates.length,
-                monthlyplans_id: 1
-            })
-        }
-
-        console.log(array);
-        const trx = await db.beginTransaction()
         try {
             const monthlyPlans = new MonthlyPlans()
             monthlyPlans.fill({pit_id, tipe, month, estimate, actual, satuan})
-            await monthlyPlans.save(trx)
-            for (const item of array) {
-                const dailyPlans = new DailyPlans()
-                dailyPlans.fill(item)
-                await dailyPlans.save(trx)
-            }
-            await trx.commit()
+            await monthlyPlans.save()
+            const data = await MonthlyPlans.query().with('daily_plan').last()
+            return data
         } catch (error) {
             console.log(error);
-            await trx.rollback()
         }
 
     }
