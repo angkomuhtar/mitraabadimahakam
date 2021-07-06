@@ -11,7 +11,7 @@
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
                         <div class="input-group">
-                            <input id="keywordTimeSheet" class="form-control" placeholder="Search for ticket or coupon..." value="{{keyword}}">
+                            <input id="keywordCoalRitase" class="form-control" placeholder="Search for ticket or coupon..." value="{{keyword}}">
                             <span class="input-group-btn"> 
                                 <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
                             </span>
@@ -39,7 +39,11 @@
                                 <tr>
                                     <td>{{$loop.index + 1}}</td>
                                     <td>
-                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                        @if(item.w_netto > 0)
+                                            <button class="btn btn-outline btn-success btn-xs bt-view-data" data-id="{{item.id}}">view</button>
+                                        @else
+                                            <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                        @endif
                                     </td>
                                     <td class="single-line">
                                         <strong class="text-warning">{{item.ritase_coal.daily_fleet.pit.name}} </strong> <br>

@@ -213,6 +213,8 @@ Route.group(() => {
     Route.get('/daily-ritase-coal/create', 'DailyRitaseCoalController.create').as('opr.daily-ritase-coal.create').middleware('R')
 
     Route.get('/daily-ritase-coal/:id/show', 'DailyRitaseCoalController.show').as('opr.daily-ritase-coal.show').middleware('U')
+
+    Route.get('/daily-ritase-coal/:id/view', 'DailyRitaseCoalController.view').as('opr.daily-ritase-coal.show').middleware('R')
     
     Route.post('/daily-ritase-coal/:id/update', 'DailyRitaseCoalController.update').as('opr.daily-ritase-coal.update').middleware('U')
     

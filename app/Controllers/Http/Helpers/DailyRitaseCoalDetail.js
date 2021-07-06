@@ -48,6 +48,7 @@ class RitaseCoalDetail {
             .with('ritase_coal', a => {
                 a.with('daily_fleet', aa => aa.with('pit'))
                 a.with('shift')
+                a.with('checker')
             })
             .with('seam')
             .with('transporter')

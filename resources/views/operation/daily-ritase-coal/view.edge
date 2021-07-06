@@ -1,0 +1,214 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" class="" id="fm-ritase-coal-upd" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <!--<div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Time Sheet</div>-->
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="col-md-9">
+                                            <h3 class="m-b-0">Kupon Pengangkutan Batu Bara</h3>
+                                            Tanggal &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="myDateTimeFormatLong" data-date="{{data.updated_at}}"></span> <br>
+                                            CreatedBy : <span>{{data.checkerJT.nm_lengkap}}</span>
+                                        </div>
+                                        <div class="col-md-3 pull-right">
+                                            <strong class="text-white pull-right">
+                                                Nomor Kupon :
+                                                <h1 class="m-t-0">{{data.kupon}}</h1>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row p-20 m-b-20 b-all">
+                                        <div class="col-md-6 b-r">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover manage-u-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center text-white" colspan="2">IN / OUT TICKET</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="">
+                                                            <td>
+                                                                Date In Jetty
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <span class="myDateTimeFormat" data-date="{{data.checkin_jt}}"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Date Out Jetty
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <span class="myDateTimeFormat" data-date="{{data.checkout_jt}}"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Vehicle
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <i class="fa fa-truck"></i> {{data.transporter.nopol}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Kontraktor
+                                                            </td>
+                                                            <td class="text-right">
+                                                                PT. Mitra Abadi Mahakam
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Lokasi/Pit
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{data.ritase_coal.daily_fleet.pit.kode}}/{{data.ritase_coal.daily_fleet.pit.name}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Seam
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{data.seam.kode}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Coal Type
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{data.coal_tipe}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Weight Gross
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{(data.w_gross).toLocaleString('ID')}} KG
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Weight Tare
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{(data.w_tare).toLocaleString('ID')}} KG
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="font-bold">
+                                                            <td>
+                                                                Weight Netto
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{(data.w_netto).toLocaleString('ID')}} KG
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover manage-u-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center text-white" colspan="2">DETAILS</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="font-bold">
+                                                            <td>
+                                                                Nomor Tiket
+                                                            </td>
+                                                            <td class="text-right text-warning">
+                                                                {{data.ticket}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Check Out Pit
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <span class="myDateTimeFormat" data-date="{{data.checkout_pit}}"></span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                No. Dump Truck
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <strong class="text-uppercase">{{data.transporter.brand}}</strong> 
+                                                                <span>{{data.transporter.kode}}</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Stockpile/Sulphur
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{data.coal_tipe}} {{data.stockpile}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Checker Pit
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{data.ritase_coal.checker.nm_lengkap}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Operator Dump Truck
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{data.opr.fullname}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td>
+                                                                Checker Jetty
+                                                            </td>
+                                                            <td class="text-right">
+                                                                {{data.checkerJT.nm_lengkap}}
+                                                            </td>
+                                                        </tr>
+                                                        <tr style="height: 150px;background-color: black;">
+                                                            <td colspan="2">
+                                                                <strong>Keterangan</strong>
+                                                                <p class="m-b-0">{{data.keterangan ? data.keterangan : 'tanpa keterangan'}}</p>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row text-right">
+                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-back"> 
+                                            <i class="fa fa-close"></i> <span>Close</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

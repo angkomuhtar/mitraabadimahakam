@@ -22,6 +22,7 @@ class DailyRitaseCoalDetailSchema extends Schema {
       table.enu('coal_tipe', ['CC', 'DCN', 'DCO']).defaultTo('CC')
       table.integer('stockpile').defaultTo(0)
       table.integer('checker_jt').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
+      table.text('keterangan').defaultTo(null)
       table.timestamps()
     })
   }
