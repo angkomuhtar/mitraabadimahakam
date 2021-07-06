@@ -67,6 +67,27 @@ class RitaseCoal {
             return error
         }
     }
+
+    async UPDATE (params, req) {
+        try {
+            const ritaseCoal = await DailyRitaseCoal.find(params.id)
+            ritaseCoal.merge(req)
+            await ritaseCoal.save()
+            return ritaseCoal
+        } catch (error) {
+            return error
+        }
+    }
+
+    async DELETE (params) {
+        try {
+            const ritaseCoal = await DailyRitaseCoal.find(params.id)
+            await ritaseCoal.delete()
+            return ritaseCoal
+        } catch (error) {
+            return error
+        }
+    }
 }
 
 module.exports = new RitaseCoal()

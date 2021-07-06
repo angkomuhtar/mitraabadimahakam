@@ -1,0 +1,140 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>New Daily Coal Production</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="keywordTimeSheet" class="form-control" placeholder="Search for ticket or coupon..." value="{{keyword}}">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="150">PIT Name</th>
+                                <th class="sl">OUT PIT</th>
+                                <th class="sl" width="200">No.Kupon - Ticket</th>
+                                <th class="sl" width="150">Description</th>
+                                <th class="sl" width="200">Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td class="single-line">
+                                        <strong class="text-warning">{{item.ritase_coal.daily_fleet.pit.name}} </strong> <br>
+                                        <span class="text-red">BLOCK {{item.ritase_coal.block}} </span> <br>
+                                        <small class="text-info">{{item.ritase_coal.shift.name}} </small> <br>
+                                        <small class="text-white myDateFormat" data-date="{{item.ritase_coal.date}}"></small>
+                                    </td>
+                                    <td>
+                                        <i class="mdi mdi-export"></i> <span>PIT CHECKER</span> 
+                                        <span class="text-white pull-right">{{item.ritase_coal.checker.nm_lengkap}}</span> <br>
+                                        <i class="mdi mdi-truck"></i> <span>OPERATOR</span> <span class="text-white pull-right">{{item.opr.fullname}}</span>
+                                        <p>
+                                            CHECK OUT PIT<span class="myTimeFormat pull-right" data-date="{{item.checkout_pit}}" data-elm="span"><i class="mdi mdi-alarm-snooze"></i> <span></span></span>
+                                        </p>
+                                    </td>
+                                    <td class="single-line">
+                                        <strong class="text-white">{{item.kupon}}</strong>
+                                        <span>
+                                            @if(item.ticket != null)
+                                            -
+                                            <strong class="text-white">{{item.ticket}}</strong>
+                                            @endif
+                                        </span>
+                                        <p>
+                                            <i class="mdi mdi-scale"></i> {{item.checkerJT != null ? item.checkerJT.nm_lengkap : 'UNSET'}} <br>
+                                            <i class="mdi mdi-alarm-plus"></i> <small class="myTimeFormat" data-date="{{item.checkin_jt}}"></small>
+                                            <i class="mdi mdi-arrow-right"></i>
+                                            <i class="mdi mdi-alarm-check"></i> <small class="myTimeFormat" data-date="{{item.checkout_jt}}"></small>
+                                        </p>
+                                    </td>
+                                    <td class="text-white">
+                                        <p class="m-b-0">Tipe {{item.coal_tipe}}</p>
+                                        <p class="m-b-0">Seam {{item.seam.kode}}</p>
+                                        <p class="m-b-0">
+                                            @if(item.coal_tipe === 'CC')
+                                              Stockpile {{item.stockpile}}/cc
+                                            @else
+                                                Stockpile {{item.stockpile}}/dcn
+                                            @endif
+                                        </p>
+                                    </td>
+                                    <td class="">
+                                        <p class="m-b-0">
+                                            <i class="mdi mdi-weight-kilogram"></i> GROSS <span class="pull-right m-t-3">
+                                                <strong class="text-white">
+                                                    {{(item.w_gross).toLocaleString('ID')}}
+                                                </strong> KG
+                                            </span>
+                                        </p>
+                                        <p class="m-b-0">
+                                            <i class="mdi mdi-weight-kilogram"></i> TARE <span class="pull-right m-t-3">
+                                                <strong class="text-white">
+                                                    {{(item.w_tare).toLocaleString('ID')}}
+                                                </strong> KG
+                                            </span>
+                                        </p>
+                                        <p class="m-b-0">
+                                            <i class="mdi mdi-weight-kilogram"></i> NET  <span class="pull-right m-t-3">
+                                                <strong class="text-white">
+                                                    {{(item.w_netto).toLocaleString('ID')}}
+                                                </strong> KG
+                                            </span>
+                                        </p>
+                                    </td>
+                                    
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('body').on('click', 'a.btn-pagging', function(e){
+            e.preventDefault()
+            var page = $(this).data('page')
+            // var keyword = $('#keywordTimeSheet').val()
+            console.log(window.location.pathname);
+            var url = window.location.pathname+'/list?page='+page
+            $.ajax({
+                async: true,
+                url: url,
+                method: 'GET',
+                success: function(result){
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+    })
+</script>

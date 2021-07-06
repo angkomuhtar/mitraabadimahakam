@@ -11,6 +11,7 @@ class DailyPlanSchema extends Schema {
       table.date('current_date').notNullable()
       table.float('estimate', 10, 2).defaultTo(0.00)
       table.float('actual', 10, 2).defaultTo(0.00)
+      table.enu('tipe', ['OB', 'COAL']).defaultTo('OB')
       table.enu('status', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })
