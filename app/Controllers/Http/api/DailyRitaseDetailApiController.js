@@ -206,8 +206,61 @@ class DailyRitaseDetailApiController {
         })
       }
     }
+  }
 
-    
+  async getByRitID ({ params, response, auth }) {
+    const { id } = params
+    var t0 = performance.now()
+    let durasi
+    response.status(200).json({data: 'ok'})
+    try {
+      await auth.authenticator("jwt").getUser()
+    } catch (error) {
+      console.log(error)
+      durasi = await diagnoticTime.durasi(t0)
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: [],
+      })
+    }
+    await GET_BY_ID()
+
+    async function GET_BY_ID(){
+      try {
+        const dailyRitaseDetail = await DailyRitaseDetail
+          .query()
+          .with('daily_ritase')
+          .with('checker')
+          .with('spv')
+          .with('hauler')
+          .where('dailyritase_id', id)
+          .orderBy('check_in', 'desc')
+          .fetch()
+        durasi = await diagnoticTime.durasi(t0)
+        return response.status(200).json({
+          diagnostic: {
+            times: durasi,
+            error: false
+          },
+          data: dailyRitaseDetail,
+        })
+      } catch (error) {
+        console.log(error)
+        durasi = await diagnoticTime.durasi(t0)
+        return response.status(400).json({
+          diagnostic: {
+            times: durasi,
+            error: true,
+            message: error.message,
+          },
+          data: [],
+        })
+      }
+    }
   }
 
   async update ({ auth, params, request, response }) {

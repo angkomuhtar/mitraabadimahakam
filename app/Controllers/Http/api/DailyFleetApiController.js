@@ -91,7 +91,7 @@ class DailyFleetApiController {
     async filterByDate ({ auth, response, request }) {
 
         var t0 = performance.now();
-        const { date } = request.only(['date']);
+        const { date, time, shift } = request.only(['date', 'time', 'shift'])
         let durasi;
 
         try {
@@ -109,7 +109,30 @@ class DailyFleetApiController {
             })
         }
 
-        await FILTER_DATE();
+        /**
+         * TODO
+         */
+
+        const now = moment(date).format('YYYY-MM-DD');
+        const prevDay = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+        const twelveAM = `${now}T00:00:00`;
+        const sixAM = `${now}T06:00:00`;
+
+        const nTime = moment(time).format("YYYY-MM-DDTHH:mm:ss");
+
+        const isNightShift = shift === 'NIGHT SHIFT';
+
+        let txt = '';
+        if (isNightShift && ((new Date(nTime) >= new Date(twelveAM)) && (new Date(nTime) <= new Date(sixAM)))) {
+            txt = 'You Are AT Night Shift 12 AM - 6 AM';
+            await FILTER_NIGHT_SHIFT();
+        } else {
+            txt = 'Morning Shift or Night shift at 18PM - 12AM';
+            await FILTER_DATE();
+        }
+
+        console.log('TXT :: ', txt);
         
         async function FILTER_DATE() {
 
@@ -121,8 +144,44 @@ class DailyFleetApiController {
                 .with('activities')
                 .with('shift')
                 .with('user')
-                .where('date', date)
+                .where('date', now)
+                .andWhere('shift_id', isNightShift ? 2 : 1)
                 .fetch()
+            durasi = await diagnoticTime.durasi(t0);
+            return response.status(200).json({
+              diagnostic : {
+                times : durasi,
+                error : false
+              },
+              data : dailyFleet
+            })
+          } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(400).json({
+              diagnostic: {
+                times: durasi,
+                error: true,
+                message: error.message,
+              },
+              data: [],
+            })
+          }
+        }
+
+        async function FILTER_NIGHT_SHIFT() {
+            try {
+            const dailyFleet = await DailyFleet
+                .query()
+                .with('pit', site => site.with('site'))
+                .with('fleet')
+                .with('activities')
+                .with('shift')
+                .with('user')
+                .where('date', prevDay)
+                .andWhere('shift_id', 2)
+                .fetch()
+
             durasi = await diagnoticTime.durasi(t0);
             return response.status(200).json({
               diagnostic : {

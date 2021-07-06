@@ -72,8 +72,10 @@ class DailyRitaseApiController {
       })
     }
 
-    await FILTER_DATE();
+    const d = moment(date).format('YYYY-MM-DD');
 
+    await FILTER_DATE();
+    
     async function FILTER_DATE() {
       try {
         const dailyRitase = await DailyRitase
@@ -87,7 +89,7 @@ class DailyRitaseApiController {
                     details.with('pit')
                 })
                 .where("status", "Y")
-                .andWhere({ date : date })
+                .andWhere({ date : d })
                 .orderBy('created_at', 'desc')
                 .fetch()
 
