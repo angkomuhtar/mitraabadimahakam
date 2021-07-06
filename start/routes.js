@@ -517,7 +517,9 @@ Route.group(() => {
 
     Route.get('/:id/show', 'DailyRitaseDetailApiController.show')
 
-    Route.post('/:id/update', 'DailyRitaseDetailApiController.update')
+    Route.get('/:id/show', 'DailyRitaseDetailApiController.show')
+
+    Route.get('/:id/rit/ob', 'DailyRitaseDetailApiController.getByRitID')
 
     Route.delete('/:id/destroy', 'DailyRitaseDetailApiController.destroy')
 

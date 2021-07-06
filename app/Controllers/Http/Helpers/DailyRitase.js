@@ -119,6 +119,19 @@ class Ritase {
             .paginate(halaman, limit)
         return dailyRitaseDetail
     }
+
+    async BY_RIT_ID (req) {
+        const limit = 25
+        const halaman = req.page === undefined ? 1 : parseInt(req.page)
+        const dailyRitaseDetail = await DailyRitaseDetail
+            .query()
+            .with('daily_ritase', wh => wh.where('id', req.id))
+            .with('checker', b => b.with('profile'))
+            .with('spv', b => b.with('profile'))
+            .orderBy('check_in', 'desc')
+            .paginate(halaman, limit)
+        return dailyRitaseDetail
+    }
 }
 
 module.exports = new Ritase()
