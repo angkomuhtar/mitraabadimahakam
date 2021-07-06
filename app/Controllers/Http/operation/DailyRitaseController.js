@@ -11,7 +11,7 @@ class DailyRitaseController {
         const req = request.only(['keyword', 'page'])
         try {
             const dailyRitase = (await DailyRitaseHelpers.ALL(req)).toJSON()
-            console.log(dailyRitase.data[0].ritase_details[0]);
+            console.log(':::::::', dailyRitase.data);
             return view.render('operation.daily-ritase-ob.list', {list: dailyRitase})
         } catch (error) {
             console.log(error)
@@ -44,6 +44,7 @@ class DailyRitaseController {
         const req = request.only(['page'])
         try {
             const dailyRitase = await DailyRitaseHelpers.BY_FLEET(params, req)
+            
             return view.render('operation.daily-ritase-ob.list-by', {
                 list: dailyRitase.toJSON(), 
                 filtered: 'fleet',
