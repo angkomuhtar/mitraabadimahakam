@@ -472,7 +472,7 @@ Route.group(() => {
 
     Route.get('/:id/show', 'DailyFleetApiController.show')
 
-    Route.post('/filter-date', 'DailyFleetApiController.filterByDate')
+    Route.get('/filter-date', 'DailyFleetApiController.filterByDate')
 
     Route.post('/:id/update', 'DailyFleetApiController.update')
 
@@ -502,7 +502,7 @@ Route.group(() => {
 
     Route.post('/:id/update', 'DailyRitaseApiController.update')
 
-    Route.post('/filter-date', 'DailyRitaseApiController.filterByDate')
+    Route.get('/filter-date', 'DailyRitaseApiController.filterByDate')
 
     Route.delete('/:id/destroy', 'DailyRitaseApiController.destroy')
 
@@ -533,6 +533,8 @@ Route.group(() => {
 
     Route.get('/:id/show', 'DailyRitaseCoalApiController.show')
 
+    Route.get('/filter-date', 'DailyRitaseCoalApiController.filterByDate')
+
     Route.post('/:id/update', 'DailyRitaseCoalApiController.update')
 
     Route.delete('/:id/destroy', 'DailyRitaseCoalApiController.destroy')
@@ -546,6 +548,8 @@ Route.group(() => {
     Route.post('/', 'DailyRitaseCoalDetailApiController.create')
 
     Route.get('/:id/show', 'DailyRitaseCoalDetailApiController.show')
+
+    Route.get('/:id/rit/coal', 'DailyRitaseCoalDetailApiController.getByRitID')
 
     Route.post('/:id/update', 'DailyRitaseCoalDetailApiController.update')
 

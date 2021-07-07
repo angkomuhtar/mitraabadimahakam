@@ -13,7 +13,11 @@ class DailyEventTimeSheet {
             eventTimeSheet = 
             await EventTimeSheet
             .query()
-            .with('timesheet')
+            .with('timesheet', (wh) => {
+                wh.with('dailyFleet', (w) => {
+                    w.with('shift')
+                })
+            })
             .with('event')
             .with('equipment')
             .with('createdby')
@@ -23,7 +27,11 @@ class DailyEventTimeSheet {
             eventTimeSheet = 
             await EventTimeSheet
             .query()
-            .with('timesheet')
+            .with('timesheet', (wh) => {
+                wh.with('dailyFleet', (w) => {
+                    w.with('shift')
+                })
+            })
             .with('event')
             .with('equipment')
             .with('createdby')

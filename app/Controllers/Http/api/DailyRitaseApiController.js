@@ -52,10 +52,10 @@ class DailyRitaseApiController {
     }
   }
 
-  /** get daily ritase based on request date from client */
+  /** show data based today and previous day */
   async filterByDate ({ auth, request, response }) {
     var t0 = performance.now()
-    const { date } = request.only(["date"])
+    const { begin_date, end_date } = request.only(["begin_date", "end_date"])
 
     try {
       await auth.authenticator("jwt").getUser()
@@ -72,10 +72,12 @@ class DailyRitaseApiController {
       })
     }
 
-    const d = moment(date).format('YYYY-MM-DD');
+    const d1 = moment(begin_date).format('YYYY-MM-DD');
+    const d2 = moment(end_date).format('YYYY-MM-DD');
+    // const prevDay = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
 
     await FILTER_DATE();
-    
+
     async function FILTER_DATE() {
       try {
         const dailyRitase = await DailyRitase
@@ -89,8 +91,8 @@ class DailyRitaseApiController {
                     details.with('pit')
                 })
                 .where("status", "Y")
-                .andWhere({ date : d })
-                .orderBy('created_at', 'desc')
+                .whereBetween('date', [d1, d2])
+                .orderBy('date', 'desc')
                 .fetch()
 
         let durasi = await diagnoticTime.durasi(t0)

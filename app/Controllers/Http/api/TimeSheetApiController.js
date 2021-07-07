@@ -104,6 +104,7 @@ class TimeSheetApiController {
         var t0 = performance.now()
         const req = request.only(['begin_date', 'end_date'])
         const { begin_date, end_date } = req
+
         let durasi
 
         try {
@@ -129,6 +130,9 @@ class TimeSheetApiController {
                     .with('operator_unit')
                     .with('equipment')
                     .with('dailyEvent')
+                    .with('dailyFleet', (wh) => {
+                        wh.with('shift')
+                    })
                     .where('tgl', '>=', new Date(begin_date))
                     .andWhere('tgl', '<=', new Date(end_date))
                     .fetch()
