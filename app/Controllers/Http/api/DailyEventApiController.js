@@ -48,6 +48,62 @@ class DailyEventApiController {
         }
     }
 
+    // show data today and previous day
+    // async filterByDate ({ auth, request, response }) {
+    //     var t0 = performance.now()
+    //     const { date } = request.only(['date'])
+    //     let durasi
+    //     try {
+    //         await auth.authenticator('jwt').getUser()
+    //     } catch (error) {
+    //         console.log(error)
+    //         durasi = await diagnoticTime.durasi(t0)
+    //         return response.status(403).json({
+    //             diagnostic: {
+    //                 times: durasi, 
+    //                 error: true,
+    //                 message: error.message
+    //             },
+    //             data: {}
+    //         })
+    //     }
+
+    //     const now = moment(date).format('YYYY-MM-DD');
+    //     const prevDay = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
+
+    //     try {
+    //         const data = await EventTimeSheet.query()
+    //         .with('timesheet', wh => {
+    //             wh.whereBetween('tgl', [prevDay, now])
+    //             wh.orderBy('tgl', 'desc')
+    //         })
+    //         .with('event')
+    //         .with('equipment')
+    //         .with('createdby')
+    //         .fetch()
+
+    //         durasi = await diagnoticTime.durasi(t0)
+    //         return response.status(201).json({
+    //             diagnostic: {
+    //                 times: durasi, 
+    //                 error: false
+    //             },
+    //             data: data
+    //         })
+    //     } catch (error) {
+    //         console.log(error)
+    //         durasi = await diagnoticTime.durasi(t0)
+    //         return response.status(403).json({
+    //             diagnostic: {
+    //                 times: durasi, 
+    //                 error: true,
+    //                 message: error.message
+    //             },
+    //             data: {}
+    //         })
+    //     }
+    // }
+
     async timesheetID ({ auth, params, request, response }) {
         var t0 = performance.now()
         const req = request.only(['keyword', 'page'])
