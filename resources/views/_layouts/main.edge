@@ -158,6 +158,7 @@
     <!-- chartist chart -->
     {{ script('plugins/bower_components/chartist-js/dist/chartist.min') }}
     {{ script('plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min') }}
+    {{ script('plugins/bower_components/chartist-plugin-pointlabels/dist/chartist-plugin-pointlabels') }}
     {{ script('plugins/bower_components/Minimal-Gauge-chart/js/cmGauge') }}
 
     <!-- SweetAlert JS -->
@@ -179,7 +180,20 @@
 
     {{--  <script src="js/dashboard3.js"></script>  --}}
 
-    
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+    window.OneSignal = window.OneSignal || [];
+    OneSignal.push(function() {
+        OneSignal.init({
+        appId: "b677f7c0-6042-4cfe-a99a-a7034ae6d4b3",
+        safari_web_id: "web.onesignal.auto.14469d21-a548-446f-9323-a0e21fc14d38",
+        notifyButton: {
+            enable: true,
+        },
+        subdomainName: "mitraabadimaha",
+        });
+    });
+    </script>
     
     <script>
         var options = {

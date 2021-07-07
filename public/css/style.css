@@ -13,6 +13,10 @@
 	stroke: rgb(68, 64, 42);
 }
 
+.ct-label {
+	fill: #fff !important;
+}
+
 span.ct-label {
 	color: #fff;
 }

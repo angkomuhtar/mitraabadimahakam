@@ -17,27 +17,87 @@ class MonthlyPlan {
         return data
     }
 
-    async CHARTIST_MONTHLY (req) {
-        let currentMonthDates = Array.from({length: moment().daysInMonth()}, 
+    async CHARTIST_MONTHLY_OB (req) {
+        const currentMonthDates = Array.from({length: moment().daysInMonth()}, 
         (x, i) => moment().startOf('month').add(i, 'days').format('DD'))
-        let awalBulan = moment().startOf('month').format('YYYY-MM-DD')
+
+        const isCurrentMonth = req.periode === moment().format('YYYY-MM')
         try {
             let dailyPlans
-            if(req.periode){
+            if(isCurrentMonth){
+                const awalBulan = moment(req.periode).startOf('month').format('YYYY-MM-DD')
                 dailyPlans = (
                         await DailyPlans
                         .query()
                         .with('monthly_plan')
-                        .where('current_date', 'like', `${req.periode}%`)
+                        .where('current_date', '>=', awalBulan)
+                        .andWhere('current_date', '<=', new Date())
+                        .andWhere('tipe', 'OB')
                         .fetch()
                     ).toJSON()
             }else{
+                const arrDate = Array.from({length: moment(req.periode).daysInMonth()}, 
+                (x, i) => moment(req.periode).startOf('month').add(i, 'days').format('YYYY-MM-DD'))
+
                 dailyPlans = (
                     await DailyPlans
                     .query()
                     .with('monthly_plan')
-                    .where('current_date', '<=', awalBulan)
-                    .andWhere('current_date', '>=', `${moment().format('YYYY-MM')}`)
+                    .whereIn('current_date', arrDate)
+                    .andWhere('tipe', 'OB')
+                    .fetch()
+                ).toJSON()
+            }
+            const data = {
+                monthly_plan: dailyPlans[0].monthly_plan,
+                labels: currentMonthDates,
+                actual: dailyPlans.map(item => parseFloat(item.actual))
+            }
+            data.monthly_plan.month = moment().format('MMMM YYYY')
+            return data
+        } catch (error) {
+            console.log(error);
+            return {
+                monthly_plan: {
+                    month: moment().format('MMMM YYYY'),
+                    satuan: 'BCM',
+                    estimate: 0,
+                    actual: 0
+                },
+                labels: currentMonthDates,
+                actual: []
+            }
+        }
+    }
+
+    async CHARTIST_MONTHLY_COAL (req) {
+        const currentMonthDates = Array.from({length: moment().daysInMonth()}, 
+        (x, i) => moment().startOf('month').add(i, 'days').format('DD'))
+
+        const isCurrentMonth = req.periode === moment().format('YYYY-MM')
+        try {
+            let dailyPlans
+            if(isCurrentMonth){
+                const awalBulan = moment(req.periode).startOf('month').format('YYYY-MM-DD')
+                dailyPlans = (
+                        await DailyPlans
+                        .query()
+                        .with('monthly_plan')
+                        .where('current_date', '>=', awalBulan)
+                        .andWhere('current_date', '<=', new Date())
+                        .andWhere('tipe', 'COAL')
+                        .fetch()
+                    ).toJSON()
+            }else{
+                const arrDate = Array.from({length: moment(req.periode).daysInMonth()}, 
+                (x, i) => moment(req.periode).startOf('month').add(i, 'days').format('YYYY-MM-DD'))
+
+                dailyPlans = (
+                    await DailyPlans
+                    .query()
+                    .with('monthly_plan')
+                    .whereIn('current_date', arrDate)
+                    .andWhere('tipe', 'COAL')
                     .fetch()
                 ).toJSON()
             }

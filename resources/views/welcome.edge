@@ -113,21 +113,36 @@
                     </div>
                     <div id="sparkline8" class="grafik-chartis"></div>
                 </div>
+
                 <div class="white-box">
                     <h3 class="box-title">
-                        <small class="pull-right m-t-10 text-danger">
-                            <i class="fa fa-sort-desc"></i> 
-                            18% High then last month
-                        </small>
+                        <div class="form-group col-sm-4 pull-right">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span> 
+                                <select class="form-control input-sm" id="opt-chart3">
+                                    @each(item in monthItem)
+                                        <option value="{{item.values}}" {{item.selected}}>{{item.name}}</option>
+                                    @endeach
+                                </select>
+                            </div>
+                        </div>
                         Monthly Coal Production
                     </h3>
                     <div class="stats-row">
                         <div class="stat-item">
-                            <h6>Overall Growth</h6> <b>80.40%</b></div>
+                            <h6>Estimate Plan</h6> 
+                            <b id="coal_plan">0 BCM</b>
+                        </div>
                         <div class="stat-item">
-                            <h6>Montly</h6> <b>15.40%</b></div>
+                            <h6>Actual</h6> 
+                            <b id="coal_actual">0 BCM</b>
+                        </div>
                         <div class="stat-item">
-                            <h6>Day</h6> <b>5.50%</b></div>
+                            <h6>Persentase</h6> 
+                            <b id="coal_persen">0%</b>
+                        </div>
                     </div>
                     <div id="sparkline9" class="grafik-chartis"></div>
                 </div>
@@ -214,8 +229,9 @@
         $(document).ready(function () {
             "use strict";
 
-            G1_MTD_OB()
-            G2_MTD_OB()
+            // G1_MTD_OB()
+            // G2_MTD_OB()
+            // G3_MTD_COAL()
 
             const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
             var random = Math.floor(Math.random() * months.length);
@@ -228,19 +244,19 @@
             
             $('select#opt-chart1').on('change', function(e){
                 e.preventDefault()
-                console.log($(this).val());
                 G1_MTD_OB()
+                G3_MTD_COAL()
             })
             
 
             setInterval(() => {
                 G1_MTD_OB()
                 G2_MTD_OB()
+                G3_MTD_COAL()
             }, 5 * 1000);
             
             function G1_MTD_OB(){
                 var bulan = $('select#opt-chart1').val()
-                console.log('bulan::', bulan);
                 $.ajax({
                     async: true,
                     url: '/ajax/grafik1?periode='+bulan,
@@ -261,6 +277,23 @@
                                 result.actual
                             ]
                             }, {
+                            plugins: [
+                                Chartist.plugins.ctPointLabels({
+                                    textAnchor: 'right',
+                                    labelInterpolationFnc: function(value) {
+                                        if(value){
+                                            return (value/1000) + 'K'
+                                        }else{
+                                            return 0
+                                        }
+                                    }
+                                }),
+                                Chartist.plugins.tooltip({
+                                    class: 'class1',
+                                    appendToBody: true,
+                                    anchorToPoint: true
+                                })
+                            ],
                             low: 0,
                             showArea: true,
                         });
@@ -307,19 +340,68 @@
                 })
             }
 
+            function G3_MTD_COAL(){
+                var bulan = $('select#opt-chart3').val()
+                $.ajax({
+                    async: true,
+                    url: '/ajax/grafik3?periode='+bulan,
+                    method: 'GET',
+                    success: function(result){
+                        var current_month = result.monthly_plan.month
+                        var satuan = result.monthly_plan.satuan
+                        var estimasi = result.monthly_plan.estimate
+                        var actual = result.monthly_plan.actual
+                        var persen = (parseFloat(actual) / parseFloat(estimasi)) * 100
+                        $('small#subtitle-monthly-coal').html(current_month)
+                        $('b#coal_plan').html((estimasi).toLocaleString('ID') +' '+satuan)
+                        $('b#coal_actual').html((actual).toLocaleString('ID') +' '+satuan)
+                        $('b#coal_persen').html((persen).toFixed(2)+'%')
+                        new Chartist.Line('#sparkline9', {
+                            labels: result.labels,
+                            series: [
+                                result.actual
+                            ]
+                            }, {
+                            plugins: [
+                                Chartist.plugins.ctPointLabels({
+                                    textAnchor: 'right',
+                                    labelInterpolationFnc: function(value) {
+                                        if(value){
+                                            return (value/1000) + 'K'
+                                        }else{
+                                            return 0
+                                        }
+                                    }
+                                }),
+                                Chartist.plugins.tooltip({
+                                    class: 'class1',
+                                    appendToBody: true,
+                                    anchorToPoint: true
+                                })
+                            ],
+                            low: 0,
+                            showArea: true,
+                        });
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+            }
+
             $('.vcarousel').carousel({
                 interval: 3000
             })
 
-            new Chartist.Line('#sparkline9', {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8],
-                series: [
-                    data2
-                ]
-                }, {
-                low: 0,
-                showArea: true
-            });
+            // new Chartist.Line('#sparkline9', {
+            //     labels: [1, 2, 3, 4, 5, 6, 7, 8],
+            //     series: [
+            //         data2
+            //     ]
+            //     }, {
+            //     low: 0,
+            //     showArea: true
+            // });
 
             new Chartist.Line('#sparkline11', {
                 labels: [1, 2, 3, 4, 5, 6, 7, 8],
