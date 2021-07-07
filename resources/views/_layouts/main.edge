@@ -67,6 +67,16 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!--<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script> -->
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+    window.OneSignal = window.OneSignal || [];
+    OneSignal.push(function() {
+        OneSignal.init({
+        appId: "b677f7c0-6042-4cfe-a99a-a7034ae6d4b3",
+        });
+    });
+    </script>
     
     
 </head>
@@ -158,6 +168,7 @@
     <!-- chartist chart -->
     {{ script('plugins/bower_components/chartist-js/dist/chartist.min') }}
     {{ script('plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min') }}
+    {{ script('plugins/bower_components/chartist-plugin-pointlabels/dist/chartist-plugin-pointlabels') }}
     {{ script('plugins/bower_components/Minimal-Gauge-chart/js/cmGauge') }}
 
     <!-- SweetAlert JS -->

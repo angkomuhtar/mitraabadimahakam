@@ -6,7 +6,13 @@ const moment = require('moment')
 class AjaxChartController {
     async grafik_OB_MTD ({ request }) {
         const req = request.all()
-        const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY(req)
+        const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY_OB(req)
+        return grafik1
+    }
+
+    async grafik_COAL_MTD ({ request }) {
+        const req = request.all()
+        const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY_COAL(req)
         return grafik1
     }
 
