@@ -104,7 +104,8 @@ class EquipmentApiController {
                 .where('date', filterDate)
                 .andWhere('shift_id', ShiftFilter.id)
                 .orderBy('id', 'desc')
-                .first()
+                .fetch()
+
 
             if(!checkDailyFleet){
                 durasi = await diagnoticTime.durasi(t0)
@@ -122,8 +123,10 @@ class EquipmentApiController {
 
             const dailyFleet = checkDailyFleet.toJSON()
             
-            for (const item of dailyFleet.details) {
-                equipment_id.push(item.equip_id)
+            for (const item of dailyFleet) {
+                for(const x of item.details){
+                    equipment_id.push(x.equip_id)
+                }
             }
 
             if(equipment_id.length === 0){
