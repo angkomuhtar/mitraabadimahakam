@@ -162,68 +162,38 @@
                     </div>
                 </div>
                 <div class="white-box">
-                    <h3 class="box-title"><small class="pull-right m-t-10 text-danger"><i class="fa fa-sort-desc"></i> 18% High then last month</small>Last Day Fuel Consumtions</h3>
+                    <h3 class="box-title">
+                        <div class="form-group col-sm-4 pull-right">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </span> 
+                                <select class="form-control input-sm" id="opt-chart4">
+                                    @each(item in monthItem)
+                                        <option value="{{item.values}}" {{item.selected}}>{{item.name}}</option>
+                                    @endeach
+                                </select>
+                            </div>
+                        </div>
+                        Monthly Fuel Consumtions
+                    </h3>
                     <div class="stats-row">
                         <div class="stat-item">
-                            <h6>Overall Growth</h6> <b>80.40%</b></div>
+                            <h6>Total Consumtions</h6> 
+                            <b id="tot_fuel">80.40%</b>
+                        </div>
                         <div class="stat-item">
-                            <h6>Montly</h6> <b>15.40%</b></div>
+                            <h6>Average per day</h6> 
+                            <b id="avg_day">15.40%</b>
+                        </div>
+                        <!--
                         <div class="stat-item">
-                            <h6>Day</h6> <b>5.50%</b></div>
+                            <h6>Day</h6> <b>5.50%</b></div> -->
                     </div>
                     <div id="sparkline11" class="grafik-chartis"></div>
                 </div>
             </div>
         </div>
-        <!--
-        <div class="row">
-            <div class="col-md-12 col-lg-6">
-                <div class="white-box m-b-0">
-                    <h3 class="box-title text-white">Coal Production / Hours</h3>
-                    <div class="demo-container" style="height:300px;">
-                        <div id="placeholder" class="demo-placeholder"></div>
-                    </div>
-                </div>
-                <div class="white-box">
-                    <h4 class="font-bold text-center">Site RPU</h4>
-                    <div class="row text-center m-t-30">
-                        <div class="col-xs-4 b-r">
-                            <h2>2</h2>
-                            <h4>FLEET</h4>
-                        </div>
-                        <div class="col-xs-4 b-r">
-                            <h2>3</h2>
-                            <h4>EXA</h4></div>
-                        <div class="col-xs-4">
-                            <h2>6</h2>
-                            <h4>OHT</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-6">
-                <div class="white-box">
-                    <h3 class="box-title">
-                        Retase OB Removal By Current Shift
-                    </h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <small>Material Lumpur Padat</small><br>
-                            <small>Jarak 800 Meter</small>
-                        </div>
-                        <div class="col-md-6">
-                            <select class="form-control">
-                                <option>Pilih Lokasi</option>
-                                <option>RPU 1</option>
-                                <option>RPU 2</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="diagram" style="width:100%;height:100%;padding-top:0px;padding-bottom:57px"></div>
-                </div>
-            </div>
-        </div>
-        -->
     </div>
     <script>
         OneSignal.push(function() {
@@ -232,6 +202,11 @@
                 console.log("OneSignal User ID:", userId);
                 // (Output) OneSignal User ID: 270a35cd-4dda-4b3f-b04e-41d7463a2316    
             });
+        });
+    </script>
+    <script>
+        $(function() {
+            $('[data-plugin="knob"]').knob();
         });
     </script>
     <script>
@@ -248,9 +223,10 @@
             //     }
             // })
 
-            // G1_MTD_OB()
-            // G2_MTD_OB()
-            // G3_MTD_COAL()
+            G1_MTD_OB()
+            G2_MTD_OB()
+            G3_MTD_COAL()
+            G4_MTD_FUEL()
 
             const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
             var random = Math.floor(Math.random() * months.length);
@@ -264,7 +240,16 @@
             $('select#opt-chart1').on('change', function(e){
                 e.preventDefault()
                 G1_MTD_OB()
+            })
+            
+            $('select#opt-chart3').on('change', function(e){
+                e.preventDefault()
                 G3_MTD_COAL()
+            })
+
+            $('select#opt-chart4').on('change', function(e){
+                e.preventDefault()
+                G4_MTD_FUEL()
             })
             
 
@@ -272,6 +257,7 @@
                 G1_MTD_OB()
                 G2_MTD_OB()
                 G3_MTD_COAL()
+                G4_MTD_FUEL()
             }, 5 * 1000);
             
             function G1_MTD_OB(){
@@ -408,181 +394,97 @@
                 })
             }
 
+            function G4_MTD_FUEL(){
+                var bulan = $('select#opt-chart4').val()
+                $.ajax({
+                    async: true,
+                    url: '/ajax/grafik4?periode='+bulan,
+                    method: 'GET',
+                    success: function(result){
+                        console.log('result::', result.y.length);
+                        var total = result.y.reduce(function(x, y){ return x + y }, 0)
+                        $('b#tot_fuel').html(total + ' Liter')
+                        $('b#avg_day').html(total / result.y.length + ' Liter / Hari')
+                        new Chartist.Line('#sparkline11', {
+                            labels: result.x,
+                            series: [result.y]
+                            }, {
+                            plugins: [
+                                Chartist.plugins.ctPointLabels({
+                                    textAnchor: 'right',
+                                    labelInterpolationFnc: function(value) {
+                                        if(value){
+                                            return value + ' Lt'
+                                        }else{
+                                            return 0
+                                        }
+                                    }
+                                }),
+                                Chartist.plugins.tooltip({
+                                    // class: 'class1',
+                                    appendToBody: true,
+                                    anchorToPoint: true
+                                })
+                            ],
+                            low: 0,
+                            showArea: true
+                        });
+                        
+                        // var satuan = result.monthly_plan.satuan
+                        // var estimasi = result.monthly_plan.estimate
+                        // var actual = result.monthly_plan.actual
+                        // var persen = (parseFloat(actual) / parseFloat(estimasi)) * 100
+                        // $('small#subtitle-monthly-coal').html(current_month)
+                        // $('b#coal_plan').html((estimasi).toLocaleString('ID') +' '+satuan)
+                        // $('b#coal_actual').html((actual).toLocaleString('ID') +' '+satuan)
+                        // $('b#coal_persen').html((persen).toFixed(2)+'%')
+                        // new Chartist.Line('#sparkline9', {
+                        //     labels: result.labels,
+                        //     series: [
+                        //         result.actual
+                        //     ]
+                        //     }, {
+                        //     plugins: [
+                        //         Chartist.plugins.ctPointLabels({
+                        //             textAnchor: 'right',
+                        //             labelInterpolationFnc: function(value) {
+                        //                 if(value){
+                        //                     return (value/1000) + 'K'
+                        //                 }else{
+                        //                     return 0
+                        //                 }
+                        //             }
+                        //         }),
+                        //         Chartist.plugins.tooltip({
+                        //             class: 'class1',
+                        //             appendToBody: true,
+                        //             anchorToPoint: true
+                        //         })
+                        //     ],
+                        //     low: 0,
+                        //     showArea: true,
+                        // });
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+            }
+
             $('.vcarousel').carousel({
                 interval: 3000
             })
 
-            // new Chartist.Line('#sparkline9', {
+            // new Chartist.Line('#sparkline11', {
             //     labels: [1, 2, 3, 4, 5, 6, 7, 8],
             //     series: [
-            //         data2
+            //         data4,
+            //         data3,
+            //         data1
             //     ]
             //     }, {
             //     low: 0,
             //     showArea: true
-            // });
-
-            new Chartist.Line('#sparkline11', {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8],
-                series: [
-                    data4
-                ]
-                }, {
-                low: 0,
-                showArea: true
-            });
-
-            // Highcharts.chart('diagram', {
-            //     chart: {
-            //         type: 'pie',
-            //         backgroundColor: '#2f323e',
-            //         options3d: {
-            //             enabled: true,
-            //             alpha: 45,
-            //             beta: 0
-            //         }
-            //     },
-            //     title: {
-            //         text: 'Browser market shares at a specific website, 2014',
-            //     },
-            //     accessibility: {
-            //         point: {
-            //             valueSuffix: '%'
-            //         }
-            //     },
-            //     tooltip: {
-            //         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            //     },
-            //     plotOptions: {
-            //         pie: {
-            //             allowPointSelect: true,
-            //             cursor: 'pointer',
-            //             depth: 35,
-            //             dataLabels: {
-            //                 enabled: true,
-            //                 format: '{point.name}'
-            //             }
-            //         }
-            //     },
-            //     series: [{
-            //         type: 'pie',
-            //         name: 'Browser share',
-            //         data: [
-            //             {
-            //                 name: 'OHT-01',
-            //                 y: Math.random() * 10,
-            //                 sliced: true,
-            //                 selected: true
-            //             },
-            //             {
-            //                 name: 'OHT-02',
-            //                 y: Math.random() * 10
-            //             },
-            //             {
-            //                 name: 'OHT-03',
-            //                 y: Math.random() * 10
-            //             },
-            //             {
-            //                 name: 'OHT-04',
-            //                 y: Math.random() * 10
-            //             },
-            //         ]
-            //     }]
-            // });
-    
-            // Highcharts.chart('placeholder', {
-            //     chart: {
-            //         type: 'spline',
-            //         backgroundColor: '#2f323e',
-            //         animation: Highcharts.svg, // don't animate in old IE
-            //         marginRight: 10,
-            //         events: {
-            //             load: function () {
-            //                 // set up the updating of the chart each second
-            //                 var series = this.series[0];
-            //                 setInterval(function () {
-            //                     var x = (new Date()).getTime(), // current time
-            //                         y = Math.random();
-            //                     series.addPoint([x, y], true, true);
-            //                 }, 1000);
-            //             }
-            //         }
-            //     },
-    
-            //     time: {
-            //         useUTC: false
-            //     },
-            //     title: {
-            //         text: '',
-            //         style: {
-            //             color: '#d70206',
-            //             font: 'bold 16px "Trebuchet MS", Verdana, sans-serif'
-            //         }
-            //     },
-            //     accessibility: {
-            //         announceNewData: {
-            //             enabled: true,
-            //             minAnnounceInterval: 15000,
-            //             announcementFormatter: function (allSeries, newSeries, newPoint) {
-            //                 if (newPoint) {
-            //                     return 'New point added. Value: ' + newPoint.y;
-            //                 }
-            //                 return false;
-            //             }
-            //         }
-            //     },
-    
-            //     xAxis: {
-            //         type: 'datetime',
-            //         tickPixelInterval: 150
-            //     },
-    
-            //     yAxis: {
-            //         title: {
-            //             text: 'Value'
-            //         },
-            //         plotLines: [{
-            //             value: 0,
-            //             width: 1,
-            //             color: '#d70206'
-            //         }]
-            //     },
-    
-            //     tooltip: {
-            //         headerFormat: '<b>{series.name}</b><br/>',
-            //         pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
-            //     },
-    
-            //     legend: {
-            //         enabled: false
-            //     },
-    
-            //     exporting: {
-            //         enabled: false
-            //     },
-            //     plotOptions: {
-            //         series: {
-            //             color: '#d70206'
-            //         }
-            //     },
-    
-            //     series: [{
-            //         name: 'Random data',
-            //         data: (function () {
-            //             // generate an array of random data
-            //             var data = [],
-            //                 time = (new Date()).getTime(),
-            //                 i;
-    
-            //             for (i = -19; i <= 0; i += 1) {
-            //                 data.push({
-            //                     x: time + i * 1000,
-            //                     y: Math.random()
-            //                 });
-            //             }
-            //             return data;
-            //         }())
-            //     }]
             // });
         })
     </script>
