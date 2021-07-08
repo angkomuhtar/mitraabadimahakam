@@ -45,7 +45,7 @@
     {{ style('plugins/bower_components/chartist-js/dist/chartist.min') }}
     {{ style('plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip') }}
 
-    {{ style('plugins/bower_components/jquery-datatables-editable/datatables.css') }}
+    {{ style('plugins/bower_components/jquery-datatables-editable/datatables') }}
 
     {{ style('plugins/bower_components/Minimal-Gauge-chart/css/cmGauge') }}
 
@@ -54,6 +54,8 @@
 
     <!-- SweetAlert CSS -->
     {{ style('plugins/bower_components/bootstrap-sweetalert/dist/sweetalert') }}
+
+    {{--  {{ style('plugins/bower_components/awesome-notifications/style') }}  --}}
 
     {{ style('https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min') }}
 
@@ -68,16 +70,16 @@
     <![endif]-->
 
     <!--<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script> -->
+
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
     <script>
-    window.OneSignal = window.OneSignal || [];
-    OneSignal.push(function() {
-        OneSignal.init({
-        appId: "b677f7c0-6042-4cfe-a99a-a7034ae6d4b3",
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+            appId: "b677f7c0-6042-4cfe-a99a-a7034ae6d4b3",
+            });
         });
-    });
     </script>
-    
     
 </head>
 
@@ -185,43 +187,43 @@
     {{ script('plugins/bower_components/styleswitcher/jQuery.style.switcher') }}
     
     {{ script('js/toastr') }}
+
+    {{--  <!-- {{ script('plugins/bower_components/awesome-notifications/index.var') }} -->  --}}
     
     {{ script('https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min') }}
-
-    {{--  <script src="js/dashboard3.js"></script>  --}}
 
     
     
     <script>
         var options = {
-        url: '../favicon.ico', // default
-        timeout: 3000, // default 3 seconds
-        sleep_delay: 5000, // default 5 seconds
-      };
+            url: '../favicon.ico', // default
+            timeout: 3000, // default 3 seconds
+            sleep_delay: 5000, // default 5 seconds
+        };
+
       var js_network_monitor = new JsNetworkMonitor(options);
       js_network_monitor.on('online', function() {
-          console.log('you are online.');
-          $.toast({
-                  heading: 'Okey,,,',
-                  text: 'Anda sedang online.',
-                  position: 'top-right',
-                  loaderBg: '#FFF',
-                  icon: 'info',
-                  hideAfter: 3500,
-                  stack: 6
-              });
+            $.toast({
+                heading: 'Okey,,,',
+                text: 'Anda sedang online.',
+                position: 'top-right',
+                loaderBg: '#FFF',
+                icon: 'info',
+                bgColor: '#5bc6f5',
+                hideAfter: 3500,
+                stack: 6
+            });
         });
         js_network_monitor.on('offline', function() {
-            console.log('you are offline.');
             $.toast({
-                  heading: 'Peringatan',
-                  text: 'Jaringan internet anda sedang offline.',
-                  position: 'top-right',
-                  loaderBg: '#FFF',
-                  icon: 'warning',
-                  hideAfter: 3500,
-                  stack: 6
-              });
+                heading: 'Peringatan',
+                text: 'Jaringan internet anda sedang offline.',
+                position: 'top-right',
+                loaderBg: '#FFF',
+                icon: 'warning',
+                hideAfter: 3500,
+                stack: 6
+            });
         }
       );
       js_network_monitor.start();
