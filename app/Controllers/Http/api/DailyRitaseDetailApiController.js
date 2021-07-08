@@ -234,8 +234,8 @@ class DailyRitaseDetailApiController {
         const dailyRitaseDetail = await DailyRitaseDetail
           .query()
           .with('daily_ritase')
-          .with('checker')
-          .with('spv')
+          .with('checker', w => w.with('profile'))
+          .with('spv', w => w.with('profile'))
           .with('hauler')
           .where('dailyritase_id', id)
           .orderBy('check_in', 'desc')
