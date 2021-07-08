@@ -114,9 +114,11 @@ class DailyRitaseCoalApiController {
                 data: [],
             })
         }
-        
-        const d1 = moment(begin_date).format('YYYY-MM-DD'); // from
-        const d2 = moment(end_date).format('YYYY-MM-DD'); // to
+
+        const d1 = moment(begin_date).startOf('day').format('YYYY-MM-DD HH:mm:ss') // from
+        const d2 = moment(end_date).endOf('day').format('YYYY-MM-DD HH:mm:ss'); // to
+
+        console.log(d1, d2);
         // const prevDay = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
 
         try {
@@ -158,7 +160,9 @@ class DailyRitaseCoalApiController {
 
     async create ({ auth, request, response }) {
         var t0 = performance.now()
-        const req = request.only(["dailyfleet_id", "checker_id", "shift_id", "distance", "block", "date"])
+        const req = request.only(["dailyfleet_id", "checker_id", "shift_id", "distance", "block", "date"]);
+        const { dailyfleet_id, distance, block } = req;
+
         let durasi
     
         try {
@@ -184,6 +188,28 @@ class DailyRitaseCoalApiController {
                     times: durasi,
                     error: true,
                     message: 'Daily Fleet undefined...',
+                },
+                data: [],
+            })
+        }
+        
+
+        const checkIfExist = await DailyRitaseCoal
+            .query()
+            .where(w => {
+                w.where('distance', distance)
+                w.where('dailyfleet_id', dailyfleet_id)
+                w.where('block', block)
+            })
+            .first()
+
+        if(checkIfExist) {
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: 'Data Already Exist'
                 },
                 data: [],
             })

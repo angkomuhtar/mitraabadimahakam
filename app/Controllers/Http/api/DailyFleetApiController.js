@@ -303,7 +303,7 @@ class DailyFleetApiController {
             const cekFleet = 
                 await DailyFleet
                     .query()
-                    .where({pit_id, fleet_id, activity_id, shift_id, date: moment(date).format('YYYY-MM-DD')})
+                    .where({pit_id, fleet_id, activity_id, shift_id, date: moment(date).format('YYYY-MM-DD'), tipe })
                     .first()
             
             if(cekFleet){
@@ -339,8 +339,8 @@ class DailyFleetApiController {
                             error: true,
                             tgl_begin: begin,
                             tgl_end: end,
-                            message: 'duplicated equipment ID: '+
-                                isEquipment.id+' or DATETIME: '+ moment().format('YYYY-MM-DD HH:mm')
+                            message: 'duplicated equipment : '+
+                                isEquipment.kode+' or DATETIME: '+ moment().format('YYYY-MM-DD HH:mm')
                         },
                         data: cekEquipment
                     })
