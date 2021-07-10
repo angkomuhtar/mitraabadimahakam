@@ -333,7 +333,7 @@ class EquipmentApiController {
     async equipmentEventAll ({ auth, params, request, response }) {
         var t0 = performance.now()
         const { idfleet } = params
-        const req = request.only(['tgl', 'event_id', 'user_id', 'description', 'time_duration', 'total_smu'])
+        const req = request.only(['tgl', 'event_id', 'user_id', 'description', 'time_duration', 'total_smu', 'start_at', 'end_at'])
         let durasi
 
         try {
@@ -374,9 +374,12 @@ class EquipmentApiController {
                         equip_id: item.unit_id,
                         description: req.description,
                         time_duration: req.time_duration || null,
-                        total_smu: req.total_smu || null
+                        total_smu: req.total_smu || null,
+                        start_at : moment(req.start_at).format('YYYY-MM-DD HH:mm:ss'),
+                        end_at : moment(req.end_at).format('YYYY-MM-DD HH:mm:ss')
                     })
-                }
+                };
+
                 let result = await DailyEvent.createMany(data, trx)
                 await trx.commit()
 
