@@ -11,6 +11,7 @@ const DailyFleet = use("App/Models/DailyFleet")
 const DailyCheckp2H = use("App/Models/DailyCheckp2H")
 const DailyChecklist = use("App/Models/DailyChecklist")
 const DailyRefueling = use("App/Models/DailyRefueling")
+const P2Hhelpers = use("App/Controllers/Http/Helpers/P2H");
 
 class TimeSheetApiController {
     async index ({ auth, request, response }){
@@ -267,7 +268,6 @@ class TimeSheetApiController {
 
     async show ({ auth, params, response }) {
         var t0 = performance.now()
-        const { id } = params
         let durasi
         try {
             await auth.authenticator('jwt').getUser()
@@ -284,13 +284,15 @@ class TimeSheetApiController {
             })
         } finally {
             const data = await TimeSheet.GET_ID(params)
+            const _p2h = await P2Hhelpers.WITH_TIMESHEET_ID(params);
             durasi = await diagnoticTime.durasi(t0)
             return response.status(200).json({
                 diagnostic: {
                     times: durasi, 
                     error: false,
                 },
-                data: data
+                data: data,
+                p2h : _p2h
             })
         }
     }
