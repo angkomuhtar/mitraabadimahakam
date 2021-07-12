@@ -95,6 +95,12 @@ tr th.sl {
 	vertical-align: middle !important;
 }
 
+.f12w300G {
+	font-weight: 300 !important;
+    font-size: 12px !important;
+	color: #ddd;
+}
+
 .f12w300 {
 	font-weight: 300 !important;
     font-size: 12px !important;

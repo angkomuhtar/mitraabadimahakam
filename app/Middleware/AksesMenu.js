@@ -19,11 +19,11 @@ class AksesMenu {
         const userData = (
           await User.query()
           .with('user_menu', q => {
-            q.orderBy('name')
+            q.orderBy('urut')
             // q.where('id', usr.id)
           })
           .with('user_menuDetail', q => {
-            q.orderBy('subname')
+            q.orderBy('urut')
             // q.where('id', usr.id)
           })
           .where('id', usr.id)

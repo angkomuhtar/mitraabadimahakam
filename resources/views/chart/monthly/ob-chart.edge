@@ -1,0 +1,33 @@
+{{ script('/ajax/chart/OB_MTD_CHART') }}
+<div class="white-box">
+    <h3 class="box-title">
+        <div class="form-group col-sm-4 pull-right">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </span> 
+                <select class="form-control input-sm" id="opt-chart1">
+                    @each(item in monthItem)
+                        <option value="{{item.values}}" {{item.selected}}>{{item.name}}</option>
+                    @endeach
+                </select>
+            </div>
+        </div>
+        Monthly OB Production
+    </h3>
+    <div class="stats-row">
+        <div class="stat-item">
+            <h6>Estimate Plan</h6> 
+            <b id="ob_plan">0 BCM</b>
+        </div>
+        <div class="stat-item">
+            <h6>Actual</h6> 
+            <b id="ob_actual">0 BCM</b>
+        </div>
+        <div class="stat-item">
+            <h6>Persentase</h6> 
+            <b id="ob_persen">0%</b>
+        </div>
+    </div>
+    <div id="sparkline8" class="grafik-chartis"></div>
+</div>

@@ -172,7 +172,11 @@
     {{ script('plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min') }}
     {{ script('plugins/bower_components/chartist-plugin-pointlabels/dist/chartist-plugin-pointlabels') }}
     {{ script('plugins/bower_components/Minimal-Gauge-chart/js/cmGauge') }}
+    <!-- knob chart -->
     {{ script('plugins/bower_components/knob/jquery.knob') }}
+    <!-- chartjs chart -->
+    {{--  {{ script('plugins/bower_components/Chart.js/chartjs.init') }}  --}}
+    {{ script('plugins/bower_components/Chart.js/Chart.min') }}
 
     <!-- SweetAlert JS -->
     {{ script('plugins/bower_components/bootstrap-sweetalert/dist/sweetalert') }}
@@ -192,6 +196,9 @@
     {{--  <!-- {{ script('plugins/bower_components/awesome-notifications/index.var') }} -->  --}}
     
     {{ script('https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min') }}
+
+    <!-- Table Freeze -->
+    {{ script('plugins/bower_components/jquery-freeze-table/dist/js/freeze-table') }}
 
     
     
@@ -228,5 +235,12 @@
         }
       );
       js_network_monitor.start();
+
+      $("#table-freeze").freezeTable({
+        'columnNum': 6,
+        'scrollable': true,
+        // 'shadow': true,
+        'backgroundColor': '#2f323e'
+      })
     </script>
 </body>
