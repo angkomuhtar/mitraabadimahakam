@@ -142,6 +142,7 @@ class DailyFleetApiController {
                 .with('activities')
                 .with('shift')
                 .with('user')
+                .with('details')
                 .whereBetween('date', [d1, d2])
                 .orderBy('date', 'desc', 'shift_id', 'asc')
                 .fetch()
