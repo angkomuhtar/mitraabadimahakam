@@ -446,6 +446,8 @@ Route.group(() => {
     
     Route.post('/available-fleet/:idfleet/equipment/:idequip', 'EquipmentApiController.equipmentEventId')
 
+    Route.get('/:id/event', 'EquipmentApiController.getEventByEquipmentID')
+
 }).prefix('api/equipment').namespace('api')
 
 Route.group(() => {

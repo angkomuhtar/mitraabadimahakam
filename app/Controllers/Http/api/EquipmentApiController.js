@@ -327,7 +327,6 @@ class EquipmentApiController {
             },
             data: result
         })
-        
     }
 
     async equipmentEventAll ({ auth, params, request, response }) {
@@ -497,6 +496,65 @@ class EquipmentApiController {
                 })
             }
         }
+    }
+
+    async getEventByEquipmentID({ auth, response, params, request }) {
+        var t0 = performance.now();
+        const { id } = params;
+        const { tgl } = request.only(['tgl']);
+
+        let durasi;
+        console.log(moment(tgl).format('YYYY-MM-DD HH:mm:ss'));
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+        const prevDay = moment(tgl).subtract(1, 'days').format('YYYY-MM-DD');
+        const now = moment(tgl).format('YYYY-MM-DD');
+        const sod = moment(prevDay).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+        const eod = moment(now).endOf('days').format('YYYY-MM-DD HH:mm:ss');
+
+        try {
+            const dailyEvent = await DailyEvent
+                        .query()
+                        .with('event')
+                        .where('equip_id', id)
+                        .whereBetween('created_at', [sod, eod])
+                        .orderBy('created_at', 'desc')
+                        .fetch();
+
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(201).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false
+                },
+                data: dailyEvent
+            })
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+
     }
 
     async destroyEquipmentEventId ({ auth, params, response }) {
