@@ -2,9 +2,11 @@
 $(function(){
     initDeafult()
 
-    $('td.rand').each(function(){
-        $(this).append(_.random(0, 100))
-    })
+    function LoadingData(){
+        $('body td.rand').each(function(){
+            $(this).html('<i class="fa fa-spin fa-spinner"></i>')
+        })
+    }
 
     $('#create-form').on('click', function(){
         initCreate()
@@ -16,10 +18,21 @@ $(function(){
     function initDeafult(){
         $('div.content-module').each(function(){ $(this).hide() })
         $('div#list-content').show()
-    }
-    function initCreate(){
-        $('div.content-module').each(function(){ $(this).hide() })
-        $('div#form-create').show()
+        $.ajax({
+            async: true,
+            url: '/operation/daily-activity/list',
+            method: 'GET',
+            beforeSend: function(){
+                LoadingData()
+            },
+            success: function(result){
+                $('div#content-list').html(result)
+            },
+            error: function(err){
+                console.log(err);
+                swal("Opps,,,!", err.responseJSON.message, "warning")
+            }
+        })
     }
 
     function initShow(){

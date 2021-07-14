@@ -157,6 +157,7 @@
     <!--script moment -->
     {{--  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js" integrity="sha512-LGXaggshOkD/at6PFNcp2V2unf9LzFq6LE+sChH7ceMTDP0g2kn6Vxwgg7wkPP7AAtX+lmPqPdxB47A0Nz0cMQ==" crossorigin="anonymous"></script>  --}}
     {{ script('plugins/bower_components/moment/moment') }}
+    {{ script('plugins/bower_components/moment/locale/id') }}
     <!--script jquery.magnific-popup -->
     {{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup-init') }}
     {{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min') }}
@@ -236,11 +237,6 @@
       );
       js_network_monitor.start();
 
-      $("#table-freeze").freezeTable({
-        'columnNum': 6,
-        'scrollable': true,
-        // 'shadow': true,
-        'backgroundColor': '#2f323e'
-      })
+      
     </script>
 </body>

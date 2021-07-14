@@ -167,6 +167,8 @@ Route.group(() => {
 
     Route.get('/daily-activity', 'DailyActivityController.index').as('opr.daily-activity.index')
 
+    Route.get('/daily-activity/list', 'DailyActivityController.list').as('opr.daily-activity.list')
+
     // Daily Fleet
     Route.get('/daily-fleet', 'DailyFleetController.index').as('opr.daily-fleet.index').middleware('R')
 

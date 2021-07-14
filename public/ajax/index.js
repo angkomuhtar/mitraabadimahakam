@@ -72,6 +72,20 @@ $(function(){
         }
     })
 
+    $('.myDateFormatLong').each(function(){
+        moment.locale("id")
+        var date = $(this).data(date)
+        var elm = $(this).data('elm')
+        var dateString = moment(date.date).format('dddd, Do MMMM YYYY')
+        var weekly = moment(date.date).week()
+        console.log(weekly);
+        if(elm != undefined){
+            $(this).find(elm).html(dateString)
+        }else{
+            $(this).html(dateString)
+        }
+    })
+
     $('.myDateTimeFormatLong').each(function(){
         var date = $(this).data(date)
         var elm = $(this).data('elm')
