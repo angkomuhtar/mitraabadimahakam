@@ -530,7 +530,7 @@ class EquipmentApiController {
                         .with('event')
                         .where('equip_id', id)
                         .whereBetween('created_at', [sod, eod])
-                        .orderBy('created_at', 'desc')
+                        .orderBy('created_at', 'asc')
                         .fetch();
 
             durasi = await diagnoticTime.durasi(t0)
