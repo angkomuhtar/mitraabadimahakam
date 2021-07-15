@@ -10,6 +10,13 @@ $(function(){
         }
     })
 
+    $('input[type="date"].setDate').each(function(){
+        var isNow = $(this).data('date')
+        if(isNow){
+            $(this).val(moment(isNow).format('YYYY-MM-DD'))
+        }
+    })
+
     $('input[type="datetime-local"].init-datetime').each(function(){
         var now = new Date()
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset())
@@ -78,7 +85,6 @@ $(function(){
         var elm = $(this).data('elm')
         var dateString = moment(date.date).format('dddd, Do MMMM YYYY')
         var weekly = moment(date.date).week()
-        console.log(weekly);
         if(elm != undefined){
             $(this).find(elm).html(dateString)
         }else{

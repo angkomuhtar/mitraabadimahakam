@@ -132,6 +132,27 @@ class Ritase {
             .paginate(halaman, limit)
         return dailyRitaseDetail
     }
+
+    async ID_SHOW (params) {
+        const dailyRitase = await DailyRitase
+            .query()
+            .with('material_details')
+            .with('ritase_details', item => {
+                item.with('checker', b => b.with('profile'))
+                item.with('spv', b => b.with('profile'))
+                item.with('hauler')
+            })
+            .with('daily_fleet', details => {
+                details.with('details', unit => unit.with('equipment'))
+                details.with('shift')
+                details.with('activities')
+                details.with('fleet')
+                details.with('pit')
+            })
+            .where("id", params.id)
+            .first()
+        return dailyRitase
+    }
 }
 
 module.exports = new Ritase()

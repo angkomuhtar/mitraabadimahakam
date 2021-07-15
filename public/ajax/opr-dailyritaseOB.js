@@ -1,5 +1,4 @@
 $(function(){
-    console.log('...');
     initDeafult()
     function initDeafult(){
         $('div.content-module').css('display', 'none')
@@ -43,5 +42,23 @@ $(function(){
         var itemid = $(this).data('item')
         var group = $(this).data('search')
         findRitasePit(id, group, itemid)
+    })
+
+    $('body').on('click', 'button.bt-edit-data', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        alert('...'+id)
+        $.ajax({
+            async: true,
+            url: '/operation/daily-ritase-ob/'+id+'/show',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
     })
 })

@@ -3,174 +3,87 @@
     <table class="table table-hover table-bordered">
         <thead>
             <tr>
-                <th class="sl f12w300G text-center" rowspan="2">ACT </th>
-                <th class="sl f12w300G text-center" rowspan="2">Date </th>
-                <th class="sl f12w300G text-center" rowspan="2">SHIFT</th>
-                <th class="sl f12w300G text-center" rowspan="2">ID NUMBER</th>
-                <th class="sl f12w300G text-center" rowspan="2">Tipe Equipment</th>
-                <th class="sl f12w300G text-center" rowspan="2">Functions</th>
-                <th class="sl f12w300G text-center text-center" rowspan="2">Production <br><small class="f12w300">(Bcm/Ton)</small></th>
-                <th class="sl f12w300G text-center" rowspan="2">PDTVY</th>
-                <th class="sl f12w300G text-center" rowspan="2">HM Awal</th>
-                <th class="sl f12w300G text-center" rowspan="2">HM Akhir</th>
-                <th class="sl f12w300G text-center" rowspan="2">SMU TOT</th>
-                <th class="sl f12w300G text-center" colspan="5">HM Exp. ACTIVITY</th>
-                <th class="sl f12w300G" rowspan="2">Total HM</th>
-                <th class="sl f12w300G text-center" colspan="18">Inactive Equipment Time</th>
-                <th class="sl f12w300G text-center" colspan="6">Idle Time</th>
-                <th class="sl text-center f12w300" rowspan="2">Moving <br><small class="">Other PIT</small></th>
-                <th class="sl text-center f12w300 bg-warning" rowspan="2">Total <br><small class="">Delay</small></th>
-                <th class="sl text-center f12w300 bg-warning" rowspan="2">Total <br><small class="">IDLE</small></th>
-                <th class="sl text-center f12w300 bg-primary" rowspan="2">Total StandBy<br><small class="">(Hours)</small></th>
-                <th class="sl text-center f12w300 bg-info" rowspan="2">Total BD<br><small class="">(Hours)</small></th>
-                <th class="sl f12w300 text-center bg-primary" rowspan="2">Total Hours</th>
-                <th class="sl f12w300 text-center bg-primary" rowspan="2">Remark</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">No </th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Date </th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SHIFT</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">ID NUMBER</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Tipe Equipment</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Functions</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Material</th>
+                <th class="sl f12w300G text-center text-center" rowspan="2" style="border-bottom: 2px solid;">
+                    Production <br>
+                    <small class="f12w300">(Bcm/Ton)</small>
+                </th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">PDTVY</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Awal</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Akhir</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SMU TOT</th>
+                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">
+                    <strong>Expend Activity Description</strong>
+                </th>
+                <th class="sl f12w300G text-center bg-inverse" colspan="{{event.length}}" style="border-bottom: 2px solid;">
+                    <strong>Equipment Time</strong>
+                </th>
+                <th class="sl text-center f12w300 bg-info" rowspan="2" style="border-bottom: 2px solid;">
+                    Total Time<br>Idle
+                </th>
+                <th class="sl text-center f12w300 bg-warning" rowspan="2" style="border-bottom: 2px solid;">
+                    Total Time<br>Delay
+                </th>
+                <th class="sl text-center f12w300 bg-primary" rowspan="2" style="border-bottom: 2px solid;">
+                    Total Other<br>SMU
+                </th>
             </tr>
             <tr>
-                <th class="sl text-center f12w300 bg-danger">
-                    HM Coal Cleaning
-                </th>
-                <th class="sl text-center f12w300 bg-danger">
-                    HM Coal Getting
-                </th>
-                <th class="sl text-center f12w300 bg-danger">
-                    HM General
-                </th>
-                <th class="sl text-center f12w300 bg-danger">
-                    HM OB PIT MRD
-                </th>
-                <th class="sl text-center f12w300 bg-danger">
-                    HM OB
-                </th>
-                <!--  StandBy Time  -->
-                <th class="sl text-center f12w300 bg-inverse">
-                    Change Shift
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Wait Blasting
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    P5M
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Front, Road, & Disp <br>
-                    Maintenance
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Refueling
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Wait Operator
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Rest & Meals
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    No Job/Order
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    No Operator
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    No Location
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Praying
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Fasting
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Wait Survey
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Travel Unit
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Dusty
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Hazard
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    No Truck/Loader
-                </th>
-                <th class="sl text-center f12w300 bg-inverse">
-                    Port Issues
-                </th>
-                <th class="sl text-center f12w300 bg-success">
-                    External Issue
-                </th>
-                <th class="sl text-center f12w300 bg-success">
-                    Land Avaibility
-                </th>
-                <th class="sl text-center f12w300 bg-success">
-                    Holiday & Shutdown
-                </th>
-                <th class="sl text-center f12w300 bg-success">
-                    Rain
-                </th>
-                <th class="sl text-center f12w300 bg-success">
-                    Slippery
-                </th>
-                <th class="sl text-center f12w300 bg-success">
-                    Fog
-                </th>
+                @each(item in event)
+                    <th class="sl text-center f12w300 bg-inverse" style="border-bottom: 2px solid;">
+                        {{item.narasi}}
+                    </th>
+                @endeach
             </tr>
         </thead>
         <tbody>
             @each(item in list.data)
-                <tr>
-                    <td style="">
-                        <button class="btn btn-outline btn-warning btn-xs">edit</button>
-                    </td>
+                <tr class="row-data" data-id="{{item.no_timesheet}}">
+                    <td>{{$loop.index + 1}}</td>
                     <td class="myDateFormatLong" data-date="{{item.date}}" style="white-space:nowrap;"></td>
                     <td>{{item.shift}}</td>
                     <td>{{item.kd_unit}}</td>
                     <td>{{item.unit_model}}</td>
                     <td class="text-uppercase">{{item.tipe_unit}}</td>
+                    <td class="rand">{{item.material != 'COAL' ? 'OB':'COAL'}}</td>
                     <td class="rand text-right">1</td>
                     <td class="rand text-right">2</td>
                     <td class="rand text-right">{{item.begin_smu}}</td>
                     <td class="rand text-right">{{item.end_smu}}</td>
                     <td class="rand text-right">{{item.used_smu}}</td>
-                    <td class="rand text-right" style="background:#f59c9c;color:#000">6</td>
-                    <td class="rand text-right" style="background:#f59c9c;color:#000">7</td>
-                    <td class="rand text-right" style="background:#f59c9c;color:#000">8</td>
-                    <td class="rand text-right" style="background:#f59c9c;color:#000">9</td>
-                    <td class="rand text-right" style="background:#f59c9c;color:#000">10</td>
-                    <td class="rand text-right">11</td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#3b3e42;color:#fff"></td>
-                    <td class="rand text-right" style="background:#64a083;color:#fff"></td>
-                    <td class="rand text-right" style="background:#64a083;color:#fff"></td>
-                    <td class="rand text-right" style="background:#64a083;color:#fff"></td>
-                    <td class="rand text-right" style="background:#64a083;color:#fff"></td>
-                    <td class="rand text-right" style="background:#64a083;color:#fff"></td>
-                    <td class="rand text-right" style="background:#64a083;color:#fff"></td>
-                    <td class="rand text-right"></td>
-                    <td class="rand text-right" style="background:#a78453;color:#fff"></td>
-                    <td class="rand text-right" style="background:#a78453;color:#fff"></td>
-                    <td class="rand text-right"></td>
-                    <td class="rand text-right" style="background:#3893bb;color:#fff"></td>
-                    <td class="rand text-right"></td>
-                    <td class="rand text-right"></td>
+                    <td class="rand">
+                        <small>{{item.activity}}</small>
+                    </td>
+                    @each(data in item.record_event)
+                        @if(data.status === 'idle')
+                            <td class="text-right" style="color:#fff;background-color: #547da0!important;">
+                                <strong class="idle">{{data.time_duration}}</strong>
+                            </td>
+                        @elseif(data.status === 'inactive')
+                            <td class="text-right" style="color:#fff;background-color: #715e43!important;">
+                                <strong class="standby">{{data.time_duration}}</strong>
+                            </td>
+                            @else
+                            <td class="text-right" style="color:#fff;background-color: #43486d!important;">
+                                <strong class="running">{{data.time_duration}}</strong>
+                            </td>
+                        @endif
+                    @endeach
+                    <td class="rand text-right bg-info" style="color:#fff">
+                        <strong id="tot-idle{{item.no_timesheet}}">Tot.idle</strong>
+                    </td>
+                    <td class="rand text-right bg-warning" style="color:#fff">
+                        <strong id="tot-standby{{item.no_timesheet}}">Tot.delay</strong>
+                    </td>
+                    <td class="rand text-right bg-primary" style="color:#fff">
+                        <strong id="tot-running{{item.no_timesheet}}">Tot.delay</strong>
+                    </td>
                 </tr>
             @endeach
         </tbody>
@@ -178,11 +91,55 @@
 </div>
 <script>
     $(function(){
+        setTotalTime()
         $("#table-freeze").freezeTable({
             'columnNum': 6,
             'scrollable': true,
             // 'shadow': true,
             'backgroundColor': '#2f323e'
         })
+
+        function setTotalTime(){
+            var inactiveTime = []
+            var runningTime = []
+            $('div.table-responsive table:first').children().find('.row-data').each(function(){
+                var id = $(this).data('id')
+
+                $(this).find('td strong.idle').removeClass('idle').addClass('idle'+id)
+                var idleTime = []
+                $(this).find('strong.idle'+id).each(function(){
+                    var idle = $(this).html()
+                    idleTime.push(parseFloat(idle))
+                })
+
+                $(this).find('td strong.standby').removeClass('standby').addClass('standby'+id)
+                var standbyTime = []
+                $(this).find('strong.standby'+id).each(function(){
+                    var standby = $(this).html()
+                    standbyTime.push(parseFloat(standby))
+                })
+
+                $(this).find('td strong.running').removeClass('running').addClass('running'+id)
+                var runningTime = []
+                $(this).find('strong.running'+id).each(function(){
+                    var running = $(this).html()
+                    runningTime.push(parseFloat(running))
+                })
+
+                console.log(idleTime);
+                console.log(standbyTime);
+                console.log(runningTime);
+
+                $('strong#tot-idle'+id).html(idleTime.reduce((x, y) => {return x + y}, 0))
+                $('strong#tot-standby'+id).html(standbyTime.reduce((x, y) => {return x + y}, 0))
+                $('strong#tot-running'+id).html(runningTime.reduce((x, y) => {return x + y}, 0))
+                // var inactive = $(this).find('td strong.standby').html()
+                // var running = $(this).find('td strong.running').html()
+                // console.log($(this).find('td strong.idle'+id));
+                // inactiveTime.push(inactive)
+                // runningTime.push(running)
+            })
+            // console.log('::',idleTime);
+        }
     })
 </script>

@@ -76,6 +76,24 @@ class DailyRitaseController {
             }
         }
     }
+
+    async show ({ params, view }) {
+        try {
+            const dailyRitase = await DailyRitaseHelpers.ID_SHOW(params)
+            console.log('====================================');
+            console.log(dailyRitase.toJSON());
+            console.log('====================================');
+            return view.render('operation.daily-ritase-ob.show', {
+                list: dailyRitase.toJSON()
+            })
+        } catch (error) {
+            console.log(error)
+            return {
+                success: false,
+                message: error.message
+            }
+        }
+    }
 }
 
 module.exports = DailyRitaseController
