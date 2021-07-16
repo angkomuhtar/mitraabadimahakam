@@ -145,13 +145,17 @@ $(function(){
         var elm = $(this)
         elm.children().remove()
         $.get('/ajax/usr?selected='+selected, function(data){
-            console.log(data);
+            console.log('is Selected::::', data.find(s => s.selected === 'selecetd'));
             if(data.length > 0){
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.nm_lengkap+'</option>')
                 if(!selected){
                     elm.prepend('<option value="" selected>Pilih</option>')
+                    elm.html(list)
+                    // elm.find('option[value="'+selected+'"]').prop('selected')
+                }else{
+                    elm.html(list)
+                    // elm.find('option[value="'+selected+'"]').prop('selected')
                 }
-                elm.append(list)
             }else{
                 elm.prepend('<option value="">Belum ada data pilihan...</option>')
             }
@@ -258,7 +262,6 @@ $(function(){
             url: '/ajax/equipment?selected='+selected,
             method: 'GET',
             success: function(data){
-                console.log(data);
                 if(data.length > 0){
                     elm.prepend('<option value="">Pilih</option>')
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.kode+' --|-- '+nod.unit_model+'</option>')
@@ -286,7 +289,7 @@ $(function(){
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.fullname+'</option>')
                     elm.append('<option value="" selected>Pilih</option>')
-                    elm.append(list)
+                    elm.html(list)
                 }else{
                     elm.prepend('<option value="">Belum ada data pilihan...</option>')
                 }

@@ -1,0 +1,78 @@
+{{ script('ajax/index') }}
+<div class="modal fade" id="modals{{item.id}}" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myLargeModalLabel">Update Details Ritase</h4>
+                <small>Form ini untuk melakukan update data pada ritase detail</small>
+            </div>
+            <div class="modal-body">
+                <form action="#" class="fm-ritase-detail-upd" id="frm-upd{{item.id}}" data-id="{{item.id}}">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="tgl">Checker</label>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                    <select class="form-control select2user" data-check="{{item.checker_id}}" name="checker_id" id="checker_id{{item.id}}" required></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tgl">Pengawas</label>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                    <select class="form-control select2user" data-check="{{item.spv_id}}" name="spv_id" id="spv_id{{item.id}}" required></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="tgl">Hauler</label>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                    <select class="form-control select2equipment" data-check="{{item.hauler_id}}" name="hauler_id" id="hauler_id{{item.id}}" disabled></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tgl">Urut Ritase</label>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Ritase Ke-</span>
+                                    <input type="text" class="form-control" name="urut" id="urut{{item.id}}" value="{{item.urut}}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tgl">Check In</label>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                    <input type="datetime-local" class="form-control set-datetime" data-datetime="{{item.check_in}}" name="check_in" id="check_in">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="tgl">Durasi dari retase sebelumnya</label>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><i class="icon-speedometer"></i></div>
+                                    <input type="number" class="form-control" name="duration" id="duration{{item.id}}" value="{{item.duration > -1 ? item.duration : '0'}}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-inverse waves-effect text-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger waves-effect text-left bt-ritase-detail-upd" data-id="{{item.id}}">Update</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

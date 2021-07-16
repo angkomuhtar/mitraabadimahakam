@@ -4,7 +4,7 @@
         <thead style="border-bottom: 2px solid;">
             <tr>
                 <th class="sl text-center" width="20">No</th>
-                <th class="sl text-center" width="20">ACT</th>
+                <th class="text-center" width="8%">ACT</th>
                 <th class="sl">Checker</th>
                 <th class="sl">Pengawas / SPV</th>
                 <th class="sl">Operator</th>
@@ -18,9 +18,19 @@
             @endif
             @each(item in list)
                 <tr>
-                    <td>{{$loop.index + 1}}</td>
                     <td>
-                        <button class="btn btn-outline btn-danger btn-xs bt-delete-data" data-id="{{item.id}}">remove</button>
+                        {{$loop.index + 1}}
+                        <div id="modal-update">
+                            @include('operation.daily-ritase-ob.show-detais-ritase-upd')
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-outline btn-danger btn-xs bt-delete-data" data-id="{{item.id}}">
+                            <i class="icon-trash"></i>
+                        </button>
+                        <button class="btn btn-outline btn-warning btn-xs bt-update-data" data-id="{{item.id}}" data-toggle="modal" data-target="#modals{{item.id}}" class="model_img img-responsive">
+                            <i class="icon-pencil"></i>
+                        </button>
                     </td>
                     <td class="single-line">
                         {{item.checker.profile.nm_depan}}
