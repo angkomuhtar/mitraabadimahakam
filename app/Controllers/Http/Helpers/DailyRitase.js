@@ -153,6 +153,19 @@ class Ritase {
             .first()
         return dailyRitase
     }
+
+    async RITASE_BY_DAILY_ID (req) {
+        const dailyRitaseDetail = await DailyRitaseDetail
+            .query()
+            .with('daily_ritase')
+            .with('hauler')
+            .with('checker', b => b.with('profile'))
+            .with('spv', b => b.with('profile'))
+            .where('dailyritase_id', req.id)
+            .orderBy([{ column: 'hauler_id', order: 'desc' }, { column: 'check_in', order: 'desc' }])
+            .fetch()
+        return dailyRitaseDetail
+    }
 }
 
 module.exports = new Ritase()

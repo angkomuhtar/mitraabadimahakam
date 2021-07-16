@@ -196,14 +196,17 @@ Route.group(() => {
     Route.get('/daily-ritase-ob/:id/show', 'DailyRitaseController.show').as('opr.daily-ritase-ob.show').middleware('U')
     
     Route.post('/daily-ritase-ob/:id/update', 'DailyRitaseController.update').as('opr.daily-ritase-ob.update').middleware('U')
-    
+
     Route.post('/daily-ritase-ob/:id/delete', 'DailyRitaseController.delete').as('opr.daily-ritase-ob.delete').middleware('D')
     
     Route.get('/daily-ritase-ob/list/pit/:pit_id', 'DailyRitaseController.listByPIT').as('opr.daily-ritase-ob.listByPIT').middleware('R')
-
+    
     Route.get('/daily-ritase-ob/list/fleet/:fleet_id', 'DailyRitaseController.listByFLEET').as('opr.daily-ritase-ob.listByFLEET').middleware('R')
-
+    
     Route.get('/daily-ritase-ob/list/shift/:shift_id', 'DailyRitaseController.listBySHIFT').as('opr.daily-ritase-ob.listBySHIFT').middleware('R')
+    
+    Route.get('/daily-ritase-ob/ritase/show/equipment', 'DailyRitaseController.listUnitByRitase').as('opr.daily-ritase-ob.listUnitByRitase').middleware('R')
+    
 
     // Daily Ritase COAL
     Route.get('/daily-ritase-coal', 'DailyRitaseCoalController.index').as('opr.daily-ritase-coal.index').middleware('R')
@@ -286,6 +289,8 @@ Route.group(() => {
     Route.get('/dealer/:id', 'AjaxDealerController.getDealerId').as('dealer.getDealerId')
 
     Route.get('/event', 'AjaxEventController.getALL').as('event.getALL')
+
+    Route.get('/material', 'AjaxMaterialController.getMaterial').as('equipment.getMaterial')
 
     Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
 

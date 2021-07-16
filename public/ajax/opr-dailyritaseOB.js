@@ -47,12 +47,12 @@ $(function(){
     $('body').on('click', 'button.bt-edit-data', function(e){
         e.preventDefault()
         var id = $(this).data('id')
-        alert('...'+id)
         $.ajax({
             async: true,
             url: '/operation/daily-ritase-ob/'+id+'/show',
             method: 'GET',
             success: function(result){
+                setRitaseUnit(id)
                 $('div#list-content').children().remove()
                 $('div#list-content').html(result).show()
             },
@@ -61,4 +61,20 @@ $(function(){
             }
         })
     })
+
+    
+    function setRitaseUnit(id){
+        $.ajax({
+            async: true,
+            url: '/operation/daily-ritase-ob/ritase/show/equipment?id='+id,
+            method: 'GET',
+            success: function(result){
+                $('div#list-ritase-unit').children().remove()
+                $('div#list-ritase-unit').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
 })

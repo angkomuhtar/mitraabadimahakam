@@ -3,6 +3,13 @@ $(function(){
         $('div#panel-message').toggleClass('in')
     })
 
+    $('.maxText').each(function(){
+        var max = $(this).data('max')
+        var values = $(this).html()
+        var len = values.substr(0, parseInt(max))
+        $(this).html(len + '...')
+    })
+
     $('input[type="date"]').each(function(){
         var isNow = $(this).data('date')
         if(isNow){
@@ -301,6 +308,31 @@ $(function(){
             success: function(data){
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.engine+' | '+nod.narasi+'</option>')
+                    elm.append('<option value="" selected>Pilih</option>')
+                    elm.append(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    /* Option Material */
+    $('body select.select2material').each(function(){
+        console.log('-Material:::');
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/material?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                if(data.length > 0){
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.tipe+' | '+nod.name+'</option>')
                     elm.append('<option value="" selected>Pilih</option>')
                     elm.append(list)
                 }else{
