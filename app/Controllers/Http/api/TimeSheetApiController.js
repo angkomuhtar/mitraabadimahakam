@@ -123,6 +123,7 @@ class TimeSheetApiController {
             })
         }
 
+
         await GET_DATA()
 
         async function GET_DATA(){
@@ -134,8 +135,7 @@ class TimeSheetApiController {
                     .with('dailyFleet', (wh) => {
                         wh.with('shift')
                     })
-                    .where('tgl', '>=', new Date(begin_date))
-                    .andWhere('tgl', '<=', new Date(end_date))
+                    .whereBetween('tgl', [moment(begin_date).format('YYYY-MM-DD'), moment(end_date).format('YYYY-MM-DD')])
                     .fetch()
             durasi = await diagnoticTime.durasi(t0)
             response.status(200).json({
