@@ -2,6 +2,8 @@
 
 const MonthlyPlanHelpers = use("App/Controllers/Http/Helpers/MonthlyPlan")
 const DailyRefueling = use("App/Models/DailyRefueling")
+const DailyEvent = use("App/Models/DailyEvent")
+const MasEvent = use("App/Models/MasEvent")
 const moment = require('moment')
 const _ = require('underscore')
 
@@ -77,6 +79,26 @@ class AjaxChartController {
             y: _.pluck(result, 'topup')
         }
 
+    }
+
+    async grafik_EVENT_MTD ({ request }) {
+        const req = request.all()
+        let data = []
+        const rangeAwal = moment(req.periode).startOf('month').format('YYYY-MM-DD HH:mm:ss')
+        const rangeAkhir = moment(req.periode).endOf('month').format('YYYY-MM-DD HH:mm:ss')
+        
+
+        const masEvent = (await MasEvent.query().where('engine', 'off').andWhere('aktif', 'Y').fetch()).toJSON()
+        for (const event of masEvent) {
+            const dailyEvent = await DailyEvent.query().where(range => range.where('start_at', '>=', rangeAwal).andWhere('end_at', '<=', rangeAkhir)).andWhere('event_id', event.id).getAvgDistinct('time_duration')
+            if(dailyEvent){
+                // console.log(dailyEvent/60);
+                data.push({labels: event.narasi, nilai: (dailyEvent/60).toFixed(0)})
+            }
+        }
+        var maxTick = _.max(data, function(max){ return Math.ceil(max.nilai) })
+        return {data: data, len: maxTick.nilai}
+        
     }
 }
 

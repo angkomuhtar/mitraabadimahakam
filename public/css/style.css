@@ -3,6 +3,9 @@
 @import "spinners.css";
 @import "icons/material-design-iconic-font/css/materialdesignicons.min.css";
 
+.ct-bar {
+    stroke-width: 20px !important;
+}
 .ct-grids .ct-horizontal {
 	/* Colour of your points */
 	stroke: rgb(68, 64, 42);

@@ -21,7 +21,7 @@ $(function(){
                 console.log('result::', result.y.length);
                 var total = result.y.reduce(function(x, y){ return x + y }, 0)
                 $('b#tot_fuel').html(total + ' Liter')
-                $('b#avg_day').html(total / result.y.length + ' Liter / Hari')
+                $('b#avg_day').html((total / result.y.length).toFixed(2) + ' Liter / Hari')
                 new Chartist.Line('#sparkline11', {
                     labels: result.x,
                     series: [result.y]
