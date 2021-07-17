@@ -1,6 +1,7 @@
 'use strict'
 
 const DailyRitaseHelpers = use("App/Controllers/Http/Helpers/DailyRitase")
+const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 const TimeSheet = use("App/Models/DailyChecklist")
 const db = use('Database')
 const _ = require("underscore")
@@ -113,6 +114,26 @@ class DailyRitaseController {
             return {
                 success: false,
                 message: error.message
+            }
+        }
+    }
+
+    async updateDetails ({ params, request }) {
+        const { id } = params
+        const req = request.all()
+        const dailyRitaseDetail = await DailyRitaseDetail.find(id)
+        dailyRitaseDetail.merge(req)
+        console.log(dailyRitaseDetail.toJSON());
+        try {
+            await db.table('daily_ritase_details').where('id', id).update(dailyRitaseDetail.toJSON())
+            return {
+                success: true,
+                message: 'success update details....'
+            }
+        } catch (error) {
+            return {
+                success: false,
+                message: 'failed update details....'
             }
         }
     }

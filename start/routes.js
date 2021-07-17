@@ -206,6 +206,8 @@ Route.group(() => {
     Route.get('/daily-ritase-ob/list/shift/:shift_id', 'DailyRitaseController.listBySHIFT').as('opr.daily-ritase-ob.listBySHIFT').middleware('R')
     
     Route.get('/daily-ritase-ob/ritase/show/equipment', 'DailyRitaseController.listUnitByRitase').as('opr.daily-ritase-ob.listUnitByRitase').middleware('R')
+
+    Route.post('/daily-ritase-ob/ritase-detail/:id/update', 'DailyRitaseController.updateDetails').as('opr.daily-ritase-ob-details.updateDetails').middleware('U')
     
 
     // Daily Ritase COAL

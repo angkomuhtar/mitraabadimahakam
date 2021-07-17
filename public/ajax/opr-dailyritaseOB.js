@@ -44,6 +44,7 @@ $(function(){
         findRitasePit(id, group, itemid)
     })
 
+    /* show ritase */
     $('body').on('click', 'button.bt-edit-data', function(e){
         e.preventDefault()
         var id = $(this).data('id')
@@ -62,7 +63,48 @@ $(function(){
         })
     })
 
-    
+    $('body').on('click', 'button.bt-delete-data', function(e){
+        e.preventDefault()
+        alert('...'+' delete')
+    })
+
+    $('body').on('click', 'button.bt-update-data', function(e){
+        e.preventDefault()
+    })
+
+    $('body').on('click', 'button.bt-ritase-detail-upd', function(e) {
+        e.preventDefault()
+        var id = $(this).data('id')
+        var formElement = document.querySelector("form#frm-upd"+id)
+        const data = new FormData(formElement)
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-ritase-ob/ritase-detail/'+id+'/update',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                if(result.success){
+                    swal("Okey,,,!", result.message, "success")
+                    window.location.reload()
+                }else{
+                    alert(result.message)
+                }
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
+    /* show list ritase equipment details */
     function setRitaseUnit(id){
         $.ajax({
             async: true,
