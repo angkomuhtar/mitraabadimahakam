@@ -121,7 +121,9 @@ class TimeSheetApiController {
                 },
                 data: {}
             })
-        }
+        };
+
+        const prevDay = moment(end_date).subtract(1, 'days').format('YYYY-MM-DD');
 
 
         await GET_DATA()
@@ -135,7 +137,7 @@ class TimeSheetApiController {
                     .with('dailyFleet', (wh) => {
                         wh.with('shift')
                     })
-                    .whereBetween('tgl', [moment(begin_date).format('YYYY-MM-DD'), moment(end_date).format('YYYY-MM-DD')])
+                    .whereBetween('tgl', [prevDay, moment(end_date).format('YYYY-MM-DD')])
                     .fetch()
             durasi = await diagnoticTime.durasi(t0)
             response.status(200).json({
