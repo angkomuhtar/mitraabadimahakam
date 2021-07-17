@@ -125,7 +125,7 @@ class TimeSheetApiController {
 
         const prevDay = moment(end_date).subtract(1, 'days').format('YYYY-MM-DD');
 
-
+        console.log('a')
         await GET_DATA()
 
         async function GET_DATA(){
