@@ -166,6 +166,17 @@ class Ritase {
             .fetch()
         return dailyRitaseDetail
     }
+
+    async POST_RITASE_OB (params, req) {
+        const dailyRitase = await DailyRitase.find(params.id)
+        try {
+            dailyRitase.merge(req)
+            await dailyRitase.save()
+            return dailyRitase
+        } catch (error) {
+            return null
+        }
+    }
 }
 
 module.exports = new Ritase()

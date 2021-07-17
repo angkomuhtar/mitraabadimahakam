@@ -325,7 +325,6 @@ $(function(){
 
     /* Option Material */
     $('body select.select2material').each(function(){
-        console.log('-Material:::');
         var selected = $(this).data('check')
         var elm = $(this)
         elm.children().remove()
@@ -336,8 +335,8 @@ $(function(){
             success: function(data){
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.tipe+' | '+nod.name+'</option>')
-                    elm.append('<option value="" selected>Pilih</option>')
-                    elm.append(list)
+                    elm.html(list)
+                    // elm.append('<option value="" selected>Pilih</option>')
                 }else{
                     elm.prepend('<option value="">Belum ada data pilihan...</option>')
                 }

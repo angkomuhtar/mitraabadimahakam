@@ -80,6 +80,23 @@ class DailyRitaseController {
         }
     }
 
+    async update ({ params, request }) {
+        const req = JSON.parse(request.raw())
+        try {
+            await DailyRitaseHelpers.POST_RITASE_OB(params, req)
+            return {
+                success: true,
+                message: 'success update data....'
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                success: false,
+                message: 'failed update data....'
+            }
+        }
+    }
+
     async listUnitByRitase ({ request, view }) {
         const req = request.all()
         // const trx = await db.beginTransaction()
@@ -134,6 +151,23 @@ class DailyRitaseController {
             return {
                 success: false,
                 message: 'failed update details....'
+            }
+        }
+    }
+
+    async detailDestroy ({ params, request }) {
+        const { id } = params
+        const dailyRitaseDetail = await DailyRitaseDetail.find(id)
+        try {
+            await dailyRitaseDetail.delete()
+            return {
+                success: true,
+                message: 'success delete details....'
+            }
+        } catch (error) {
+            return {
+                success: false,
+                message: 'failed delete details....'
             }
         }
     }
