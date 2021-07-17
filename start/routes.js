@@ -337,6 +337,14 @@ Route.group(() => {
 
 Route.group(() => {
 
+    Route.post('/error/add', 'SysErrorController.store')
+
+    Route.post('/log/add', 'SysLogController.store')
+
+}).prefix('api/system').namespace('setting')
+
+Route.group(() => {
+
     Route.get('/', 'UserApiController.index')
     
     Route.get('/search', 'UserApiController.search')
