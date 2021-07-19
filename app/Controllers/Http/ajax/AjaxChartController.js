@@ -1,6 +1,8 @@
 'use strict'
 
 const MonthlyPlanHelpers = use("App/Controllers/Http/Helpers/MonthlyPlan")
+const DailyRitaseCoalDetail = use("App/Models/DailyRitaseCoalDetail")
+const DailyChecklist = use("App/Models/DailyChecklist")
 const DailyRefueling = use("App/Models/DailyRefueling")
 const DailyEvent = use("App/Models/DailyEvent")
 const MasEvent = use("App/Models/MasEvent")
@@ -20,8 +22,9 @@ class AjaxChartController {
         return grafik1
     }
 
-    async grafik_OB_RITASE_EQUIPMENT () {
-        const grafik2 = await MonthlyPlanHelpers.CHARTIST_RITASE_OB_EQUIPMENT()
+    async grafik_OB_RITASE_EQUIPMENT ({ request }) {
+        const req = request.all()
+        const grafik2 = await MonthlyPlanHelpers.CHARTIST_RITASE_OB_EQUIPMENT(req)
         const labels = grafik2.map(item => item.fleet)
         const data = grafik2.map(item => parseInt(item.tot_ritase))
         return {
@@ -99,6 +102,44 @@ class AjaxChartController {
         var maxTick = _.max(data, function(max){ return Math.ceil(max.nilai) })
         return {data: data, len: maxTick.nilai}
         
+    }
+
+    async grafik_COST_VS_PROD({ request }){
+        const req = request.all()
+        const arrTahunBulan = Array.apply(0, Array(12)).map(function(_,i){return req.periode +'-'+ moment().month(i).format('MM')})
+        let sumFuel = []
+        let sumCoal = []
+        let sumHM = []
+        for (const item of arrTahunBulan) {
+            const fuel = await DailyRefueling.query().where('fueling_at', 'like', `${item}%`).getSum('topup')
+            if(fuel){
+                sumFuel.push(fuel)
+            }else{
+                sumFuel.push(0)
+            }
+
+            const coal = await DailyRitaseCoalDetail.query().where('checkout_pit', 'like', `${item}%`).getSum('w_netto')
+            if(coal){
+                sumCoal.push(coal/1000)
+            }else{
+                sumCoal.push(0)
+            }
+
+            const smu = await DailyChecklist.query().where('tgl', 'like', `${item}%`).getSum('used_smu')
+            if(smu){
+                sumHM.push(smu)
+            }else{
+                sumHM.push(0)
+            }
+        }
+        console.log(sumFuel);
+        console.log(sumCoal);
+        console.log(sumHM);
+        return {
+            fuel: sumFuel,
+            coal: sumCoal,
+            smu: sumHM
+        }
     }
 }
 

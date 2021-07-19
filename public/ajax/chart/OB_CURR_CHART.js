@@ -1,14 +1,20 @@
 $(function(){
     G2_CURR_RITASE_OB()
 
+    // $('input[name="inp-date"]').on('change', function(e){
+    //     e.preventDefault()
+    //     G2_CURR_RITASE_OB()
+    // })
+
     setInterval(() => {
         G2_CURR_RITASE_OB()
     }, 5 * 1000)
 
     function G2_CURR_RITASE_OB(){
+        var periode = $('input[name="inp-date"]').val()
         $.ajax({
             async: true,
-            url: '/ajax/grafik2',
+            url: '/ajax/grafik2?periode='+periode,
             method: 'GET',
             success: function(result){
                 console.log(result);

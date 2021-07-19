@@ -123,8 +123,8 @@ class MonthlyPlan {
         }
     }
 
-    async CHARTIST_RITASE_OB_EQUIPMENT() {
-        const date = moment().format('YYYY-MM-DD')
+    async CHARTIST_RITASE_OB_EQUIPMENT(req) {
+        const date = req.periode ? moment(req.periode).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')
         try {
             const data = (await DailyRitase
                 .query()

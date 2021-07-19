@@ -309,6 +309,8 @@ Route.group(() => {
     Route.get('/grafik4', 'AjaxChartController.grafik_FUEL_MTD')
 
     Route.get('/grafik5', 'AjaxChartController.grafik_EVENT_MTD')
+
+    Route.get('/grafik6', 'AjaxChartController.grafik_COST_VS_PROD')
     
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
 
