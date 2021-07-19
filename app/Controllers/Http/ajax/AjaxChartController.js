@@ -132,9 +132,6 @@ class AjaxChartController {
                 sumHM.push(0)
             }
         }
-        console.log(sumFuel);
-        console.log(sumCoal);
-        console.log(sumHM);
         return {
             fuel: sumFuel,
             coal: sumCoal,
