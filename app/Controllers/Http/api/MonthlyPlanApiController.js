@@ -68,13 +68,64 @@ class MonthlyPlanApiController {
           .fetch()
       ).toJSON();
 
-      const data = {
-        monthly_plan: dailyPlans,
-        labels: currentWeekDays,
-        actual: dailyPlans.map((item) => parseFloat(item.actual)),
-      };
+      let temp = [];
+      let _temp = [];
 
-      data.monthly_plan.month = moment().format("MMMM YYYY");
+      for (let x of dailyPlans) {
+        let obj = {
+          current_date: moment(x.current_date).format("ddd"),
+          actual: x.actual,
+        };
+        temp.push(obj);
+      }
+
+      for (let i = 0; i < currentWeekDays.length; i++) {
+        let obj = {
+          current_date: currentWeekDays[i],
+          actual: 0,
+        };
+        _temp.push(obj);
+      }
+
+      let a = [...temp, ..._temp];
+
+      const newArr = [
+        ...new Map(a.map((item) => [item["current_date"], item])).values(),
+      ];
+
+      const weeklyCoal = newArr.map(
+        (obj) => temp.find((o) => o.current_date === obj.current_date) || obj
+      );
+
+      let r = [];
+      for (let i = 0; i < weeklyCoal.length; i++) {
+        if (weeklyCoal[i].current_date === "Sun") {
+          r[0] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Mon") {
+          r[1] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Tue") {
+          r[2] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Wed") {
+          r[3] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Thu") {
+          r[4] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Fri") {
+          r[5] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Sat") {
+          r[6] = weeklyCoal[i];
+        }
+      }
+
+      let data = {
+        labels: _.pluck(r, "current_date"),
+        actual: _.pluck(r, "actual"),
+      };
 
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
@@ -146,13 +197,64 @@ class MonthlyPlanApiController {
           .fetch()
       ).toJSON();
 
-      const data = {
-        monthly_plan: dailyPlans,
-        labels: currentWeekDays,
-        actual: dailyPlans.map((item) => parseFloat(item.actual)),
-      };
+      let temp = [];
+      let _temp = [];
 
-      data.monthly_plan.month = moment().format("MMMM YYYY");
+      for (let x of dailyPlans) {
+        let obj = {
+          current_date: moment(x.current_date).format("ddd"),
+          actual: x.actual,
+        };
+        temp.push(obj);
+      }
+
+      for (let i = 0; i < currentWeekDays.length; i++) {
+        let obj = {
+          current_date: currentWeekDays[i],
+          actual: 0,
+        };
+        _temp.push(obj);
+      }
+
+      let a = [...temp, ..._temp];
+
+      const newArr = [
+        ...new Map(a.map((item) => [item["current_date"], item])).values(),
+      ];
+
+      const weeklyCoal = newArr.map(
+        (obj) => temp.find((o) => o.current_date === obj.current_date) || obj
+      );
+
+      let r = [];
+      for (let i = 0; i < weeklyCoal.length; i++) {
+        if (weeklyCoal[i].current_date === "Sun") {
+          r[0] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Mon") {
+          r[1] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Tue") {
+          r[2] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Wed") {
+          r[3] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Thu") {
+          r[4] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Fri") {
+          r[5] = weeklyCoal[i];
+        }
+        if (weeklyCoal[i].current_date === "Sat") {
+          r[6] = weeklyCoal[i];
+        }
+      }
+
+      let data = {
+        labels: _.pluck(r, "current_date"),
+        actual: _.pluck(r, "actual"),
+      };
 
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
@@ -188,6 +290,16 @@ class MonthlyPlanApiController {
   async getWeeklyFuelConsumption({ auth, request, response }) {
     const { date } = request.only(["date"]);
 
+    const SoW = moment(date).startOf("week").format("YYYY-MM-DD");
+    const EoW = moment(date).endOf("week").format("YYYY-MM-DD");
+
+    const currentWeekDays = Array.from({ length: 7 }, (x, i) =>
+      moment().startOf("week").add(i, "days").format("ddd")
+    );
+
+    let durasi;
+    var t0 = performance.now();
+
     try {
       await auth.authenticator("jwt").getUser();
     } catch (error) {
@@ -203,101 +315,246 @@ class MonthlyPlanApiController {
       });
     }
 
-    let dataPeriode = [];
+    try {
+      let dataPeriode = [];
 
-    const SoW = moment(date).startOf("week").format("YYYY-MM-DD");
-    const EoW = moment(date).endOf("week").format("YYYY-MM-DD");
+      dataPeriode = (
+        await DailyRefueling.query()
+          .whereBetween("fueling_at", [SoW, EoW])
+          .fetch()
+      ).toJSON();
 
-    const currentWeekDays = Array.from({ length: 7 }, (x, i) =>
-      moment().startOf("week").add(i, "days").format("ddd")
-    );
+      dataPeriode = dataPeriode.map((item) => {
+        return { ...item, fueling_at: moment(item.fueling_at).format("ddd") };
+      });
 
-    dataPeriode = (
-      await DailyRefueling.query()
-        .whereBetween("fueling_at", [SoW, EoW])
-        .fetch()
-    ).toJSON();
+      var result = [];
+      dataPeriode.reduce(function (res, value) {
+        if (!res[value.fueling_at]) {
+          res[value.fueling_at] = { fueling_at: value.fueling_at, topup: 0 };
+          result.push(res[value.fueling_at]);
+        }
+        res[value.fueling_at].topup += value.topup;
+        return res;
+      }, {});
 
-    dataPeriode = dataPeriode.map((item) => {
-      return { ...item, fueling_at: moment(item.fueling_at).format("ddd") };
-    });
+      let t = [];
+      let _temp = [];
 
-    var result = [];
-    dataPeriode.reduce(function (res, value) {
-      if (!res[value.fueling_at]) {
-        res[value.fueling_at] = { fueling_at: value.fueling_at, topup: 0 };
-        result.push(res[value.fueling_at]);
-      }
-      res[value.fueling_at].topup += value.topup;
-      return res;
-    }, {});
-
-    let t = [];
-    let temp = [];
-
-    for (let i = 0; i < result.length; i++) {
-      if (result[i].fueling_at === currentWeekDays[i]) {
+      for (let i = 0; i < currentWeekDays.length; i++) {
         let obj = {
-          fueling_at: result[i].fueling_at,
-          topup: result[i].topup,
+          fueling_at: currentWeekDays[i],
+          topup: 0,
         };
-        t.push(obj);
-      } else {
-        for (let x = 0; x < currentWeekDays.length; x++) {
-          if (result[i].fueling_at !== currentWeekDays[x]) {
-            let obj = {
-              fueling_at: currentWeekDays[x],
-              topup: 0,
-            };
-            temp.push(obj);
-          } else {
-            let obj = {
-              fueling_at: result[i].fueling_at,
-              topup: result[i].topup,
-            };
-            t.push(obj);
-          }
+        _temp.push(obj);
+      }
+
+      let temp = [..._temp, ...result];
+
+      const newArr = [
+        ...new Map(temp.map((item) => [item["fueling_at"], item])).values(),
+      ];
+
+      const weeklyFuel = newArr.map(
+        (obj) => t.find((o) => o.fueling_at === obj.fueling_at) || obj
+      );
+
+      let r = [];
+      for (let i = 0; i < weeklyFuel.length; i++) {
+        if (weeklyFuel[i].fueling_at === "Sun") {
+          r[0] = weeklyFuel[i];
+        }
+        if (weeklyFuel[i].fueling_at === "Mon") {
+          r[1] = weeklyFuel[i];
+        }
+        if (weeklyFuel[i].fueling_at === "Tue") {
+          r[2] = weeklyFuel[i];
+        }
+        if (weeklyFuel[i].fueling_at === "Wed") {
+          r[3] = weeklyFuel[i];
+        }
+        if (weeklyFuel[i].fueling_at === "Thu") {
+          r[4] = weeklyFuel[i];
+        }
+        if (weeklyFuel[i].fueling_at === "Fri") {
+          r[5] = weeklyFuel[i];
+        }
+        if (weeklyFuel[i].fueling_at === "Sat") {
+          r[6] = weeklyFuel[i];
         }
       }
+
+      let data = {
+        labels: _.pluck(r, "fueling_at"),
+        actual: _.pluck(r, "topup"),
+      };
+
+      if (!data.labels && !data.actual) {
+        data = {
+          labels: currentWeekDays,
+          actual: [0, 0, 0, 0, 0, 0, 0],
+        };
+      }
+
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(200).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+        },
+        data: data,
+      });
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(404).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error,
+        },
+        data: {
+          WeeklyFuelConsumption: {
+            month: moment().format("MMMM YYYY"),
+            satuan: "Liter",
+            actual: 0,
+          },
+          labels: currentWeekDays,
+          actual: [0, 0, 0, 0, 0, 0, 0],
+        },
+      });
+    }
+  }
+
+  async getAllThisYearRecap({ auth, request, response }) {
+    const { date } = request.only(["date"]);
+    let durasi;
+    var t0 = performance.now();
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
     }
 
-    const newArr = [
-      ...new Map(temp.map((item) => [item["fueling_at"], item])).values(),
-    ];
+    try {
+      const SoY = moment(date).startOf("year").format("YYYY-MM-DD");
+      const EoY = moment(date).endOf("year").format("YYYY-MM-DD");
 
-    const weeklyFuel = newArr.map(
-      (obj) => t.find((o) => o.fueling_at === obj.fueling_at) || obj
-    );
+      const allMonthsThisYear = Array.apply(0, Array(12)).map(function (_, i) {
+        return moment(date).month(i).format("MMMM");
+      });
 
-    let r = [];
-    for (let i = 0; i < weeklyFuel.length; i++) {
-      if (weeklyFuel[i].fueling_at === "Sun") {
-        r[0] = weeklyFuel[i];
+      let monthArr = [];
+      for (let x of allMonthsThisYear) {
+        const obj = {
+          month_name: x,
+          value: {
+            ob: 0,
+            coal: 0,
+            fuel: 0,
+          },
+        };
+        monthArr.push(obj);
       }
-      if (weeklyFuel[i].fueling_at === "Mon") {
-        r[1] = weeklyFuel[i];
+
+      const fuels = (
+        await DailyRefueling.query()
+          .whereBetween("fueling_at", [SoY, EoY])
+          .fetch()
+      ).toJSON();
+
+      const coals = (
+        await DailyPlans.query()
+          .whereBetween("current_date", [SoY, EoY])
+          .andWhere("tipe", "COAL")
+          .fetch()
+      ).toJSON();
+
+      const obs = (
+        await DailyPlans.query()
+          .whereBetween("current_date", [SoY, EoY])
+          .andWhere("tipe", "OB")
+          .fetch()
+      ).toJSON();
+
+      const convertFuelsToMonthName = fuels.map((v) => {
+        return {
+          month_name: moment(v.fueling_at).format("MMMM"),
+          value: v.topup,
+        };
+      });
+
+      const convertCoalsToMonthName = coals.map((v) => {
+        return {
+          month_name: moment(v.current_date).format("MMMM"),
+          value: v.actual,
+        };
+      });
+
+      const convertObsToMonthName = obs.map((v) => {
+        return {
+          month_name: moment(v.current_date).format("MMMM"),
+          value: v.actual,
+        };
+      });
+
+      let newArr = [];
+      for (let z of monthArr) {
+        let obj = {
+          month_name: z.month_name,
+          value: {
+            ob: convertObsToMonthName
+              .filter((x) => x.month_name === z.month_name)
+              .reduce((a, b) => a + b.value, 0),
+            coal: convertCoalsToMonthName
+              .filter((x) => x.month_name === z.month_name)
+              .reduce((a, b) => a + b.value, 0),
+            fuel: convertFuelsToMonthName
+              .filter((x) => x.month_name === z.month_name)
+              .reduce((a, b) => a + b.value, 0),
+          },
+        };
+        newArr.push(obj);
       }
-      if (weeklyFuel[i].fueling_at === "Tue") {
-        r[2] = weeklyFuel[i];
-      }
-      if (weeklyFuel[i].fueling_at === "Wed") {
-        r[3] = weeklyFuel[i];
-      }
-      if (weeklyFuel[i].fueling_at === "Thu") {
-        r[4] = weeklyFuel[i];
-      }
-      if (weeklyFuel[i].fueling_at === "Fri") {
-        r[5] = weeklyFuel[i];
-      }
-      if (weeklyFuel[i].fueling_at === "Sat") {
-        r[6] = weeklyFuel[i];
-      }
+
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(200).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+        },
+        data: newArr,
+      });
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(404).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error,
+        },
+        data: {
+          WeeklyFuelConsumption: {
+            month: moment().format("MMMM YYYY"),
+            satuan: "Liter",
+            actual: 0,
+          },
+          labels: currentWeekDays,
+          actual: [0, 0, 0, 0, 0, 0, 0],
+        },
+      });
     }
-
-    return {
-      dayLabels: _.pluck(r, "fueling_at"),
-      fuelConsumptionDaily: _.pluck(r, "topup"),
-    };
   }
 }
 
