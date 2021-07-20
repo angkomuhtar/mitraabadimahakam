@@ -144,16 +144,7 @@ class MonthlyPlanApiController {
           error: true,
           message: error,
         },
-        data: {
-          monthly_plan: {
-            month: moment().format("MMMM YYYY"),
-            satuan: "BCM",
-            estimate: 0,
-            actual: 0,
-          },
-          labels: currentWeekDays,
-          actual: [],
-        },
+        data: {},
       });
     }
   }
@@ -273,16 +264,7 @@ class MonthlyPlanApiController {
           error: true,
           message: error,
         },
-        data: {
-          monthly_plan: {
-            month: moment().format("MMMM YYYY"),
-            satuan: "MT",
-            estimate: 0,
-            actual: 0,
-          },
-          labels: currentWeekDays,
-          actual: [],
-        },
+        data: {},
       });
     }
   }
@@ -413,20 +395,12 @@ class MonthlyPlanApiController {
           error: true,
           message: error,
         },
-        data: {
-          WeeklyFuelConsumption: {
-            month: moment().format("MMMM YYYY"),
-            satuan: "Liter",
-            actual: 0,
-          },
-          labels: currentWeekDays,
-          actual: [0, 0, 0, 0, 0, 0, 0],
-        },
+        data: {},
       });
     }
   }
 
-  async getAllThisYearRecap({ auth, request, response }) {
+  async getMonthlyRecap({ auth, request, response }) {
     const { date } = request.only(["date"]);
     let durasi;
     var t0 = performance.now();
@@ -544,15 +518,7 @@ class MonthlyPlanApiController {
           error: true,
           message: error,
         },
-        data: {
-          WeeklyFuelConsumption: {
-            month: moment().format("MMMM YYYY"),
-            satuan: "Liter",
-            actual: 0,
-          },
-          labels: currentWeekDays,
-          actual: [0, 0, 0, 0, 0, 0, 0],
-        },
+        data: {},
       });
     }
   }

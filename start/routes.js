@@ -634,7 +634,7 @@ Route.group(() => {
 
     Route.post('/weekly/fuel', 'MonthlyPlanApiController.getWeeklyFuelConsumption')
     
-    Route.post('/monthly/recap', 'MonthlyPlanApiController.getAllThisYearRecap')
+    Route.post('/monthly/recap', 'MonthlyPlanApiController.getMonthlyRecap')
     
 }).prefix('api/monthly-plan').namespace('api')
 
