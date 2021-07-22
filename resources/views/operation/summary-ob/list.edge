@@ -19,7 +19,7 @@
                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Akhir</th>
                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SMU TOT</th>
                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">
-                    <strong>Expend Activity Description</strong>
+                    <strong>Activity Description</strong>
                 </th>
                 <th class="sl f12w300G text-center bg-inverse" colspan="{{event.length}}" style="border-bottom: 2px solid;">
                     <strong>Equipment Time</strong>
@@ -89,6 +89,7 @@
         </tbody>
     </table>
 </div>
+@include('_component.pagination')
 <script>
     $(function(){
         setTotalTime()
@@ -97,6 +98,26 @@
             'scrollable': true,
             // 'shadow': true,
             'backgroundColor': '#2f323e'
+        })
+
+        $('body').on('click', 'a.btn-pagging', function(e){
+            e.preventDefault()
+            var page = $(this).data('page')
+            var keyword = $('#keywordTimeSheet').val()
+            var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword
+            $.ajax({
+                async: true,
+                url: url,
+                method: 'GET',
+                success: function(result){
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                    listNoBerkas()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
         })
 
         function setTotalTime(){
@@ -133,13 +154,7 @@
                 $('strong#tot-idle'+id).html(idleTime.reduce((x, y) => {return x + y}, 0))
                 $('strong#tot-standby'+id).html(standbyTime.reduce((x, y) => {return x + y}, 0))
                 $('strong#tot-running'+id).html(runningTime.reduce((x, y) => {return x + y}, 0))
-                // var inactive = $(this).find('td strong.standby').html()
-                // var running = $(this).find('td strong.running').html()
-                // console.log($(this).find('td strong.idle'+id));
-                // inactiveTime.push(inactive)
-                // runningTime.push(running)
             })
-            // console.log('::',idleTime);
         }
     })
 </script>

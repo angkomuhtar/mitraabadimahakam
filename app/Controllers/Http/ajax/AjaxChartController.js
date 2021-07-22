@@ -4,6 +4,7 @@ const MonthlyPlanHelpers = use("App/Controllers/Http/Helpers/MonthlyPlan")
 const DailyRitaseCoalDetail = use("App/Models/DailyRitaseCoalDetail")
 const DailyChecklist = use("App/Models/DailyChecklist")
 const DailyRefueling = use("App/Models/DailyRefueling")
+const DailyRitase = use("App/Models/DailyRitase")
 const DailyEvent = use("App/Models/DailyEvent")
 const MasEvent = use("App/Models/MasEvent")
 const moment = require('moment')
@@ -106,10 +107,11 @@ class AjaxChartController {
 
     async grafik_COST_VS_PROD({ request }){
         const req = request.all()
-        const arrTahunBulan = Array.apply(0, Array(12)).map(function(_,i){return req.periode +'-'+ moment().month(i).format('MM')})
+        const arrTahunBulan = Array.apply(0, Array(12)).map(function(_, i){return req.periode +'-'+ moment().month(i).format('MM')})
         let sumFuel = []
         let sumCoal = []
         let sumHM = []
+        let sumOB = []
         for (const item of arrTahunBulan) {
             const fuel = await DailyRefueling.query().where('fueling_at', 'like', `${item}%`).getSum('topup')
             if(fuel){
@@ -125,6 +127,13 @@ class AjaxChartController {
                 sumCoal.push(0)
             }
 
+            const ob = await DailyRitase.query().where('date', 'like', `${item}%`).getSum('tot_ritase')
+            if(ob){
+                sumOB.push((ob * 22))
+            }else{
+                sumOB.push(0)
+            }
+
             const smu = await DailyChecklist.query().where('tgl', 'like', `${item}%`).getSum('used_smu')
             if(smu){
                 sumHM.push(smu)
@@ -135,7 +144,8 @@ class AjaxChartController {
         return {
             fuel: sumFuel,
             coal: sumCoal,
-            smu: sumHM
+            smu: sumHM,
+            ob: sumOB
         }
     }
 }
