@@ -93,32 +93,32 @@ class MonthlyPlanApiController {
         ...new Map(a.map((item) => [item["current_date"], item])).values(),
       ];
 
-      const weeklyCoal = newArr.map(
+      const weeklyOB = newArr.map(
         (obj) => temp.find((o) => o.current_date === obj.current_date) || obj
       );
 
       let r = [];
-      for (let i = 0; i < weeklyCoal.length; i++) {
-        if (weeklyCoal[i].current_date === "Sun") {
-          r[0] = weeklyCoal[i];
+      for (let i = 0; i < weeklyOB.length; i++) {
+        if (weeklyOB[i].current_date === "Sun") {
+          r[0] = weeklyOB[i];
         }
-        if (weeklyCoal[i].current_date === "Mon") {
-          r[1] = weeklyCoal[i];
+        if (weeklyOB[i].current_date === "Mon") {
+          r[1] = weeklyOB[i];
         }
-        if (weeklyCoal[i].current_date === "Tue") {
-          r[2] = weeklyCoal[i];
+        if (weeklyOB[i].current_date === "Tue") {
+          r[2] = weeklyOB[i];
         }
-        if (weeklyCoal[i].current_date === "Wed") {
-          r[3] = weeklyCoal[i];
+        if (weeklyOB[i].current_date === "Wed") {
+          r[3] = weeklyOB[i];
         }
-        if (weeklyCoal[i].current_date === "Thu") {
-          r[4] = weeklyCoal[i];
+        if (weeklyOB[i].current_date === "Thu") {
+          r[4] = weeklyOB[i];
         }
-        if (weeklyCoal[i].current_date === "Fri") {
-          r[5] = weeklyCoal[i];
+        if (weeklyOB[i].current_date === "Fri") {
+          r[5] = weeklyOB[i];
         }
-        if (weeklyCoal[i].current_date === "Sat") {
-          r[6] = weeklyCoal[i];
+        if (weeklyOB[i].current_date === "Sat") {
+          r[6] = weeklyOB[i];
         }
       }
 
@@ -320,7 +320,6 @@ class MonthlyPlanApiController {
         return res;
       }, {});
 
-      let t = [];
       let _temp = [];
 
       for (let i = 0; i < currentWeekDays.length; i++) {
@@ -333,13 +332,10 @@ class MonthlyPlanApiController {
 
       let temp = [..._temp, ...result];
 
-      const newArr = [
+      const weeklyFuel = [
         ...new Map(temp.map((item) => [item["fueling_at"], item])).values(),
       ];
-
-      const weeklyFuel = newArr.map(
-        (obj) => t.find((o) => o.fueling_at === obj.fueling_at) || obj
-      );
+      
 
       let r = [];
       for (let i = 0; i < weeklyFuel.length; i++) {

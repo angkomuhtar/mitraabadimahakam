@@ -37,7 +37,7 @@ class AjaxChartController {
     async grafik_FUEL_MTD ({ request }) {
         const req = request.all()
         const arrDate = Array.from({length: moment(req.periode).daysInMonth()}, 
-            (x, i) => moment(req.periode).startOf('month').add(i, 'days').format('YYYY-MM-DD'))
+            (x, i) => moment(req.periode).startOf('month').add(i, 'days').format('DD'))
 
         /* Get Semua data equipment pada periode */
         let dataPeriode = []
@@ -76,7 +76,7 @@ class AjaxChartController {
             res[value.fueling_at].topup += value.topup;
             return res;
           }, {});
-        
+          
         return {
             x: _.pluck(result, 'fueling_at'),
             y: _.pluck(result, 'topup')
