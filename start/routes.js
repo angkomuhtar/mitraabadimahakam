@@ -628,6 +628,14 @@ Route.group(() => {
 
     Route.delete('/:id/destroy', 'MonthlyPlanApiController.destroy')
 
+    Route.post('/weekly/ob', 'MonthlyPlanApiController.getWeeklyOBProduction')
+
+    Route.post('/weekly/coal', 'MonthlyPlanApiController.getWeeklyCoalProduction')
+
+    Route.post('/weekly/fuel', 'MonthlyPlanApiController.getWeeklyFuelConsumption')
+    
+    Route.post('/monthly/recap', 'MonthlyPlanApiController.getMonthlyRecap')
+    
 }).prefix('api/monthly-plan').namespace('api')
 
 
