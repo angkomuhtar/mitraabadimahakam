@@ -635,8 +635,18 @@ Route.group(() => {
     Route.post('/weekly/fuel', 'MonthlyPlanApiController.getWeeklyFuelConsumption')
     
     Route.post('/monthly/recap', 'MonthlyPlanApiController.getMonthlyRecap')
+
+    Route.get('/report/daily', 'MonthlyPlanApiController.getDailyReport')
     
 }).prefix('api/monthly-plan').namespace('api')
+
+Route.group(() => {
+
+    Route.get('/', 'DailyFuelFillingApiController.index')
+
+    Route.post('/store', 'DailyFuelFillingApiController.store')
+    
+}).prefix('api/daily-refueling').namespace('api')
 
 
 Route.get('/401', ({ view }) => view.render('401'))
