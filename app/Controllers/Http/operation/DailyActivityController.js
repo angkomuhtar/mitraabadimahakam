@@ -13,30 +13,34 @@ class DailyActivityController {
 
     async list ({ request, view }) {
         const req = request.all()
-        const limit = 10
+        const limit = 50
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let list = (await SummaryOB
             .query()
             .with('dailyevent')
-            // .where('material', '!=', 'COAL')
-            .distinct(
-                'no_timesheet', 
-                'dailyfleet_id', 
-                'shift', 
-                'date',
-                'begin_smu',
-                'end_smu',
-                'used_smu',
-                'unit_id',
-                'kd_unit',
-                'tipe_unit',
-                'unit_model',
-                'activity',
-                'ritase_ob',
-                'material'
-            )
+            // .distinct(
+            //     'no_timesheet', 
+            //     'dailyfleet_id', 
+            //     'shift', 
+            //     'date',
+            //     'begin_smu',
+            //     'end_smu',
+            //     'used_smu',
+            //     'unit_id',
+            //     'kd_unit',
+            //     'tipe_unit',
+            //     'unit_model',
+            //     'activity',
+            //     'ritase_ob',
+            //     'material'
+            // )
             .orderBy('date', 'desc')
             .paginate(halaman, limit)).toJSON()
+        
+        list.data = [...list.data.reduce((a,c)=>{
+            a.set(c.no_timesheet, c)
+            return a;
+          }, new Map()).values()]
         
 
         const mas_event = (await MasEvent.query().where('aktif', 'Y').select('id', 'kode', 'narasi', 'satuan', 'engine', 'status').orderBy('status').fetch()).toJSON()

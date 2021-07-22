@@ -18,7 +18,8 @@
     <small>Coal data adalah total akumulasi produksi coal perbulan</small>
     <!--  
         <canvas id="chart6" width="400" height="400"></canvas>
--->
+        <a href="https://api.whatsapp.com/send?phone=628114107717&text=sy%20ingin%0Amelakukan%20%2Atesting%2A">WHATAPPS</a>
+    -->
 </div>
 <script>
     $(function(){
@@ -53,6 +54,13 @@
                                 data: result.smu
                             },
                             {
+                                label: "OB",
+                                backgroundColor: "#6d2b04",
+                                borderWidth: 0.5,
+                                borderColor: "#fff",
+                                data: result.ob
+                            },
+                            {
                                 label: "Coal",
                                 backgroundColor: "#000",
                                 borderWidth: 0.5,
@@ -69,13 +77,13 @@
                             scales: {
                                 yAxes: [{
                                     ticks: {
-                                        min: 0,
+                                        min: 0 
                                     }
                                 }],
                                 xAxes: [{
                                     // categoryPercentage: 1.0,
                                     barPercentage: 1.0
-                                }]
+                                }],
                             }
                         }
                     };

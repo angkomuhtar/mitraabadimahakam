@@ -11,6 +11,7 @@ class MasEventSchema extends Schema {
       table.string('narasi', 200).notNullable()
       table.enu('satuan', ['HM', 'TIME']).defaultTo('HM')
       table.enu('engine', ['off', 'on']).defaultTo('off')
+      table.enu('status', ['idle', 'inactive', 'productive']).defaultTo('idle')
       table.enu('aktif', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })
