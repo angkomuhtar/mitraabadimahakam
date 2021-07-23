@@ -335,7 +335,6 @@ class MonthlyPlanApiController {
       const weeklyFuel = [
         ...new Map(temp.map((item) => [item["fueling_at"], item])).values(),
       ];
-      
 
       let r = [];
       for (let i = 0; i < weeklyFuel.length; i++) {
@@ -504,6 +503,49 @@ class MonthlyPlanApiController {
           error: false,
         },
         data: newArr,
+      });
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(404).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error,
+        },
+        data: {},
+      });
+    }
+  }
+
+  async getDailyReport({ auth, request, response }) {
+    const { date } = request.only(["date"]);
+    let durasi;
+    var t0 = performance.now();
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+
+    try {
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(200).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+        },
+        data: "hellow" + date,
       });
     } catch (error) {
       console.log(error);

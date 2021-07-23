@@ -103,8 +103,8 @@ class TimeSheetApiController {
 
     async filterDate ({ auth, request, response }) {
         var t0 = performance.now()
-        const req = request.only(['begin_date', 'end_date'])
-        const { begin_date, end_date } = req
+        const req = request.only(['date'])
+        const { date } = req
 
         let durasi
 
@@ -123,7 +123,10 @@ class TimeSheetApiController {
             })
         };
 
-        const prevDay = moment(end_date).subtract(1, 'days').format('YYYY-MM-DD');
+        const prevDay = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
+        const now = moment(date).format('YYYY-MM-DD')
+        console.log('now : ', now);
+        console.log('prev day', prevDay);
         
         await GET_DATA()
 
@@ -132,11 +135,12 @@ class TimeSheetApiController {
                     .query()
                     .with('operator_unit')
                     .with('equipment')
-                    .with('dailyEvent')
+                    .with('dailyRefueling')
                     .with('dailyFleet', (wh) => {
                         wh.with('shift')
                     })
-                    .whereBetween('tgl', [prevDay, moment(end_date).format('YYYY-MM-DD')])
+                    .whereBetween('tgl', [prevDay, now])
+                    .orderBy('tgl','desc')
                     .fetch()
             durasi = await diagnoticTime.durasi(t0)
             response.status(200).json({
