@@ -19,7 +19,7 @@ $(function(){
         initDeafult()
     })
 
-    $('body').on('keyup', 'input#inpKeywordSite', function(e){
+    $('body').on('keyup', 'input#inpKeywordFuelDist', function(e){
         var value = $(this).val()
         if(e.keyCode === 13){
             ajaxSearch(value)
@@ -27,7 +27,7 @@ $(function(){
     })
 
     $('body').on('click', 'button#bt-search-keyword', function(){
-        var value = $('input#inpKeywordSite').val()
+        var value = $('input#inpKeywordFuelDist').val()
         ajaxSearch(value)
     })
 
@@ -42,6 +42,37 @@ $(function(){
     //     $('div#tbl-equipment-list').hide()
     //     $('div#tbl-equipment-select').show()
     // })
+
+    $('body').on('submit', 'form#fm-fuel-distribution', function(e){
+        e.preventDefault()
+        var data = new FormData(this)
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/fuel-dist',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                const { message } = result
+                if(result.success){
+                    swal("Okey,,,!", message, "success")
+                    initDeafult()
+                }else{
+                    swal("Opps,,,!", message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
 
 
     $('body').on('click', 'button.bt-edit-data', function(e){
@@ -106,7 +137,7 @@ $(function(){
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        $.get('/operation/daily-fleet/list?page='+page+'&keyword=', function(data){
+        $.get('/operation/fuel-dist/list?page='+page+'&keyword=', function(data){
             console.log(data);
             $('div#list-content').children().remove()
             $('div#list-content').html(data)
@@ -150,9 +181,10 @@ $(function(){
     }
 
     function ajaxSearch(value){
+        console.log('keyword :::', value);
         $.ajax({
             async: true,
-            url: '/operation/daily-fleet/list?keyword='+value,
+            url: '/operation/fuel-dist/list?keyword='+value,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()

@@ -11,7 +11,7 @@
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
                         <div class="input-group">
-                            <input id="inpKeywordSite" class="form-control" placeholder="Search for...">
+                            <input id="inpKeywordFuelDist" class="form-control" placeholder="Search for...">
                             <span class="input-group-btn"> 
                                 <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
                             </span>
@@ -24,13 +24,12 @@
                             <tr>
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="20">ACT</th>
-                                <th class="sl" width="150">PIT</th>
-                                <th class="sl" width="150">Nama Fleet</th>
-                                <th class="sl">Activity</th>
-                                <th class="sl">Shift</th>
-                                <th class="sl" width="100">Date</th>
-                                <th class="sl text-center" width="20">Created</th>
-                                <th class="sl text-center" width="20">Equipment</th>
+                                <th class="sl" width="150">SITE</th>
+                                <th class="sl" width="150">Agen</th>
+                                <th class="sl">DO / SO</th>
+                                <th class="sl">Flow Meter</th>
+                                <th class="sl" width="250">DRIVER</th>
+                                <th class="sl" width="200">SEAL</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -44,63 +43,30 @@
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                     </td>
                                     <td class="single-line">
-                                        {{item.pit.name}} <br>
-                                        <small>{{item.pit.site.name}}</small>
+                                        {{item.site.name}} <br>
+                                        <small>{{item.site.kode}}</small>
                                     </td>
                                     <td class="single-line">
-                                        <strong>{{item.fleet.name}}</strong>
-                                        <br>
-                                        <small class="text-info">{{item.tipe === 'MF' ? 'Main-Fleet' : 'Support-Fleet'}}</small>
+                                        <strong>{{item.agen.name}}</strong><br>
+                                        <small>{{item.fuel.name}}</small>
                                     </td>
                                     <td>
-                                        {{item.activities.kode}} - {{item.activities.name}} <br>
-                                        <small>{{item.activities.keterangan}}</small>
+                                        {{item.no_do}} - {{item.no_so}}<br>
+                                        <small class="myDateFormat" data-date="{{item.tgl_do}}"></small>
                                     </td>
-                                    <td>{{item.shift.name}}</td>
-                                    <td class="myDateFormat" data-date="{{item.date}}"></td>
-                                    <td class="text-center">{{item.user.username}}</td>
-                                    <td class="text-center">
-                                        <!-- Button trigger modal -->
-                                        <button type="button" class="btn btn-default btn-circle" data-toggle="modal" data-target="#{{item.id}}"><i class="fa fa-truck"></i> </button>
-                                        
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                            <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                    <h4 class="modal-title" id="myModalLabel">List Equipment on Fleet</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="table-responsive">
-                                                        <table class="table table-stripped" style="background-color:#1f212b;">
-                                                            <thead style="border-bottom: 2px white solid;">
-                                                                <tr>
-                                                                    <th>Kode</th>
-                                                                    <th>Brand</th>
-                                                                    <th>Tipe</th>
-                                                                    <th>Model</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @each(item in item.details)
-                                                                  <tr>
-                                                                      <td class="text-left">{{item.equipment.kode}}</td>
-                                                                      <td class="text-left">{{item.equipment.brand}}</td>
-                                                                      <td class="text-left">{{item.equipment.tipe}}</td>
-                                                                      <td class="text-left">{{item.equipment.unit_model}}</td>
-                                                                  </tr>
-                                                                @endeach
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
+                                    <td>
+                                        <i class="ti-paint-bucket"></i>
+                                        {{(item.flow_meter).toLocaleString('ID')}} Liter <br>
+                                        <i class="ti-truck"></i>
+                                        <small class="text-uppercase">{{item.no_plat}}</small>
+                                    </td>
+                                    <td class="">
+                                        <strong class="text-uppercase">{{item.truck_driver}}</strong> <br>
+                                        <small class="myDateTimeFormat" data-date="{{item.arrival}}"></small>
+                                    </td>
+                                    <td>
+                                        <i class="ti-zip"></i> Top : {{item.seal_top}} <br>
+                                        <i class="ti-zip"></i> Bot : {{item.seal_bott1}} - {{item.seal_bott2}}
                                     </td>
                                 </tr>
                             @endeach
