@@ -43,66 +43,7 @@ class DailyFuelFillingApiController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, response, auth }) {
-    var t0 = performance.now();
-    let durasi;
-    const req = request.only([
-      "timesheet_id",
-      "topup",
-      "smu",
-      "equip_id",
-      "operator",
-      "fueling_at",
-      "description",
-      "fuelman",
-    ]);
-
-    try {
-      await auth.authenticator("jwt").getUser();
-    } catch (error) {
-      console.log(error);
-      let durasi = await diagnoticTime.durasi(t0);
-      return response.status(403).json({
-        diagnostic: {
-          times: durasi,
-          error: true,
-          message: error.message,
-        },
-        data: [],
-      });
-    }
-
-    const trx = await db.beginTransaction();
-
-    try {
-      const dailyRefueling = new DailyRefueling();
-      dailyRefueling.fill({ ...req, fueling_at : moment(req.fueling_at).format('YYYY-MM-DD HH:mm:ss')});
-      await dailyRefueling.save(trx);
-
-      await trx.commit(trx);
-      const result = await DailyRefueling.query().last();
-      durasi = await diagnoticTime.durasi(t0);
-      response.status(201).json({
-        diagnostic: {
-          times: durasi,
-          error: false,
-        },
-        data: result,
-      });
-    } catch (error) {
-      console.log(error);
-      await trx.rollback();
-      durasi = await diagnoticTime.durasi(t0);
-      response.status(403).json({
-        diagnostic: {
-          times: durasi,
-          error: true,
-          message: error.message,
-        },
-        data: [],
-      });
-    }
-  }
+  async store({ request, response, auth, params }) {}
 
   /**
    * Display a single dailyfuelfilling.
@@ -134,7 +75,90 @@ class DailyFuelFillingApiController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, response, auth }) {
+    var t0 = performance.now();
+    let durasi;
+    const req = request.only([
+      "timesheet_id",
+      "topup",
+      "smu",
+      "equip_id",
+      "operator",
+      "fueling_at",
+      "description",
+      "fuelman",
+    ]);
+
+    const { id } = params;
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      let durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: [],
+      });
+    };
+
+    const trx = await db.beginTransaction();
+
+    try {
+      const dailyRefueling = await DailyRefueling.query(trx)
+        .where("timesheet_id", id)
+        .first();
+
+      if (dailyRefueling) {
+        dailyRefueling.merge({
+          ...req,
+          fueling_at: moment(req.fueling_at).format("YYYY-MM-DD HH:mm:ss"),
+        });
+
+        await dailyRefueling.save(trx);
+
+        await trx.commit(trx);
+        const result = await DailyRefueling.query()
+          .where("timesheet_id", id)
+          .first();
+
+        durasi = await diagnoticTime.durasi(t0);
+        response.status(201).json({
+          diagnostic: {
+            times: durasi,
+            error: false,
+          },
+          data: result,
+        });
+      } else {
+        trx.rollback(trx);
+        durasi = await diagnoticTime.durasi(t0);
+        response.status(201).json({
+          diagnostic: {
+            times: durasi,
+            error: false,
+            message: "Daily Refueling not found",
+          },
+          data: {},
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      await trx.rollback();
+      durasi = await diagnoticTime.durasi(t0);
+      response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: [],
+      });
+    }
+  }
 
   /**
    * Delete a dailyfuelfilling with id.
