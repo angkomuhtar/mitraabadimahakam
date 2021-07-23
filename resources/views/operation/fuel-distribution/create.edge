@@ -1,0 +1,161 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-dailyfleet">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add Daily Fleet</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Nama PIT</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control input-sm select2pit" data-check="" name="pit_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Nama Fleet</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control input-sm select2fleet" data-check="" name="fleet_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Shift</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control input-sm select2shift" data-check="" name="shift_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Activity</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control input-sm select2activities" data-check="" name="activity_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Datetime</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="datetime-local" class="form-control input-sm init-datetime" name="datetime" id="datetime">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <textarea class="form-control" name="keterangan" rows="5" disabled></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12" id="tbl-equipment-list" style="display:none;">
+                                            <button class="btn btn-outline btn-info btn-sm m-b-10" id="bt-close-equipment-list">Close</button>
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead style="border-bottom: 2px white solid;">
+                                                        <tr>
+                                                            <th class="sl text-center" width="20">No</th>
+                                                            <th class="sl text-center" width="20">ACT</th>
+                                                            <th class="sl">Kode</th>
+                                                            <th class="sl">Brand</th>
+                                                            <th class="sl">Tipe</th>
+                                                            <th class="sl">Model</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="list-source-unit">
+                                                        @if(list.length < 1)
+                                                          <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                                                        @endif
+                                                        @each(item in list)
+                                                            <tr id="tr-{{item.id}}">
+                                                                <td>{{$loop.index + 1}}</td>
+                                                                <td>
+                                                                    <button class="btn btn-outline btn-info btn-xs bt-select-data" 
+                                                                        data-kode="{{item.kode}}"
+                                                                        data-brand="{{item.brand}}"
+                                                                        data-tipe="{{item.tipe}}"
+                                                                        data-model="{{item.unit_model}}"
+                                                                        data-id="{{item.id}}">
+                                                                        select
+                                                                    </button>
+                                                                </td>
+                                                                <td class="single-line">
+                                                                    {{item.kode}}
+                                                                </td>
+                                                                <td>
+                                                                    <p><strong class="text-uppercase">{{item.brand}}</strong>
+                                                                </td>
+                                                                <td class="single-line">
+                                                                    {{item.tipe}}
+                                                                </td>
+                                                                <td>{{item.unit_model}}</td>
+                                                            </tr>
+                                                        @endeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div id="tbl-equipment-select">
+                                            <div class="col-md-6">
+                                                <button class="btn btn-outline btn-warning btn-sm m-b-10" id="bt-open-equipment-list">Tambah Alat</button>
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover">
+                                                        <thead style="border-bottom: 2px white solid;">
+                                                            <tr>
+                                                                <th class="sl text-center" width="20">ACT</th>
+                                                                <th class="sl">Kode</th>
+                                                                <th class="sl">Brand</th>
+                                                                <th class="sl">Tipe</th>
+                                                                <th class="sl">Model</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="list-selected-unit">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <div class="well well-sm m-t-10">
+                                                    <h4>Note</h4>
+                                                    <p>
+                                                        Klik tombol <strong>Tambah Alat</strong> untuk menambahkan equipment unit pada Fleet terpilih sehingga menampilkan list data equipment yang dapat anda pilih
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

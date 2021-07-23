@@ -259,6 +259,11 @@ Route.group(() => {
 
     Route.get('/monthly-plan/list-daily', 'MonthlyPlanController.listHarian').as('opr.monthly-plan.listHarian').middleware('R')
 
+    // Fuel Distribution
+    Route.get('/fuel-dist', 'FuelDistributeController.index').as('opr.fuel-distribution.index').middleware('R')
+
+    Route.post('/fuel-dist', 'FuelDistributeController.create').as('opr.fuel-distribution.index').middleware('R')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX
