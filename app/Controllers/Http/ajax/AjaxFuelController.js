@@ -7,7 +7,29 @@ class AjaxFuelController {
         const req = request.all()
         let result
         try {
-            const data = (await MaterialHelpers.ALL_FUEL(req)).toJSON()
+            const data = (await FuelHelpers.ALL_FUEL(req)).toJSON()
+            if(req.selected){
+                result = data.data.map(item => 
+                    item.id === parseInt(req.selected) ?
+                    {...item, selected: 'selected'}
+                    :
+                    {...item, selected: ''}
+                )
+            }else{
+                result = data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+        return result
+    }
+
+    async getFuelAgen ({ request }) {
+        const req = request.all()
+        let result
+        try {
+            const data = (await FuelHelpers.FUEL_AGEN(req)).toJSON()
             if(req.selected){
                 result = data.data.map(item => 
                     item.id === parseInt(req.selected) ?

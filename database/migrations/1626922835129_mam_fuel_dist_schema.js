@@ -7,6 +7,7 @@ class MamFuelDistSchema extends Schema {
   up () {
     this.create('mam_fuel_dists', (table) => {
       table.increments()
+      table.integer('site_id').unsigned().references('id').inTable('mas_sites').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('agen_id').unsigned().references('id').inTable('mas_fuel_agens').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('fuel_id').unsigned().references('id').inTable('mas_fuels').onDelete('CASCADE').onUpdate('CASCADE')
       table.string('no_do').notNullable()
