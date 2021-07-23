@@ -262,7 +262,11 @@ Route.group(() => {
     // Fuel Distribution
     Route.get('/fuel-dist', 'FuelDistributeController.index').as('opr.fuel-distribution.index').middleware('R')
 
-    Route.post('/fuel-dist', 'FuelDistributeController.create').as('opr.fuel-distribution.index').middleware('R')
+    Route.post('/fuel-dist', 'FuelDistributeController.store').as('opr.fuel-distribution.store').middleware('C')
+
+    Route.get('/fuel-dist/list', 'FuelDistributeController.list').as('opr.fuel-distribution.list').middleware('R')
+
+    Route.get('/fuel-dist/create', 'FuelDistributeController.create').as('opr.fuel-distribution.create').middleware('R')
 
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
@@ -302,6 +306,10 @@ Route.group(() => {
     Route.get('/material', 'AjaxMaterialController.getMaterial').as('equipment.getMaterial')
 
     Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
+
+    Route.get('/fueltype', 'AjaxFuelController.getFuelType').as('fuel.getFuelType')
+
+    Route.get('/fuelagen', 'AjaxFuelController.getFuelAgen').as('fuel.getFuelAgen')
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
 
