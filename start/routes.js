@@ -641,13 +641,13 @@ Route.group(() => {
 
     Route.delete('/:id/destroy', 'MonthlyPlanApiController.destroy')
 
-    Route.post('/weekly/ob', 'MonthlyPlanApiController.getWeeklyOBProduction')
+    Route.get('/weekly/ob', 'MonthlyPlanApiController.getWeeklyOBProduction')
 
-    Route.post('/weekly/coal', 'MonthlyPlanApiController.getWeeklyCoalProduction')
+    Route.get('/weekly/coal', 'MonthlyPlanApiController.getWeeklyCoalProduction')
 
-    Route.post('/weekly/fuel', 'MonthlyPlanApiController.getWeeklyFuelConsumption')
+    Route.get('/weekly/fuel', 'MonthlyPlanApiController.getWeeklyFuelConsumption')
     
-    Route.post('/monthly/recap', 'MonthlyPlanApiController.getMonthlyRecap')
+    Route.get('/monthly/recap', 'MonthlyPlanApiController.getMonthlyRecap')
 
     Route.get('/report/daily', 'MonthlyPlanApiController.getDailyReport')
     
