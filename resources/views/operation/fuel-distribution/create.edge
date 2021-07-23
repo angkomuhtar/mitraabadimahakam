@@ -5,9 +5,9 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="" id="fm-dailyfleet">
+                    <form action="" id="fm-fuel-distribution">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add Daily Fleet</div>
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Fuel Distribution</div>
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
@@ -23,124 +23,146 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <label for="">Nama Fleet</label>
+                                                <label for="">Agen Pemasok</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
-                                                    <select class="form-control input-sm select2fleet" data-check="" name="fleet_id"></select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="">Shift</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
-                                                    <select class="form-control input-sm select2shift" data-check="" name="shift_id"></select>
+                                                    <select class="form-control input-sm select2fuel-agen" data-check="" name="agen_id"></select>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="">Activity</label>
+                                                <label for="">Type Fuel</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-paint-bucket"></i></div>
+                                                    <select class="form-control input-sm select2fuel-type" data-check="" name="fuel_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">No.DO <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
-                                                    <select class="form-control input-sm select2activities" data-check="" name="activity_id"></select>
+                                                    <input type="text" class="form-control input-sm" id="no_do" name="no_do" required>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Tgl.DO <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control input-sm initDate" id="tgl_do" name="tgl_do" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">No.SO <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="input" class="form-control input-sm" id="no_so" name="no_so" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Kwantitas <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control text-right input-sm" id="flow_meter" name="flow_meter" required>
+                                                    <div class="input-group-addon"><span>Liter</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">No.Kendaraan <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                    <input type="text" class="form-control text-uppercase input-sm" id="no_plat" name="no_plat" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">SG.Meter <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-dashboard"></i></div>
+                                                    <input type="text" class="form-control text-right input-sm" id="sg_meter" name="sg_meter" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Segel Atas <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+                                                    <input type="number" class="form-control text-right input-sm" id="seal_top" name="seal_top" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Segel Bawah <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+                                                    <input type="number" class="form-control text-right input-sm" id="seal_bott1" name="seal_bott1" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Segel Bawah2 <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+                                                    <input type="number" class="form-control text-right input-sm" id="seal_bott2" name="seal_bott2" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Temperatur <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-alert"></i></div>
+                                                    <input type="number" class="form-control text-right input-sm" id="temp" name="temp" required>
+                                                    <div class="input-group-addon">&#8451;</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Jam Berangkat</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                                    <input type="datetime-local" class="form-control input-sm" id="departure" name="departure" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Jam Tiba</label>
+                                                <input type="datetime-local" class="form-control text-right input-sm init-datetime" id="arrival" name="arrival" >
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="">Datetime</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
-                                                    <input type="datetime-local" class="form-control input-sm init-datetime" name="datetime" id="datetime">
-                                                </div>
+                                                <label for="">Pengemudi <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control input-sm" id="truck_driver" name="truck_driver" required>
                                             </div>
                                         </div>
-                                        
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group">
-                                                <textarea class="form-control" name="keterangan" rows="5" disabled></textarea>
+                                                <label for="">Mengetahui <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control input-sm" id="mengetahui" name="mengetahui" required>
                                             </div>
                                         </div>
-
-                                        <div class="col-md-12" id="tbl-equipment-list" style="display:none;">
-                                            <button class="btn btn-outline btn-info btn-sm m-b-10" id="bt-close-equipment-list">Close</button>
-                                            <div class="table-responsive">
-                                                <table class="table table-hover">
-                                                    <thead style="border-bottom: 2px white solid;">
-                                                        <tr>
-                                                            <th class="sl text-center" width="20">No</th>
-                                                            <th class="sl text-center" width="20">ACT</th>
-                                                            <th class="sl">Kode</th>
-                                                            <th class="sl">Brand</th>
-                                                            <th class="sl">Tipe</th>
-                                                            <th class="sl">Model</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="list-source-unit">
-                                                        @if(list.length < 1)
-                                                          <tr><td colspan="5">Data not found or data is not exsist</td></tr>
-                                                        @endif
-                                                        @each(item in list)
-                                                            <tr id="tr-{{item.id}}">
-                                                                <td>{{$loop.index + 1}}</td>
-                                                                <td>
-                                                                    <button class="btn btn-outline btn-info btn-xs bt-select-data" 
-                                                                        data-kode="{{item.kode}}"
-                                                                        data-brand="{{item.brand}}"
-                                                                        data-tipe="{{item.tipe}}"
-                                                                        data-model="{{item.unit_model}}"
-                                                                        data-id="{{item.id}}">
-                                                                        select
-                                                                    </button>
-                                                                </td>
-                                                                <td class="single-line">
-                                                                    {{item.kode}}
-                                                                </td>
-                                                                <td>
-                                                                    <p><strong class="text-uppercase">{{item.brand}}</strong>
-                                                                </td>
-                                                                <td class="single-line">
-                                                                    {{item.tipe}}
-                                                                </td>
-                                                                <td>{{item.unit_model}}</td>
-                                                            </tr>
-                                                        @endeach
-                                                    </tbody>
-                                                </table>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Penerima <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control input-sm" id="recipient" name="recipient" required>
                                             </div>
                                         </div>
-                                        <div id="tbl-equipment-select">
-                                            <div class="col-md-6">
-                                                <button class="btn btn-outline btn-warning btn-sm m-b-10" id="bt-open-equipment-list">Tambah Alat</button>
-                                                <div class="table-responsive">
-                                                    <table class="table table-hover">
-                                                        <thead style="border-bottom: 2px white solid;">
-                                                            <tr>
-                                                                <th class="sl text-center" width="20">ACT</th>
-                                                                <th class="sl">Kode</th>
-                                                                <th class="sl">Brand</th>
-                                                                <th class="sl">Tipe</th>
-                                                                <th class="sl">Model</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody id="list-selected-unit">
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-md-6">
-                                                <div class="well well-sm m-t-10">
-                                                    <h4>Note</h4>
-                                                    <p>
-                                                        Klik tombol <strong>Tambah Alat</strong> untuk menambahkan equipment unit pada Fleet terpilih sehingga menampilkan list data equipment yang dapat anda pilih
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
                                     </div>
                                 </div>
                                 <div class="panel-footer text-right">

@@ -17,6 +17,10 @@ $(function(){
         }
     })
 
+    $('input[type="date"].initDate').each(function(){
+        $(this).val(moment().format('YYYY-MM-DD'))
+    })
+
     $('input[type="date"].setDate').each(function(){
         var isNow = $(this).data('date')
         if(isNow){
@@ -347,18 +351,42 @@ $(function(){
         })
     })
 
-    /* Option Material */
-    $('body select.select2fueltype').each(function(){
+    /* Option Fuel Agen */
+    $('body select.select2fuel-agen').each(function(){
         var selected = $(this).data('check')
         var elm = $(this)
         elm.children().remove()
         $.ajax({
             async: true,
-            url: '/ajax/material?selected='+selected,
+            url: '/ajax/fuel-agen?selected='+selected,
             method: 'GET',
             success: function(data){
                 if(data.length > 0){
-                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.tipe+' | '+nod.name+'</option>')
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
+                    elm.html(list)
+                    // elm.append('<option value="" selected>Pilih</option>')
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    /* Option Fuel Type */
+    $('body select.select2fuel-type').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/fuel-type?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                if(data.length > 0){
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                     elm.html(list)
                     // elm.append('<option value="" selected>Pilih</option>')
                 }else{

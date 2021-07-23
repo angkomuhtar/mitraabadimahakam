@@ -307,9 +307,9 @@ Route.group(() => {
 
     Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
 
-    Route.get('/fueltype', 'AjaxFuelController.getFuelType').as('fuel.getFuelType')
+    Route.get('/fuel-type', 'AjaxFuelController.getFuelType').as('fuel.getFuelType')
 
-    Route.get('/fuelagen', 'AjaxFuelController.getFuelAgen').as('fuel.getFuelAgen')
+    Route.get('/fuel-agen', 'AjaxFuelController.getFuelAgen').as('fuel.getFuelAgen')
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
 
