@@ -644,7 +644,7 @@ Route.group(() => {
 
     Route.get('/', 'DailyFuelFillingApiController.index')
 
-    Route.post('/store', 'DailyFuelFillingApiController.store')
+    Route.post('/:id/update', 'DailyFuelFillingApiController.update')
     
 }).prefix('api/daily-refueling').namespace('api')
 
