@@ -268,6 +268,10 @@ Route.group(() => {
 
     Route.get('/fuel-dist/create', 'FuelDistributeController.create').as('opr.fuel-distribution.create').middleware('R')
 
+    Route.get('/fuel-dist/:id/show', 'FuelDistributeController.show').as('opr.fuel-distribution.show').middleware('R')
+
+    Route.post('/fuel-dist/:id/update', 'FuelDistributeController.update').as('opr.fuel-distribution.update').middleware('R')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX

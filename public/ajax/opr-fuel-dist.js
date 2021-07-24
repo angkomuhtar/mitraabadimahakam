@@ -31,18 +31,6 @@ $(function(){
         ajaxSearch(value)
     })
 
-    // $('body').on('click', 'button#bt-open-equipment-list', function(e){
-    //     e.preventDefault()
-    //     $('div#tbl-equipment-list').show()
-    //     $('div#tbl-equipment-select').hide()
-    // })
-
-    // $('body').on('click', 'button#bt-close-equipment-list', function(e){
-    //     e.preventDefault()
-    //     $('div#tbl-equipment-list').hide()
-    //     $('div#tbl-equipment-select').show()
-    // })
-
     $('body').on('submit', 'form#fm-fuel-distribution', function(e){
         e.preventDefault()
         var data = new FormData(this)
@@ -74,12 +62,44 @@ $(function(){
         })
     })
 
+    $('body').on('submit', 'form#fm-fuel-distribution_upd', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        var data = new FormData(this)
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/fuel-dist/'+id+'/update',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                const { message } = result
+                if(result.success){
+                    swal("Okey,,,!", message, "success")
+                    initDeafult()
+                }else{
+                    swal("Opps,,,!", message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err)
+                // const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
 
     $('body').on('click', 'button.bt-edit-data', function(e){
         var id = $(this).data('id')
         $.ajax({
             async: true,
-            url: '/operation/daily-fleet/'+id+'/show',
+            url: '/operation/fuel-dist/'+id+'/show',
             method: 'GET',
             success: function(result){
                 $('div#form-show').html(result)

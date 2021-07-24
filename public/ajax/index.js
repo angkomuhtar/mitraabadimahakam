@@ -361,10 +361,10 @@ $(function(){
             url: '/ajax/fuel-agen?selected='+selected,
             method: 'GET',
             success: function(data){
+                console.log('Option Agen:::', data);
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                     elm.html(list)
-                    // elm.append('<option value="" selected>Pilih</option>')
                 }else{
                     elm.prepend('<option value="">Belum ada data pilihan...</option>')
                 }
@@ -385,6 +385,7 @@ $(function(){
             url: '/ajax/fuel-type?selected='+selected,
             method: 'GET',
             success: function(data){
+                console.log('Option Fuel:::', data);
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                     elm.html(list)

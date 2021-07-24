@@ -9,7 +9,7 @@ class AjaxFuelController {
         try {
             const data = (await FuelHelpers.ALL_FUEL(req)).toJSON()
             if(req.selected){
-                result = data.data.map(item => 
+                result = data.map(item => 
                     item.id === parseInt(req.selected) ?
                     {...item, selected: 'selected'}
                     :
@@ -31,7 +31,7 @@ class AjaxFuelController {
         try {
             const data = (await FuelHelpers.FUEL_AGEN(req)).toJSON()
             if(req.selected){
-                result = data.data.map(item => 
+                result = data.map(item => 
                     item.id === parseInt(req.selected) ?
                     {...item, selected: 'selected'}
                     :
