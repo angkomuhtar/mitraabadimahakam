@@ -18,22 +18,6 @@ class DailyActivityController {
         let list = (await SummaryOB
             .query()
             .with('dailyevent')
-            // .distinct(
-            //     'no_timesheet', 
-            //     'dailyfleet_id', 
-            //     'shift', 
-            //     'date',
-            //     'begin_smu',
-            //     'end_smu',
-            //     'used_smu',
-            //     'unit_id',
-            //     'kd_unit',
-            //     'tipe_unit',
-            //     'unit_model',
-            //     'activity',
-            //     'ritase_ob',
-            //     'material'
-            // )
             .orderBy('date', 'desc')
             .paginate(halaman, limit)).toJSON()
         

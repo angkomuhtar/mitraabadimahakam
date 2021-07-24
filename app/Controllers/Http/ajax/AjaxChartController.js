@@ -26,7 +26,8 @@ class AjaxChartController {
     async grafik_OB_RITASE_EQUIPMENT ({ request }) {
         const req = request.all()
         const grafik2 = await MonthlyPlanHelpers.CHARTIST_RITASE_OB_EQUIPMENT(req)
-        const labels = grafik2.map(item => item.fleet)
+        const labels = grafik2.map(item => 'FLT'+item.fleet)
+        console.log('labels:::', labels);
         const data = grafik2.map(item => parseInt(item.tot_ritase))
         return {
             date: moment().format('Do, MMMM YYYY'),

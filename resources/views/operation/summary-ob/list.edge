@@ -147,13 +147,15 @@
                     runningTime.push(parseFloat(running))
                 })
 
-                console.log(idleTime);
-                console.log(standbyTime);
-                console.log(runningTime);
-
-                $('strong#tot-idle'+id).html(idleTime.reduce((x, y) => {return x + y}, 0))
-                $('strong#tot-standby'+id).html(standbyTime.reduce((x, y) => {return x + y}, 0))
-                $('strong#tot-running'+id).html(runningTime.reduce((x, y) => {return x + y}, 0))
+                var totIdleTime = idleTime.reduce((x, y) => {return x + y}, 0) || 0.00
+                var totStandByTime = standbyTime.reduce((x, y) => {return x + y}, 0) || 0.00
+                var totRunningTime = runningTime.reduce((x, y) => {return x + y}, 0) || 0.00
+                // console.log((totIdleTime).toFixed(1));
+                // console.log((totStandByTime).toFixed(1));
+                // console.log((totRunningTime).toFixed(1));
+                $('strong#tot-idle'+id).html(totIdleTime.toFixed(2))
+                $('strong#tot-standby'+id).html(totStandByTime.toFixed(2))
+                $('strong#tot-running'+id).html(totRunningTime.toFixed(2))
             })
         }
     })
