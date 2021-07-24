@@ -3,6 +3,7 @@
 const moment = require('moment')
 const DailyPlan = use("App/Models/DailyPlan")
 const DailyRitase = use("App/Models/DailyRitase")
+const MasMaterial = use("App/Models/MasMaterial")
 const MasEquipment = use("App/Models/MasEquipment")
 const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 
@@ -36,11 +37,14 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
     /* GET CAPACITY HAULER */
     const hauler = await MasEquipment.findOrFail(dailyritasedetail.hauler_id)
 
+    /* GET VOLUME MATERIAL */
+    const volume = await MasMaterial.query().where('id', dailyRitase.material).last()
+
     /* GET PLAN DATE */
     const date = moment(dailyritasedetail.check_in).format('YYYY-MM-DD')
     const dailyPlan = await DailyPlan.query().where('current_date', date).first()
     dailyPlan.merge({
-        actual: parseFloat(dailyPlan.actual) + parseFloat(hauler.qty_capacity)
+        actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol)
     })
     await dailyPlan.save()
 }
@@ -55,11 +59,14 @@ DailyRitaseDetailHook.afterDeleteData = async (dailyritasedetail) => {
     /* GET CAPACITY HAULER */
     const hauler = await MasEquipment.findOrFail(dailyritasedetail.hauler_id)
 
+    /* GET VOLUME MATERIAL */
+    const volume = await MasMaterial.query().where('id', dailyRitase.material).last()
+
     /* GET PLAN DATE */
     const date = moment(dailyritasedetail.check_in).format('YYYY-MM-DD')
     const dailyPlan = await DailyPlan.query().where('current_date', date).first()
     dailyPlan.merge({
-        actual: parseFloat(dailyPlan.actual) - parseFloat(hauler.qty_capacity)
+        actual: parseFloat(dailyPlan.actual) - parseFloat(volume.vol)
     })
     await dailyPlan.save()
 }
