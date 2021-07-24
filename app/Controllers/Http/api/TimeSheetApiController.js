@@ -361,17 +361,17 @@ class TimeSheetApiController {
         //     })
         // }
 
-        if(!req.refueling.topup){
-            durasi = await diagnoticTime.durasi(t0)
-            return response.status(412).json({
-                diagnostic: {
-                    times: durasi, 
-                    error: true,
-                    message: 'Jumlah Topup Fuel tdk valid...'
-                },
-                data: {}
-            })
-        }
+        // if(!req.refueling.topup){
+        //     durasi = await diagnoticTime.durasi(t0)
+        //     return response.status(412).json({
+        //         diagnostic: {
+        //             times: durasi, 
+        //             error: true,
+        //             message: 'Jumlah Topup Fuel tdk valid...'
+        //         },
+        //         data: {}
+        //     })
+        // }
 
         if(req.refueling.smu === '' || req.refueling.topup < 0){
             durasi = await diagnoticTime.durasi(t0)
