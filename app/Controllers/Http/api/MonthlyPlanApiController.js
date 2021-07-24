@@ -557,16 +557,25 @@ class MonthlyPlanApiController {
       // OB Ritase
       const ritaseOBDS = (
         await DailyRitaseDetail.query(trx)
+          .with("daily_ritase", (wh) => {
+            wh.with("material_details");
+          })
           .whereBetween("check_in", [ds, ns_1])
           .fetch()
       ).toJSON();
       const ritaseOBNS_1 = (
         await DailyRitaseDetail.query(trx)
+          .with("daily_ritase", (wh) => {
+            wh.with("material_details");
+          })
           .whereBetween("check_in", [ns_1, ns_2])
           .fetch()
       ).toJSON();
       const ritaseOBNS_2 = (
         await DailyRitaseDetail.query(trx)
+          .with("daily_ritase", (wh) => {
+            wh.with("material_details");
+          })
           .whereBetween("check_in", [ns_2, ns_3])
           .fetch()
       ).toJSON();
@@ -600,10 +609,20 @@ class MonthlyPlanApiController {
           .where("current_date", prevDay)
           .andWhere("tipe", "OB")
           .first()
-      ).toJSON()
+      ).toJSON();
 
-      const obActualDS = parseInt(ritaseOBDS.length * 22);
-      const obActualNS = parseInt(ritaseOBNS_1.length * 22 + ritaseOBNS_2 * 22);
+      const OB_NS_1_ACCUMULATE = ritaseOBNS_1.reduce(
+        (a, b) => a + b.daily_ritase.material_details.vol,
+        0
+      );
+      const OB_NS_2_ACCUMULATE = ritaseOBNS_2.reduce(
+        (a, b) => a + b.daily_ritase.material_details.vol,
+        0
+      );
+      const obActualDS = parseInt(
+        ritaseOBDS.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0)
+      );
+      const obActualNS = parseInt(OB_NS_1_ACCUMULATE + OB_NS_2_ACCUMULATE);
       const obActualToday = parseInt(obActualDS + obActualNS);
       const obAchieved = parseFloat(
         ((obActualToday / obPlanToday.estimate) * 100).toFixed(2)
@@ -697,9 +716,9 @@ class MonthlyPlanApiController {
           for (let e of DAILY_EVENT_DS) {
             let obj = {
               event_name: e.event.narasi,
-              range_time: `${moment(e.start_at)
-                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
-                .format("LLLL").split('pukul')[0]}`,
+              range_time: `${
+                moment(e.start_at).format("LT")
+              } - ${moment(e.end_at).format('LT')}`,
             };
             EVENT_DS.push(obj);
           }
@@ -709,9 +728,9 @@ class MonthlyPlanApiController {
           for (let e of DAILY_EVENT_NS_1) {
             let obj = {
               event_name: e.event.narasi,
-              range_time: `${moment(e.start_at)
-                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
-                .format("LLLL").split('pukul')[0]}`,
+              range_time: `${
+                moment(e.start_at).format("LT")
+              } - ${moment(e.end_at).format("LT")}`,
             };
             EVENT_NS_1.push(obj);
           }
@@ -720,9 +739,9 @@ class MonthlyPlanApiController {
           for (let e of DAILY_EVENT_NS_2) {
             let obj = {
               event_name: e.event.narasi,
-              range_time: `${moment(e.start_at)
-                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
-                .format("LLLL").split('pukul')[0]}`,
+              range_time: `${
+                moment(e.start_at).format("LT")
+              } - ${moment(e.end_at).format("LT")}`,
             };
             EVENT_NS_2.push(obj);
           }
@@ -740,6 +759,7 @@ class MonthlyPlanApiController {
           actual: obActualToday,
           plan: obPlanToday.estimate,
           achieved: obAchieved,
+          ritase_total : ritaseOBDS.length || 0
         },
         daily_coal: {
           ds: coalActualDS,
@@ -747,6 +767,7 @@ class MonthlyPlanApiController {
           actual: coalActualToday,
           plan: coalPlanToday.estimate,
           achieved: coalAchieved,
+          ritase_total : ritaseOBNS_1.length + ritaseOBNS_2.length
         },
         mtd_ob_actual_by_tc: _MTD_OB_ACTUAL_BY_TC,
         mtd_coal_actual_by_tc: _MTD_COAL_ACTUAL_BY_TC,
@@ -758,7 +779,7 @@ class MonthlyPlanApiController {
           ds: EVENT_DS,
           ns: EVENT_NS,
         },
-      }
+      };
 
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
