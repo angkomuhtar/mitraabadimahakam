@@ -401,9 +401,19 @@ class MonthlyPlanApiController {
   }
 
   async getMonthlyRecap({ auth, request, response }) {
-    const { date } = request.only(["date"]);
+    const { date, page, limit } = request.only(["date","page","limit"]);
     let durasi;
     var t0 = performance.now();
+
+
+    const _page = parseInt(page) || 1;
+    const _limit = parseInt(limit) || 2;
+    const startIndex = (_page - 1);
+    const endIndex = _page * _limit
+
+    const paginate  = {};
+
+    
 
     try {
       await auth.authenticator("jwt").getUser();
@@ -501,13 +511,33 @@ class MonthlyPlanApiController {
         newArr.push(obj);
       }
 
+      const CURRENT_MONTH_RECAP = newArr.filter((v) => v.month_name === moment(date).format('MMMM'))[0];
+
+      if(endIndex < newArr.length) {
+        paginate.next = {
+          page : (_page + 1),
+          limit : _limit
+        }
+      }
+
+      if(startIndex > 0) {
+        paginate.previous = {
+          page : (_page - 1),
+          limit : _limit
+        }
+      }
+
+      console.log('paginate :: ', paginate);
+      console.log('SI ', startIndex, endIndex);
+
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
+        ...paginate,
         diagnostic: {
           times: durasi,
           error: false,
         },
-        data: newArr,
+        data: [...newArr.slice(0, endIndex).filter((v) => v.month_name !== moment(date).format('MMMM')), CURRENT_MONTH_RECAP],
       });
     } catch (error) {
       console.log(error);
@@ -527,6 +557,7 @@ class MonthlyPlanApiController {
     const { date } = request.only(["date"]);
     let durasi;
     var t0 = performance.now();
+
 
     try {
       await auth.authenticator("jwt").getUser();
