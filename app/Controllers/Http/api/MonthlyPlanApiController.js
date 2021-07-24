@@ -600,7 +600,7 @@ class MonthlyPlanApiController {
           .where("current_date", prevDay)
           .andWhere("tipe", "OB")
           .first()
-      ).toJSON();
+      ).toJSON()
 
       const obActualDS = parseInt(ritaseOBDS.length * 22);
       const obActualNS = parseInt(ritaseOBNS_1.length * 22 + ritaseOBNS_2 * 22);
@@ -698,10 +698,8 @@ class MonthlyPlanApiController {
             let obj = {
               event_name: e.event.narasi,
               range_time: `${moment(e.start_at)
-                .format("LT")
-                .replace(".", ":")} - ${moment(e.end_at)
-                .format("LT")
-                .replace(".", ":")}`,
+                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
+                .format("LLLL").split('pukul')[0]}`,
             };
             EVENT_DS.push(obj);
           }
@@ -712,10 +710,8 @@ class MonthlyPlanApiController {
             let obj = {
               event_name: e.event.narasi,
               range_time: `${moment(e.start_at)
-                .format("LT")
-                .replace(".", ":")} - ${moment(e.end_at)
-                .format("LT")
-                .replace(".", ":")}`,
+                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
+                .format("LLLL").split('pukul')[0]}`,
             };
             EVENT_NS_1.push(obj);
           }
@@ -725,10 +721,8 @@ class MonthlyPlanApiController {
             let obj = {
               event_name: e.event.narasi,
               range_time: `${moment(e.start_at)
-                .format("LT")
-                .replace(".", ":")} - ${moment(e.end_at)
-                .format("LT")
-                .replace(".", ":")}`,
+                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
+                .format("LLLL").split('pukul')[0]}`,
             };
             EVENT_NS_2.push(obj);
           }
@@ -764,7 +758,7 @@ class MonthlyPlanApiController {
           ds: EVENT_DS,
           ns: EVENT_NS,
         },
-      };
+      }
 
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
