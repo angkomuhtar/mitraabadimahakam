@@ -62,26 +62,26 @@
                     </td>
                     @each(data in item.record_event)
                         @if(data.status === 'idle')
-                            <td class="text-right" style="color:#fff;background-color: #547da0!important;">
+                            <td class="text-right" style="color:#fff;background-color: #547da052!important;">
                                 <strong class="idle">{{data.time_duration}}</strong>
                             </td>
                         @elseif(data.status === 'inactive')
-                            <td class="text-right" style="color:#fff;background-color: #715e43!important;">
+                            <td class="text-right" style="color:#fff;background-color: #b79b7252!important;">
                                 <strong class="standby">{{data.time_duration}}</strong>
                             </td>
                             @else
-                            <td class="text-right" style="color:#fff;background-color: #43486d!important;">
+                            <td class="text-right" style="color:#fff;background-color: #43486d6b!important;">
                                 <strong class="running">{{data.time_duration}}</strong>
                             </td>
                         @endif
                     @endeach
-                    <td class="rand text-right bg-info" style="color:#fff">
+                    <td class="rand text-right bg-info" style="color:#fff;background-color: #2babe382!important;">
                         <strong id="tot-idle{{item.no_timesheet}}">Tot.idle</strong>
                     </td>
-                    <td class="rand text-right bg-warning" style="color:#fff">
+                    <td class="rand text-right" style="color:#fff;background-color: #ffc26c8a!important;">
                         <strong id="tot-standby{{item.no_timesheet}}">Tot.delay</strong>
                     </td>
-                    <td class="rand text-right bg-primary" style="color:#fff">
+                    <td class="rand text-right" style="color:#fff;background-color: #6f7cd287!important;">
                         <strong id="tot-running{{item.no_timesheet}}">Tot.delay</strong>
                     </td>
                 </tr>

@@ -131,6 +131,36 @@ Route.group(() => {
 
     Route.post('/fleet/:id/delete', 'MasFleetController.delete').as('mas.fleet.delete').middleware('D')
 
+    // Event
+    Route.get('/event', 'MasEventController.index').as('mas.event.index').middleware('R')
+
+    Route.post('/event', 'MasEventController.store').as('mas.event.store').middleware('C')
+
+    Route.get('/event/list', 'MasEventController.list').as('mas.event.list').middleware('R')
+
+    Route.get('/event/create', 'MasEventController.create').as('mas.event.create').middleware('R')
+
+    Route.get('/event/:id/show', 'MasEventController.show').as('mas.event.show').middleware('U')
+
+    Route.post('/event/:id/update', 'MasEventController.update').as('mas.event.update').middleware('U')
+
+    Route.post('/event/:id/delete', 'MasEventController.delete').as('mas.event.delete').middleware('D')
+
+    // Sub Contractor
+    Route.get('/subcont', 'MasSubcontractorController.index').as('mas.subcont.index').middleware('R')
+
+    Route.post('/subcont', 'MasSubcontractorController.store').as('mas.subcont.store').middleware('C')
+
+    Route.get('/subcont/list', 'MasSubcontractorController.list').as('mas.subcont.list').middleware('R')
+
+    Route.get('/subcont/create', 'MasSubcontractorController.create').as('mas.subcont.create').middleware('R')
+
+    Route.get('/subcont/:id/show', 'MasSubcontractorController.show').as('mas.subcont.show').middleware('U')
+
+    Route.post('/subcont/:id/update', 'MasSubcontractorController.update').as('mas.subcont.update').middleware('U')
+
+    Route.post('/subcont/:id/delete', 'MasSubcontractorController.delete').as('mas.subcont.delete').middleware('D')
+
 }).prefix('master').namespace('master').middleware(['MM'])
 
 // SETTING

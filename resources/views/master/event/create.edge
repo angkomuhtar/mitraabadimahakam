@@ -1,0 +1,75 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-event">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Add Event</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Kode Event</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control input-sm" name="kode"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Narasi Event</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-rss-square"></i></div>
+                                                    <input type="text" class="form-control input-sm" name="narasi" required> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Satuan Event</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
+                                                    <select class="form-control input-sm" name="satuan" id="satuan">
+                                                        <option value="HM">HM / SMU</option>
+                                                        <option value="TIME">TIME</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Narasi Event</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
+                                                    <select class="form-control input-sm" name="status" id="status">
+                                                        <option value="idle">Idle</option>
+                                                        <option value="Inactive">Inactive</option>
+                                                        <option value="productive">Active</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

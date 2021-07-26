@@ -7,6 +7,11 @@ $(function(){
         alert('...')
     })
 
+    $('body').on('click', 'button#bt-cancel-create', function(e){
+        e.preventDefault()
+        window.location.reload()
+    })
+
     /* Update Data Form */
     $('body').on('click', 'button.bt-edit-data', function(e){
         e.preventDefault()
