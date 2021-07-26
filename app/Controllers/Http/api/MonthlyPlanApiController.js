@@ -11,6 +11,7 @@ const DailyRitaseDetail = use("App/Models/DailyRitaseDetail");
 const DailyRitaseCoalDetail = use("App/Models/DailyRitaseCoalDetail");
 const db = use("Database");
 const DailyEvent = use("App/Models/DailyEvent");
+const MonthlyPlans = use("App/Models/MonthlyPlan");
 const { infinityCheck } = use("App/Controllers/Http/customClass/utils");
 
 class MonthlyPlanApiController {
@@ -127,9 +128,19 @@ class MonthlyPlanApiController {
         }
       }
 
+      const WEEKLY_OB_ACTUAL = parseFloat(r.reduce((a, b) => a + b.actual, 0).toFixed(2))
+      const WEEKLY_OB_PLAN = parseFloat(dailyPlans.reduce((a, b) => a + b.estimate, 0).toFixed(2))
+
       let data = {
         labels: _.pluck(r, "current_date"),
         actual: _.pluck(r, "actual"),
+        plan: {
+          actual: WEEKLY_OB_ACTUAL,
+          weeklyPlan: WEEKLY_OB_PLAN,
+          ach: parseFloat(
+            ((WEEKLY_OB_ACTUAL / WEEKLY_OB_PLAN) * 100).toFixed(2)
+          ),
+        },
       };
 
       durasi = await diagnoticTime.durasi(t0);
@@ -247,9 +258,19 @@ class MonthlyPlanApiController {
         }
       }
 
+      const WEEKLY_COAL_ACTUAL = parseFloat(r.reduce((a, b) => a + b.actual, 0).toFixed(2));
+      const WEEKLY_COAL_PLAN = parseFloat(dailyPlans.reduce((a, b) => a + b.estimate, 0).toFixed(2));
+
       let data = {
         labels: _.pluck(r, "current_date"),
         actual: _.pluck(r, "actual"),
+        plan: {
+          actual: WEEKLY_COAL_ACTUAL,
+          weeklyPlan: WEEKLY_COAL_PLAN,
+          ach: parseFloat(
+            ((WEEKLY_COAL_ACTUAL / WEEKLY_COAL_PLAN) * 100).toFixed(2)
+          ),
+        },
       };
 
       durasi = await diagnoticTime.durasi(t0);
@@ -401,9 +422,22 @@ class MonthlyPlanApiController {
   }
 
   async getMonthlyRecap({ auth, request, response }) {
-    const { date } = request.only(["date"]);
+    const { date, page, limit, filter_month } = request.only([
+      "date",
+      "page",
+      "limit",
+      "filter_month",
+    ]);
     let durasi;
     var t0 = performance.now();
+
+    const _page = parseInt(page) || 1;
+    const _limit = parseInt(limit) || 2;
+    const startIndex = _page - 1;
+    const endIndex = _page * _limit;
+
+    const paginate = {};
+    const filter = filter_month;
 
     try {
       await auth.authenticator("jwt").getUser();
@@ -421,12 +455,16 @@ class MonthlyPlanApiController {
     }
 
     try {
-      const SoY = moment(date).startOf("year").format("YYYY-MM-DD");
-      const EoY = moment(date).endOf("year").format("YYYY-MM-DD");
+      const SoY = moment(date).startOf("year").format("YYYY-MM-DD HH:mm:ss");
+      const EoY = moment(date).endOf("year").format("YYYY-MM-DD HH:mm:ss");
 
       const allMonthsThisYear = Array.apply(0, Array(12)).map(function (_, i) {
         return moment(date).month(i).format("MMMM");
       });
+
+      const CURRENT_MONTH = moment(date)
+        .startOf("month")
+        .format("YYYY-MM-DD HH:mm:ss");
 
       let monthArr = [];
       for (let x of allMonthsThisYear) {
@@ -461,24 +499,51 @@ class MonthlyPlanApiController {
           .fetch()
       ).toJSON();
 
-      const convertFuelsToMonthName = fuels.map((v) => {
+      const MONTHLY_OB_PLANS = (
+        await MonthlyPlans.query()
+          .whereBetween("month", [SoY, EoY])
+          .andWhere("tipe", "OB")
+          .fetch()
+      ).toJSON();
+      const MONTHLY_COAL_PLANS = (
+        await MonthlyPlans.query()
+          .whereBetween("month", [SoY, EoY])
+          .andWhere("tipe", "BB")
+          .fetch()
+      ).toJSON();
+
+      let convertFuelsToMonthName = fuels.map((v) => {
         return {
           month_name: moment(v.fueling_at).format("MMMM"),
           value: v.topup,
         };
       });
 
-      const convertCoalsToMonthName = coals.map((v) => {
+      let convertCoalsToMonthName = coals.map((v) => {
         return {
           month_name: moment(v.current_date).format("MMMM"),
           value: v.actual,
+          plans:
+            MONTHLY_COAL_PLANS.filter(
+              (x) =>
+                moment(x.month).format("YYYY-MM-DD") ===
+                moment(v.current_date).format("YYYY-MM-DD")
+            )[0]?.estimate || 0,
+          ach: 0,
         };
       });
 
-      const convertObsToMonthName = obs.map((v) => {
+      let convertObsToMonthName = obs.map((v) => {
         return {
           month_name: moment(v.current_date).format("MMMM"),
           value: v.actual,
+          plans:
+            MONTHLY_OB_PLANS.filter(
+              (x) =>
+                moment(x.month).format("YYYY-MM-DD") ===
+                moment(v.current_date).format("YYYY-MM-DD")
+            )[0]?.estimate || 0,
+          ach: 0,
         };
       });
 
@@ -487,12 +552,48 @@ class MonthlyPlanApiController {
         let obj = {
           month_name: z.month_name,
           value: {
-            ob: convertObsToMonthName
-              .filter((x) => x.month_name === z.month_name)
-              .reduce((a, b) => a + b.value, 0),
-            coal: convertCoalsToMonthName
-              .filter((x) => x.month_name === z.month_name)
-              .reduce((a, b) => a + b.value, 0),
+            ob: {
+              value: convertObsToMonthName
+                .filter((x) => x.month_name === z.month_name)
+                .reduce((a, b) => a + b.value, 0),
+              plans:
+                convertObsToMonthName.filter(
+                  (v) => v.month_name === z.month_name
+                )[0]?.plans || 0,
+              ach:
+                parseFloat(
+                  (
+                    (convertObsToMonthName
+                      .filter((x) => x.month_name === z.month_name)
+                      .reduce((a, b) => a + b.value, 0) /
+                      convertObsToMonthName.filter(
+                        (v) => v.month_name === z.month_name
+                      )[0]?.plans) *
+                    100
+                  ).toFixed(2)
+                ) || 0,
+            },
+            coal: {
+              value: convertCoalsToMonthName
+                .filter((x) => x.month_name === z.month_name)
+                .reduce((a, b) => a + b.value, 0),
+              plans:
+                convertCoalsToMonthName.filter(
+                  (v) => v.month_name === z.month_name
+                )[0]?.plans || 0,
+              ach:
+                parseFloat(
+                  (
+                    (convertCoalsToMonthName
+                      .filter((x) => x.month_name === z.month_name)
+                      .reduce((a, b) => a + b.value, 0) /
+                      convertCoalsToMonthName.filter(
+                        (v) => v.month_name === z.month_name
+                      )[0]?.plans) *
+                    100
+                  ).toFixed(2)
+                ) || 0,
+            },
             fuel: convertFuelsToMonthName
               .filter((x) => x.month_name === z.month_name)
               .reduce((a, b) => a + b.value, 0),
@@ -501,13 +602,39 @@ class MonthlyPlanApiController {
         newArr.push(obj);
       }
 
+      const CURRENT_MONTH_RECAP = newArr.filter(
+        (v) => v.month_name === moment(date).format("MMMM")
+      )[0];
+
+      if (endIndex < newArr.length) {
+        paginate.next = {
+          page: _page + 1,
+          limit: _limit,
+        };
+      }
+
+      if (startIndex > 0) {
+        paginate.previous = {
+          page: _page - 1,
+          limit: _limit,
+        };
+      }
+
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
+        ...paginate,
         diagnostic: {
           times: durasi,
           error: false,
         },
-        data: newArr,
+        data: filter_month
+          ? newArr.filter((v) => v.month_name === filter)
+          : [
+              ...newArr
+                .slice(0, endIndex)
+                .filter((v) => v.month_name !== moment(date).format("MMMM")),
+              CURRENT_MONTH_RECAP,
+            ],
       });
     } catch (error) {
       console.log(error);
@@ -557,16 +684,25 @@ class MonthlyPlanApiController {
       // OB Ritase
       const ritaseOBDS = (
         await DailyRitaseDetail.query(trx)
+          .with("daily_ritase", (wh) => {
+            wh.with("material_details");
+          })
           .whereBetween("check_in", [ds, ns_1])
           .fetch()
       ).toJSON();
       const ritaseOBNS_1 = (
         await DailyRitaseDetail.query(trx)
+          .with("daily_ritase", (wh) => {
+            wh.with("material_details");
+          })
           .whereBetween("check_in", [ns_1, ns_2])
           .fetch()
       ).toJSON();
       const ritaseOBNS_2 = (
         await DailyRitaseDetail.query(trx)
+          .with("daily_ritase", (wh) => {
+            wh.with("material_details");
+          })
           .whereBetween("check_in", [ns_2, ns_3])
           .fetch()
       ).toJSON();
@@ -600,10 +736,20 @@ class MonthlyPlanApiController {
           .where("current_date", prevDay)
           .andWhere("tipe", "OB")
           .first()
-      ).toJSON()
+      ).toJSON();
 
-      const obActualDS = parseInt(ritaseOBDS.length * 22);
-      const obActualNS = parseInt(ritaseOBNS_1.length * 22 + ritaseOBNS_2 * 22);
+      const OB_NS_1_ACCUMULATE = ritaseOBNS_1.reduce(
+        (a, b) => a + b.daily_ritase.material_details.vol,
+        0
+      );
+      const OB_NS_2_ACCUMULATE = ritaseOBNS_2.reduce(
+        (a, b) => a + b.daily_ritase.material_details.vol,
+        0
+      );
+      const obActualDS = parseInt(
+        ritaseOBDS.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0)
+      );
+      const obActualNS = parseInt(OB_NS_1_ACCUMULATE + OB_NS_2_ACCUMULATE);
       const obActualToday = parseInt(obActualDS + obActualNS);
       const obAchieved = parseFloat(
         ((obActualToday / obPlanToday.estimate) * 100).toFixed(2)
@@ -697,9 +843,9 @@ class MonthlyPlanApiController {
           for (let e of DAILY_EVENT_DS) {
             let obj = {
               event_name: e.event.narasi,
-              range_time: `${moment(e.start_at)
-                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
-                .format("LLLL").split('pukul')[0]}`,
+              range_time: `${moment(e.start_at).format("LT")} - ${moment(
+                e.end_at
+              ).format("LT")}`,
             };
             EVENT_DS.push(obj);
           }
@@ -709,9 +855,9 @@ class MonthlyPlanApiController {
           for (let e of DAILY_EVENT_NS_1) {
             let obj = {
               event_name: e.event.narasi,
-              range_time: `${moment(e.start_at)
-                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
-                .format("LLLL").split('pukul')[0]}`,
+              range_time: `${moment(e.start_at).format("LT")} - ${moment(
+                e.end_at
+              ).format("LT")}`,
             };
             EVENT_NS_1.push(obj);
           }
@@ -720,9 +866,9 @@ class MonthlyPlanApiController {
           for (let e of DAILY_EVENT_NS_2) {
             let obj = {
               event_name: e.event.narasi,
-              range_time: `${moment(e.start_at)
-                .format("LLLL").split('pukul')[0]} - ${moment(e.end_at)
-                .format("LLLL").split('pukul')[0]}`,
+              range_time: `${moment(e.start_at).format("LT")} - ${moment(
+                e.end_at
+              ).format("LT")}`,
             };
             EVENT_NS_2.push(obj);
           }
@@ -740,6 +886,7 @@ class MonthlyPlanApiController {
           actual: obActualToday,
           plan: obPlanToday.estimate,
           achieved: obAchieved,
+          ritase_total: ritaseOBDS.length || 0,
         },
         daily_coal: {
           ds: coalActualDS,
@@ -747,6 +894,7 @@ class MonthlyPlanApiController {
           actual: coalActualToday,
           plan: coalPlanToday.estimate,
           achieved: coalAchieved,
+          ritase_total: ritaseOBNS_1.length + ritaseOBNS_2.length,
         },
         mtd_ob_actual_by_tc: _MTD_OB_ACTUAL_BY_TC,
         mtd_coal_actual_by_tc: _MTD_COAL_ACTUAL_BY_TC,
@@ -758,7 +906,7 @@ class MonthlyPlanApiController {
           ds: EVENT_DS,
           ns: EVENT_NS,
         },
-      }
+      };
 
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
