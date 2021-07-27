@@ -149,11 +149,35 @@ Route.group(() => {
     // Sub Contractor
     Route.get('/subcont', 'MasSubcontractorController.index').as('mas.subcont.index').middleware('R')
 
-    Route.post('/subcont', 'MasSubcontractorController.store').as('mas.subcont.store').middleware('C')
+    Route.post('/subcont', 'MasSubcontractorController.storeSubcon').as('mas.subcont.storeSubcon').middleware('C')
 
-    Route.get('/subcont/list', 'MasSubcontractorController.list').as('mas.subcont.list').middleware('R')
+    Route.get('/subcont/create', 'MasSubcontractorController.createSubcon').as('mas.subcont.createSubcon').middleware('R')
 
-    Route.get('/subcont/create', 'MasSubcontractorController.create').as('mas.subcont.create').middleware('R')
+    Route.get('/subcont/list-subcont', 'MasSubcontractorController.listSubcon').as('mas.subcont.listSubcon').middleware('R')
+
+    Route.get('/subcont/list-equipment', 'MasSubcontractorController.listEquipment').as('mas.subcont.listEquipment').middleware('R')
+
+    Route.get('/subcont/list-employee', 'MasSubcontractorController.listEmployee').as('mas.subcont.listEmployee').middleware('R')
+    
+    Route.get('/subcont/create-equipment', 'MasSubcontractorController.createEquipment').as('mas.subcont.createEquipment').middleware('R')
+
+    Route.get('/subcont/create-employee', 'MasSubcontractorController.createEmployee').as('mas.subcont.createEmployee').middleware('R')
+
+    Route.post('/subcont/store-equipment', 'MasSubcontractorController.storeEquipment').as('mas.subcont.storeEquipment').middleware('C')
+
+    Route.post('/subcont/store-employee', 'MasSubcontractorController.storeEmployee').as('mas.subcont.storeEmployee').middleware('C')
+    
+    Route.get('/subcont/:id/show-subcont', 'MasSubcontractorController.showSubcon').as('mas.subcont.showSubcon').middleware('R')
+
+    Route.get('/subcont/:id/show-equipment', 'MasSubcontractorController.showEquipment').as('mas.subcont.showEquipment').middleware('R')
+
+    Route.get('/subcont/:id/show-employee', 'MasSubcontractorController.showEmployee').as('mas.subcont.showEmployee').middleware('R')
+    
+    Route.post('/subcont/:id/update-subcont', 'MasSubcontractorController.updateSubcon').as('mas.subcont.updateSubcon').middleware('U')
+
+    Route.post('/subcont/:id/update-equipment', 'MasSubcontractorController.updateEquipment').as('mas.subcont.updateEquipment').middleware('U')
+
+    Route.post('/subcont/:id/update-employee', 'MasSubcontractorController.updateEmployee').as('mas.subcont.updateEmployee').middleware('U')
 
     Route.get('/subcont/:id/show', 'MasSubcontractorController.show').as('mas.subcont.show').middleware('U')
 
@@ -344,6 +368,8 @@ Route.group(() => {
     Route.get('/fuel-type', 'AjaxFuelController.getFuelType').as('fuel.getFuelType')
 
     Route.get('/fuel-agen', 'AjaxFuelController.getFuelAgen').as('fuel.getFuelAgen')
+
+    Route.get('/subcon', 'AjaxSubcontractorController.getSubcon').as('subcon.getSubcon')
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
 

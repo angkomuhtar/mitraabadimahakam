@@ -4,6 +4,9 @@
 const Model = use('Model')
 
 class MasEquipmentSubcont extends Model {
+    subcon () {
+        return this.belongsTo("App/Models/MasSubContractor", "subcont_id", "id")
+    }
 }
 
 module.exports = MasEquipmentSubcont

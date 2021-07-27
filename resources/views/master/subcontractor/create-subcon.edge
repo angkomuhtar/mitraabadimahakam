@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well">
+                        <form action="" id="fm-subcont">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="ti-arrow-left" id="bt-back" style="margin-right: 10px;"></i> 
+                                    Create Subcontractor
+                                </div>
+                                <div class="panel-wrapper collapse in">
+                                    <div class="panel-body">
+                                        {{ csrfField() }}
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="">Kode <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                        <input type="text" class="form-control" name="kode" required> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">Nama Subcontractor <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-rss-square"></i></div>
+                                                        <input type="text" class="form-control" name="name" required> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="">Email</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+                                                        <input type="email" class="form-control" name="email"> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="">Phone</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-phone"></i></div>
+                                                        <input type="text" class="form-control" name="phone"> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <div class="form-group">
+                                                    <label for="">Address</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-road"></i></div>
+                                                        <input type="text" class="form-control" name="address"> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer text-right">
+                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-back" type="button"> 
+                                            <i class="fa fa-close"></i> <span>Cancel</span>
+                                        </button>
+                                        <button class="btn btn-success waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                            <i class="fa fa-save"></i> <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -129,17 +129,28 @@ $(function(){
         }
     })
 
-    $('body select.select2 select.custom-option').each(function(){
+    $('body select.select2, select.custom-option').each(function(){
         var group = $(this).data('title')
         var selected = $(this).data('check')
         var id = $(this).attr('id')
         var elm = $(this)
-        // console.log('SET DATA OPTION FROM INDEX PUBLIC')
         if(group != undefined){
-            $.get('/ajax/sys-options?group='+group+'&selected='+selected, function(data){
-                elm.children().remove()
-                const list = data.map(nod => '<option value="'+nod.nilai+'" '+nod.selected+'>'+nod.teks+'</option>')
-                elm.html(list)
+            $.ajax({
+                async: true,
+                url: '/ajax/sys-options?group='+group+'&selected='+selected,
+                method: 'GET',
+                success: function(data){
+                    if(data.length > 0){
+                        elm.children().remove()
+                        const list = data.map(nod => '<option value="'+nod.nilai+'" '+nod.selected+'>'+nod.teks+'</option>')
+                        elm.html(list)
+                    }else{
+                        elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                    }
+                },
+                error: function(err){
+                    console.log(err);
+                }
             })
         }
     })
@@ -386,6 +397,30 @@ $(function(){
             method: 'GET',
             success: function(data){
                 console.log('Option Fuel:::', data);
+                if(data.length > 0){
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
+                    elm.html(list)
+                    // elm.append('<option value="" selected>Pilih</option>')
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    /* Option Sub Contractor  */
+    $('body select.select2subcon').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/subcon?selected='+selected,
+            method: 'GET',
+            success: function(data){
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                     elm.html(list)

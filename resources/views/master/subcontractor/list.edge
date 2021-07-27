@@ -4,9 +4,9 @@
             <h3 class="box-title m-b-0" id="title-tab">Data SubContractor</h3>
             <p class="text-muted m-b-20">Gunakan <code>nav-tabs</code> dibawah untuk melakukan navigasi data data sub contractor...</p>
             <!-- Nav tabs -->
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav customtab nav-tabs" role="tablist">
                 <li role="presentation" class="active">
-                    <a href="#SubContractor" class="reff-tab" data-title="Data SubContractor" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true">
+                    <a href="#subcontractor" class="reff-tab" data-reff="subcont" data-title="Data SubContractor" aria-controls="subcontractor" role="tab" data-toggle="tab" aria-expanded="true">
                         <span class="visible-xs">
                             <i class="ti-home"></i>
                         </span>
@@ -14,7 +14,7 @@
                     </a>
                 </li>
                 <li role="presentation" class="">
-                    <a href="#profile" class="reff-tab" data-title="Data Equipment Unit SubContractor" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false">
+                    <a href="#equipment" class="reff-tab" data-reff="equipment" data-title="Data Equipment Unit SubContractor" aria-controls="equipment" role="tab" data-toggle="tab" aria-expanded="false">
                         <span class="visible-xs">
                             <i class="ti-truck"></i>
                         </span> 
@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li role="presentation" class="">
-                    <a href="#messages" class="reff-tab" data-title="Data ManPower SubContractor" aria-controls="messages" role="tab" data-toggle="tab" aria-expanded="false">
+                    <a href="#employee" class="reff-tab" data-reff="employee" data-title="Data ManPower SubContractor" aria-controls="employee" role="tab" data-toggle="tab" aria-expanded="false">
                         <span class="visible-xs">
                             <i class="ti-user"></i>
                         </span>
@@ -32,219 +32,25 @@
             </ul>
             <!-- Tab panes -->
             <div class="tab-content m-t-0">
-                <div role="tabpanel" class="tab-pane active" id="SubContractor">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="" id="content-list">
-                                <div class="row sales-report m-t-0">
-                                    <div class="col-md-9 col-sm-9 col-xs-12">
-                                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                                            <i class="fa fa-plus m-r-5"></i> <span>Add Data</span>
-                                        </button>
-                                    </div>
-                                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
-                                        <div class="input-group">
-                                            <input id="inpKeywordFuelDist" class="form-control" placeholder="Search for...">
-                                            <span class="input-group-btn"> 
-                                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead style="border-bottom: 2px solid;">
-                                            <tr>
-                                                <th class="sl text-center" width="20">No</th>
-                                                <th class="sl text-center" width="20">ACT</th>
-                                                <th class="sl" width="150">Kode</th>
-                                                <th class="sl" width="250">Name</th>
-                                                <th class="sl">Email</th>
-                                                <th class="sl">Phone</th>
-                                                <th class="sl" width="300">Address</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if(list.data.length < 1)
-                                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
-                                            @endif
-                                            @each(item in list.data)
-                                                <tr>
-                                                    <td>{{$loop.index + 1}}</td>
-                                                    <td>
-                                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
-                                                    </td>
-                                                    <td class="single-line">
-                                                        {{item.site.name}} <br>
-                                                        <small>{{item.site.kode}}</small>
-                                                    </td>
-                                                    <td class="single-line">
-                                                        <strong>{{item.agen.name}}</strong><br>
-                                                        <small>{{item.fuel.name}}</small>
-                                                    </td>
-                                                    <td>
-                                                        {{item.no_do}} - {{item.no_so}}<br>
-                                                        <small class="myDateFormat" data-date="{{item.tgl_do}}"></small>
-                                                    </td>
-                                                    <td>
-                                                        <i class="ti-paint-bucket"></i>
-                                                        {{(item.flow_meter).toLocaleString('ID')}} Liter <br>
-                                                        <i class="ti-truck"></i>
-                                                        <small class="text-uppercase">{{item.no_plat}}</small>
-                                                    </td>
-                                                    <td class="">
-                                                        <strong class="text-uppercase">{{item.truck_driver}}</strong> <br>
-                                                        <small class="myDateTimeFormat" data-date="{{item.arrival}}"></small>
-                                                    </td>
-                                                </tr>
-                                            @endeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                @include('_component.pagination')
-                            </div>
-                        </div>
-                    </div>
+                <div role="tabpanel" class="tab-pane active" id="subcontractor">
+                    {{ script('ajax/mst-subcont-subcont') }}
+                    <div id="subcontractor-subcont-list"></div>
+                    <div id="subcontractor-subcont-form"></div>
+
                     <div class="clearfix"></div>
                 </div>
-                <div role="tabpanel" class="tab-pane" id="profile">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="" id="content-list">
-                                <div class="row sales-report m-t-0">
-                                    <div class="col-md-9 col-sm-9 col-xs-12">
-                                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                                            <i class="fa fa-plus m-r-5"></i> <span>Add Data</span>
-                                        </button>
-                                    </div>
-                                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
-                                        <div class="input-group">
-                                            <input id="inpKeywordFuelDist" class="form-control" placeholder="Search for...">
-                                            <span class="input-group-btn"> 
-                                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead style="border-bottom: 2px solid;">
-                                            <tr>
-                                                <th class="sl text-center" width="20">No</th>
-                                                <th class="sl text-center" width="20">ACT</th>
-                                                <th class="sl" width="350">SubContractor</th>
-                                                <th class="sl" width="250">Kode Unit</th>
-                                                <th class="sl">Brand Unit</th>
-                                                <th class="sl">Tipe Unit</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if(list.data.length < 1)
-                                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
-                                            @endif
-                                            @each(item in list.data)
-                                                <tr>
-                                                    <td>{{$loop.index + 1}}</td>
-                                                    <td>
-                                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
-                                                    </td>
-                                                    <td class="single-line">
-                                                        {{item.site.name}} <br>
-                                                        <small>{{item.site.kode}}</small>
-                                                    </td>
-                                                    <td class="single-line">
-                                                        <strong>{{item.agen.name}}</strong><br>
-                                                        <small>{{item.fuel.name}}</small>
-                                                    </td>
-                                                    <td>
-                                                        {{item.no_do}} - {{item.no_so}}<br>
-                                                        <small class="myDateFormat" data-date="{{item.tgl_do}}"></small>
-                                                    </td>
-                                                    <td>
-                                                        <i class="ti-paint-bucket"></i>
-                                                        {{(item.flow_meter).toLocaleString('ID')}} Liter <br>
-                                                        <i class="ti-truck"></i>
-                                                        <small class="text-uppercase">{{item.no_plat}}</small>
-                                                    </td>
-                                                </tr>
-                                            @endeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                @include('_component.pagination')
-                            </div>
-                        </div>
-                    </div>
+                <div role="tabpanel" class="tab-pane" id="equipment">
+                    {{ script('ajax/mst-subcont-equipment') }}
+                    <div id="subcontractor-equipment-list"></div>
+                    <div id="subcontractor-equipment-form"></div>
+
                     <div class="clearfix"></div>
                 </div>
-                <div role="tabpanel" class="tab-pane" id="messages">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="" id="content-list">
-                                <div class="row sales-report m-t-0">
-                                    <div class="col-md-9 col-sm-9 col-xs-12">
-                                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                                            <i class="fa fa-plus m-r-5"></i> <span>Add Data</span>
-                                        </button>
-                                    </div>
-                                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
-                                        <div class="input-group">
-                                            <input id="inpKeywordFuelDist" class="form-control" placeholder="Search for...">
-                                            <span class="input-group-btn"> 
-                                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead style="border-bottom: 2px solid;">
-                                            <tr>
-                                                <th class="sl text-center" width="20">No</th>
-                                                <th class="sl text-center" width="20">ACT</th>
-                                                <th class="sl" width="350">SubContractor</th>
-                                                <th class="sl">FullName</th>
-                                                <th class="sl" width="250">Position</th>
-                                                <th class="sl" width="50">Aktif</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if(list.data.length < 1)
-                                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
-                                            @endif
-                                            @each(item in list.data)
-                                                <tr>
-                                                    <td>{{$loop.index + 1}}</td>
-                                                    <td>
-                                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
-                                                    </td>
-                                                    <td class="single-line">
-                                                        {{item.site.name}} <br>
-                                                        <small>{{item.site.kode}}</small>
-                                                    </td>
-                                                    <td class="single-line">
-                                                        <strong>{{item.agen.name}}</strong><br>
-                                                        <small>{{item.fuel.name}}</small>
-                                                    </td>
-                                                    <td>
-                                                        {{item.no_do}} - {{item.no_so}}<br>
-                                                        <small class="myDateFormat" data-date="{{item.tgl_do}}"></small>
-                                                    </td>
-                                                    <td>
-                                                        <i class="ti-paint-bucket"></i>
-                                                        {{(item.flow_meter).toLocaleString('ID')}} Liter <br>
-                                                        <i class="ti-truck"></i>
-                                                        <small class="text-uppercase">{{item.no_plat}}</small>
-                                                    </td>
-                                                </tr>
-                                            @endeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                                @include('_component.pagination')
-                            </div>
-                        </div>
-                    </div>
+                <div role="tabpanel" class="tab-pane" id="employee">
+                    {{ script('ajax/mst-subcont-employee') }}
+                    <div id="subcontractor-employee-list"></div>
+                    <div id="subcontractor-employee-form"></div>
+
                     <div class="clearfix"></div>
                 </div>
             </div>
@@ -255,6 +61,23 @@
     $(function(){
         $('a.reff-tab').on('click', function(){
             $('h3#title-tab').html($(this).data('title'))
+            var reff = $(this).data('reff')
+            initialDefault(reff)
         })
+
+        function initialDefault(reff){
+            $.ajax({
+                async: true,
+                url: '/master/subcont/list-'+reff,
+                method: 'GET',
+                success: function(result){
+                    $('div#subcontractor-'+reff+'-list').html(result)
+                    $('div#subcontractor-'+reff+'-form').children().remove()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        }
     })
 </script>
