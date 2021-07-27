@@ -135,6 +135,13 @@ class Subcont {
 
     }
 
+    // Func API
+
+    async SUBCON_EQUIPMENT (params) {
+        const data = await MasEquipmentSubcont.query().where('subcont_id', params.id).fetch()
+        return data
+    }
+
 }
 
 module.exports = new Subcont()

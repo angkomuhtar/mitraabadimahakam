@@ -524,6 +524,16 @@ Route.group(() => {
 
 Route.group(() => {
 
+    Route.get('/', 'SubconApiController.index')
+
+    Route.get('/:id/show', 'SubconApiController.show')
+
+    Route.get('/:id/equipment', 'SubconApiController.showEquipment')
+
+}).prefix('api/subcon').namespace('api')
+
+Route.group(() => {
+
     Route.get('/', 'EquipmentApiController.index')
 
     Route.get('/available-fleet', 'EquipmentApiController.availableForFleet')
