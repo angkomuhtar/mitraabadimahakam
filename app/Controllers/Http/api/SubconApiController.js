@@ -4,6 +4,7 @@ const { performance } = require('perf_hooks')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 const SubcontHelpers = use("App/Controllers/Http/Helpers/Subcontractor")
 const EquipmentHelpers = use("App/Controllers/Http/Helpers/Equipment");
+const EmployeeHelpers = use("App/Controllers/Http/Helpers/Employee");
 
 class SubconApiController {
     async index ({ auth, request, response }) {
@@ -169,6 +170,71 @@ class SubconApiController {
             }
 
             for(let x of ownEquipments){
+                let obj = {
+                    ...x,
+                    type : 'MAM'
+                }
+                arr1.push(obj)
+            };
+            let data = [...arr, ...arr1];
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(200).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false
+                },
+                data: data
+            })
+
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        }
+    }
+
+    async subconEmployeeAll ({ auth, response, request }) {
+        var t0 = performance.now()
+        let durasi;
+        const req = request.only(['keyword'])
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        };
+
+        try {
+            let arr = [];
+            let arr1 = [];
+            const subconOperator = await SubcontHelpers.EMPLOYEE_SHOW_ALL();
+            const ownOperator = (await EmployeeHelpers.OPERATOR(req)).toJSON();
+
+            for(let x of subconOperator){
+                let obj = {
+                    ...x,
+                    type : 'SC'
+                }
+                arr.push(obj)
+            }
+
+            for(let x of ownOperator){
                 let obj = {
                     ...x,
                     type : 'MAM'

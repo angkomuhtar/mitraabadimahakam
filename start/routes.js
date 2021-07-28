@@ -532,6 +532,8 @@ Route.group(() => {
 
     Route.get('/equipment/all', 'SubconApiController.showEquipmentAll')
 
+    Route.get('/employee/all', 'SubconApiController.subconEmployeeAll')
+    
 }).prefix('api/subcon').namespace('api')
 
 Route.group(() => {

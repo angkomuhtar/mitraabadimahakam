@@ -11,10 +11,10 @@ class Employee {
                 .query()
                 .where(w => {
                     w.where('fullname', 'like', `%${req.keyword}%`)
-                    orWhere('email', 'like', `%${req.keyword}%`)
-                    orWhere('no_idcard', 'like', `%${req.keyword}%`)
+                    w.orWhere('email', 'like', `%${req.keyword}%`)
+                    w.orWhere('no_idcard', 'like', `%${req.keyword}%`)
                 })
-                .andWare('aktif', 'Y')
+                .andWhere('aktif', 'Y')
                 .fetch()
         }else{
             employee = await MasEmployee.query().where({aktif: 'Y'}).fetch()
@@ -30,10 +30,10 @@ class Employee {
                 .query()
                 .where(w => {
                     w.where('fullname', 'like', `%${req.keyword}%`)
-                    orWhere('email', 'like', `%${req.keyword}%`)
-                    orWhere('no_idcard', 'like', `%${req.keyword}%`)
+                    w.orWhere('email', 'like', `%${req.keyword}%`)
+                    w.orWhere('no_idcard', 'like', `%${req.keyword}%`)
                 })
-                .andWare('is_operator', 'Y')
+                .andWhere('is_operator', 'Y')
                 .fetch()
         }else{
             operator = await MasEmployee.query().where({is_operator: 'Y'}).fetch()

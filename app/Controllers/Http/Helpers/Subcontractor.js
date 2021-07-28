@@ -120,6 +120,11 @@ class Subcont {
         return data
     }
 
+    async EMPLOYEE_SHOW_ALL () {
+        const data = (await MasEmployeeSubcont.query().fetch()).toJSON();
+        return data
+    }
+
     async EMPLOYEE_POST (req) {
         console.log(req);
         const masEmployeeSubcont = new MasEmployeeSubcont()
@@ -132,7 +137,6 @@ class Subcont {
         const masEmployeeSubcont = await MasEmployeeSubcont.find(params.id)
         masEmployeeSubcont.merge(req)
         return await masEmployeeSubcont.save()
-
     }
 
     // Func API

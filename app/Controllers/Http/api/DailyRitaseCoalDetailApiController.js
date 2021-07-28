@@ -162,7 +162,7 @@ class DailyRitaseCoalDetailApiController {
 
     async create ({ auth, request, response }) {
         var t0 = performance.now()
-        const req = request.only(["ritasecoal_id", "seam_id", "dt_id", "operator", "checkout_pit", "kupon"])
+        const req = request.only(["ritasecoal_id", "seam_id", "dt_id", "subcondt_id", "operator", "subcon_operator", "checkout_pit", "kupon"])
         let durasi
     
         try {
