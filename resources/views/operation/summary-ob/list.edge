@@ -138,8 +138,6 @@
                 url: url,
                 method: 'GET',
                 success: function(result){
-                    // $('body div#list-content').children().remove()
-                    // $('body div#list-content').html(result).show()
                     $('body').find('div#list-content').html(result).show()
                     $('body').find('div#row-paginate').css('margin-bottom', '20px')
                     listNoBerkas()
