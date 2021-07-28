@@ -134,9 +134,10 @@ class SubconApiController {
         }
     }
 
-    async showEquipmentAll ({ auth, response, params }) {
+    async showEquipmentAll ({ auth, response, request }) {
         var t0 = performance.now()
-        let durasi
+        let durasi;
+        const req = request.only(['keyword'])
 
         try {
             await auth.authenticator('jwt').getUser()
@@ -156,8 +157,8 @@ class SubconApiController {
         try {
             let arr = [];
             let arr1 = [];
-            const subconEquipments = await SubcontHelpers.SUBCON_EQUIPMENT_ALL(params);
-            const ownEquipments = await EquipmentHelpers.ALL();
+            const subconEquipments = await SubcontHelpers.SUBCON_EQUIPMENT_ALL();
+            const ownEquipments = (await EquipmentHelpers.ALL(req)).toJSON();
 
             for(let x of subconEquipments){
                 let obj = {

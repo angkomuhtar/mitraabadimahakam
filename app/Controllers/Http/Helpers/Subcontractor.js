@@ -143,7 +143,7 @@ class Subcont {
     }
 
     async SUBCON_EQUIPMENT_ALL () {
-        const data = await MasEquipmentSubcont.query().where('aktif', 'Y').fetch()
+        const data = (await MasEquipmentSubcont.query().where('aktif', 'Y').fetch()).toJSON()
         return data
     }
 
