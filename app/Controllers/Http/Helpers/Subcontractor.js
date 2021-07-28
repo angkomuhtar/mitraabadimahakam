@@ -142,6 +142,11 @@ class Subcont {
         return data
     }
 
+    async SUBCON_EQUIPMENT_ALL () {
+        const data = await MasEquipmentSubcont.query().where('aktif', 'Y').fetch()
+        return data
+    }
+
 }
 
 module.exports = new Subcont()

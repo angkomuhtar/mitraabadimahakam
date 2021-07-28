@@ -98,7 +98,6 @@ class AuthApiController {
                 data: {}
             })
         }
-        
     }
 
     async logout ({ auth, response }) {
