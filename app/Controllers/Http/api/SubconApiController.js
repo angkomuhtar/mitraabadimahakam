@@ -134,7 +134,7 @@ class SubconApiController {
         }
     }
 
-    async showEquipmentAll ({ auth, response }) {
+    async showEquipmentAll ({ auth, response, params }) {
         var t0 = performance.now()
         let durasi
 
@@ -154,10 +154,9 @@ class SubconApiController {
         };
 
         try {
-
             let arr = [];
             let arr1 = [];
-            const subconEquipments = await SubcontHelpers.SUBCON_EQUIPMENT_ALL();
+            const subconEquipments = await SubcontHelpers.SUBCON_EQUIPMENT_ALL(params);
             const ownEquipments = await EquipmentHelpers.ALL();
 
             for(let x of subconEquipments){

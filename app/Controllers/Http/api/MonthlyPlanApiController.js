@@ -674,10 +674,10 @@ class MonthlyPlanApiController {
       const today = moment(date).format("YYYY-MM-DD");
       const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
 
-      const ds = `${prevDay} 06:01:00`;
-      const ns_1 = `${prevDay} 18:01:00`;
+      const ds = `${prevDay} 07:01:00`;
+      const ns_1 = `${prevDay} 19:01:00`;
       const ns_2 = `${today} 00:00:00`;
-      const ns_3 = `${today} 06:00:00`;
+      const ns_3 = `${today} 07:00:00`;
 
       const trx = await db.beginTransaction();
 
