@@ -134,7 +134,7 @@ class SubconApiController {
         }
     }
 
-    async showEquipmentAll ({ auth, params, response }) {
+    async showEquipmentAll ({ auth, response }) {
         var t0 = performance.now()
         let durasi
 
