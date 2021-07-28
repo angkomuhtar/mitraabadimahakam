@@ -80,7 +80,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <label for="">Weight Gross <span class="text-danger">*</span></label>
                                             <div class="form-group">
                                                 <div class="input-group">
@@ -89,7 +89,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <label for="">Weight Tare <span class="text-danger">*</span></label>
                                             <div class="form-group">
                                                 <div class="input-group">
@@ -98,7 +98,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <label for="">Weight Netto</label>
                                             <div class="form-group">
                                                 <div class="input-group">
@@ -107,16 +107,39 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <label for="">Vehicle</label>
-                                            <div class="form-group">
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="mdi mdi-truck"></i></div>
-                                                    <span class="input-group-addon" id="basic-addon2">{{data.transporter.kode}}</span>
-                                                    <input type="text" class="form-control inp-coal-ritase" value="{{data.opr.fullname}}" disabled>
+                                        @if(data.transporter_subcon)
+                                            <div class="col-md-6">
+                                                <label for="">Sub Contractor</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="mdi mdi-bank"></i></div>
+                                                        <span class="input-group-addon" id="basic-addon2">{{data.transporter_subcon.subcon.kode}}</span>
+                                                        <input type="text" class="form-control text-uppercase inp-coal-ritase" value="{{data.transporter_subcon.subcon.name}}" disabled>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                            <div class="col-md-6">
+                                                <label for="">Vehicle</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="mdi mdi-truck"></i></div>
+                                                        <span class="input-group-addon" id="basic-addon2">{{data.transporter_subcon.kode}}</span>
+                                                        <input type="text" class="form-control inp-coal-ritase" value="{{data.opr_subcon.fullname}}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="col-md-6">
+                                                <label for="">Vehicle</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="mdi mdi-truck"></i></div>
+                                                        <span class="input-group-addon" id="basic-addon2">{{data.transporter.kode}}</span>
+                                                        <input type="text" class="form-control inp-coal-ritase" value="{{data.opr.fullname}}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
                                         <div class="col-md-7">
                                             <label for="">Keterangan</label>
                                             <textarea class="form-control" rows="3" name="keterangan">{{data.keterangan ? data.keterangan : ''}}</textarea>

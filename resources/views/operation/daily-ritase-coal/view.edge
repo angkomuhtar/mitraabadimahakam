@@ -55,15 +55,23 @@
                                                                 Vehicle
                                                             </td>
                                                             <td class="text-right">
-                                                                <i class="fa fa-truck"></i> {{data.transporter.nopol}}
+                                                                @if(data.transporter_subcon)
+                                                                    <i class="fa fa-truck"></i> {{data.transporter_subcon.kode}}
+                                                                @else
+                                                                    <i class="fa fa-truck"></i> {{data.transporter.nopol}}
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         <tr class="">
                                                             <td>
-                                                                Kontraktor
+                                                                Sub Contractor
                                                             </td>
                                                             <td class="text-right">
-                                                                PT. Mitra Abadi Mahakam
+                                                                @if(data.transporter_subcon)
+                                                                    {{data.transporter_subcon.subcon.name}}
+                                                                @else
+                                                                    -
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         <tr class="">
@@ -148,8 +156,13 @@
                                                                 No. Dump Truck
                                                             </td>
                                                             <td class="text-right">
-                                                                <strong class="text-uppercase">{{data.transporter.brand}}</strong> 
-                                                                <span>{{data.transporter.kode}}</span>
+                                                                @if(data.transporter_subcon)
+                                                                    <strong class="text-uppercase">{{data.transporter_subcon.brand}}</strong> 
+                                                                    <span>{{data.transporter_subcon.kode}}</span>
+                                                                @else
+                                                                    <strong class="text-uppercase">{{data.transporter.brand}}</strong> 
+                                                                    <span>{{data.transporter.kode}}</span>
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         <tr class="">
@@ -173,7 +186,11 @@
                                                                 Operator Dump Truck
                                                             </td>
                                                             <td class="text-right">
-                                                                {{data.opr.fullname}}
+                                                                @if(data.opr_subcon)
+                                                                    {{data.opr_subcon.fullname}}
+                                                                @else
+                                                                    {{data.opr.fullname}}
+                                                                @endif
                                                             </td>
                                                         </tr>
                                                         <tr class="">

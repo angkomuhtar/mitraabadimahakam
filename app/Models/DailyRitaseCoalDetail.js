@@ -22,8 +22,16 @@ class DailyRitaseCoalDetail extends Model {
         return this.belongsTo("App/Models/MasEquipment", "dt_id", "id")
     }
 
+    transporter_subcon(){
+        return this.belongsTo("App/Models/MasEquipmentSubcont", "subcondt_id", "id")
+    }
+
     opr(){
         return this.belongsTo("App/Models/MasEmployee", "operator", "id")
+    }
+
+    opr_subcon(){
+        return this.belongsTo("App/Models/MasEmployeeSubcont", "subcon_operator", "id")
     }
 
     checkerJT(){
