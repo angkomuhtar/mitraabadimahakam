@@ -88,6 +88,8 @@ class DailyRitaseCoalDetailApiController {
             .with('seam')
             .with('transporter')
             .with('opr')
+            .with('opr_subcon')
+            .with('transporter_subcon')
             .with('checkerJT')
             .where('ritasecoal_id', id)
             .orderBy('created_at', 'desc')
