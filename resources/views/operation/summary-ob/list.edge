@@ -1,95 +1,123 @@
 {{ script('ajax/index') }}
-<div class="table-responsive" id="table-freeze">
-    <table class="table table-hover table-bordered">
-        <thead>
-            <tr>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">No </th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Date </th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SHIFT</th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">ID NUMBER</th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Tipe Equipment</th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Functions</th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Material</th>
-                <th class="sl f12w300G text-center text-center" rowspan="2" style="border-bottom: 2px solid;">
-                    Production <br>
-                    <small class="f12w300">(Bcm/Ton)</small>
-                </th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">PDTVY</th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Awal</th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Akhir</th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SMU TOT</th>
-                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">
-                    <strong>Activity Description</strong>
-                </th>
-                <th class="sl f12w300G text-center bg-inverse" colspan="{{event.length}}" style="border-bottom: 2px solid;">
-                    <strong>Equipment Time</strong>
-                </th>
-                <th class="sl text-center f12w300 bg-info" rowspan="2" style="border-bottom: 2px solid;">
-                    Total Time<br>Idle
-                </th>
-                <th class="sl text-center f12w300 bg-warning" rowspan="2" style="border-bottom: 2px solid;">
-                    Total Time<br>Delay
-                </th>
-                <th class="sl text-center f12w300 bg-primary" rowspan="2" style="border-bottom: 2px solid;">
-                    Total Other<br>SMU
-                </th>
-            </tr>
-            <tr>
-                @each(item in event)
-                    <th class="sl text-center f12w300 bg-inverse" style="border-bottom: 2px solid;">
-                        {{item.narasi}}
-                    </th>
-                @endeach
-            </tr>
-        </thead>
-        <tbody>
-            @each(item in list.data)
-                <tr class="row-data" data-id="{{item.no_timesheet}}">
-                    <td>{{$loop.index + 1}}</td>
-                    <td class="myDateFormatLong" data-date="{{item.date}}" style="white-space:nowrap;"></td>
-                    <td>{{item.shift}}</td>
-                    <td>{{item.kd_unit}}</td>
-                    <td>{{item.unit_model}}</td>
-                    <td class="text-uppercase">{{item.tipe_unit}}</td>
-                    <td class="rand">{{item.material != 'COAL' ? 'OB':'COAL'}}</td>
-                    <td class="rand text-right">1</td>
-                    <td class="rand text-right">2</td>
-                    <td class="rand text-right">{{item.begin_smu}}</td>
-                    <td class="rand text-right">{{item.end_smu}}</td>
-                    <td class="rand text-right">{{item.used_smu}}</td>
-                    <td class="rand">
-                        <small>{{item.activity}}</small>
-                    </td>
-                    @each(data in item.record_event)
-                        @if(data.status === 'idle')
-                            <td class="text-right" style="color:#fff;background-color: #547da052!important;">
-                                <strong class="idle">{{data.time_duration}}</strong>
-                            </td>
-                        @elseif(data.status === 'inactive')
-                            <td class="text-right" style="color:#fff;background-color: #b79b7252!important;">
-                                <strong class="standby">{{data.time_duration}}</strong>
-                            </td>
-                            @else
-                            <td class="text-right" style="color:#fff;background-color: #43486d6b!important;">
-                                <strong class="running">{{data.time_duration}}</strong>
-                            </td>
-                        @endif
-                    @endeach
-                    <td class="rand text-right bg-info" style="color:#fff;background-color: #2babe382!important;">
-                        <strong id="tot-idle{{item.no_timesheet}}">Tot.idle</strong>
-                    </td>
-                    <td class="rand text-right" style="color:#fff;background-color: #ffc26c8a!important;">
-                        <strong id="tot-standby{{item.no_timesheet}}">Tot.delay</strong>
-                    </td>
-                    <td class="rand text-right" style="color:#fff;background-color: #6f7cd287!important;">
-                        <strong id="tot-running{{item.no_timesheet}}">Tot.delay</strong>
-                    </td>
-                </tr>
-            @endeach
-        </tbody>
-    </table>
+<!--<div class="row">
+    <div class="col-md-12">
+        <div class="well">
+            <em>{{dummy}}</em>
+        </div>
+    </div>
+</div>-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-md-3 pull-right">
+                    <div class="input-group m-b-10">
+                        <input type="text" id="keyword" data-keyword="" name="keyword" class="form-control" placeholder="Keyword...">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn waves-effect waves-light btn-info">
+                                <i class="ti-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr style="margin-bottom: 5px;border-color:#2f323e;">
+            <div class="" id="content-list">
+                <div class="table-responsive" id="table-freeze">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">No </th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Date </th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SHIFT</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">ID NUMBER</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Tipe Equipment</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Functions</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Material</th>
+                                <th class="sl f12w300G text-center text-center" rowspan="2" style="border-bottom: 2px solid;">
+                                    Production <br>
+                                    <small class="f12w300">(Bcm/Ton)</small>
+                                </th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">PDTVY</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Awal</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Akhir</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SMU TOT</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">
+                                    <strong>Activity Description</strong>
+                                </th>
+                                <th class="sl f12w300G text-center bg-inverse" colspan="{{event.length}}" style="border-bottom: 2px solid;">
+                                    <strong>Equipment Time</strong>
+                                </th>
+                                <th class="sl text-center f12w300 bg-info" rowspan="2" style="border-bottom: 2px solid;">
+                                    Total Time<br>Idle
+                                </th>
+                                <th class="sl text-center f12w300 bg-warning" rowspan="2" style="border-bottom: 2px solid;">
+                                    Total Time<br>Delay
+                                </th>
+                                <th class="sl text-center f12w300 bg-primary" rowspan="2" style="border-bottom: 2px solid;">
+                                    Total Other<br>SMU
+                                </th>
+                            </tr>
+                            <tr>
+                                @each(item in event)
+                                    <th class="sl text-center f12w300 bg-inverse" style="border-bottom: 2px solid;">
+                                        {{item.narasi}}
+                                    </th>
+                                @endeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                                <tr class="row-data" data-id="{{item.id}}">
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td class="myDateFormatLong" data-date="{{item.tgl}}" style="white-space:nowrap;"></td>
+                                    <td>{{item.shift.kode}}</td>
+                                    <td>{{item.unit.kode}}</td>
+                                    <td>{{item.unit.unit_model}}</td>
+                                    <td class="text-uppercase">{{item.unit.tipe}}</td>
+                                    <td class="rand">{{item.material != 'COAL' ? 'OB':'COAL'}}</td>
+                                    <td class="rand text-right">1</td>
+                                    <td class="rand text-right">2</td>
+                                    <td class="rand text-right">{{item.begin_smu}}</td>
+                                    <td class="rand text-right">{{item.end_smu}}</td>
+                                    <td class="rand text-right">{{item.used_smu}}</td>
+                                    <td class="rand">
+                                        <small>{{item.activity.name}}</small>
+                                    </td>
+                                    @each(data in item.record_event)
+                                        @if(data.status === 'idle')
+                                            <td class="text-right" style="color:#fff;background-color: #547da052!important;">
+                                                <strong class="idle">{{data.time_duration}}</strong>
+                                            </td>
+                                        @elseif(data.status === 'inactive')
+                                            <td class="text-right" style="color:#fff;background-color: #b79b7252!important;">
+                                                <strong class="standby">{{data.time_duration}}</strong>
+                                            </td>
+                                            @else
+                                            <td class="text-right" style="color:#fff;background-color: #43486d6b!important;">
+                                                <strong class="running">{{data.time_duration}}</strong>
+                                            </td>
+                                        @endif
+                                    @endeach
+                                    <td class="rand text-right bg-info" style="color:#fff;background-color: #2babe382!important;">
+                                        <strong id="tot-idle{{item.id}}">Tot.idle</strong>
+                                    </td>
+                                    <td class="rand text-right" style="color:#fff;background-color: #ffc26c8a!important;">
+                                        <strong id="tot-standby{{item.id}}">Tot.delay</strong>
+                                    </td>
+                                    <td class="rand text-right" style="color:#fff;background-color: #6f7cd287!important;">
+                                        <strong id="tot-running{{item.id}}">Tot.delay</strong>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
 </div>
-@include('_component.pagination')
 <script>
     $(function(){
         setTotalTime()
@@ -110,8 +138,10 @@
                 url: url,
                 method: 'GET',
                 success: function(result){
-                    $('div#list-content').children().remove()
-                    $('div#list-content').html(result).show()
+                    // $('body div#list-content').children().remove()
+                    // $('body div#list-content').html(result).show()
+                    $('body').find('div#list-content').html(result).show()
+                    $('body').find('div#row-paginate').css('margin-bottom', '20px')
                     listNoBerkas()
                 },
                 error: function(err){

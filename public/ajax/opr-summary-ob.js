@@ -26,7 +26,7 @@ $(function(){
                 LoadingData()
             },
             success: function(result){
-                $('div#content-list').html(result)
+                $('div#list-content').html(result)
             },
             error: function(err){
                 console.log(err);
