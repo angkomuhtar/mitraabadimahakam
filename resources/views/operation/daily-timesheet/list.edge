@@ -22,16 +22,16 @@
                     <table class="table table-hover">
                         <thead style="border-bottom: 2px solid;">
                             <tr>
-                                <th class="sl text-center" width="20">No</th>
-                                <th class="sl text-center" width="20">ACT</th>
-                                <th class="sl" width="250">Description</th>
-                                <th class="sl">Activity</th>
-                                <th class="sl" width="100">Date</th>
-                                <th class="sl text-right" width="100">START SMU</th>
-                                <th class="sl text-right" width="100">END SMU</th>
-                                <th class="sl text-right" width="100">USED SMU</th>
-                                <th class="sl text-center" width="20">Equipment</th>
-                                <th class="sl text-center" width="20">Checker/SPV</th>
+                                <td class=" text-center" width="20">No</td>
+                                <td class=" text-center" width="20">ACT</td>
+                                <td class="" width="250">Description</td>
+                                <td class="" width="600">Activity</td>
+                                <td class="" width="*">Date</td>
+                                <td class="text-right" width="250">START HM</td>
+                                <td class="text-right" width="250">END HM</td>
+                                <td class="text-right" width="250">USED HM</td>
+                                <td class="text-center" width="200">Equipment</td>
+                                <td class="text-center" width="200">Checker/SPV</td>
                             </tr>
                         </thead>
                         <tbody>
@@ -49,17 +49,17 @@
                                         <small class="text-success">{{item.dailyFleet.pit.name}}</small><br>
                                         <small class="text-info">{{item.dailyFleet.shift.name}}</small>
                                     </td>
-                                    <td class="single-line">
+                                    <td class="">
                                         <strong>{{item.dailyFleet.activities.name}}</strong><br>
                                         <small>{{item.description}}</small><br>
                                     </td>
-                                    <td class="myDateFormat" data-date="{{item.approved_at}}" data-elm="h5">
-                                        <h5></h5>
+                                    <td class="myDateFormat single-line" data-date="{{item.approved_at}}" data-elm="p">
+                                        <p class="text-white"></p>
                                         <small class="text-warning nomor-berkas" data-id="{{item.id}}"></small>
                                     </td>
-                                    <td class="text-right">{{item.begin_smu}}</td>
-                                    <td class="text-right">{{item.end_smu ? item.end_smu : 0}}</td>
-                                    <td class="text-right">{{item.used_smu ? item.used_smu : 0}}</td>
+                                    <td class="text-right single-line">{{item.begin_smu}}</td>
+                                    <td class="text-right single-line">{{item.end_smu ? item.end_smu : 0}}</td>
+                                    <td class="text-right single-line">{{item.used_smu ? item.used_smu : 0}}</td>
                                     <td>
                                         <strong class="text-warning">{{item.equipment.kode}}</strong> <br>
                                         <small>{{item.equipment.tipe}}</small>

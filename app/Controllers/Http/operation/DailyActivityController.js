@@ -12,9 +12,13 @@ const MasFleet = use("App/Models/MasFleet")
 const MasPit = use("App/Models/MasPit")
 const MasSite = use("App/Models/MasSite")
 const MasActivity = use("App/Models/MasActivity")
+const MasMaterial = use("App/Models/MasMaterial")
 const DailyEvent = use("App/Models/DailyEvent")
-const { map } = require("underscore")
+const DailyRitase = use("App/Models/DailyRitase")
+const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 const _ = require("underscore")
+const moment = require('moment')
+moment.locale("id")
 
 class DailyActivityController {
     async index ({auth, view, request}) {
@@ -28,10 +32,13 @@ class DailyActivityController {
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         // const arrTimeSheet = (await SummaryOB.query().distinct('no_timesheet').select('no_timesheet').fetch()).toJSON()
 
+        const fleetOB = (await DailyRitase.query().where('status', 'Y').fetch()).toJSON()
+        const arrFleetOB = fleetOB.map(item => item.dailyfleet_id)
 
         let timeSheet = (
                 await TimeSheet
                     .query()
+                    .whereIn('dailyfleet_id', arrFleetOB)
                     .orderBy('id', 'desc')
                     .paginate(halaman, limit)
             ).toJSON()
@@ -50,9 +57,27 @@ class DailyActivityController {
             let pit = (await MasPit.findBy('id', dailyfleet.pit_id)).toJSON()
             let site = (await MasSite.findBy('id', pit.site_id)).toJSON()
             let dailyevent = (await DailyEvent.query().where('timesheet_id', item.id).fetch()).toJSON() || []
-            
+
+            /* Find Daily Ritase OB */
+            item.ritase_ob = 0
+            item.volume_ob = 0
+            item.pdtvy = null
+            item.material = null
+
+            let dailyRitase = await DailyRitase.findBy('dailyfleet_id', item.dailyfleet_id)
+            if(dailyRitase){
+                let v_material = await MasMaterial.find(dailyRitase.material)
+                item.ritase_ob = await DailyRitaseDetail.query()
+                    .where('dailyritase_id', dailyRitase.id)
+                    .andWhere('hauler_id', item.unit_id).getCount()
+                item.volume_ob = (parseFloat(v_material.vol) * parseFloat(item.ritase_ob))
+                item.pdtvy = (parseFloat(item.volume_ob) / parseFloat(item.used_smu)).toFixed(2)
+                item.material = v_material.tipe
+            }
+
             result.push({
                 ...item, 
+                tgl: moment(item.tgl).format('dddd, Do MMMM YYYY'),
                 checker,
                 pengawas,
                 operator,
@@ -66,43 +91,11 @@ class DailyActivityController {
                 dailyevent
             })
         }
-
-        // timeSheet = timeSheet.map(async item => {
-        //     let checker = await Profile.findBy('user_id', item.user_chk)
-        //     return {
-        //         ...item,
-        //         user_chk: checker.toJSON()
-        //     }
-        // })
-        
-
-        // list.data = [...list.data.reduce((a,c)=>{
-        //     a.set(c.no_timesheet, c)
-        //     return a;
-        //   }, new Map()).values()]
         
 
         const mas_event = (await MasEvent.query().where('aktif', 'Y').select('id', 'kode', 'narasi', 'satuan', 'engine', 'status').orderBy('status').fetch()).toJSON()
         const masActivity = (await MasActivity.query().where('sts', 'Y').fetch()).toJSON()
-        // let list = (await SummaryOB
-        //     .query()
-        //     .with('dailyevent')
-        //     .whereIn('no_timesheet', arrTimeSheet.map(a => a.no_timesheet))
-        //     .orderBy('date', 'desc')
-        //     .paginate(halaman, limit)
-        //     ).toJSON()
-        // list.data = list.data.map(item => {
-        //     return {
-        //         ...item,
-        //         record_event: mas_event.map(obj => {
-        //             var time_duration = _.find(item.dailyevent, val => val.event_id === obj.id) 
-        //             return {
-        //                 ...obj,
-        //                 time_duration: time_duration ? (parseFloat(time_duration.time_duration)/60).toFixed(2) : 0
-        //             }
-        //         })
-        //     }
-        // })
+        
 
         result = result.map(item => {
             return {
@@ -120,7 +113,7 @@ class DailyActivityController {
         timeSheet.data = result
 
         // console.log(JSON.stringify(list, null, 3));
-        // console.log(list);
+        console.log(timeSheet.data);
         return view.render('operation.summary-ob.list', {
             // dummy: JSON.stringify(result, null, 5),
             // list: list, 

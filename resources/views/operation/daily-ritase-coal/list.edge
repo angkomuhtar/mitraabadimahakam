@@ -54,7 +54,14 @@
                                     <td>
                                         <i class="ti-user"></i> <span>PIT CHECKER</span> 
                                         <span class="text-white pull-right">{{item.ritase_coal.checker ? item.ritase_coal.checker.nm_lengkap : ''}}</span> <br>
-                                        <i class="ti-truck"></i> <span>OPERATOR</span> <span class="text-white pull-right">{{item.opr.fullname}}</span> <br>
+                                        @if(item.opr_subcon)
+                                            <i class="ti-truck"></i> <span>Driver Subcon</span> 
+                                            <span class="text-white pull-right">{{item.opr_subcon.fullname}}</span>
+                                        @else
+                                            <i class="ti-truck"></i> <span>Driver MAM</span> 
+                                            <span class="text-white pull-right">{{item.opr.fullname}}</span>
+                                        @endif
+                                        <br>
                                         <span class="myTimeFormat" data-date="{{item.checkout_pit}}" data-elm="span">
                                             <i class="ti-share"></i><small> CHECK OUT PIT </small>
                                             <i class="ti-timer"></i> 
