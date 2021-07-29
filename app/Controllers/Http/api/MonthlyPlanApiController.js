@@ -11,6 +11,7 @@ const DailyRitaseDetail = use("App/Models/DailyRitaseDetail");
 const DailyRitaseCoalDetail = use("App/Models/DailyRitaseCoalDetail");
 const db = use("Database");
 const DailyEvent = use("App/Models/DailyEvent");
+const MasShift = use("App/Models/MasShift");
 const MonthlyPlans = use("App/Models/MonthlyPlan");
 const { infinityCheck } = use("App/Controllers/Http/customClass/utils");
 
@@ -128,8 +129,12 @@ class MonthlyPlanApiController {
         }
       }
 
-      const WEEKLY_OB_ACTUAL = parseFloat(r.reduce((a, b) => a + b.actual, 0).toFixed(2))
-      const WEEKLY_OB_PLAN = parseFloat(dailyPlans.reduce((a, b) => a + b.estimate, 0).toFixed(2))
+      const WEEKLY_OB_ACTUAL = parseFloat(
+        r.reduce((a, b) => a + b.actual, 0).toFixed(2)
+      );
+      const WEEKLY_OB_PLAN = parseFloat(
+        dailyPlans.reduce((a, b) => a + b.estimate, 0).toFixed(2)
+      );
 
       let data = {
         labels: _.pluck(r, "current_date"),
@@ -258,8 +263,12 @@ class MonthlyPlanApiController {
         }
       }
 
-      const WEEKLY_COAL_ACTUAL = parseFloat(r.reduce((a, b) => a + b.actual, 0).toFixed(2));
-      const WEEKLY_COAL_PLAN = parseFloat(dailyPlans.reduce((a, b) => a + b.estimate, 0).toFixed(2));
+      const WEEKLY_COAL_ACTUAL = parseFloat(
+        r.reduce((a, b) => a + b.actual, 0).toFixed(2)
+      );
+      const WEEKLY_COAL_PLAN = parseFloat(
+        dailyPlans.reduce((a, b) => a + b.estimate, 0).toFixed(2)
+      );
 
       let data = {
         labels: _.pluck(r, "current_date"),
@@ -670,59 +679,13 @@ class MonthlyPlanApiController {
       });
     }
 
+    const trx = await db.beginTransaction();
+
     try {
       const today = moment(date).format("YYYY-MM-DD");
       const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
 
-      const ds = `${prevDay} 07:01:00`;
-      const ns_1 = `${prevDay} 19:01:00`;
-      const ns_2 = `${today} 00:00:00`;
-      const ns_3 = `${today} 07:00:00`;
-
-      const trx = await db.beginTransaction();
-
-      // OB Ritase
-      const ritaseOBDS = (
-        await DailyRitaseDetail.query(trx)
-          .with("daily_ritase", (wh) => {
-            wh.with("material_details");
-          })
-          .whereBetween("check_in", [ds, ns_1])
-          .fetch()
-      ).toJSON();
-      const ritaseOBNS_1 = (
-        await DailyRitaseDetail.query(trx)
-          .with("daily_ritase", (wh) => {
-            wh.with("material_details");
-          })
-          .whereBetween("check_in", [ns_1, ns_2])
-          .fetch()
-      ).toJSON();
-      const ritaseOBNS_2 = (
-        await DailyRitaseDetail.query(trx)
-          .with("daily_ritase", (wh) => {
-            wh.with("material_details");
-          })
-          .whereBetween("check_in", [ns_2, ns_3])
-          .fetch()
-      ).toJSON();
-
-      // Coal Ritase
-      const ritaseCoalDS = (
-        await DailyRitaseCoalDetail.query(trx)
-          .whereBetween("checkout_jt", [ds, ns_1])
-          .fetch()
-      ).toJSON();
-      const ritaseCoalNS_1 = (
-        await DailyRitaseCoalDetail.query(trx)
-          .whereBetween("checkout_jt", [ns_1, ns_2])
-          .fetch()
-      ).toJSON();
-      const ritaseCoalNS_2 = (
-        await DailyRitaseCoalDetail.query(trx)
-          .whereBetween("checkout_jt", [ns_2, ns_3])
-          .fetch()
-      ).toJSON();
+      const shifts = (await MasShift.query().fetch()).toJSON();
 
       // Daily Plans, Breakdown from Monthly Plans / Number of Days in month
       const coalPlanToday = (
@@ -738,33 +701,84 @@ class MonthlyPlanApiController {
           .first()
       ).toJSON();
 
-      const OB_NS_1_ACCUMULATE = ritaseOBNS_1.reduce(
-        (a, b) => a + b.daily_ritase.material_details.vol,
-        0
-      );
-      const OB_NS_2_ACCUMULATE = ritaseOBNS_2.reduce(
-        (a, b) => a + b.daily_ritase.material_details.vol,
-        0
-      );
-      const obActualDS = parseInt(
-        ritaseOBDS.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0)
-      );
-      const obActualNS = parseInt(OB_NS_1_ACCUMULATE + OB_NS_2_ACCUMULATE);
-      const obActualToday = parseInt(obActualDS + obActualNS);
-      const obAchieved = parseFloat(
-        ((obActualToday / obPlanToday.estimate) * 100).toFixed(2)
-      );
+      let RIT_OB_ARR = [];
+      let RIT_COAL_ARR = [];
+      let EVENTS = [];
+      let SHIFTS = [];
 
-      const coalActualDS = parseInt(
-        ritaseCoalDS.reduce((a, b) => a + b.w_netto, 0)
-      );
-      const coalActualNS =
-        parseInt(ritaseCoalNS_1.reduce((a, b) => a + b.w_netto, 0)) +
-        parseInt(ritaseCoalNS_2.reduce((a, b) => a + b.w_netto, 0));
-      const coalActualToday = parseInt(coalActualDS + coalActualNS);
-      const coalAchieved = parseFloat(
-        ((coalActualToday / coalPlanToday.estimate) * 100).toFixed(2)
-      );
+      for (let v of shifts) {
+        const _start = moment(`${prevDay} ${v.start_shift}`).format(
+          "YYYY-MM-DD HH:mm:ss"
+        );
+        const _end = moment(`${prevDay} ${v.start_shift}`)
+          .add(v.duration, "hour")
+          .format("YYYY-MM-DD HH:mm:ss");
+
+        SHIFTS.push({
+          name : v.kode.toLowerCase()
+        });
+        const _ritOB = (
+          await DailyRitaseDetail.query(trx)
+            .with("daily_ritase", (wh) => {
+              wh.with("material_details");
+            })
+            .whereBetween("check_in", [_start, _end])
+            .fetch()
+        ).toJSON();
+        const obActual = parseInt(
+          _ritOB.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0)
+        );
+
+        const obj = {
+          [v.kode.toLowerCase()]: obActual,
+          actual: obActual,
+        };
+        RIT_OB_ARR.push(obj);
+
+        // coal ritase
+        const ritaseCoal = (
+          await DailyRitaseCoalDetail.query(trx)
+            .whereBetween("checkout_jt", [_start, _end])
+            .fetch()
+        ).toJSON();
+
+        const coalActual = parseInt(
+          ritaseCoal.reduce((a, b) => a + b.w_netto, 0)
+        );
+
+        const obj_1 = {
+          [v.kode.toLowerCase()]: coalActual,
+          actual: coalActual,
+        };
+        RIT_COAL_ARR.push(obj_1);
+
+        const DAILY_EVENT = (
+          await DailyEvent.query(trx)
+            .with("event")
+            .where("start_at", ">=", [_start])
+            .andWhere("end_at", "<=", [_end])
+            .orderBy("start_at", "asc")
+            .fetch()
+        ).toJSON();
+
+        for (let z of DAILY_EVENT) {
+          let obj_2 = {
+            shift: v.kode.toLowerCase(),
+            event_name: z.event.narasi,
+            range_time: `${moment(z.start_at).format("LT")} - ${moment(
+              z.end_at
+            ).format("LT")}`,
+          };
+          EVENTS.push(obj_2);
+        }
+      }
+      const _EVENTS = [];
+      for(let x of SHIFTS){
+        const obj = {
+          [x.name] : EVENTS.filter((v) => v.shift === x.name)
+        }
+        _EVENTS.push(obj);
+      }
 
       const SoM = moment(date).startOf("month").format("YYYY-MM-DD");
       const now = moment(date).format("YYYY-MM-DD");
@@ -809,92 +823,27 @@ class MonthlyPlanApiController {
         MTD_COAL_EXPOSE_SR = 0;
       }
 
-      const DAILY_EVENT_DS = (
-        await DailyEvent.query(trx)
-          .with("event")
-          .where("start_at", ">=", [ds])
-          .andWhere("end_at", "<=", [ns_1])
-          .orderBy("start_at", "asc")
-          .fetch()
-      ).toJSON();
-      const DAILY_EVENT_NS_1 = (
-        await DailyEvent.query(trx)
-          .with("event")
-          .where("start_at", ">=", [ns_1])
-          .andWhere("end_at", "<=", [ns_2])
-          .orderBy("start_at", "asc")
-          .fetch()
-      ).toJSON();
-      const DAILY_EVENT_NS_2 = (
-        await DailyEvent.query(trx)
-          .with("event")
-          .where("start_at", ">=", [ns_2])
-          .andWhere("end_at", "<=", [ns_3])
-          .orderBy("start_at", "asc")
-          .fetch()
-      ).toJSON();
-
-      let EVENT_DS = [];
-      let EVENT_NS_1 = [];
-      let EVENT_NS_2 = [];
-
-      try {
-        if (DAILY_EVENT_DS) {
-          for (let e of DAILY_EVENT_DS) {
-            let obj = {
-              event_name: e.event.narasi,
-              range_time: `${moment(e.start_at).format("LT")} - ${moment(
-                e.end_at
-              ).format("LT")}`,
-            };
-            EVENT_DS.push(obj);
-          }
-        }
-
-        if (DAILY_EVENT_NS_1) {
-          for (let e of DAILY_EVENT_NS_1) {
-            let obj = {
-              event_name: e.event.narasi,
-              range_time: `${moment(e.start_at).format("LT")} - ${moment(
-                e.end_at
-              ).format("LT")}`,
-            };
-            EVENT_NS_1.push(obj);
-          }
-        }
-        if (EVENT_NS_2) {
-          for (let e of DAILY_EVENT_NS_2) {
-            let obj = {
-              event_name: e.event.narasi,
-              range_time: `${moment(e.start_at).format("LT")} - ${moment(
-                e.end_at
-              ).format("LT")}`,
-            };
-            EVENT_NS_2.push(obj);
-          }
-        }
-      } catch (err) {
-        console.log(err);
-      }
-
-      let EVENT_NS = [...EVENT_NS_1, ...EVENT_NS_2];
+      const obActualToday = RIT_OB_ARR.reduce((a, b) => a + b.actual, 0);
+      const coalActualToday = RIT_COAL_ARR.reduce((a, b) => a + b.actual, 0);
 
       let data = {
         daily_ob: {
-          ds: obActualDS,
-          ns: obActualNS,
+          shift: RIT_OB_ARR,
+          achieved: parseFloat(
+            ((obActualToday / obPlanToday.estimate) * 100).toFixed(2)
+          ),
           actual: obActualToday,
           plan: obPlanToday.estimate,
-          achieved: obAchieved,
-          ritase_total: ritaseOBDS.length || 0,
+          ritase_total: RIT_OB_ARR.length || 0,
         },
         daily_coal: {
-          ds: coalActualDS,
-          ns: coalActualNS,
+          shift: RIT_COAL_ARR,
           actual: coalActualToday,
+          achieved: parseFloat(
+            ((coalActualToday / coalPlanToday.estimate) * 100).toFixed(2)
+          ),
           plan: coalPlanToday.estimate,
-          achieved: coalAchieved,
-          ritase_total: ritaseOBNS_1.length + ritaseOBNS_2.length,
+          ritase_total: RIT_COAL_ARR.length,
         },
         mtd_ob_actual_by_tc: _MTD_OB_ACTUAL_BY_TC,
         mtd_coal_actual_by_tc: _MTD_COAL_ACTUAL_BY_TC,
@@ -902,10 +851,7 @@ class MonthlyPlanApiController {
         coal_expose: COAL_EXPOSE,
         mtd_coal_expose: MTD_COAL_EXPOSE,
         mtd_coal_expose_sr: MTD_COAL_EXPOSE_SR,
-        event: {
-          ds: EVENT_DS,
-          ns: EVENT_NS,
-        },
+        event: _EVENTS,
       };
 
       durasi = await diagnoticTime.durasi(t0);
