@@ -11,23 +11,56 @@
         <div class="white-box">
             <div class="row">
                 <div class="col-md-3">
-                    <!--<div class="input-group m-b-10">
-                        <input type="text" id="keyword" data-keyword="" name="keyword" class="form-control" placeholder="Keyword...">
+                    <div class="btn-group m-r-10">
+                        <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Filter Data <span class="caret"></span></button>
+                        <ul role="menu" class="dropdown-menu animated flipInX">
+                            <li><a class="bt-filter-data" data-filter="filter-date" href="#">By Range Date</a></li>
+                            <li><a class="bt-filter-data" data-filter="filter-shift" href="#">By Shift Schedule</a></li>
+                            <li><a class="bt-filter-data" data-filter="filter-keyword" href="#">By Keyword</a></li>
+                            <li class="divider"></li>
+                            <li><a class="bt-filter-data" href="#">Custom Filter</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 filter pull-right" id="filter-date" style="display:none;">
+                    <div class="row b-all p-t-10">
+                        <div class="col-md-5">
+                            <div class="form-group m-b-5">
+                                <input type="date" class="form-control input-sm" id="no_plat" name="no_plat">
+                                <span class="text-warning"><small>Tanggal Mulai Filter</small></span>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group m-b-5">
+                                <input type="date" class="form-control input-sm" id="no_plat" name="no_plat">
+                                <span class="text-warning"><small>Tanggal Akhir Filter</small></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group m-b-5">
+                                <button class="btn btn-outline btn-info waves-effect waves-light"> <i class="ti-filter m-r-5"></i> <span>Filter</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 pull-right filter" id="filter-shift" style="display:none;">
+                    <div class="input-group m-b-10">
+                        <select type="text" id="shift-filter" name="shift-filter" class="form-control select2shift"></select>
                         <div class="input-group-btn">
                             <button type="button" class="btn waves-effect waves-light btn-info">
                                 <i class="ti-search"></i>
                             </button>
                         </div>
-                    </div>-->
-                    <div class="btn-group m-r-10">
-                        <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Filter Data <span class="caret"></span></button>
-                        <ul role="menu" class="dropdown-menu animated flipInX">
-                            <li><a class="bt-filter-data" href="#">By Range Date</a></li>
-                            <li><a class="bt-filter-data" href="#">By Shift Schedule</a></li>
-                            <li><a class="bt-filter-data" href="#">By Keyword</a></li>
-                            <li class="divider"></li>
-                            <li><a class="bt-filter-data" href="#">Custom Filter</a></li>
-                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4 pull-right filter" id="filter-keyword" style="display:none;">
+                    <div class="input-group m-b-10">
+                        <input type="text" id="keyword-filter" data-keyword="" name="keyword-filter" class="form-control" placeholder="Keyword...">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn waves-effect waves-light btn-info">
+                                <i class="ti-search"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -43,7 +76,7 @@
                                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">ID NUMBER</th>
                                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Tipe Equipment</th>
                                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Functions</th>
-                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Material</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Material Name</th>
                                 <th class="sl f12w300G text-center text-center" rowspan="2" style="border-bottom: 2px solid;">
                                     Production <br>
                                     <small class="f12w300">(Bcm/Ton)</small>
@@ -52,6 +85,7 @@
                                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Awal</th>
                                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Akhir</th>
                                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SMU TOT</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">RIT OB</th>
                                 <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">
                                     <strong>Activity Description</strong>
                                 </th>
@@ -88,7 +122,9 @@
                                     <td>{{item.unit.kode}}</td>
                                     <td>{{item.unit.unit_model}}</td>
                                     <td class="text-uppercase">{{item.unit.tipe}}</td>
-                                    <td class="rand">{{!item.material ? 'COAL':'OB'}}</td>
+                                    <td class="rand">
+                                        <small>{{item.material_nm}}</small>
+                                    </td>
                                     <td class="rand text-right">
                                         {{item.volume_ob ? item.volume_ob : '-'}}
                                     </td>
@@ -98,6 +134,7 @@
                                     <td class="rand text-right">{{item.begin_smu}}</td>
                                     <td class="rand text-right">{{item.end_smu}}</td>
                                     <td class="rand text-right">{{item.used_smu}}</td>
+                                    <td class="rand text-right">{{item.ritase_ob}}</td>
                                     <td class="rand">
                                         <small>{{item.activity.name}}</small>
                                     </td>
@@ -170,7 +207,10 @@
 
         $('a.bt-filter-data').on('click', function(e){
             e.preventDefault()
-            alert('Filter Under Development....')
+            var filter = $(this).data('filter')
+            $('div.filter').css('display', 'none')
+            $('div#'+filter).show()
+            // alert('Filter Under Development....')
         })
 
         function setTotalTime(){

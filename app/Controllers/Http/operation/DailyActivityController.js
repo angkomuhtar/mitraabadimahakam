@@ -35,6 +35,13 @@ class DailyActivityController {
         const fleetOB = (await DailyRitase.query().where('status', 'Y').fetch()).toJSON()
         const arrFleetOB = fleetOB.map(item => item.dailyfleet_id)
 
+        // /* Find Begin Schedule Shift */
+        // const masShift = await MasShift.query().where('status', 'Y').first()
+        // var durasi_shift = masShift.duration
+        // var awal_shift = masShift.start_shift
+        // var dateTimeSheet = moment(item.tgl).format('')
+        
+
         let timeSheet = (
                 await TimeSheet
                     .query()
@@ -63,16 +70,27 @@ class DailyActivityController {
             item.volume_ob = 0
             item.pdtvy = null
             item.material = null
+            item.material_nm = '-'
+
+            var waktuMulai = new Date(moment(item.tgl).format('YYYY-MM-DD')+' '+shift.start_shift)
+            var waktuBerakhir = moment(waktuMulai).add(shift.duration, 'hours').format('YYYY-MM-DD HH:mm:ss')
+            
 
             let dailyRitase = await DailyRitase.findBy('dailyfleet_id', item.dailyfleet_id)
             if(dailyRitase){
                 let v_material = await MasMaterial.find(dailyRitase.material)
                 item.ritase_ob = await DailyRitaseDetail.query()
-                    .where('dailyritase_id', dailyRitase.id)
-                    .andWhere('hauler_id', item.unit_id).getCount()
+                    .where(w => {
+                        w.where('check_in', '>=', waktuMulai)
+                        .andWhere('check_in', '<=', waktuBerakhir)
+                    })
+                    .andWhere('dailyritase_id', dailyRitase.id)
+                    .andWhere('hauler_id', item.unit_id)
+                    .getCount()
                 item.volume_ob = (parseFloat(v_material.vol) * parseFloat(item.ritase_ob))
                 item.pdtvy = (parseFloat(item.volume_ob) / parseFloat(item.used_smu)).toFixed(2)
                 item.material = v_material.tipe
+                item.material_nm = v_material.name
             }
 
             result.push({
@@ -111,12 +129,8 @@ class DailyActivityController {
         })
 
         timeSheet.data = result
-
-        // console.log(JSON.stringify(list, null, 3));
-        console.log(timeSheet.data);
+        console.log(timeSheet.data[0].record_event);
         return view.render('operation.summary-ob.list', {
-            // dummy: JSON.stringify(result, null, 5),
-            // list: list, 
             list: timeSheet, 
             event: mas_event, 
             activity: masActivity
