@@ -176,6 +176,7 @@ class TimeSheetApiController {
             await DailyChecklist
                 .query()
                 .where({
+                    operator: req.operator,
                     unit_id: req.unit_id, 
                     dailyfleet_id: req.dailyfleet_id, 
                     tgl: moment(req.tgl).format('YYYY-MM-DD')
