@@ -125,8 +125,6 @@ class TimeSheetApiController {
 
         const prevDay = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
         const now = moment(date).format('YYYY-MM-DD')
-        console.log('now : ', now);
-        console.log('prev day', prevDay);
         
         await GET_DATA()
 
@@ -135,7 +133,9 @@ class TimeSheetApiController {
                     .query()
                     .with('operator_unit')
                     .with('equipment')
-                    .with('dailyRefueling')
+                    .with('dailyRefueling', (wh) => {
+                        wh.with('user')
+                    })
                     .with('dailyFleet', (wh) => {
                         wh.with('shift')
                     })
