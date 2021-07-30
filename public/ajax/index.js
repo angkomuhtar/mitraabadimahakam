@@ -315,6 +315,30 @@ $(function(){
         })
     })
 
+    $('body select.select2fuelman').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/fuelman?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                console.log('fuelman ::', data);
+                if(data.length > 0){
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.nm_lengkap+'</option>')
+                    elm.append('<option value="" selected>Pilih</option>')
+                    elm.html(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
     $('body select.select2event').each(function(){
         var selected = $(this).data('check')
         var elm = $(this)

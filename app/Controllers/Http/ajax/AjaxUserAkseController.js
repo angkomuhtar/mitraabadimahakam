@@ -20,6 +20,15 @@ class AjaxUserAkseController {
         }
         return data
     }
+
+    async getOptionFuelman ({ request }) {
+        const req = request.all()
+        let data = (await VUser.query().where({status: 'Y', user_tipe: 'fuelman'}).fetch()).toJSON()
+        if(req.selected){
+            data = data.map(item => item.id === parseInt(req.selected) ? {...item, selected: 'selected'} : {...item, selected: ''})
+        }
+        return data
+    }
 }
 
 module.exports = AjaxUserAkseController

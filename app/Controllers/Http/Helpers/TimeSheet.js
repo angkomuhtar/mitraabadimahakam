@@ -80,24 +80,12 @@ class TimeSheet {
     }
 
     async UPDATE (params, req) {
+        console.log('TimeSheet ::', req);
         const trx = await db.beginTransaction()
         try {
             
             const { p2h, event, refueling } = req
             const dailyChecklist = await DailyChecklist.find(params.id)
-
-            // if(!refueling){
-            //     throw new Error('Data Pengisian Bahan Bakar tdk valid...')
-            // }
-    
-            // if(refueling.topup === '' || refueling.topup < 0){
-            //     throw new Error('Jumlah Topup Fuel tdk valid...')
-            // }
-    
-            // if(refueling.smu === '' || refueling.topup < 0){
-            //     throw new Error('Input SMU Refuel Unit tdk valid...')
-            // }
-            
     
             const dataMerge = {
                 user_chk: req.user_chk, 
@@ -105,6 +93,8 @@ class TimeSheet {
                 operator: req.operator, 
                 unit_id: req.unit_id,
                 tgl: req.tgl,
+                approved_at: req.approved_at,
+                finish_at: req.finish_at,
                 dailyfleet_id: req.dailyfleet_id,
                 description: req.description, 
                 begin_smu: dailyChecklist.begin_smu,

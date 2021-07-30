@@ -19,6 +19,6 @@ DailyChecklistHook.beforeUPDATE = async (dailychecklist) => {
     }
 
     if(dailychecklist.end_smu){
-        dailychecklist.finish_at = new Date()
+        dailychecklist.finish_at = dailychecklist.finish_at ? dailychecklist.finish_at : new Date()
     }
 }

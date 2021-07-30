@@ -8,6 +8,10 @@ class DailyRefueling extends Model {
         return null
     }
 
+    user () {
+        return this.belongsTo("App/Models/VUser", "fuelman", "id")
+    }
+
     timesheet () {
         return this.belongsTo("App/Models/DailyChecklist", "timesheet_id", "id")
     }
