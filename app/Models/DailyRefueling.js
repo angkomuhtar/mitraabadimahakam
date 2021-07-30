@@ -4,6 +4,10 @@
 const Model = use('Model')
 
 class DailyRefueling extends Model {
+    static get updatedAtColumn () {
+        return null
+    }
+
     timesheet () {
         return this.belongsTo("App/Models/DailyChecklist", "timesheet_id", "id")
     }

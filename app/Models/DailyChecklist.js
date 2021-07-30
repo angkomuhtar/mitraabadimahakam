@@ -10,6 +10,10 @@ class DailyChecklist extends Model {
         this.addHook('beforeUpdate', 'DailyChecklistHook.beforeUPDATE')
     }
 
+    static get updatedAtColumn () {
+        return null
+    }
+
     userCheck(){
         return this.belongsTo("App/Models/User", "user_chk", "id")
     }

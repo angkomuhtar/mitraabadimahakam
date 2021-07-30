@@ -14,68 +14,67 @@ const moment = require("moment");
  * Resourceful controller for interacting with dailyfuelfillings
  */
 class DailyFuelFillingApiController {
-  /**
-   * Show a list of all dailyfuelfillings.
-   * GET dailyfuelfillings
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async index({ request, response, view }) {}
 
-  /**
-   * Render a form to be used for creating a new dailyfuelfilling.
-   * GET dailyfuelfillings/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async create({ request, response, view }) {}
 
-  /**
-   * Create/save a new dailyfuelfilling.
-   * POST dailyfuelfillings
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store({ request, response, auth, params }) {}
+  async store({ request, response, auth }) {
+    var t0 = performance.now();
+    let durasi;
+    const req = request.only([
+      "timesheet_id",
+      "topup",
+      "smu",
+      "equip_id",
+      "operator",
+      "fueling_at",
+      "description",
+      "fuelman",
+    ]);
 
-  /**
-   * Display a single dailyfuelfilling.
-   * GET dailyfuelfillings/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      let durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: [],
+      });
+    };
+
+    try {
+      const dailyRefueling = new DailyRefueling()
+      dailyRefueling.fill(req)
+      await dailyRefueling.save()
+      return response.status(201).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+        },
+        data: dailyRefueling,
+      });
+    } catch (error) {
+      console.log(error);
+      return response.status(400).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: [],
+      });
+    }
+  }
+
   async show({ params, request, response, view }) {}
 
-  /**
-   * Render a form to update an existing dailyfuelfilling.
-   * GET dailyfuelfillings/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async edit({ params, request, response, view }) {}
 
-  /**
-   * Update dailyfuelfilling details.
-   * PUT or PATCH dailyfuelfillings/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
   async update({ params, request, response, auth }) {
     var t0 = performance.now();
     let durasi;
@@ -161,14 +160,6 @@ class DailyFuelFillingApiController {
     }
   }
 
-  /**
-   * Delete a dailyfuelfilling with id.
-   * DELETE dailyfuelfillings/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
   async destroy({ params, request, response }) {}
 }
 
