@@ -715,7 +715,8 @@ class MonthlyPlanApiController {
           .format("YYYY-MM-DD HH:mm:ss");
 
         SHIFTS.push({
-          name : v.kode.toLowerCase()
+          kode: v.kode.toLowerCase(),
+          name : v.name
         });
         const _ritOB = (
           await DailyRitaseDetail.query(trx)
@@ -730,7 +731,7 @@ class MonthlyPlanApiController {
         );
 
         const obj = {
-          [v.kode.toLowerCase()]: obActual,
+          name: v.kode.toUpperCase(),
           actual: obActual,
         };
         RIT_OB_ARR.push(obj);
@@ -747,7 +748,7 @@ class MonthlyPlanApiController {
         );
 
         const obj_1 = {
-          [v.kode.toLowerCase()]: coalActual,
+          name: v.kode.toUpperCase(),
           actual: coalActual,
         };
         RIT_COAL_ARR.push(obj_1);
@@ -773,10 +774,11 @@ class MonthlyPlanApiController {
         }
       }
       const _EVENTS = [];
-      for(let x of SHIFTS){
+      for (let x of SHIFTS) {
         const obj = {
-          [x.name] : EVENTS.filter((v) => v.shift === x.name)
-        }
+          shift: x.name.toUpperCase(),
+          data : EVENTS.filter((v) => v.shift === x.kode)
+        };
         _EVENTS.push(obj);
       }
 
@@ -817,7 +819,7 @@ class MonthlyPlanApiController {
           _MTD_OB_ACTUAL_BY_TC /
           (_MTD_COAL_ACTUAL_BY_TC + parseInt(COAL_EXPOSE))
         ).toFixed(2)
-      );
+      )
 
       if (await infinityCheck(MTD_COAL_EXPOSE_SR)) {
         MTD_COAL_EXPOSE_SR = 0;
@@ -832,13 +834,13 @@ class MonthlyPlanApiController {
           achieved: parseFloat(
             ((obActualToday / obPlanToday.estimate) * 100).toFixed(2)
           ),
-          actual: obActualToday,
+          total: obActualToday,
           plan: obPlanToday.estimate,
           ritase_total: RIT_OB_ARR.length || 0,
         },
         daily_coal: {
           shift: RIT_COAL_ARR,
-          actual: coalActualToday,
+          total: coalActualToday,
           achieved: parseFloat(
             ((coalActualToday / coalPlanToday.estimate) * 100).toFixed(2)
           ),
