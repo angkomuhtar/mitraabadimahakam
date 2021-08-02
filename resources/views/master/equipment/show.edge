@@ -93,7 +93,17 @@
                                         <div class="col-md-7">
                                             <div class="form-group">
                                                 <label for="">Description</label>
-                                                <textarea class="form-control" rows="3" name="remark">{{list.remark}}</textarea>
+                                                <textarea class="form-control" rows="13" name="remark">{{list.remark}}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Upload Photo</label>
+                                                <img src="{{list.img_uri}}" alt="user" style="width: -webkit-fill-available;margin-bottom: 10px;">
+                                                <div class="input-group">
+                                                    <input type="file" class="form-control input-sm" name="photo"> 
+                                                    <div class="input-group-addon">Photo</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -154,6 +164,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>

@@ -10,6 +10,16 @@ $(function(){
         $(this).html(len + '...')
     })
 
+    $('input[type="date"].range_begin').each(function(){
+        var dateString = moment().startOf('month').format("YYYY-MM-DD")
+        $(this).val(dateString)
+    })
+
+    $('input[type="date"].range_end').each(function(){
+        var dateString = moment().endOf('month').format("YYYY-MM-DD")
+        $(this).val(dateString)
+    })
+
     $('input[type="date"]').each(function(){
         var isNow = $(this).data('date')
         if(isNow){

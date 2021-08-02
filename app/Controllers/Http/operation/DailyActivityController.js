@@ -30,25 +30,64 @@ class DailyActivityController {
         const req = request.all()
         const limit = 15
         const halaman = req.page === undefined ? 1:parseInt(req.page)
-        // const arrTimeSheet = (await SummaryOB.query().distinct('no_timesheet').select('no_timesheet').fetch()).toJSON()
 
+        let timeSheet = []
+
+        const reqUnit = request.only(['unit'])
+        const arrayUnit = reqUnit.unit && reqUnit.unit.split(',')
+        
         const fleetOB = (await DailyRitase.query().where('status', 'Y').fetch()).toJSON()
         const arrFleetOB = fleetOB.map(item => item.dailyfleet_id)
-
-        // /* Find Begin Schedule Shift */
-        // const masShift = await MasShift.query().where('status', 'Y').first()
-        // var durasi_shift = masShift.duration
-        // var awal_shift = masShift.start_shift
-        // var dateTimeSheet = moment(item.tgl).format('')
         
 
-        let timeSheet = (
+        if(req.filter === 'date'){
+            timeSheet = (
                 await TimeSheet
                     .query()
                     .whereIn('dailyfleet_id', arrFleetOB)
+                    .andWhere(w => {
+                        w.where('tgl', '>=', req.range_begin)
+                        .andWhere('tgl', '<=', req.range_end)
+                    })
                     .orderBy('id', 'desc')
                     .paginate(halaman, limit)
             ).toJSON()
+        }else if(req.filter === 'shift'){
+            const dailyFleet = (await DailyFleet.query().whereIn('id', arrFleetOB).andWhere('shift_id', req.shift).fetch()).toJSON()
+            timeSheet = (
+                await TimeSheet
+                    .query()
+                    .whereIn('dailyfleet_id', dailyFleet.map(i => i.id))
+                    .andWhere(w => {
+                        w.where('tgl', '>=', req.range_begin)
+                        .andWhere('tgl', '<=', req.range_end)
+                    })
+                    .orderBy('id', 'desc')
+                    .paginate(halaman, limit)
+            ).toJSON()
+        }else if(req.filter === 'unit'){
+            timeSheet = (
+                await TimeSheet
+                    .query()
+                    .whereIn('dailyfleet_id', arrFleetOB)
+                    .andWhere(w => {
+                        w.whereIn('unit_id', arrayUnit)
+                        .andWhere('tgl', '>=', req.range_begin)
+                        .andWhere('tgl', '<=', req.range_end)
+                    })
+                    .orderBy('id', 'desc')
+                    .paginate(halaman, limit)
+            ).toJSON()
+        }else{
+            timeSheet = (
+                    await TimeSheet
+                        .query()
+                        .whereIn('dailyfleet_id', arrFleetOB)
+                        .orderBy('id', 'desc')
+                        .paginate(halaman, limit)
+                ).toJSON()
+        }
+
 
         let result = []
 
@@ -129,7 +168,7 @@ class DailyActivityController {
         })
 
         timeSheet.data = result
-        console.log(timeSheet.data[0].record_event);
+        // console.log(timeSheet.data[0].record_event);
         return view.render('operation.summary-ob.list', {
             list: timeSheet, 
             event: mas_event, 

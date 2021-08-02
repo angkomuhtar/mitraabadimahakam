@@ -1,11 +1,4 @@
 {{ script('ajax/index') }}
-<!--<div class="row">
-    <div class="col-md-12">
-        <div class="well">
-            <em>{{dummy}}</em>
-        </div>
-    </div>
-</div>-->
 <div class="row">
     <div class="col-md-12">
         <div class="white-box">
@@ -16,9 +9,9 @@
                         <ul role="menu" class="dropdown-menu animated flipInX">
                             <li><a class="bt-filter-data" data-filter="filter-date" href="#">By Range Date</a></li>
                             <li><a class="bt-filter-data" data-filter="filter-shift" href="#">By Shift Schedule</a></li>
-                            <li><a class="bt-filter-data" data-filter="filter-keyword" href="#">By Keyword</a></li>
+                            <li><a class="bt-filter-data" data-filter="filter-unit" href="#">By Equipment Unit</a></li>
                             <li class="divider"></li>
-                            <li><a class="bt-filter-data" href="#">Custom Filter</a></li>
+                            <li><a class="bt-filter-data" id="filter-reset" href="#">Reset Filter</a></li>
                         </ul>
                     </div>
                 </div>
@@ -26,40 +19,83 @@
                     <div class="row b-all p-t-10">
                         <div class="col-md-5">
                             <div class="form-group m-b-5">
-                                <input type="date" class="form-control input-sm" id="no_plat" name="no_plat">
                                 <span class="text-warning"><small>Tanggal Mulai Filter</small></span>
+                                <input type="date" class="form-control input-sm range_begin" id="range_begin" name="range_begin">
                             </div>
                         </div>
                         <div class="col-md-5">
                             <div class="form-group m-b-5">
-                                <input type="date" class="form-control input-sm" id="no_plat" name="no_plat">
                                 <span class="text-warning"><small>Tanggal Akhir Filter</small></span>
+                                <input type="date" class="form-control input-sm range_end" id="range_end" name="range_end">
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-2 p-t-20">
                             <div class="form-group m-b-5">
-                                <button class="btn btn-outline btn-info waves-effect waves-light"> <i class="ti-filter m-r-5"></i> <span>Filter</span></button>
+                                <button class="btn btn-outline btn-info waves-effect waves-light btn-sm" id="bt-filter-date"> 
+                                    <i class="ti-filter m-r-5"></i> 
+                                    <span>Filter</span>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 pull-right filter" id="filter-shift" style="display:none;">
-                    <div class="input-group m-b-10">
-                        <select type="text" id="shift-filter" name="shift-filter" class="form-control select2shift"></select>
-                        <div class="input-group-btn">
-                            <button type="button" class="btn waves-effect waves-light btn-info">
-                                <i class="ti-search"></i>
-                            </button>
+                <div class="col-md-8 pull-right filter" id="filter-shift" style="display:none;">
+                    <div class="row b-all p-t-10">
+                        <div class="col-md-3">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Mulai Filter</small></span>
+                                <input type="date" class="form-control input-sm range_begin" id="shift_begin" name="shift_begin">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Akhir Filter</small></span>
+                                <input type="date" class="form-control input-sm range_end" id="shift_end" name="shift_end">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group m-b-10">
+                                <span class="text-warning"><small>Tipe Shift</small></span>
+                                <select type="text" id="shift-filter" name="shift-filter" class="form-control input-sm select2shift"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 p-t-20">
+                            <div class="form-group m-b-5">
+                                <button class="btn btn-outline btn-info waves-effect waves-light btn-sm" id="bt-filter-shift"> 
+                                    <i class="ti-filter m-r-5"></i> 
+                                    <span>Filter</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4 pull-right filter" id="filter-keyword" style="display:none;">
-                    <div class="input-group m-b-10">
-                        <input type="text" id="keyword-filter" data-keyword="" name="keyword-filter" class="form-control" placeholder="Keyword...">
-                        <div class="input-group-btn">
-                            <button type="button" class="btn waves-effect waves-light btn-info">
-                                <i class="ti-search"></i>
-                            </button>
+                <div class="col-md-8 pull-right filter" id="filter-unit" style="display:none;">
+                    <div class="row b-all p-t-10">
+                        <div class="col-md-3">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Mulai Filter</small></span>
+                                <input type="date" class="form-control input-sm range_begin" id="unit_begin" name="unit_begin">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Akhir Filter</small></span>
+                                <input type="date" class="form-control input-sm range_end" id="unit_end" name="unit_end">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group m-b-10">
+                                <span class="text-warning"><small>Tipe Shift</small></span>
+                                <select type="text" id="unit-filter" name="unit-filter" class="form-control input-sm select2equipmentx" data-live-search="true" multiple></select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 p-t-20">
+                            <div class="form-group m-b-5">
+                                <button class="btn btn-outline btn-info waves-effect waves-light btn-sm" id="bt-filter-unit"> 
+                                    <i class="ti-filter m-r-5"></i> 
+                                    <span>Filter</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -114,6 +150,13 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @if(list.data <= 0)
+                              <tr>
+                                  <td colspan="45">
+                                      <code>Data not found...</code>
+                                  </td>
+                              </tr>
+                            @endif
                             @each(item in list.data)
                                 <tr class="row-data" data-id="{{item.id}}">
                                     <td>{{$loop.index + 1}}</td>
@@ -185,19 +228,23 @@
             'backgroundColor': '#2f323e'
         })
 
-        $('body').on('click', 'a.btn-pagging', function(e){
-            e.preventDefault()
-            var page = $(this).data('page')
-            var keyword = $('#keywordTimeSheet').val()
-            var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword
+        $('body select.select2equipmentx').each(function(){
+            var selected = $(this).data('check')
+            var elm = $(this)
+            elm.children().remove()
             $.ajax({
                 async: true,
-                url: url,
+                url: '/ajax/equipment?selected='+selected,
                 method: 'GET',
-                success: function(result){
-                    $('body').find('div#list-content').html(result).show()
-                    $('body').find('div#row-paginate').css('margin-bottom', '20px')
-                    listNoBerkas()
+                success: function(data){
+                    if(data.length > 0){
+                        const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.kode+' ('+nod.unit_model+') - '+(nod.brand).toUpperCase()+'</option>')
+                        elm.html(list)
+                        elm.prepend('<option value="">Pilih</option>')
+                        elm.selectpicker('render')
+                    }else{
+                        elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                    }
                 },
                 error: function(err){
                     console.log(err);
@@ -210,7 +257,6 @@
             var filter = $(this).data('filter')
             $('div.filter').css('display', 'none')
             $('div#'+filter).show()
-            // alert('Filter Under Development....')
         })
 
         function setTotalTime(){

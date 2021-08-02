@@ -1,6 +1,8 @@
 'use strict'
 
+const Helpers = use('Helpers')
 const Equipment = use("App/Models/MasEquipment")
+const cryptoRandomString = require('crypto-random-string')
 var moment = require('moment')
 const Db = use('Database')
 
@@ -48,12 +50,36 @@ class MasEquipmentController {
 
   async store ({ auth, request, response }) {
     const equip = request.only(['kode', 'tipe', 'brand', 'received_date', 'received_hm', 'is_warranty', 'warranty_date', 'is_owned', 'remark', 'unit_sn', 'unit_model', 'engine_sn', 'engine_model', 'fuel_capacity', 'qty_capacity', 'satuan'])
+    
+    const host = request.headers().origin
+    const validatePhoto = {
+      types: ["image"],
+      size: "10mb",
+      extname: ["jpg", "jpeg", "png"],
+    }
+
+    const photo = request.file("photo", validatePhoto)
+    let uriImages = null
+    if(photo){
+      const randURL = await cryptoRandomString({length: 30, type: 'url-safe'})
+      const aliasName = `${randURL}.${photo.subtype}`
+      uriImages = host + '/images/equipments/'+aliasName
+      await photo.move(Helpers.publicPath(`/images/equipments/`), {
+        name: aliasName,
+        overwrite: true,
+      })
+  
+      if (!photo.moved()) {
+        return photo.error()
+      }
+    }
+
     const usr = await auth.getUser()
     const logger = new Loggerx(request.url(), request.all(), usr, request.method(), true)
     await logger.tempData()
 
     const equipment = new Equipment()
-    equipment.fill({...equip, created_by: usr.id})
+    equipment.fill({...equip, created_by: usr.id, img_uri: uriImages})
     const trx = await Db.beginTransaction()
     try {
       await equipment.save(trx)
@@ -90,6 +116,31 @@ class MasEquipmentController {
     const usr = await auth.getUser()
     const { id } = params
     const req = request.only(['kode', 'tipe', 'brand', 'received_date', 'received_hm', 'is_warranty', 'warranty_date', 'is_owned', 'remark', 'unit_sn', 'unit_model', 'engine_sn', 'engine_model', 'fuel_capacity', 'qty_capacity', 'satuan', 'dealer_id'])
+
+    const host = request.headers().origin
+    const validatePhoto = {
+      types: ["image"],
+      size: "10mb",
+      extname: ["jpg", "jpeg", "png"],
+    }
+
+    const photo = request.file("photo", validatePhoto)
+    let uriImages = null
+    if(photo){
+      const randURL = await cryptoRandomString({length: 30, type: 'url-safe'})
+      const aliasName = `${randURL}.${photo.subtype}`
+      uriImages = host + '/images/equipments/'+aliasName
+      req.img_uri = uriImages
+      await photo.move(Helpers.publicPath(`/images/equipments/`), {
+        name: aliasName,
+        overwrite: true,
+      })
+  
+      if (!photo.moved()) {
+        return photo.error()
+      }
+    }
+    
     const equipment = await Equipment.findOrFail(id)
     equipment.merge(req)
     try {
