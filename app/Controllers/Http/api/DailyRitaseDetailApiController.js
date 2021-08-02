@@ -238,7 +238,7 @@ class DailyRitaseDetailApiController {
           .with('spv', w => w.with('profile'))
           .with('hauler')
           .where('dailyritase_id', id)
-          .orderBy('check_in', 'desc')
+          .orderBy('check_in', 'asc')
           .fetch()
         durasi = await diagnoticTime.durasi(t0)
         return response.status(200).json({

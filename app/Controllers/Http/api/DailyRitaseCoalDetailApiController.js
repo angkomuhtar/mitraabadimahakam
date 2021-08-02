@@ -92,7 +92,7 @@ class DailyRitaseCoalDetailApiController {
             .with('transporter_subcon')
             .with('checkerJT')
             .where('ritasecoal_id', id)
-            .orderBy('created_at', 'desc')
+            .orderBy('created_at', 'asc')
             .fetch()
 
             durasi = await diagnoticTime.durasi(t0)
