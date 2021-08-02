@@ -36,6 +36,7 @@
                                 <th class="sl" width="100px">Recived HM</th>
                                 <th class="sl">is Owned</th>
                                 <th class="sl text-center">Warranty</th>
+                                <th class="sl text-center">Photo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -84,6 +85,17 @@
                                             -
                                         @endif
                                     </td>
+                                    <td>
+                                        @if(item.img_uri)
+                                            <a class="image-popup-vertical-fit" href="{{item.img_uri}}" title="{{ upperCase(item.brand) }}"> 
+                                                <img src="{{item.img_uri}}" alt="{{item.kode}}" class="img-responsive">
+                                            </a>
+                                        @else
+                                            <a class="image-popup-vertical-fit" href="{{ assetsUrl('img-notfound.png') }}" title="{{ upperCase(item.brand) }}"> 
+                                                <img src="{{ assetsUrl('img-notfound.png') }}" alt="{{item.kode}}" class="img-responsive">
+                                            </a>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endeach
                         </tbody>
@@ -94,3 +106,5 @@
         </div>
     </div>
 </div>
+{{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min') }}
+{{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup-init') }}
