@@ -31,27 +31,55 @@ class MonthlyPlanController {
   }
 
   
-  async create ({ request, response, view }) {
+  async create ({ request, view }) {
+    return view.render('operation.monthly-plan.create')
   }
 
   
   async store ({ request, response }) {
+    const req = request.only(['pit_id', 'tipe', 'month', 'estimate'])
+    console.log(req);
+    try {
+      await MonthlyPlanHelpers.POST(req)
+      return {
+        success: true,
+        message: 'Success save data...'
+      }
+    } catch (error) {
+      console.log(error)
+      return {
+        success: false,
+        message: 'Failed save data...'
+      }
+    }
   }
 
   
-  async show ({ params, request, response, view }) {
+  async show ({ params, view }) {
+    try {
+      const data = (await MonthlyPlanHelpers.GET_ID(params)).toJSON()
+      return view.render('operation.monthly-plan.show', {data: data})
+    } catch (error) {
+      return view.render('404')
+    }
   }
 
   
-  async edit ({ params, request, response, view }) {
-  }
-
-  
-  async update ({ params, request, response }) {
-  }
-
-  
-  async destroy ({ params, request, response }) {
+  async update ({ params, request }) {
+    const req = request.only(['pit_id', 'tipe', 'month', 'estimate'])
+    try {
+      await MonthlyPlanHelpers.UPDATE(params, req)
+      return {
+        success: true,
+        message: 'Success update data...'
+      }
+    } catch (error) {
+      console.log(error)
+      return {
+        success: false,
+        message: 'Failed update data...'
+      }
+    }
   }
 }
 

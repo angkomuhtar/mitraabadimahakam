@@ -309,9 +309,17 @@ Route.group(() => {
     // Monthly Plan
     Route.get('/monthly-plan', 'MonthlyPlanController.index').as('opr.monthly-plan.index').middleware('R')
 
-    Route.get('/monthly-plan/list', 'MonthlyPlanController.listBulanan').as('opr.monthly-plan.listBulanan').middleware('R')
+    Route.post('/monthly-plan', 'MonthlyPlanController.store').as('opr.monthly-plan.store').middleware('R')
 
+    Route.get('/monthly-plan/list', 'MonthlyPlanController.listBulanan').as('opr.monthly-plan.listBulanan').middleware('R')
+    
+    Route.get('/monthly-plan/create', 'MonthlyPlanController.create').as('opr.monthly-plan.create').middleware('R')
+    
     Route.get('/monthly-plan/list-daily', 'MonthlyPlanController.listHarian').as('opr.monthly-plan.listHarian').middleware('R')
+    
+    Route.get('/monthly-plan/:id/show', 'MonthlyPlanController.show').as('opr.monthly-plan.show').middleware('R')
+
+    Route.post('/monthly-plan/:id/update', 'MonthlyPlanController.update').as('opr.monthly-plan.update').middleware('U')
 
     // Fuel Distribution
     Route.get('/fuel-dist', 'FuelDistributeController.index').as('opr.fuel-distribution.index').middleware('R')

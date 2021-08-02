@@ -35,6 +35,7 @@ class MonthlyPlan {
                         .andWhere('tipe', 'OB')
                         .fetch()
                     ).toJSON()
+                    // console.log(awalBulan);
             }else{
                 const arrDate = Array.from({length: moment(req.periode).daysInMonth()}, 
                 (x, i) => moment(req.periode).startOf('month').add(i, 'days').format('YYYY-MM-DD'))
@@ -47,9 +48,12 @@ class MonthlyPlan {
                     .andWhere('tipe', 'OB')
                     .fetch()
                 ).toJSON()
+                
             }
+
+
             const data = {
-                monthly_plan: dailyPlans[0].monthly_plan,
+                monthly_plan: dailyPlans[0] ? dailyPlans[0].monthly_plan : null,
                 labels: currentMonthDates,
                 actual: dailyPlans.map(item => parseFloat(item.actual))
             }
@@ -155,8 +159,12 @@ class MonthlyPlan {
         return data
     }
 
+    async GET_ID (params) {
+        const data = await MonthlyPlans.find(params.id)
+        return data
+    }
+
     async POST (req) { 
-        
         const { pit_id, tipe, month, estimate, actual } = req
         const satuan = tipe != 'BB' ? 'BCM':'MT'
         try {
@@ -168,7 +176,19 @@ class MonthlyPlan {
         } catch (error) {
             console.log(error);
         }
+    }
 
+    async UPDATE (params, req) {
+        let monthlyPlans = await MonthlyPlans.find(params.id)
+        try {
+            await monthlyPlans.delete()
+            monthlyPlans = new MonthlyPlans()
+            monthlyPlans.fill(req)
+            await monthlyPlans.save()
+            return monthlyPlans
+        } catch (error) {
+            throw new Error('Failed...')
+        }
     }
 }
 
