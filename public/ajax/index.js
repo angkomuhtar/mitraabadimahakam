@@ -468,5 +468,29 @@ $(function(){
             }
         })
     })
+
+    /* Option Platform  */
+    $('body select.select2fitur').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/doc/fitur?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                console.log('FITUR ::', data);
+                if(data.length > 0){
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.fitur+'</option>')
+                    elm.html(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
 })
 

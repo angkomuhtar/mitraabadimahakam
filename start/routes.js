@@ -185,6 +185,21 @@ Route.group(() => {
 
     Route.post('/subcont/:id/delete', 'MasSubcontractorController.delete').as('mas.subcont.delete').middleware('D')
 
+    // Dokumentasi
+    Route.get('/doc', 'MasDucumentationController.index').as('mas.doc.index').middleware('R')
+
+    Route.post('/doc', 'MasDucumentationController.store').as('mas.doc.store').middleware('C')
+
+    Route.get('/doc/list', 'MasDucumentationController.list').as('mas.doc.list').middleware('R')
+
+    Route.get('/doc/create', 'MasDucumentationController.create').as('mas.doc.create').middleware('R')
+
+    Route.get('/doc/:id/show', 'MasDucumentationController.show').as('mas.doc.show').middleware('U')
+
+    Route.post('/doc/:id/update', 'MasDucumentationController.update').as('mas.doc.update').middleware('U')
+
+    Route.post('/doc/:id/delete', 'MasDucumentationController.delete').as('mas.doc.delete').middleware('D')
+
 }).prefix('master').namespace('master').middleware(['MM'])
 
 // SETTING
@@ -383,6 +398,8 @@ Route.group(() => {
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
 
+    
+
     Route.get('/grafik1', 'AjaxChartController.grafik_OB_MTD')
     
     Route.get('/grafik2', 'AjaxChartController.grafik_OB_RITASE_EQUIPMENT')
@@ -394,6 +411,8 @@ Route.group(() => {
     Route.get('/grafik5', 'AjaxChartController.grafik_EVENT_MTD')
 
     Route.get('/grafik6', 'AjaxChartController.grafik_COST_VS_PROD')
+
+    Route.get('/doc/fitur', 'AjaxDocumentationController.getFitur')
     
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
 

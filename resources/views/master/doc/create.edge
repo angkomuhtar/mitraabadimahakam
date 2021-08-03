@@ -1,0 +1,117 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-doc">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Add Documentation</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row b-all m-b-20 m-t-10 p-10">
+                                                <div class="col-md-6">
+                                                    <div class="radio radio-info m-b-20">
+                                                        <input type="radio" data-hidden="mobile" name="platform" id="web" value="web">
+                                                        <label for="web"> Platform Web Apps </label>
+                                                    </div>
+                                                    <div class="radio radio-info m-b-20">
+                                                        <input type="radio" data-hidden="desktop" name="platform" id="mobile" value="mobile">
+                                                        <label for="mobile"> Platform Mobile Apps </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row text-center">
+                                                <div class="col-md-12">
+                                                    <i id="desktop" class="ti-mobile iconx" style="font-size: 10em;display:none;"></i>
+                                                    <i id="mobile" class="ti-desktop iconx" style="font-size: 10em;display:none;"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all m-t-20 p-t-20">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Fitur</label>
+                                                <select class="form-control select2fitur" name="fitur" id="fitur" data-platform="" data-check="" required></select> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Deskripsi Fitur</label>
+                                                <textarea class="form-control" name="desc" id="desc" rows="3" disabled></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all m-t-20 p-t-20">
+                                        <div class="col-md-12">
+                                            <h3>Penjelasan Fitur</h3>
+                                            <hr>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label for="">Title</label>
+                                                <input type="text" class="form-control input-sm" name="title" id="title" required>
+                                             </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Upload Gambar</label>
+                                                <input type="file" class="form-control input-sm" name="photo" id="photo" required>
+                                             </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Urut Dokumentasi</label>
+                                                <input type="number" class="form-control input-sm" name="urut" id="urut" required>
+                                             </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="white-box p-0">
+                                                <h3 class="box-title">Penjelasan lengkap setiap details fitur</h3>
+                                                <textarea class="summernote" id="summernote"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    jQuery(document).ready(function() {
+        $('#summernote').summernote({
+            height: 350, // set editor height
+            minHeight: null, // set minimum height of editor
+            maxHeight: null, // set maximum height of editor
+            focus: false, // set focus to editable area after initializing summernote
+            backgroundColor: '#2f323e'
+        });
+        $('.inline-editor').summernote({
+            airMode: true
+        });
+    });
+    window.edit = function() {
+        $(".click2edit").summernote()
+    }, window.save = function() {
+        $(".click2edit").destroy()
+    }
+</script>

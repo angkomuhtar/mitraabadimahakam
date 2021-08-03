@@ -1,0 +1,72 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add New Documentations</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="inpKeywordEvent" class="form-control" placeholder="Search for..." value="{{keyword}}">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl text-center" width="100">Platform</th>
+                                <th class="sl" width="*">Title</th>
+                                <th class="sl" width="*">Fitur</th>
+                                <th class="sl" width="100">Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td class="text-center">{{item.fitur.platform}}</td>
+                                    <td>
+                                        <strong>{{item.title}}</strong>
+                                    </td>
+                                    <td class="">
+                                        {{item.fitur.fitur}} <br>
+                                        <small>{{item.fitur.desc}}</small>
+                                    </td>
+                                    <td class="v-middle">
+                                        @if(item.img_doc)
+                                            <a class="image-popup-vertical-fit" href="{{item.img_doc}}" title="{{ upperCase(item.title) }}"> 
+                                                <img src="{{item.img_doc}}" alt="{{item.title}}" class="img-responsive">
+                                            </a>
+                                        @else
+                                            <a class="image-popup-vertical-fit" href="{{ assetsUrl('img-notfound.png') }}" title="{{ upperCase(item.title) }}"> 
+                                                <img src="{{ assetsUrl('img-notfound.png') }}" alt="{{item.title}}" class="img-responsive">
+                                            </a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>
+{{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min') }}
+{{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup-init') }}

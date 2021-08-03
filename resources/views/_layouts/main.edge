@@ -23,6 +23,10 @@
     {{ style('css/style') }}
     <!-- color CSS -->
     {{ style('css/colors/blue-dark') }}
+
+    {{--  <link href="../plugins/bower_components/summernote/dist/summernote.css" rel="stylesheet" />  --}}
+    {{ style('plugins/bower_components/summernote/dist/summernote.css') }}
+
     {{--  <link href="../plugins/bower_components/custom-select/custom-select" rel="stylesheet" type="text/css" />  --}}
     {{ style('plugins/bower_components/custom-select/custom-select') }}
     {{--  <link href="../plugins/bower_components/bootstrap-select/bootstrap-select.min" rel="stylesheet" />  --}}
@@ -191,6 +195,8 @@
 
     <!-- switcher -->
     {{ script('plugins/bower_components/styleswitcher/jQuery.style.switcher') }}
+    <!-- summernote -->
+    {{ script('plugins/bower_components/summernote/dist/summernote.min') }}
     
     {{ script('js/toastr') }}
 
@@ -239,4 +245,5 @@
 
       
     </script>
+    
 </body>
