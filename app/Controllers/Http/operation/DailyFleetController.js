@@ -7,6 +7,7 @@ const Database = use('Database')
 const DailyFleet = use("App/Models/DailyFleet")
 const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 const Equipment = use("App/Models/MasEquipment")
+const Shift = use("App/Models/MasShift")
 
 class DailyFleetController {
 
@@ -16,7 +17,7 @@ class DailyFleetController {
 
   async list ({ request, view }) {
     const req = request.only(['keyword', 'page'])
-    const limit = 10
+    const limit = 25
     const halaman = req.page === undefined ? 1:parseInt(req.page)
 
     let data
@@ -143,22 +144,23 @@ class DailyFleetController {
     const reqUnit = request.collect(['equip_id'])
 
     // Check available Equipment Unit
-    const filterDateStart = moment(reqWaktu.datetime).format('YYYY-MM-DD 00:00')
-    const filterDateEnd = moment(reqWaktu.datetime).format('YYYY-MM-DD 23:59')
+    const shift = await Shift.find(req.shift_id)
+    const filterDateStart = moment(reqWaktu.datetime).format('YYYY-MM-DD '+shift.start_shift)
+    const filterDateEnd = moment(filterDateStart).add(shift.duration, 'hours').format('YYYY-MM-DD HH:mm:ss')
 
     for (const itemUnit of reqUnit) {
       const checkEquipment = 
         await DailyFleetEquip
           .query()
-          .whereBetween('datetime', [filterDateStart, filterDateEnd])
+          .where(w => {
+            w.where('datetime', '>=', filterDateStart).andWhere('datetime', '<=', filterDateEnd)
+          })
           .andWhere({equip_id: itemUnit.equip_id})
           .first()
       if (checkEquipment) {
-        const unit = await Equipment.findOrFail(checkEquipment.equip_id)
-        return {
-          success: false,
-          message: 'Used another fleet equipment data '+unit.kode
-        }
+        // const unit = await Equipment.findOrFail(checkEquipment.equip_id)
+        checkEquipment.merge(itemUnit)
+        await checkEquipment.save()
       }
     }
 

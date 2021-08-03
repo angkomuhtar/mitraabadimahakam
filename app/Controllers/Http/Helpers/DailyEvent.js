@@ -6,7 +6,7 @@ const Event = use("App/Models/MasEvent")
 
 class DailyEventTimeSheet {
     async ALL (req) {
-        const limit = 10
+        const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let eventTimeSheet
         if(req.keyword){

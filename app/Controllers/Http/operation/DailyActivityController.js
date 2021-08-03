@@ -28,7 +28,7 @@ class DailyActivityController {
 
     async list ({ request, view }) {
         const req = request.all()
-        const limit = 15
+        const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
 
         let timeSheet = []
