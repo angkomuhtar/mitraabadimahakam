@@ -13,7 +13,6 @@ class WebappsDocumentController {
             .orderBy('urut')
             .fetch()
         ).toJSON()
-        console.log(JSON.stringify(doc, null, 4));
         return view.render('documentation.web.index', {list: doc})
     }
 }
