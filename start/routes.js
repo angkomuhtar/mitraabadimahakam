@@ -202,6 +202,14 @@ Route.group(() => {
 
 }).prefix('master').namespace('master').middleware(['MM'])
 
+Route.group(() => {
+    // Web Apps Documentations
+    Route.get('/webapps', 'WebappsDocumentController.index').as('doc.webapps')
+
+    Route.get('/mobileapps', 'MobileappsDocumentController.index').as('doc.mobileapps')
+
+}).prefix('documentation').namespace('documentation').middleware(['MM'])
+
 // SETTING
 Route.group(() => {
     Route.get('/sys-options', 'SysOptionController.index').as('set.sys-options.index').middleware('R')

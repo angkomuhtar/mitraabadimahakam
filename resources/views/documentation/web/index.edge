@@ -1,0 +1,69 @@
+
+@layout('_layouts.main')
+@section('content')
+    {{ script('ajax/doc-webapps') }}
+    <div class="container-fluid">
+        <div class="row bg-title">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <h4 class="page-title">Dokumentations</h4> 
+            </div>
+        </div>
+        <div class="content-module" id="list-content">
+            <div class="white-box">
+                <h3 class="box-title">Web Fitur</h3>
+                <div class="vtabs customvtab">
+                    <ul class="nav tabs-vertical">
+                        @each(item in list)
+                            <li class="tab">
+                                <a data-toggle="tab" href="#content{{item.id}}" aria-expanded="false"> <span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">{{item.fitur}}}</span> </a>
+                            </li>
+                        @endeach
+                    </ul>
+
+                    <div class="tab-content p-t-0">
+                        @each(item in list)
+                            @each(detail in item.details)
+                                <div id="content{{detail.fitur_id}}" class="tab-pane">
+                                    <strong class="text-white">{{detail.title}}</strong>
+                                    <div class="row m-t-20">
+                                        <div class="col-md-10">
+                                            <div class="well">
+                                                {{{detail.teks}}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 b-all text-center">
+                                            @if(detail.img_doc)
+                                                <small class="text-white">image {{detail.id}}</small><br>
+                                                <a class="image-popup-vertical-fit" href="{{detail.img_doc}}" title="{{ upperCase(detail.title) }}"> 
+                                                    <img src="{{detail.img_doc}}" alt="{{detail.title}}" class="img-responsive">
+                                                </a>
+                                            @else
+                                                <a class="image-popup-vertical-fit" href="{{ assetsUrl('img-notfound.png') }}" title="{{ upperCase(detail.title) }}"> 
+                                                    <img src="{{ assetsUrl('img-notfound.png') }}" alt="{{detail.title}}" class="img-responsive">
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            @endeach
+                        @endeach
+                        <div class="tab-pane" name="unfound-tab" style="padding-top:50px">
+                            <h3>
+                                <strong class="title">
+                                    Oops,,,!!!
+                                    <code>
+                                        Sorry the document not found.
+                                    </code>
+                                </strong>
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+{{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min') }}
+{{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup-init') }}
+
