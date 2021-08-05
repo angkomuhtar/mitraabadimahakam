@@ -140,7 +140,7 @@ class TimeSheetApiController {
                         wh.with('shift')
                     })
                     .whereBetween('tgl', [prevDay, now])
-                    .orderBy('tgl','desc')
+                    .orderBy('tgl','asc')
                     .fetch()
             durasi = await diagnoticTime.durasi(t0)
             response.status(200).json({
@@ -271,6 +271,127 @@ class TimeSheetApiController {
             }
         }
     }
+
+    // for mobile, without add p2h
+    async create_v2 ({ auth, request, response }) {
+        var t0 = performance.now()
+        const req = request.all()
+        let durasi
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        }
+        
+        const cekDuplicated = 
+            await DailyChecklist
+                .query()
+                .where({
+                    operator: req.operator,
+                    unit_id: req.unit_id, 
+                    dailyfleet_id: req.dailyfleet_id, 
+                    tgl: moment(req.tgl).format('YYYY-MM-DD')
+            }).first()
+
+        if(cekDuplicated){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(422).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: 'Duplicated Data...'
+                },
+                data: cekDuplicated
+            })
+        }else{
+            await SAVE_DATA()
+        }
+
+        async function SAVE_DATA(){
+            let last_smu
+            last_smu = await DailyChecklist.query().where('unit_id', req.unit_id).orderBy('id', 'desc').first()
+            // console.log(last_smu);
+            if(last_smu){
+                if(last_smu?.end_smu != req.begin_smu){
+                    durasi = await diagnoticTime.durasi(t0)
+                    return response.status(403).json({
+                        diagnostic: {
+                            times: durasi, 
+                            error: true,
+                            message: 'Data SMU Equipment Unit tidak sesuai dengan data terakhir'
+                        },
+                        data: last_smu
+                    })
+                }
+            }
+
+            const trx = await db.beginTransaction()
+            const { user_chk, user_spv, operator, unit_id, dailyfleet_id, tgl, description, begin_smu, p2h, refueling } = req
+            var tgl_ = new Date(tgl)
+            try {
+                const dailyChecklist = new DailyChecklist()
+                dailyChecklist.fill({
+                    user_chk, 
+                    user_spv, 
+                    operator,
+                    unit_id, 
+                    dailyfleet_id, 
+                    description, 
+                    begin_smu,
+                    tgl: tgl_,
+                    approved_at: new Date()
+                })
+                await dailyChecklist.save(trx)
+
+                // let p2hDetails = []
+                // for (const item of p2h) {
+                //     if(item.description === null && item.is_check === 'N'){
+                //         throw new Error('ID ::'+item.p2h_id+' Status Uncheck but no description...')
+                //     }else{
+                //         p2hDetails.push({...item, checklist_id: dailyChecklist.id})
+                //     }
+                // }
+                // await DailyCheckp2H.createMany(p2hDetails, trx)
+
+                const dailyRefueling = new DailyRefueling()
+                dailyRefueling.fill({...refueling, timesheet_id: dailyChecklist.id})
+                await dailyRefueling.save(trx)
+
+                await trx.commit()
+                const result = await DailyChecklist.query().last()
+                durasi = await diagnoticTime.durasi(t0)
+                response.status(201).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false
+                    },
+                    data: result
+                })
+            } catch (error) {
+                console.log(error)
+                await trx.rollback()
+                durasi = await diagnoticTime.durasi(t0)
+                response.status(403).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: true,
+                        message: error.message
+                    },
+                    data: []
+                })
+            }
+        }
+    }
+
 
     async show ({ auth, params, response }) {
         var t0 = performance.now()

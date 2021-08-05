@@ -109,6 +109,7 @@ class DailyRitaseDetailApiController {
     const req = request.only(['dailyritase_id', 'checker_id', 'spv_id', 'hauler_id'])
     let durasi
 
+    console.log(req);
     try {
       await auth.authenticator("jwt").getUser()
     } catch (error) {

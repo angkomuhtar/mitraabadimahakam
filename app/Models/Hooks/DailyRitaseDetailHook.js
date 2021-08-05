@@ -28,7 +28,6 @@ DailyRitaseDetailHook.beforeInsertData = async (dailyritasedetail) => {
 }
 
 DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
-
     const dailyRitase = await DailyRitase.findOrFail(dailyritasedetail.dailyritase_id)
     const totalRitase = await DailyRitaseDetail.query().where('dailyritase_id', dailyritasedetail.dailyritase_id).getCount()
     dailyRitase.merge({tot_ritase: totalRitase})

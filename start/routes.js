@@ -733,6 +733,8 @@ Route.group(() => {
 
     Route.post('/', 'TimeSheetApiController.create')
     
+    Route.post('/create/v2', 'TimeSheetApiController.create_v2')
+
     Route.get('/all', 'TimeSheetApiController.allTimeSheet')
 
     Route.get('/ranges-date', 'TimeSheetApiController.filterDate')
