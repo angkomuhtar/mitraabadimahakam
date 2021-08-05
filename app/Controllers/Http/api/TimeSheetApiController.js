@@ -140,7 +140,7 @@ class TimeSheetApiController {
                         wh.with('shift')
                     })
                     .whereBetween('tgl', [prevDay, now])
-                    .orderBy('tgl','desc')
+                    .orderBy('tgl','asc')
                     .fetch()
             durasi = await diagnoticTime.durasi(t0)
             response.status(200).json({
