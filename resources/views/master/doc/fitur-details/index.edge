@@ -1,0 +1,46 @@
+
+@layout('_layouts.main')
+@section('content')
+    {{ script('ajax/mst-doc') }}
+    <div class="container-fluid">
+        <div class="row bg-title">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <h4 class="page-title">Master Documentations</h4> 
+            </div>
+        </div>
+        <div class="white-box">
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#doc" aria-controls="doc" role="tab" data-toggle="tab" aria-expanded="true">
+                        <span class="visible-xs">
+                            <i class="ti-home"></i>
+                        </span>
+                        <span class="hidden-xs"> Fitur-Fitur</span>
+                    </a>
+                </li>
+                <li role="presentation" class="">
+                    <a href="#doc-details" aria-controls="doc-details" role="tab" data-toggle="tab" aria-expanded="false">
+                        <span class="visible-xs">
+                            <i class="ti-user"></i>
+                        </span> 
+                        <span class="hidden-xs">Fitur Details</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content m-0">
+                <div role="tabpanel" class="tab-pane active" id="doc">
+                    <div class="content-module" id="list-content" style="display:none;"></div>
+                    <div class="content-module" id="form-content" style="display:none;"></div>
+                    <div class="clearfix"></div>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="doc-details">
+                    <div class="content-module" id="list-content-details" style="display:none;"></div>
+                    <div class="content-module" id="form-content-details" style="display:none;"></div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

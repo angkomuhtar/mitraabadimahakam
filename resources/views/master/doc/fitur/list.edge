@@ -1,11 +1,11 @@
 <div class="row">
     <div class="col-md-12">
-        <div class="white-box">
+        <div class="white-box p-t-0">
             <div class="" id="content-list">
                 <div class="row sales-report">
                     <div class="col-md-9 col-sm-9 col-xs-12">
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                            <i class="fa fa-plus m-r-5"></i> <span>Add New Documentations</span>
+                            <i class="fa fa-plus m-r-5"></i> <span>Add New</span>
                         </button>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
@@ -25,8 +25,7 @@
                                 <th class="sl text-center" width="20">ACT</th>
                                 <th class="sl text-center" width="100">Platform</th>
                                 <th class="sl" width="*">Title</th>
-                                <th class="sl" width="*">Fitur</th>
-                                <th class="sl" width="100">Image</th>
+                                <th class="sl" width="*">Description</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,26 +36,14 @@
                                 <tr>
                                     <td>{{$loop.index + 1}}</td>
                                     <td>
-                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit" data-id="{{item.id}}">edit</button>
                                     </td>
-                                    <td class="text-center">{{item.fitur.platform}}</td>
+                                    <td class="text-center">{{item.platform}}</td>
                                     <td>
-                                        <strong>{{item.title}}</strong>
+                                        <strong>{{item.fitur}}</strong>
                                     </td>
                                     <td class="">
-                                        {{item.fitur.fitur}} <br>
-                                        <small>{{item.fitur.desc}}</small>
-                                    </td>
-                                    <td class="v-middle">
-                                        @if(item.img_doc)
-                                            <a class="image-popup-vertical-fit" href="{{item.img_doc}}" title="{{ upperCase(item.title) }}"> 
-                                                <img src="{{item.img_doc}}" alt="{{item.title}}" class="img-responsive">
-                                            </a>
-                                        @else
-                                            <a class="image-popup-vertical-fit" href="{{ assetsUrl('img-notfound.png') }}" title="{{ upperCase(item.title) }}"> 
-                                                <img src="{{ assetsUrl('img-notfound.png') }}" alt="{{item.title}}" class="img-responsive">
-                                            </a>
-                                        @endif
+                                        <small>{{item.desc}}</small>
                                     </td>
                                 </tr>
                             @endeach

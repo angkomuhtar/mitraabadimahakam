@@ -472,16 +472,40 @@ $(function(){
     /* Option Platform  */
     $('body select.select2fitur').each(function(){
         var selected = $(this).data('check')
+        var platform = $(this).data('platform')
         var elm = $(this)
         elm.children().remove()
         $.ajax({
             async: true,
-            url: '/ajax/doc/fitur?selected='+selected,
+            url: '/ajax/doc/fitur?platform='+platform+'&selected='+selected,
             method: 'GET',
             success: function(data){
                 console.log('FITUR ::', data);
                 if(data.length > 0){
-                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.fitur+'</option>')
+                    const list = data.map(nod => '<option value="'+nod.id+'" data-desc="'+nod.desc+'" '+nod.selected+'>'+nod.fitur+'</option>')
+                    elm.html(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    $('body select.select2platform').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/doc/platform?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                console.log('FITUR ::', data);
+                if(data.length > 0){
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                     elm.html(list)
                 }else{
                     elm.prepend('<option value="">Belum ada data pilihan...</option>')

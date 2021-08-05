@@ -186,19 +186,34 @@ Route.group(() => {
     Route.post('/subcont/:id/delete', 'MasSubcontractorController.delete').as('mas.subcont.delete').middleware('D')
 
     // Dokumentasi
-    Route.get('/doc', 'MasDucumentationController.index').as('mas.doc.index').middleware('R')
+    Route.get('/doc-details', 'MasDocumentationDetailsController.index').as('mas.doc-details.index').middleware('R')
 
-    Route.post('/doc', 'MasDucumentationController.store').as('mas.doc.store').middleware('C')
+    Route.post('/doc-details', 'MasDocumentationDetailsController.store').as('mas.doc-details.store').middleware('C')
 
-    Route.get('/doc/list', 'MasDucumentationController.list').as('mas.doc.list').middleware('R')
+    Route.get('/doc-details/list', 'MasDocumentationDetailsController.list').as('mas.doc-details.list').middleware('R')
 
-    Route.get('/doc/create', 'MasDucumentationController.create').as('mas.doc.create').middleware('R')
+    Route.get('/doc-details/create', 'MasDocumentationDetailsController.create').as('mas.doc-details.create').middleware('R')
 
-    Route.get('/doc/:id/show', 'MasDucumentationController.show').as('mas.doc.show').middleware('U')
+    Route.get('/doc-details/:id/show', 'MasDocumentationDetailsController.show').as('mas.doc-details.show').middleware('U')
 
-    Route.post('/doc/:id/update', 'MasDucumentationController.update').as('mas.doc.update').middleware('U')
+    Route.post('/doc-details/:id/update', 'MasDocumentationDetailsController.update').as('mas.doc-details.update').middleware('U')
 
-    Route.post('/doc/:id/delete', 'MasDucumentationController.delete').as('mas.doc.delete').middleware('D')
+    Route.delete('/doc-details/:id/destroy', 'MasDocumentationDetailsController.destroy').as('mas.doc-details.destroy').middleware('D')
+
+    // Documentasi Fitur
+    Route.get('/doc', 'MasDocumentationController.index').as('mas.doc.index').middleware('R')
+
+    Route.post('/doc', 'MasDocumentationController.store').as('mas.doc.store').middleware('C')
+
+    Route.get('/doc/list', 'MasDocumentationController.list').as('mas.doc.list').middleware('R')
+
+    Route.get('/doc/create', 'MasDocumentationController.create').as('mas.doc.create').middleware('R')
+
+    Route.get('/doc/:id/show', 'MasDocumentationController.show').as('mas.doc.show').middleware('U')
+
+    Route.post('/doc/:id/update', 'MasDocumentationController.update').as('mas.doc.update').middleware('U')
+
+    Route.delete('/doc/:id/destroy', 'MasDocumentationController.destroy').as('mas.doc.destroy').middleware('D')
 
 }).prefix('master').namespace('master').middleware(['MM'])
 
@@ -419,6 +434,8 @@ Route.group(() => {
     Route.get('/grafik5', 'AjaxChartController.grafik_EVENT_MTD')
 
     Route.get('/grafik6', 'AjaxChartController.grafik_COST_VS_PROD')
+
+    Route.get('/doc/platform', 'AjaxDocumentationController.getPlatform')
 
     Route.get('/doc/fitur', 'AjaxDocumentationController.getFitur')
     

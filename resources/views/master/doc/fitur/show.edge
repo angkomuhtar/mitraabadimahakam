@@ -1,0 +1,59 @@
+{{ script('ajax/index') }}
+<div class="row" style="padding-top: 10px">
+    <div class="col-md-12">
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-doc-upd" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <button type="button" class="btn btn-default btn-circle" id="bt-back">
+                                    <i class="ti-arrow-left"></i>
+                                </button> Back
+                            </div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all m-t-20 p-t-20">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Platform</label>
+                                                <select class="form-control select2platform" data-check="{{data.platform}}" name="platform" id="platform" required></select> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Fitur</label>
+                                                <input type="text" class="form-control" name="fitur" id="fitur" value="{{data.fitur}}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">Urut</label>
+                                                <input type="text" class="form-control" name="urut" id="urut" value="{{data.urut}}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Deskripsi Fitur</label>
+                                                <textarea class="form-control" name="desc" id="desc" rows="5">{{data.desc ? data.desc : ''}}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,13 +1,16 @@
 {{ script('ajax/index') }}
-<div class="row">
+<div class="row" style="padding-top: 10px">
     <div class="col-md-12">
-        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="" id="fm-doc">
+                    <form action="" id="fm-doc-details">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Add Documentation</div>
+                            <div class="panel-heading">
+                                <button type="button" class="btn btn-default btn-circle" id="bt-back">
+                                    <i class="ti-arrow-left"></i>
+                                </button> Back
+                            </div>
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
@@ -39,7 +42,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">Fitur</label>
-                                                <select class="form-control select2fitur" name="fitur" id="fitur" data-platform="" data-check="" required></select> 
+                                                <select class="form-control select2fitur" name="fitur_id" id="fitur_id" data-platform="" data-check="" required></select> 
                                             </div>
                                         </div>
                                         <div class="col-md-12">
