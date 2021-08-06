@@ -144,7 +144,7 @@ class DailyFleetApiController {
                 .with('user')
                 .with('details', (wh) => wh.with('equipment'))
                 .whereBetween('date', [d1, d2])
-                .orderBy('date', 'asc', 'shift_id', 'asc')
+                .orderBy('created_at', 'desc', 'shift_id', 'asc')
                 .fetch()
 
             durasi = await diagnoticTime.durasi(t0);

@@ -134,7 +134,7 @@ class DailyRitaseCoalApiController {
             })
             .where("status", "Y")
             .whereBetween('date', [d1, d2])
-            .orderBy('date', 'asc')
+            .orderBy('created_at', 'desc')
             .fetch()
             let durasi = await diagnoticTime.durasi(t0)
             return response.status(200).json({
