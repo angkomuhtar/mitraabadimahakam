@@ -160,7 +160,7 @@ class DailyRitaseCoalApiController {
 
     async create ({ auth, request, response }) {
         var t0 = performance.now()
-        const req = request.only(["dailyfleet_id", "checker_id", "shift_id", "distance", "block", "date"]);
+        const req = request.only(["dailyfleet_id", "checker_id", "shift_id", "distance", "block", "date", "exca_id"]);
         const { dailyfleet_id, distance, block } = req;
 
         let durasi

@@ -128,7 +128,7 @@ class DailyRitaseApiController {
       "spv_id",
       "material",
       "distance",
-      "hauler_id",
+      "exca_id",
       "date"
     ])
 
@@ -162,7 +162,8 @@ class DailyRitaseApiController {
           .where({
             dailyfleet_id: req.dailyfleet_id,
             material: req.material,
-            distance: req.distance
+            distance: req.distance,
+            exca_id : req.exca_id 
           })
           .first()
           
