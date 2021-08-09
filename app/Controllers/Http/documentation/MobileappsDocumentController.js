@@ -1,7 +1,8 @@
 'use strict'
 
 class MobileappsDocumentController {
-    async index ({ view }) {
+    async index ({ params, view }) {
+        const { token } = params
         return view.render('404')
     }
 }

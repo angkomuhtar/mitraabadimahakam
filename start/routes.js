@@ -217,11 +217,10 @@ Route.group(() => {
 
 }).prefix('master').namespace('master').middleware(['MM'])
 
+// DUCUMENTATIONS
 Route.group(() => {
     // Web Apps Documentations
     Route.get('/webapps', 'WebappsDocumentController.index').as('doc.webapps')
-
-    Route.get('/mobileapps', 'MobileappsDocumentController.index').as('doc.mobileapps')
 
 }).prefix('documentation').namespace('documentation').middleware(['MM'])
 
@@ -793,6 +792,7 @@ Route.group(() => {
     
 }).prefix('api/daily-refueling').namespace('api')
 
+Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
 
 Route.get('/401', ({ view }) => view.render('401'))
 
