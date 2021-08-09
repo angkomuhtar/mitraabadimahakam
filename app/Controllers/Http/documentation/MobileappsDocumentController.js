@@ -3,7 +3,7 @@
 class MobileappsDocumentController {
     async index ({ params, view }) {
         const { token } = params
-        return view.render('404')
+        return view.render('mobile-documentation')
     }
 }
 

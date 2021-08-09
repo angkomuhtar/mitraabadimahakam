@@ -792,7 +792,9 @@ Route.group(() => {
     
 }).prefix('api/daily-refueling').namespace('api')
 
-Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
+// Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
+
+Route.get('/mobileapps', 'MobileappsDocumentController.index').namespace('documentation')
 
 Route.get('/401', ({ view }) => view.render('401'))
 
