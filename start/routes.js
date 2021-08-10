@@ -370,6 +370,19 @@ Route.group(() => {
     Route.get('/fuel-dist/:id/show', 'FuelDistributeController.show').as('opr.fuel-distribution.show').middleware('R')
 
     Route.post('/fuel-dist/:id/update', 'FuelDistributeController.update').as('opr.fuel-distribution.update').middleware('R')
+    
+    // Monthly Survey
+    Route.get('/monthly-survey', 'MonthlySurveyController.index').as('opr.monthly-survey.index').middleware('R')
+
+    Route.post('/monthly-survey', 'MonthlySurveyController.store').as('opr.monthly-survey.store').middleware('C')
+
+    Route.get('/monthly-survey/list', 'MonthlySurveyController.list').as('opr.monthly-survey.list').middleware('R')
+
+    Route.get('/monthly-survey/create', 'MonthlySurveyController.create').as('opr.monthly-survey.create').middleware('R')
+
+    Route.get('/monthly-survey/:id/show', 'MonthlySurveyController.show').as('opr.monthly-survey.show').middleware('R')
+
+    Route.post('/monthly-survey/:id/update', 'MonthlySurveyController.update').as('opr.monthly-survey.update').middleware('R')
 
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
