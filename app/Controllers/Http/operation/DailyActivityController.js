@@ -105,11 +105,14 @@ class DailyActivityController {
             let dailyevent = (await DailyEvent.query().where('timesheet_id', item.id).fetch()).toJSON() || []
 
             /* Find Daily Ritase OB */
+            item.is_exca = unit.tipe === 'excavator'
             item.ritase_ob = 0
             item.volume_ob = 0
             item.pdtvy = null
             item.material = null
             item.material_nm = '-'
+
+            
 
             var waktuMulai = new Date(moment(item.tgl).format('YYYY-MM-DD')+' '+shift.start_shift)
             var waktuBerakhir = moment(waktuMulai).add(shift.duration, 'hours').format('YYYY-MM-DD HH:mm:ss')
@@ -126,8 +129,13 @@ class DailyActivityController {
                     .andWhere('dailyritase_id', dailyRitase.id)
                     .andWhere('hauler_id', item.unit_id)
                     .getCount()
-                item.volume_ob = (parseFloat(v_material.vol) * parseFloat(item.ritase_ob))
-                item.pdtvy = (parseFloat(item.volume_ob) / parseFloat(item.used_smu)).toFixed(2)
+                item.ritase_ob = unit.tipe === 'excavator' ? '-' : item.ritase_ob
+                /* Jika unit excavator maka volume_ob = total ritase semua hauler x volume OB */
+                var volumUnit = item.is_exca ? (parseFloat(v_material.vol) * parseFloat(dailyRitase.tot_ritase)) : (parseFloat(v_material.vol) * parseFloat(item.ritase_ob))
+                item.volume_ob = volumUnit
+
+                var productivityUnit = item.is_exca ? (parseFloat(item.volume_ob) / parseFloat(item.used_smu)).toFixed(2) : (parseFloat(item.volume_ob) / parseFloat(item.used_smu)).toFixed(2)
+                item.pdtvy = productivityUnit
                 item.material = v_material.tipe
                 item.material_nm = v_material.name
             }
