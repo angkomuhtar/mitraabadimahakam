@@ -28,7 +28,7 @@ class MasFleetController {
     }
 
     async store ({ auth, request }) {
-        const req = request.only(['kode', 'name'])
+        const req = request.only(['kode', 'name', 'tipe'])
         const usr = await auth.getUser()
         const fleet = new Fleet()
         fleet.fill(req)
@@ -60,7 +60,7 @@ class MasFleetController {
     async update ({ auth, params, request }) {
         const usr = await auth.getUser()
         const { id } = params
-        const req = request.only(['kode', 'name'])
+        const req = request.only(['kode', 'name', 'tipe'])
         const fleet = await Fleet.findOrFail(id)
         fleet.merge(req)
         try {
