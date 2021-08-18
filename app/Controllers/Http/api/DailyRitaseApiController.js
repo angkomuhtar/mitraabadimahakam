@@ -4,7 +4,7 @@ const { performance } = require("perf_hooks")
 const moment = require("moment")
 const DailyRitaseHelpers = use("App/Controllers/Http/Helpers/DailyRitase")
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
-
+const DailyFleet = use("App/Models/DailyFleet");
 const db = use("Database")
 const DailyRitase = use("App/Models/DailyRitase")
 
@@ -55,7 +55,12 @@ class DailyRitaseApiController {
   /** show data based today and previous day */
   async filterByDate ({ auth, request, response }) {
     var t0 = performance.now()
-    const { begin_date, end_date } = request.only(["begin_date", "end_date"])
+    const { begin_date, end_date, isFilter, filter } = request.only(["begin_date", "end_date",
+    "isFilter",
+    "filter",])
+
+    let _filter = filter ? JSON.parse(filter) : null;
+    let _isFilter = isFilter ? JSON.parse(isFilter) : null;
 
     try {
       await auth.authenticator("jwt").getUser()
@@ -80,21 +85,76 @@ class DailyRitaseApiController {
 
     async function FILTER_DATE() {
       try {
-        const dailyRitase = await DailyRitase
-              .query()
-                .with('material_details')
-                .with('daily_fleet', details => {
-                    details.with('details', unit => unit.with('equipment'))
-                    details.with('shift')
-                    details.with('activities')
-                    details.with('fleet')
-                    details.with('pit')
-                })
-                .where("status", "Y")
-                .whereBetween('date', [d1, d2])
-                .orderBy([{ column : 'created_at', order : 'desc' }])
-                .fetch()
+        let dailyRitase = null 
+        
+        if (_isFilter) {
+        const dailyFleet = await DailyFleet.query()
+        .with("pit", (site) => site.with("site"))
+        .with("fleet")
+        .with("activities")
+        .with("shift")
+        .with("user")
+        .with("details", (wh) => wh.with("equipment"))
+        .where((wh) => {
+          wh.where("date", ">=", d1);
+          wh.andWhere("date", "<=", d2);
+          if (_filter.shifts) {
+            wh.andWhere("shift_id", _filter.shifts.id);
+          }
+          if (_filter.pits) {
+            wh.andWhere("pit_id", _filter.pits.id);
+          }
 
+          if (_filter.fleets) {
+            wh.andWhere("fleet_id", _filter.fleets.id);
+          }
+        })
+        .orderBy([{ column: 'created_at', order: "desc" }])
+        .first();
+
+
+        if(dailyFleet) {
+          dailyRitase = await DailyRitase
+          .query()
+          .with('material_details')
+          .with('daily_fleet', details => {
+              details.with('details', unit => unit.with('equipment'))
+              details.with('shift')
+              details.with('activities')
+              details.with('fleet')
+              details.with('pit')
+          })
+          .where((wh) => {
+            wh.where('date', '>=', d1)
+            wh.andWhere('date', '<=', d2)
+            wh.andWhere('status', 'Y')
+            wh.andWhere('dailyfleet_id', dailyFleet?.id)
+            if(_filter?.materials?.id) {
+              wh.andWhere('material', _filter.materials.id)
+            }
+          })
+          .orderBy([{ column : _filter?.order?.value, order : 'desc' }])
+          .fetch()
+        } else {
+          dailyRitase = []
+        }
+
+        } else {
+          dailyRitase = await DailyRitase
+          .query()
+            .with('material_details')
+            .with('daily_fleet', details => {
+                details.with('details', unit => unit.with('equipment'))
+                details.with('shift')
+                details.with('activities')
+                details.with('fleet')
+                details.with('pit')
+            })
+            .where("status", "Y")
+            .whereBetween('date', [d1, d2])
+            .orderBy([{ column : 'created_at', order : 'desc' }])
+            .fetch()
+        }
         let durasi = await diagnoticTime.durasi(t0)
         return response.status(200).json({
           diagnostic: {
