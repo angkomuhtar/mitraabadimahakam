@@ -32,4 +32,15 @@ $(function(){
             $('body div#list-content').html(data)
         })
     }
+
+    $('body').on('click', 'a.btn-pagging', function(e){
+        e.preventDefault()
+        var page = $(this).data('page')
+        var url = window.location.pathname+'/search?keyword=&page='+page
+        $.get(url, function(data){
+            console.log(data);
+            $('body #list-content').children().remove()
+            $('body #list-content').append(data)
+        })
+    })
 })

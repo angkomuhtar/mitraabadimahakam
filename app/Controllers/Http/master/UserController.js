@@ -24,24 +24,6 @@ class UserController {
         const employee = await Employee.query().whereNotIn('email', arrEmail).andWhere('aktif', 'Y').fetch()
 
 
-        // console.log('-'.repeat(92))
-        // console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
-        // console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
-        // console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
-        // console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
-        // console.log(' '.repeat(2) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '='.repeat(60))
-        // console.log('*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' '.repeat(4) + '*' + ' ' + '#'.repeat(60))
-        // console.log('='.repeat(92));
-        // console.log('#'.repeat(92));
-        // console.log('='.repeat(92));
-        // console.log('#'.repeat(92));
-        // console.log('='.repeat(92));
-        // console.log('#'.repeat(92));
-        // console.log('='.repeat(92));
-        // console.log('#'.repeat(92));
-        // console.log('-'.repeat(92))
-        
-
 
         return view.render('master.user.index', {
             user: employee.toJSON()
@@ -51,10 +33,12 @@ class UserController {
     async list ({ auth, request, view }){
         const usr = await auth.getUser()
         const req = request.all()
-        const limit = 10
+        const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let data 
+
         new Loggerx(request.url(), req, usr, request.method(), true).tempData()
+        
         if(req.keyword != ''){
             data = await VUser.query().where(whe => {
                 whe.where('username', 'like', `%${req.keyword}%`)
@@ -66,7 +50,6 @@ class UserController {
         }else{
             data = await VUser.query().where('status', 'Y').paginate(halaman, limit)
         }
-
         return view.render('master.user.list', {list: data.toJSON()})
     }
 
