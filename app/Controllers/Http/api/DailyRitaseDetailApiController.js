@@ -139,12 +139,10 @@ class DailyRitaseDetailApiController {
     }
 
     async function SAVE_DATA_WITH_NEW_DAILY_RITASE() {
-      const trx = await db.beginTransaction();
-      
       const dailyRitase = new DailyRitase();
-      const existingDailyRitase = await DailyRitase.query().where("id", req.dailyritase_id).first()
-
-      console.log('existingDailyRitase >>', existingDailyRitase);
+      const existingDailyRitase = await DailyRitase.query()
+        .where("id", req.dailyritase_id)
+        .first();
 
       dailyRitase.fill({
         dailyfleet_id: existingDailyRitase.dailyfleet_id,
@@ -154,23 +152,26 @@ class DailyRitaseDetailApiController {
         exca_id: existingDailyRitase.exca_id,
       });
 
-      
-      await dailyRitase.save()
+      await dailyRitase.save();
       try {
-        
         const dailyRitaseDetail = new DailyRitaseDetail();
         dailyRitaseDetail.fill({
-          dailyritase_id: dailyRitase.id, // gk bisa ngambil id yg baru di bikin 
+          dailyritase_id: dailyRitase.id,
           checker_id: req.checker_id,
           spv_id: req.spv_id,
           hauler_id: req.hauler_id,
           check_in: new Date(),
         });
-        
-        console.log('dailyRitaseDetail >>', dailyRitase.id);
 
-        await dailyRitaseDetail.save(trx);
-        await trx.commit(trx);
+        await dailyRitaseDetail.save();
+
+        const _dailyRitase = await DailyRitase.findOrFail(dailyRitase.id);
+        const totalRitase = await DailyRitaseDetail.query()
+          .where("dailyritase_id", _dailyRitase.id)
+          .getCount();
+        _dailyRitase.merge({ tot_ritase: totalRitase });
+        await _dailyRitase.save();
+
         durasi = await diagnoticTime.durasi(t0);
         return response.status(201).json({
           diagnostic: {
