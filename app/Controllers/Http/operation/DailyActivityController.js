@@ -91,6 +91,8 @@ class DailyActivityController {
 
         let result = []
 
+        // console.log('TIMESHEET :::', timeSheet.data);
+        
         for (const item of timeSheet.data) {
             let checker = (await Profile.findBy('user_id', item.user_chk)).toJSON()
             let pengawas = (await Profile.findBy('user_id', item.user_spv)).toJSON()

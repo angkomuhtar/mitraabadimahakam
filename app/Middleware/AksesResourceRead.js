@@ -12,6 +12,7 @@ class AksesResourceRead {
    * @param {Function} next
    */
   async handle ({ request, response, auth }, next) {
+
     // call next to advance the request
     const uri = (request.url()).split('/')
     
@@ -21,7 +22,10 @@ class AksesResourceRead {
       console.log('middleware:: ', uri);
       await next()
     }
+    console.log('USER-TIPE :::', usr.user_tipe);
+    console.log('NM-MODULE :::', name);
     const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'R'}).first()
+    console.log('AKSES >>>>>', akses);
     if(akses){
       await next()
     }else{
