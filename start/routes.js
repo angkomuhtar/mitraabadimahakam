@@ -672,6 +672,8 @@ Route.group(() => {
 
     Route.delete('/:id/destroy', 'DailyFleetEquipmentApiController.destroy')
 
+    Route.post('/move-to-other-fleet', 'DailyFleetEquipmentApiController.moveUnitToOtherFleet')
+
 }).prefix('api/daily-fleet-equipment').namespace('api')
 
 Route.group(() => {
