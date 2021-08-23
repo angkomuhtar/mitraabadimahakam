@@ -201,6 +201,65 @@ class DailyFleetEquipmentApiController {
         }
     }
 
+
+    async moveUnitToOtherFleet ({ auth, request, response }) {
+        
+        const req = request.only(['unit_id', 'dailyfleet_id','datetime'])
+        var t0 = performance.now()
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            let durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+        await ADD_NEW_DATA()
+
+        async function ADD_NEW_DATA(){
+            try {
+                const dailyFleetEquip = new DailyFleetEquip();
+
+                dailyFleetEquip.fill({
+                    dailyfleet_id : req.dailyfleet_id,
+                    equip_id : req.unit_id,
+                    datetime : req.datetime
+                })
+
+                await dailyFleetEquip.save()
+
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(201).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: false
+                    },
+                    data: dailyFleetEquip
+                })
+            } catch (error) {
+                console.log(error)
+                durasi = await diagnoticTime.durasi(t0)
+                return response.status(403).json({
+                    diagnostic: {
+                        times: durasi, 
+                        error: true,
+                        message: error.message
+                    },
+                    data: []
+                })
+            }
+        }
+    }
+
     async destroy ({auth, params, response}) {
         const { id } = params
         var t0 = performance.now()
