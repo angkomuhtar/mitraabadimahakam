@@ -40,15 +40,17 @@ class MasPitController {
 
   async store ({ request, auth }) {
     const usr = auth.getUser()
-    const req = request.only(['side_id', 'kode', 'name', 'location', 'ob_plan', 'coal_plan'])
+    const req = request.only(['site_id', 'kode', 'name', 'location', 'ob_plan', 'coal_plan'])
 
-    if(!req.side_id){
+    
+    if(!req.site_id){
       return {
         success: false,
         message: 'Failed insert data'
       }
     }
-
+    
+    console.log('LOG ::::', req);
     const pit = new Pit()
     pit.fill(req)
     try {
