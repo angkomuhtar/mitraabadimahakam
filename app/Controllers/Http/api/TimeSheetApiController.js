@@ -130,7 +130,6 @@ class TimeSheetApiController {
 
     async function GET_DATA() {
       let dailyChecklist = null;
-      console.log("FILTER :: ", _filter);
       try {
         if (_isFilter) {
           let dailyFleet = await DailyFleet.query()
