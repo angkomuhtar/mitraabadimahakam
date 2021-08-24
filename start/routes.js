@@ -807,6 +807,12 @@ Route.group(() => {
     
 }).prefix('api/daily-refueling').namespace('api')
 
+Route.group(() => {
+
+    Route.post('/', 'NotificationController.store')
+    
+}).prefix('api/notifications').namespace('api')
+
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
 
 Route.get('/mobileapps', 'MobileappsDocumentController.index').namespace('documentation')
