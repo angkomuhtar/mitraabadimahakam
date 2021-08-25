@@ -181,6 +181,30 @@ class DailyRitaseCoalDetailApiController {
                 data: [],
             })
         }
+
+        if(req.subcon_operator && req.dt_id) {
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: 'Operator Sub Contractor tidak dapat memilih unit dari PT. MAM',
+                },
+                data: [],
+            })
+        }
+
+        if(req.operator && req.subcondt_id) {
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi,
+                    error: true,
+                    message: 'Operator PT. MAM tidak dapat memilih unit dari Sub Contractor',
+                },
+                data: [],
+            })
+        }
         
 
         try {

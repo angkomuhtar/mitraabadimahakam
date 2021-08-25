@@ -132,7 +132,7 @@ class DailyRitaseDetailApiController {
       });
     }
 
-    if (req.tipe !== "normal") {
+    if (req.tipe !== "normal" && req.tipe !== 'in pit') {
       await SAVE_DATA_WITH_NEW_DAILY_RITASE();
     } else {
       await SAVE_DATA();
