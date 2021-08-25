@@ -78,6 +78,9 @@ class MasEquipmentController {
     const logger = new Loggerx(request.url(), request.all(), usr, request.method(), true)
     await logger.tempData()
 
+    equip.received_hm = parseFloat(equip.received_hm)
+    equip.qty_capacity = parseFloat(equip.qty_capacity)
+
     const equipment = new Equipment()
     equipment.fill({...equip, created_by: usr.id, img_uri: uriImages})
     const trx = await Db.beginTransaction()
@@ -142,6 +145,10 @@ class MasEquipmentController {
     }
     
     const equipment = await Equipment.findOrFail(id)
+
+    req.received_hm = parseFloat(req.received_hm)
+    req.qty_capacity = parseFloat(req.qty_capacity)
+
     equipment.merge(req)
     try {
       await equipment.save()
