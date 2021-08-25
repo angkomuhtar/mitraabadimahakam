@@ -7,6 +7,7 @@ const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
 // Collections
 const Options = use("App/Models/SysOption")
 const Employee = use("App/Models/MasEmployee")
+const moment = use("moment")
 
 class MasEmployeeController {
   async index ({ auth, request, response, view }) {
@@ -33,10 +34,10 @@ class MasEmployeeController {
         whe.orWhere('no_idcard', 'like', `%${req.keyword}%`)
         whe.orWhere('alamat', 'like', `%${req.keyword}%`)
         whe.orWhere('tipe_idcard', 'like', `%${req.keyword}%`)
-      }).andWhere('aktif', 'Y')
+      }).andWhere('aktif', 'Y').orderBy('fullname', 'asc')
       .paginate(halaman, limit)
     }else{
-      data = await Employee.query().where('aktif', 'Y').paginate(halaman, limit)
+      data = await Employee.query().where('aktif', 'Y').orderBy('fullname', 'asc').paginate(halaman, limit)
     }
     // console.log(data.toJSON());
     return view.render('master.employee.list', {list: data.toJSON()})
@@ -46,6 +47,9 @@ class MasEmployeeController {
   async store ({ auth, request, response }) {
     const usr = await auth.getUser()
     const req = request.all()
+
+    req.tgl_lahir = new Date(req.tgl_lahir)
+    req.tgl_lahir = new Date(req.join_date)
     console.log(req)
     
 
@@ -89,6 +93,9 @@ class MasEmployeeController {
     const req = request.except(['_csrf', 'submit'])
     console.log(req);
     const employee = await Employee.findOrFail(id)
+    req.tgl_lahir = new Date(req.tgl_lahir)
+    req.tgl_lahir = new Date(req.join_date)
+
     employee.merge(req)
     try {
       await employee.save()
