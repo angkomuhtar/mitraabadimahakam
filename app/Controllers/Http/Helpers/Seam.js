@@ -11,13 +11,13 @@ class CoalSeam {
         if(req.keyword){
             coalSeam = await MasSeam
                 .query()
-                .with('pit')
+                .with('pit', w => w.with('site'))
                 .where('kode', 'like', `%${req.keyword}%`)
                 .paginate(halaman, limit)
         }else{
             coalSeam = await MasSeam
                 .query()
-                .with('pit')
+                .with('pit', w => w.with('site'))
                 .paginate(halaman, limit)
         }
         
@@ -25,12 +25,18 @@ class CoalSeam {
     }
 
     async GET_PIT_ID (params) {
-        const coalSeam = await MasSeam.query().with('pit').where('pit_id', params.pit_id).fetch()
+        const coalSeam = await MasSeam.query()
+            .with('pit')
+            .where('pit_id', params.pit_id)
+            .fetch()
         return coalSeam
     }
 
     async GET_ID (params) {
-        const coalSeam = await MasSeam.query().with('pit').where('id', params.id).first()
+        const coalSeam = await MasSeam.query()
+            .with('pit', w => w.with('site'))
+            .where('id', params.id)
+            .first()
         return coalSeam
     }
 
@@ -45,6 +51,12 @@ class CoalSeam {
         const coalSeam = await MasSeam.query().where('id', params.id).first()
         coalSeam.merge(req)
         await coalSeam.save()
+        return coalSeam
+    }
+
+    async DELETE (params) {
+        const coalSeam = await MasSeam.query().where('id', params.id).first()
+        await coalSeam.delete()
         return coalSeam
     }
 }
