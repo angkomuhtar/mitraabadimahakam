@@ -717,7 +717,8 @@ class MonthlyPlanApiController {
         SHIFTS.push({
           kode: v.kode.toLowerCase(),
           name : v.name
-        });
+        })
+
         const _ritOB = (
           await DailyRitaseDetail.query(trx)
             .with("daily_ritase", (wh) => {
@@ -760,7 +761,7 @@ class MonthlyPlanApiController {
             .andWhere("end_at", "<=", [_end])
             .orderBy("start_at", "asc")
             .fetch()
-        ).toJSON();
+        ).toJSON()
 
         for (let z of DAILY_EVENT) {
           let obj_2 = {
