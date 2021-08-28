@@ -27,18 +27,17 @@ $(function(){
                 $('b#ob_plan').html((estimasi).toLocaleString('ID') +' '+satuan)
                 $('b#ob_actual').html((actual).toLocaleString('ID') +' '+satuan)
                 $('b#ob_persen').html((persen).toFixed(2)+'%')
+                console.log('result.actual', result.actual);
                 new Chartist.Line('#sparkline8', {
                     labels: result.labels,
-                    series: [
-                        result.actual
-                    ]
+                    series: [result.actual]
                     }, {
                     plugins: [
                         Chartist.plugins.ctPointLabels({
                             textAnchor: 'right',
                             labelInterpolationFnc: function(value) {
                                 if(value){
-                                    return (value/1000) + 'K'
+                                    return ((value/1000)).toFixed(2) + 'K'
                                 }else{
                                     return 0
                                 }

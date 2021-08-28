@@ -58,6 +58,7 @@ class MonthlyPlan {
                 actual: dailyPlans.map(item => parseFloat(item.actual))
             }
             data.monthly_plan.month = moment().format('MMMM YYYY')
+            // console.log('DATA    :::::', data);
             return data
         } catch (error) {
             console.log(error);
