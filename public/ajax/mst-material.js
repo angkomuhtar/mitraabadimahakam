@@ -14,7 +14,7 @@ $(function(){
         initDeafult()
     })
 
-    $('body').on('keyup', 'input#inpKeywordSeam', function(e){
+    $('body').on('keyup', 'input#inpKeywordMaterial', function(e){
         var value = $(this).val()
         if(e.keyCode === 13){
             ajaxSearch(value)
@@ -22,7 +22,7 @@ $(function(){
     })
 
     $('body').on('click', 'button#bt-search-keyword', function(){
-        var value = $('input#inpKeywordSeam').val()
+        var value = $('input#inpKeywordMaterial').val()
         ajaxSearch(value)
     })
 
@@ -30,7 +30,7 @@ $(function(){
         var id = $(this).data('id')
         $.ajax({
             async: true,
-            url: '/master/seam/'+id+'/show',
+            url: '/master/material/'+id+'/show',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -43,12 +43,12 @@ $(function(){
         })
     })
 
-    $('body').on('submit', 'form#fm-seam', function(e){
+    $('body').on('submit', 'form#fm-material', function(e){
         e.preventDefault()
         var data = new FormData(this)
         $.ajax({
             async: true,
-            url: '/master/seam',
+            url: '/master/material',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -73,13 +73,13 @@ $(function(){
         })
     })
 
-    $('body').on('submit', 'form#fm-seam-upd', function(e){
+    $('body').on('submit', 'form#fm-material-upd', function(e){
         e.preventDefault()
         var id = $(this).data('id')
         var data = new FormData(this)
         $.ajax({
             async: true,
-            url: '/master/seam/'+id+'/update',
+            url: '/master/material/'+id+'/update',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -110,7 +110,7 @@ $(function(){
         $.ajax({
             async: true,
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
-            url: '/master/seam/'+id+'/delete',
+            url: '/master/material/'+id+'/delete',
             method: 'POST',
             dataType: 'json',
             processData: false,
@@ -137,7 +137,7 @@ $(function(){
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        $.get('/master/seam/list?page='+page+'&keyword=', function(data){
+        $.get('/master/material/list?page='+page+'&keyword=', function(data){
             console.log(data);
             $('div#list-content').children().remove()
             $('div#list-content').html(data)
@@ -148,7 +148,7 @@ $(function(){
         $('div.content-module').css('display', 'none')
         $.ajax({
             async: true,
-            url: '/master/seam/list?keyword=',
+            url: '/master/material/list?keyword=',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -164,7 +164,7 @@ $(function(){
         $('div.content-module').css('display', 'none')
         $.ajax({
             async: true,
-            url: '/master/seam/create',
+            url: '/master/material/create',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -185,7 +185,7 @@ $(function(){
     function ajaxSearch(value){
         $.ajax({
             async: true,
-            url: '/master/seam/list?keyword='+value,
+            url: '/master/material/list?keyword='+value,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()

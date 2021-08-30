@@ -48,6 +48,12 @@ class Material {
         await masMaterial.save()
         return masMaterial
     }
+
+    async DELETE (params) {
+        const masMaterial = await MasMaterial.query().where('id', params.id).first()
+        await masMaterial.delete()
+        return masMaterial
+    }
 }
 
 module.exports = new Material()
