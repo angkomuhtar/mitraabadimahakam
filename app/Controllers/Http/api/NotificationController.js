@@ -10,6 +10,7 @@ const moment = require("moment");
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime");
 const DailyChecklist = use("App/Models/DailyChecklist");
 const db = use("Database");
+const UserDevice = use("App/Models/UserDevice");
 
 /**
  * Resourceful controller for interacting with notifications
@@ -104,7 +105,10 @@ class NotificationController {
             .add(12, "hour")
             .format("YYYY-MM-DD HH:mm:ss"),
         ])
-        .with("userCheck", (wh) => wh.with("profile"))
+        .with("userCheck", (wh) => {
+          wh.with("deviceId");
+          wh.with("profile");
+        })
         .with("spv", (wh) => wh.with("profile"))
         .with("operator_unit")
         .with("equipment")
@@ -120,6 +124,16 @@ class NotificationController {
       const msg = `Jangan lupa untuk menutup HM akhir unit ${x.equipment.kode}`;
       sendMessage("308272c7-1f8c-4a12-bf30-d9366b4a06ca", msg, data);
     }
+
+    durasi = await diagnoticTime.durasi(t0);
+    return response.status(403).json({
+      diagnostic: {
+        times: durasi,
+        error: false,
+        message: "qq",
+      },
+      data: todayTimesheet,
+    });
   }
 
   /**
@@ -201,6 +215,110 @@ class NotificationController {
 
       const msg = `Jangan lupa untuk menutup time sheet unit ${x.id}`;
       sendMessage("308272c7-1f8c-4a12-bf30-d9366b4a06ca", msg, data);
+    }
+  }
+
+  /**
+   * Create/save a new notification.
+   * POST notifications
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async storeUserDevice({ request, response, auth }) {
+    var t0 = performance.now();
+    let durasi;
+
+    const { user_id, device_model, userId, playerId } = request.only([
+      "user_id",
+      "device_model",
+      "userId",
+      "playerId",
+    ]);
+
+    console.log('requests :: ', request.all());
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+
+
+    const userDevice = new UserDevice();
+    console.log('user device constructor :: ', userDevice);
+    const checkIfExist = await UserDevice
+      .query()
+      .where('playerId', playerId)
+      .first()
+
+    console.log('check if exists ?? ', checkIfExist);
+    if (checkIfExist) {
+
+      console.log('user is exists ? ');
+      try {
+        checkIfExist.merge({
+          user_id: user_id,
+          userId : userId
+        });
+        await checkIfExist.save();
+
+        console.log('check if exists :: ', checkIfExist);
+        durasi = await diagnoticTime.durasi(t0);
+        return response.status(200).json({
+          diagnostic: {
+            times: durasi,
+            error: false,
+            message: "Data is Existing, Replacing old user_id",
+          },
+          data: checkIfExist,
+        });
+      } catch (err) {
+        console.log('err1 ', err)
+        durasi = await diagnoticTime.durasi(t0);
+        return response.status(403).json({
+          diagnostic: {
+            times: durasi,
+            error: true,
+            message: err.message,
+          },
+          data: {},
+        });
+      }
+    } else {
+
+      try {
+        userDevice.fill({
+          userId,
+          device_model,
+          user_id,
+          playerId,
+        });
+        await userDevice.save();
+
+      console.log('thiis is working instead ? ', userDevice);
+      } catch (err) {
+        console.log('err 2 ', err)
+        durasi = await diagnoticTime.durasi(t0);
+        return response.status(403).json({
+          diagnostic: {
+            times: durasi,
+            error: true,
+            message: err.message,
+          },
+          data: {},
+        });
+      }
     }
   }
 

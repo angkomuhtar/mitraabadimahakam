@@ -828,6 +828,8 @@ Route.group(() => {
 
     Route.post('/shift/morning', 'NotificationController.morningShiftNotification')
     Route.post('/shift/night', 'NotificationController.nightShiftNotification')
+
+    Route.post('/user/device-id/update', 'NotificationController.storeUserDevice')
     
 }).prefix('api/notifications').namespace('api')
 
