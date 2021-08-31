@@ -166,10 +166,7 @@ class TimeSheetApiController {
             }
           }
 
-          console.log("daily fleet ids :: ", dailyFleetIDs);
-
           if (_filter.type === "time sheet") {
-            console.log("TYPE :: TIME SHEET");
             if (dailyFleet) {
               dailyChecklist = await DailyChecklist.query()
                 .with("userCheck", (wh) => wh.with("profile"))
@@ -238,7 +235,6 @@ class TimeSheetApiController {
                 .fetch();
             }
           } else {
-            console.log("TYPE ::: REFUELINGS");
             const dailyChecklistYstdAndToday = (
               await DailyChecklist.query()
                 .whereBetween("tgl", [prevDay, now])
@@ -578,6 +574,7 @@ class TimeSheetApiController {
         begin_smu,
         p2h,
         refueling,
+        approved_at
       } = req;
       var tgl_ = new Date(tgl);
       try {
@@ -591,7 +588,7 @@ class TimeSheetApiController {
           description,
           begin_smu,
           tgl: tgl_,
-          approved_at: new Date(),
+          approved_at: moment(approved_at).format('YYYY-MM-DD HH:mm:ss'),
         });
         await dailyChecklist.save(trx);
 

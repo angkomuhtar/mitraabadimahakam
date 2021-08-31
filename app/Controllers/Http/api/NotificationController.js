@@ -79,7 +79,8 @@ class NotificationController {
           json: true,
           body: {
             app_id: appID,
-            contents: { en: message },
+            contents: { en: `\n ${message} !` },
+            headings: { en : 'Penutupan HM Akhir'},
             include_player_ids: Array.isArray(device) ? device : [device],
             data: data,
           },
@@ -99,12 +100,6 @@ class NotificationController {
     // morning shift
     const todayTimesheet = (
       await DailyChecklist.query()
-        .whereBetween("approved_at", [
-          `${timeNow} 07:01:00`,
-          moment(`${timeNow} 19:00:00`)
-            .add(12, "hour")
-            .format("YYYY-MM-DD HH:mm:ss"),
-        ])
         .with("userCheck", (wh) => {
           wh.with("deviceId");
           wh.with("profile");
@@ -112,17 +107,28 @@ class NotificationController {
         .with("spv", (wh) => wh.with("profile"))
         .with("operator_unit")
         .with("equipment")
+        .where((wh) => {
+          wh.whereBetween("approved_at", [
+            moment(`${timeNow} 07:01:00`).format("YYYY-MM-DD HH:mm:ss"),
+            moment(`${timeNow} 07:01:00`)
+              .add(12, "hour")
+              .format("YYYY-MM-DD HH:mm:ss"),
+          ]);
+          wh.whereNull("end_smu");
+        })
         .fetch()
     ).toJSON();
 
     for (let x of todayTimesheet) {
       let data = {
+        type : 'time sheet',
         dailyfleet_id: x.dailyfleet_id,
         unit_id: x.unit_id,
         id: x.id,
+        unit_name: x.equipment.kode,
       };
       const msg = `Jangan lupa untuk menutup HM akhir unit ${x.equipment.kode}`;
-      sendMessage("308272c7-1f8c-4a12-bf30-d9366b4a06ca", msg, data);
+      sendMessage(x.userCheck.deviceId.playerId, msg, data);
     }
 
     durasi = await diagnoticTime.durasi(t0);
@@ -237,8 +243,6 @@ class NotificationController {
       "playerId",
     ]);
 
-    console.log('requests :: ', request.all());
-
     try {
       await auth.authenticator("jwt").getUser();
     } catch (error) {
@@ -254,26 +258,18 @@ class NotificationController {
       });
     }
 
-
     const userDevice = new UserDevice();
-    console.log('user device constructor :: ', userDevice);
-    const checkIfExist = await UserDevice
-      .query()
-      .where('playerId', playerId)
-      .first()
+    const checkIfExist = await UserDevice.query()
+      .where("playerId", playerId)
+      .first();
 
-    console.log('check if exists ?? ', checkIfExist);
     if (checkIfExist) {
-
-      console.log('user is exists ? ');
       try {
         checkIfExist.merge({
           user_id: user_id,
-          userId : userId
+          userId: userId,
         });
         await checkIfExist.save();
-
-        console.log('check if exists :: ', checkIfExist);
         durasi = await diagnoticTime.durasi(t0);
         return response.status(200).json({
           diagnostic: {
@@ -284,7 +280,6 @@ class NotificationController {
           data: checkIfExist,
         });
       } catch (err) {
-        console.log('err1 ', err)
         durasi = await diagnoticTime.durasi(t0);
         return response.status(403).json({
           diagnostic: {
@@ -296,7 +291,6 @@ class NotificationController {
         });
       }
     } else {
-
       try {
         userDevice.fill({
           userId,
@@ -305,10 +299,7 @@ class NotificationController {
           playerId,
         });
         await userDevice.save();
-
-      console.log('thiis is working instead ? ', userDevice);
       } catch (err) {
-        console.log('err 2 ', err)
         durasi = await diagnoticTime.durasi(t0);
         return response.status(403).json({
           diagnostic: {
