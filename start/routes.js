@@ -163,6 +163,21 @@ Route.group(() => {
 
     Route.post('/seam/:id/delete', 'MasSeamController.delete').as('mas.seam.delete').middleware('D')
 
+    // Material
+    Route.get('/material', 'MasMaterialController.index').as('mas.material.index').middleware('R')
+
+    Route.post('/material', 'MasMaterialController.store').as('mas.material.store').middleware('C')
+
+    Route.get('/material/list', 'MasMaterialController.list').as('mas.material.list').middleware('R')
+
+    Route.get('/material/create', 'MasMaterialController.create').as('mas.material.create').middleware('R')
+
+    Route.get('/material/:id/show', 'MasMaterialController.show').as('mas.material.show').middleware('U')
+
+    Route.post('/material/:id/update', 'MasMaterialController.update').as('mas.material.update').middleware('U')
+
+    Route.post('/material/:id/delete', 'MasMaterialController.delete').as('mas.material.delete').middleware('D')
+
     // Sub Contractor
     Route.get('/subcont', 'MasSubcontractorController.index').as('mas.subcont.index').middleware('R')
 
