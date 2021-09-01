@@ -11,7 +11,7 @@ class MasFleetController {
 
     async list ({ request, view }) {
         const req = request.only(['keyword', 'page'])
-        const limit = 10
+        const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let data
         if(req.keyword != ''){
@@ -19,6 +19,7 @@ class MasFleetController {
             whe.where('kode', 'like', `%${req.keyword}%`)
             whe.orWhere('name', 'like', `%${req.keyword}%`)
         }).andWhere('status', 'Y')
+        .orderBy('name', 'asc')
         .paginate(halaman, limit)
         }else{
         data = await Fleet.query().where('status', 'Y').paginate(halaman, limit)
