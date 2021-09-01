@@ -574,7 +574,7 @@ class TimeSheetApiController {
         begin_smu,
         p2h,
         refueling,
-        approved_at
+        approved_at,
       } = req;
       var tgl_ = new Date(tgl);
       try {
@@ -588,7 +588,7 @@ class TimeSheetApiController {
           description,
           begin_smu,
           tgl: tgl_,
-          approved_at: moment(approved_at).format('YYYY-MM-DD HH:mm:ss'),
+          approved_at: moment(approved_at).format("YYYY-MM-DD HH:mm:ss"),
         });
         await dailyChecklist.save(trx);
 
