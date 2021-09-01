@@ -9,6 +9,8 @@ const DailyFleet = use("App/Models/DailyFleet");
 const MasEquipment = use("App/Models/MasEquipment");
 const DailyFleetEquip = use("App/Models/DailyFleetEquip");
 const Database = use("Database");
+const MasShift = use("App/Models/MasShift");
+
 var initString = "YYYY-MM-DD";
 
 class DailyFleetApiController {
@@ -374,35 +376,6 @@ class DailyFleetApiController {
           },
           data: cekFleet,
         });
-      }
-
-      for (const item of details) {
-        const begin = moment(item.datetime).format("YYYY-MM-DD 00:00");
-        const end = moment(item.datetime).format("YYYY-MM-DD 23:59");
-        const cekEquipment = await DailyFleetEquip.query()
-          .whereBetween("datetime", [begin, end])
-          .andWhere("equip_id", item.equip_id)
-          .first();
-
-        const isEquipment = await MasEquipment.findOrFail(item.equip_id);
-
-        if (cekEquipment) {
-          durasi = await diagnoticTime.durasi(t0);
-          return response.status(200).json({
-            diagnostic: {
-              times: durasi,
-              error: true,
-              tgl_begin: begin,
-              tgl_end: end,
-              message:
-                "duplicated equipment : " +
-                isEquipment.kode +
-                " or DATETIME: " +
-                moment().format("YYYY-MM-DD HH:mm"),
-            },
-            data: cekEquipment,
-          });
-        }
       }
 
       const trx = await db.beginTransaction();

@@ -376,7 +376,7 @@ class DailyRitaseDetailApiController {
             error: false,
           },
           data: dailyRitaseDetail,
-        });
+        })
       } catch (error) {
         console.log(error);
         durasi = await diagnoticTime.durasi(t0);
