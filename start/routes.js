@@ -217,6 +217,21 @@ Route.group(() => {
 
     Route.post('/subcont/:id/delete', 'MasSubcontractorController.delete').as('mas.subcont.delete').middleware('D')
 
+    // Supplier
+    Route.get('/supplier', 'MasSupplierController.index').as('mas.supplier.index').middleware('R')
+
+    Route.post('/supplier', 'MasSupplierController.store').as('mas.supplier.store').middleware('C')
+
+    Route.get('/supplier/list', 'MasSupplierController.list').as('mas.supplier.list').middleware('R')
+
+    Route.get('/supplier/create', 'MasSupplierController.create').as('mas.supplier.create').middleware('R')
+
+    Route.get('/supplier/:id/show', 'MasSupplierController.show').as('mas.supplier.show').middleware('U')
+
+    Route.post('/supplier/:id/update', 'MasSupplierController.update').as('mas.supplier.update').middleware('U')
+
+    Route.post('/supplier/:id/delete', 'MasSupplierController.delete').as('mas.supplier.delete').middleware('D')
+
     // Dokumentasi
     Route.get('/doc-details', 'MasDocumentationDetailsController.index').as('mas.doc-details.index').middleware('R')
 
