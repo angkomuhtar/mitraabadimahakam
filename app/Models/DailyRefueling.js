@@ -20,6 +20,10 @@ class DailyRefueling extends Model {
         return this.belongsTo("App/Models/MasEquipment", "equip_id", "id")
     }
 
+    truck_fuel () {
+        return this.belongsTo("App/Models/MasEquipment", "fuel_truck", "id")
+    }
+
     operator_unit () {
         return this.belongsTo("App/Models/MasEmployee", "operator", "id")
     }
