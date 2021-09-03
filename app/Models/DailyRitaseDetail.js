@@ -24,6 +24,10 @@ class DailyRitaseDetail extends Model {
         return this.belongsTo("App/Models/User", "spv_id", "id")
     }
 
+    operator(){
+        return this.belongsTo("App/Models/MasEmployee", "opr_id", "id")
+    }
+
     hauler(){
         return this.belongsTo("App/Models/MasEquipment", "hauler_id", "id")
     }

@@ -48,6 +48,7 @@ class DailyRitaseDetailApiController {
           .with("checker")
           .with("spv")
           .with("hauler")
+          .with("operator")
           .where(req)
           .paginate(page, limit);
         durasi = await diagnoticTime.durasi(t0);
@@ -79,6 +80,7 @@ class DailyRitaseDetailApiController {
           .with("checker")
           .with("spv")
           .with("hauler")
+          .with("operator")
           .where("check_in", ">=", begin_time)
           .andWhere("check_in", "<=", end_time)
           .paginate(page, limit);
@@ -111,6 +113,7 @@ class DailyRitaseDetailApiController {
       "dailyritase_id",
       "checker_id",
       "spv_id",
+      "opr_id",
       "hauler_id",
       "tipe",
       "distance",
@@ -159,6 +162,7 @@ class DailyRitaseDetailApiController {
           dailyritase_id: dailyRitase.id,
           checker_id: req.checker_id,
           spv_id: req.spv_id,
+          opr_id: req.opr_id,
           hauler_id: req.hauler_id,
           check_in: new Date(),
         });
@@ -308,6 +312,7 @@ class DailyRitaseDetailApiController {
           .with("checker", (w) => w.with("profile"))
           .with("spv", (w) => w.with("profile"))
           .with("hauler")
+          .with("operator")
           .where("dailyritase_id", id)
           .orderBy([{ column: "created_at", order: "desc" }])
           .fetch();
@@ -342,6 +347,7 @@ class DailyRitaseDetailApiController {
       "checker_id",
       "spv_id",
       "hauler_id",
+      "opr_id",
       "check_in",
     ]);
 

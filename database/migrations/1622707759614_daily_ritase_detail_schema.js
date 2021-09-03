@@ -11,6 +11,7 @@ class DailyRitaseDetailSchema extends Schema {
       table.integer('checker_id').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('spv_id').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
       table.integer('hauler_id').unsigned().references('id').inTable('mas_equipments').onDelete('CASCADE').onUpdate('CASCADE')
+      table.integer('opr_id').unsigned().references('id').inTable('mas_employees').onDelete('CASCADE').onUpdate('CASCADE')
       table.timestamp('check_in').notNullable()
       table.integer('urut').notNullable()
       table.integer('duration').notNullable()
