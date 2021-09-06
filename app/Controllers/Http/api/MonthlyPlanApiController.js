@@ -37,9 +37,11 @@ class MonthlyPlanApiController {
   async destroy({ params, request, response }) {}
 
   async getWeeklyOBProduction({ request, response, auth }) {
-    const { date } = request.only(["date"]);
+    const { date, pit_id } = request.only(["date", "pit_id"]);
     var t0 = performance.now();
     let durasi;
+
+    const _pit_id = pit_id ? pit_id : 1;
 
     try {
       await auth.authenticator("jwt").getUser();
@@ -56,6 +58,16 @@ class MonthlyPlanApiController {
       });
     }
 
+    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+
+    const monthlyPlans = await MonthlyPlans.query()
+      .with("pit")
+      .where("month", SoM)
+      .andWhere("pit_id", _pit_id)
+      .first();
+
+    const MONTHLYPLANS_ID = monthlyPlans?.id;
+
     const currentWeekDays = Array.from({ length: 7 }, (x, i) =>
       moment().startOf("week").add(i, "days").format("ddd")
     );
@@ -65,15 +77,17 @@ class MonthlyPlanApiController {
 
     let dailyPlans;
     try {
-
       dailyPlans = (
         await DailyPlans.query()
           .with("monthly_plan")
           .where("current_date", ">=", SoW)
           .andWhere("current_date", "<=", EoW)
           .andWhere("tipe", "OB")
+          .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
       ).toJSON();
+
+      console.log("daily plans found ?? ", dailyPlans);
 
       let temp = [];
       let _temp = [];
@@ -129,8 +143,6 @@ class MonthlyPlanApiController {
         }
       }
 
-      console.log("this is week days :: ", r);
-
       const WEEKLY_OB_ACTUAL = parseFloat(
         r.reduce((a, b) => a + b.actual, 0).toFixed(2)
       );
@@ -144,9 +156,10 @@ class MonthlyPlanApiController {
         plan: {
           actual: WEEKLY_OB_ACTUAL,
           weeklyPlan: WEEKLY_OB_PLAN,
-          ach: parseFloat(
-            ((WEEKLY_OB_ACTUAL / WEEKLY_OB_PLAN) * 100).toFixed(2)
-          ),
+          ach:
+            parseFloat(
+              ((WEEKLY_OB_ACTUAL / WEEKLY_OB_PLAN) * 100).toFixed(2)
+            ) || 0,
         },
       };
 
@@ -154,8 +167,9 @@ class MonthlyPlanApiController {
       return response.status(200).json({
         diagnostic: {
           times: durasi,
-          error: false
+          error: false,
         },
+        pit_name: monthlyPlans.toJSON().pit.name,
         data: data,
       });
     } catch (error) {
@@ -165,7 +179,7 @@ class MonthlyPlanApiController {
         diagnostic: {
           times: durasi,
           error: true,
-          message: error
+          message: error,
         },
         data: {},
       });
@@ -173,9 +187,11 @@ class MonthlyPlanApiController {
   }
 
   async getWeeklyCoalProduction({ request, response, auth }) {
-    const { date } = request.only(["date"]);
+    const { date, pit_id } = request.only(["date", "pit_id"]);
     var t0 = performance.now();
     let durasi;
+
+    const _pit_id = pit_id ? pit_id : 1;
 
     try {
       await auth.authenticator("jwt").getUser();
@@ -192,6 +208,16 @@ class MonthlyPlanApiController {
       });
     }
 
+    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+
+    const monthlyPlans = await MonthlyPlans.query()
+      .with("pit")
+      .where("month", SoM)
+      .andWhere("pit_id", _pit_id)
+      .first();
+
+    const MONTHLYPLANS_ID = monthlyPlans?.id;
+
     const currentWeekDays = Array.from({ length: 7 }, (x, i) =>
       moment().startOf("week").add(i, "days").format("ddd")
     );
@@ -199,15 +225,16 @@ class MonthlyPlanApiController {
     const SoW = moment(date).startOf("week").format("YYYY-MM-DD");
     const EoW = moment(date).endOf("week").format("YYYY-MM-DD");
 
-    try {
-      let dailyPlans;
+    let dailyPlans;
 
+    try {
       dailyPlans = (
         await DailyPlans.query()
           .with("monthly_plan")
           .where("current_date", ">=", SoW)
           .andWhere("current_date", "<=", EoW)
           .andWhere("tipe", "COAL")
+          .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
       ).toJSON();
 
@@ -278,9 +305,10 @@ class MonthlyPlanApiController {
         plan: {
           actual: WEEKLY_COAL_ACTUAL,
           weeklyPlan: WEEKLY_COAL_PLAN,
-          ach: parseFloat(
-            ((WEEKLY_COAL_ACTUAL / WEEKLY_COAL_PLAN) * 100).toFixed(2)
-          ),
+          ach:
+            parseFloat(
+              ((WEEKLY_COAL_ACTUAL / WEEKLY_COAL_PLAN) * 100).toFixed(2)
+            ) || 0,
         },
       };
 
@@ -290,6 +318,7 @@ class MonthlyPlanApiController {
           times: durasi,
           error: false,
         },
+        pit_name: monthlyPlans.toJSON().pit.name,
         data: data,
       });
     } catch (error) {
@@ -334,9 +363,9 @@ class MonthlyPlanApiController {
       });
     }
 
-    try {
-      let dataPeriode = [];
+    let dataPeriode = [];
 
+    try {
       dataPeriode = (
         await DailyRefueling.query()
           .whereBetween("fueling_at", [SoW, EoW])
