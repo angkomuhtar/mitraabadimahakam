@@ -152,13 +152,7 @@ class MonthlyPlanApiController {
       return response.status(200).json({
         diagnostic: {
           times: durasi,
-          error: false,
-          check: {
-            currentWeekDays: currentWeekDays,
-            SoW: SoW,
-            EoW: EoW,
-            dailyPlans: dailyPlans
-          }
+          error: false
         },
         data: data,
       });
@@ -169,13 +163,7 @@ class MonthlyPlanApiController {
         diagnostic: {
           times: durasi,
           error: true,
-          message: error,
-          check: {
-            currentWeekDays: currentWeekDays,
-            SoW: SoW,
-            EoW: EoW,
-            dailyPlans: dailyPlans
-          }
+          message: error
         },
         data: {},
       });
