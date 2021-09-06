@@ -705,6 +705,8 @@ Route.group(() => {
 
     Route.post('/:id/update', 'DailyFleetApiController.update')
 
+    Route.post('update-pit', 'DailyFleetApiController.moveFleetToOtherPIT')
+
 }).prefix('api/daily-fleet').namespace('api')
 
 Route.group(() => {
@@ -718,8 +720,6 @@ Route.group(() => {
     Route.post('/:id/update', 'DailyFleetEquipmentApiController.update')
 
     Route.delete('/:id/destroy', 'DailyFleetEquipmentApiController.destroy')
-
-    Route.post('/move-to-other-fleet', 'DailyFleetEquipmentApiController.moveUnitToOtherFleet')
 
 }).prefix('api/daily-fleet-equipment').namespace('api')
 

@@ -323,6 +323,63 @@ class DailyFleetApiController {
     });
   }
 
+  async moveFleetToOtherPIT({ auth, request, response }) {
+    const req = request.only(["dailyfleet_id", "pit_id"]);
+
+    var t0 = performance.now();
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      let durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+
+    const { pit_id, dailyfleet_id } = req;
+
+    let durasi;
+    try {
+      const cekDailyFleet = await DailyFleet.query()
+        .where("id", dailyfleet_id)
+        .with('pit')
+        .first();
+
+      if (cekDailyFleet) {
+        cekDailyFleet.merge({
+          pit_id,
+        });
+        cekDailyFleet.save();
+        durasi = await diagnoticTime.durasi(t0);
+        return response.status(200).json({
+          diagnostic: {
+            times: durasi,
+            error: false,
+            message: "Change PIT Success",
+          },
+          data: cekDailyFleet,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      let durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+  }
+
   async create({ auth, request, response }) {
     const req = request.only([
       "pit_id",

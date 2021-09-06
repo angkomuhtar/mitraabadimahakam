@@ -129,6 +129,8 @@ class MonthlyPlanApiController {
         }
       }
 
+      console.log("this is week days :: ", r);
+
       const WEEKLY_OB_ACTUAL = parseFloat(
         r.reduce((a, b) => a + b.actual, 0).toFixed(2)
       );
@@ -716,8 +718,8 @@ class MonthlyPlanApiController {
 
         SHIFTS.push({
           kode: v.kode.toLowerCase(),
-          name : v.name
-        })
+          name: v.name,
+        });
 
         const _ritOB = (
           await DailyRitaseDetail.query(trx)
@@ -761,7 +763,7 @@ class MonthlyPlanApiController {
             .andWhere("end_at", "<=", [_end])
             .orderBy("start_at", "asc")
             .fetch()
-        ).toJSON()
+        ).toJSON();
 
         for (let z of DAILY_EVENT) {
           let obj_2 = {
@@ -778,7 +780,7 @@ class MonthlyPlanApiController {
       for (let x of SHIFTS) {
         const obj = {
           shift: x.name.toUpperCase(),
-          data : EVENTS.filter((v) => v.shift === x.kode)
+          data: EVENTS.filter((v) => v.shift === x.kode),
         };
         _EVENTS.push(obj);
       }
@@ -820,7 +822,7 @@ class MonthlyPlanApiController {
           _MTD_OB_ACTUAL_BY_TC /
           (_MTD_COAL_ACTUAL_BY_TC + parseInt(COAL_EXPOSE))
         ).toFixed(2)
-      )
+      );
 
       if (await infinityCheck(MTD_COAL_EXPOSE_SR)) {
         MTD_COAL_EXPOSE_SR = 0;
