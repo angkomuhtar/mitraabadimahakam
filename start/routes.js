@@ -405,6 +405,23 @@ Route.group(() => {
 
     Route.post('/monthly-plan/:id/update', 'MonthlyPlanController.update').as('opr.monthly-plan.update').middleware('U')
 
+    // Daily Coal Exposed
+    Route.get('/daily-coal-exposed', 'DailyCoalExposedController.index').as('opr.daily-coal-exposed.index').middleware('R')
+
+    Route.post('/daily-coal-exposed', 'DailyCoalExposedController.store').as('opr.daily-coal-expose.store').middleware('R')
+
+    Route.get('/daily-coal-exposed/list', 'DailyCoalExposedController.list').as('opr.daily-coal-expose.list').middleware('R')
+
+    Route.get('/daily-coal-exposed/filter', 'DailyCoalExposedController.filter').as('opr.daily-coal-expose.filter').middleware('R')
+    
+    Route.get('/daily-coal-exposed/create', 'DailyCoalExposedController.create').as('opr.daily-coal-expose.create').middleware('R')
+    
+    Route.post('/daily-coal-exposed/:id/destroy', 'DailyCoalExposedController.destroy').as('opr.daily-coal-expose.destroy').middleware('D')
+    
+    Route.get('/daily-coal-exposed/:id/show', 'DailyCoalExposedController.show').as('opr.daily-coal-expose.show').middleware('R')
+    
+    Route.post('/daily-coal-exposed/:id/update', 'DailyCoalExposedController.update').as('opr.daily-coal-expose.update').middleware('U')
+
     // Fuel Distribution
     Route.get('/fuel-dist', 'FuelDistributeController.index').as('opr.fuel-distribution.index').middleware('R')
 
