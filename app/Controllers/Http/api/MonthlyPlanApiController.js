@@ -63,8 +63,8 @@ class MonthlyPlanApiController {
     const SoW = moment(date).startOf("week").format("YYYY-MM-DD");
     const EoW = moment(date).endOf("week").format("YYYY-MM-DD");
 
+    let dailyPlans;
     try {
-      let dailyPlans;
 
       dailyPlans = (
         await DailyPlans.query()
@@ -154,7 +154,7 @@ class MonthlyPlanApiController {
       return response.status(200).json({
         diagnostic: {
           times: durasi,
-          error: false,
+          error: false
         },
         data: data,
       });
@@ -165,7 +165,7 @@ class MonthlyPlanApiController {
         diagnostic: {
           times: durasi,
           error: true,
-          message: error,
+          message: error
         },
         data: {},
       });
