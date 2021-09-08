@@ -19,10 +19,10 @@ class MasFleetController {
             whe.where('kode', 'like', `%${req.keyword}%`)
             whe.orWhere('name', 'like', `%${req.keyword}%`)
         }).andWhere('status', 'Y')
-        .orderBy('name', 'asc')
+        .orderBy('kode', 'asc')
         .paginate(halaman, limit)
         }else{
-        data = await Fleet.query().where('status', 'Y').paginate(halaman, limit)
+        data = await Fleet.query().where('status', 'Y').orderBy('kode', 'asc').paginate(halaman, limit)
         }
         // console.log(data);
         return view.render('master.fleet.list', {list: data.toJSON()})

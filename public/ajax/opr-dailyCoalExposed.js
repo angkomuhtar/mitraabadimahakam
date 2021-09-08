@@ -25,6 +25,26 @@ $(function(){
     //     var value = $('input#inpKeywordSupplier').val()
     //     ajaxSearch(value)
     // })
+    $('body').on('hidden.bs.modal', '#filterModal', function (e) {
+        var isFilter = $('body input[name="inp-filter"]').prop('checked')
+        var begin_date = $('body input[name="begin_date"]').val()
+        var end_date = $('body input[name="end_date"]').val()
+        var pit_id = $('body select[name="idpit"]').val()
+        let data
+        if(isFilter){
+            data = {
+                "begin_date": begin_date,
+                "end_date": end_date
+            }
+            if(pit_id){
+                data = {...data, pit_id: pit_id}
+            }
+            console.log(data);
+            dataFiltered(data)
+        }else{
+            initDeafult()
+        }
+    })
 
     $('body').on('click', 'button.bt-edit-data', function(e){
         var id = $(this).data('id')
@@ -177,10 +197,11 @@ $(function(){
         
     }
 
-    function ajaxSearch(value){
+    function dataFiltered(values){
         $.ajax({
             async: true,
-            url: '/operation/daily-coal-exposed/list?keyword='+value,
+            url: '/operation/daily-coal-exposed/filter',
+            data: values,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
