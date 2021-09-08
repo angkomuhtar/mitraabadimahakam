@@ -722,24 +722,24 @@ class MonthlyPlanApiController {
 
     const trx = await db.beginTransaction();
 
-    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+    // const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
 
-    const monthlyPlansOB = await MonthlyPlans.query()
-      .with("pit")
-      .where("month", SoM)
-      .andWhere("pit_id", _pit_id)
-      .andWhere("tipe", "OB")
-      .first();
+    // const monthlyPlansOB = await MonthlyPlans.query()
+    //   .with("pit")
+    //   .where("month", SoM)
+    //   .andWhere("pit_id", _pit_id)
+    //   .andWhere("tipe", "OB")
+    //   .first();
 
-    const monthlyPlansCoal = await MonthlyPlans.query()
-      .with("pit")
-      .where("month", SoM)
-      .andWhere("pit_id", _pit_id)
-      .andWhere("tipe", "BB")
-      .first();
+    // const monthlyPlansCoal = await MonthlyPlans.query()
+    //   .with("pit")
+    //   .where("month", SoM)
+    //   .andWhere("pit_id", _pit_id)
+    //   .andWhere("tipe", "BB")
+    //   .first();
 
-    const MONTHLYPLANS_OB_ID = monthlyPlansOB?.id;
-    const MONTHLYPLANS_CO_ID = monthlyPlansCoal?.id;
+    // const MONTHLYPLANS_OB_ID = monthlyPlansOB?.id;
+    // const MONTHLYPLANS_CO_ID = monthlyPlansCoal?.id;
     try {
       const today = moment(date).format("YYYY-MM-DD");
       const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
@@ -751,14 +751,14 @@ class MonthlyPlanApiController {
         await DailyPlans.query(trx)
           .where("current_date", prevDay)
           .andWhere("tipe", "COAL")
-          .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
+          // .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
           .first()
       ).toJSON();
       const obPlanToday = (
         await DailyPlans.query(trx)
           .where("current_date", prevDay)
           .andWhere("tipe", "OB")
-          .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
+          // .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
           .first()
       ).toJSON();
 
@@ -780,46 +780,46 @@ class MonthlyPlanApiController {
           name: v.name,
         });
 
-        const masFleetOB = (
-          await MasFleet.query(trx).where("tipe", "OB").fetch()
-        ).toJSON();
+        // const masFleetOB = (
+        //   await MasFleet.query(trx).where("tipe", "OB").fetch()
+        // ).toJSON();
 
-        const dailyFleetsOBSpecificPit = (
-          await DailyFleet.query(trx)
-            .whereIn(
-              "fleet_id",
-              masFleetOB.map((x) => x.id)
-            )
-            .andWhere("pit_id", _pit_id)
-            .andWhere("created_at", ">=", _start)
-            .andWhere("created_at", "<=", _end)
-            .fetch()
-        ).toJSON();
+        // const dailyFleetsOBSpecificPit = (
+        //   await DailyFleet.query(trx)
+        //     .whereIn(
+        //       "fleet_id",
+        //       masFleetOB.map((x) => x.id)
+        //     )
+        //     .andWhere("pit_id", _pit_id)
+        //     .andWhere("created_at", ">=", _start)
+        //     .andWhere("created_at", "<=", _end)
+        //     .fetch()
+        // ).toJSON();
 
-        const dailyRitaseOBSpecificFleet = (
-          await DailyRitase.query(trx)
-            .whereIn(
-              "dailyfleet_id",
-              dailyFleetsOBSpecificPit.map((x) => x.id)
-            )
-            .fetch()
-        ).toJSON();
+        // const dailyRitaseOBSpecificFleet = (
+        //   await DailyRitase.query(trx)
+        //     .whereIn(
+        //       "dailyfleet_id",
+        //       dailyFleetsOBSpecificPit.map((x) => x.id)
+        //     )
+        //     .fetch()
+        // ).toJSON();
 
-        console.log(
-          "daily fleet ob id :: ",
-          dailyFleetsOBSpecificPit.map((x) => x.id)
-        );
+        // console.log(
+        //   "daily fleet ob id :: ",
+        //   dailyFleetsOBSpecificPit.map((x) => x.id)
+        // );
 
         const _ritOB = (
           await DailyRitaseDetail.query(trx)
             .with("daily_ritase", (wh) => {
               wh.with("material_details");
             })
-            .whereIn(
-              "dailyritase_id",
-              dailyRitaseOBSpecificFleet.map((x) => x.id)
-            )
-            .andWhere("check_in", ">=", _start)
+            // .whereIn(
+            //   "dailyritase_id",
+            //   dailyRitaseOBSpecificFleet.map((x) => x.id)
+            // )
+            .where("check_in", ">=", _start)
             .andWhere("check_in", "<=", _end)
             .fetch()
         ).toJSON();
@@ -836,38 +836,38 @@ class MonthlyPlanApiController {
         RIT_OB_ARR.push(obj);
 
         // coal ritase
-        const masFleetCoal = (
-          await MasFleet.query(trx).where("tipe", "CO").fetch()
-        ).toJSON();
+        // const masFleetCoal = (
+        //   await MasFleet.query(trx).where("tipe", "CO").fetch()
+        // ).toJSON();
 
         const dailyFleetsCoalSpecificPit = (
           await DailyFleet.query(trx)
-            .whereIn(
-              "fleet_id",
-              masFleetCoal.map((x) => x.id)
-            )
-            .andWhere("pit_id", _pit_id)
+            // .whereIn(
+            //   "fleet_id",
+            //   masFleetCoal.map((x) => x.id)
+            // )
+            .where("pit_id", _pit_id)
             .andWhere("created_at", ">=", _start)
             .andWhere("created_at", "<=", _end)
             .fetch()
         ).toJSON();
 
-        const dailyRitaseCoalSpecificFleet = (
-          await DailyRitaseCoal.query(trx)
-            .whereIn(
-              "dailyfleet_id",
-              dailyFleetsCoalSpecificPit.map((x) => x.id)
-            )
-            .fetch()
-        ).toJSON()
+        // const dailyRitaseCoalSpecificFleet = (
+        //   await DailyRitaseCoal.query(trx)
+        //     .whereIn(
+        //       "dailyfleet_id",
+        //       dailyFleetsCoalSpecificPit.map((x) => x.id)
+        //     )
+        //     .fetch()
+        // ).toJSON()
 
         const ritaseCoal = (
           await DailyRitaseCoalDetail.query(trx)
-            .whereIn(
-              "ritasecoal_id",
-              dailyRitaseCoalSpecificFleet.map((x) => x.id)
-            )
-            .andWhere("checkout_jt", ">=", _start)
+            // .whereIn(
+            //   "ritasecoal_id",
+            //   dailyRitaseCoalSpecificFleet.map((x) => x.id)
+            // )
+            .where("checkout_jt", ">=", _start)
             .andWhere("checkout_jt", "<=", _end)
             .fetch()
         ).toJSON();
@@ -882,31 +882,31 @@ class MonthlyPlanApiController {
         };
         RIT_COAL_ARR.push(obj_1);
 
-        const allDailyFleetInASpecificPit = (
-          await DailyFleet.query(trx)
-            .where("pit_id", _pit_id)
-            .andWhere("created_at", ">=", _start)
-            .andWhere("created_at", "<=", _end)
-            .fetch()
-        ).toJSON();
+        // const allDailyFleetInASpecificPit = (
+        //   await DailyFleet.query(trx)
+        //     .where("pit_id", _pit_id)
+        //     .andWhere("created_at", ">=", _start)
+        //     .andWhere("created_at", "<=", _end)
+        //     .fetch()
+        // ).toJSON();
 
-        const timeSheetSpecificPit = (
-          await DailyChecklist.query(trx)
-            .whereIn(
-              "dailyfleet_id",
-              allDailyFleetInASpecificPit.map((x) => x.id)
-            )
-            .fetch()
-        ).toJSON();
+        // const timeSheetSpecificPit = (
+        //   await DailyChecklist.query(trx)
+        //     .whereIn(
+        //       "dailyfleet_id",
+        //       allDailyFleetInASpecificPit.map((x) => x.id)
+        //     )
+        //     .fetch()
+        // ).toJSON();
 
         const DAILY_EVENT = (
           await DailyEvent.query(trx)
             .with("event")
-            .whereIn(
-              "timesheet_id",
-              timeSheetSpecificPit.map((x) => x.id)
-            )
-            .andWhere("start_at", ">=", [_start])
+            // .whereIn(
+            //   "timesheet_id",
+            //   timeSheetSpecificPit.map((x) => x.id)
+            // )
+            .where("start_at", ">=", [_start])
             .andWhere("end_at", "<=", [_end])
             .orderBy("start_at", "asc")
             .fetch()
@@ -939,7 +939,7 @@ class MonthlyPlanApiController {
         await DailyPlans.query(trx)
           .whereBetween("current_date", [SoM, now])
           .where("tipe", "OB")
-          .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
+          // .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
           .fetch()
       ).toJSON();
 
@@ -947,7 +947,7 @@ class MonthlyPlanApiController {
         await DailyPlans.query(trx)
           .whereBetween("current_date", [SoM, now])
           .where("tipe", "COAL")
-          .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
+          // .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
           .fetch()
       ).toJSON();
 
@@ -1016,7 +1016,6 @@ class MonthlyPlanApiController {
           error: false,
           request_time: date,
           server_time: moment(date).format("YYYY-MM-DD"),
-          pit_name: monthlyPlansOB.pit.name,
         },
         data: data,
       });
