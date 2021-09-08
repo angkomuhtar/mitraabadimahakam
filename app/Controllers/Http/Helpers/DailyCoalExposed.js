@@ -15,13 +15,14 @@ class DailyCoalExposed {
     }
 
     async FILTER (req) {
+        console.log(req);
         const data = await CoalExposed.query()
             .with('pit')
             .with('createdby')
             .where(w => {
-                w.where('tgl', '>=', req.begin_data)
-                .andWhere('tgl', '<=', req.end_date)
-                .andWhere('pit_id', req.pid_id)
+                w.where('tgl', '>=', `${req.begin_date}`)
+                .andWhere('tgl', '<=', `${req.end_date}`)
+                .andWhere('pit_id', `${req.pid_id}`)
             })
             .andWhere('aktif', 'Y')
             .fetch()

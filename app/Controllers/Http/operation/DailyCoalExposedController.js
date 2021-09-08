@@ -17,6 +17,7 @@ class DailyCoalExposedController {
 
     async filter ({ auth, request, view }) {
         const req = request.all()
+        
         await auth.getUser()
         const data = await CoalExposedHelpers.FILTER(req)
         return view.render('operation.daily-coal-exposed.list', {list: data.toJSON()})
