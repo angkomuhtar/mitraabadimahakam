@@ -873,6 +873,16 @@ Route.group(() => {
 
 Route.group(() => {
 
+    Route.get('/', 'DailyCoalExposedApiController.index')
+
+    Route.get('/filter', 'DailyCoalExposedApiController.filter')
+
+    Route.get('/:id/details', 'DailyCoalExposedApiController.show')
+    
+}).prefix('api/daily-coal-exposed').namespace('api')
+
+Route.group(() => {
+
     Route.post('/shift/morning', 'NotificationController.morningShiftNotification')
     Route.post('/shift/night', 'NotificationController.nightShiftNotification')
 

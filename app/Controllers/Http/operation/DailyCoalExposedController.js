@@ -19,6 +19,7 @@ class DailyCoalExposedController {
         const req = request.all()
         
         await auth.getUser()
+        // console.warn("dashboard filter ::", req);
         const data = await CoalExposedHelpers.FILTER(req)
         return view.render('operation.daily-coal-exposed.list', {list: data.toJSON()})
     }

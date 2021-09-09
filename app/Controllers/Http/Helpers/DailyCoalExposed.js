@@ -10,22 +10,29 @@ class DailyCoalExposed {
             .with('pit')
             .with('createdby')
             .where('aktif', 'Y')
+            .orderBy('tgl', 'desc')
             .paginate(halaman, limit)
         return data
     }
 
     async FILTER (req) {
-        console.log(req);
+        const limit = 50
+        const halaman = req.page === undefined ? 1:parseInt(req.page)
         const data = await CoalExposed.query()
             .with('pit')
             .with('createdby')
             .where(w => {
-                w.where('tgl', '>=', `${req.begin_date}`)
-                .andWhere('tgl', '<=', `${req.end_date}`)
-                .andWhere('pit_id', `${req.pid_id}`)
+                if(req.pit_id){
+                    w.where('pit_id', `${req.pit_id}`)
+                }
+                if(req.begin_date){
+                    w.where('tgl', '>=', `${req.begin_date}`)
+                    w.where('tgl', '<=', `${req.end_date}`)
+                }
+                w.where('aktif', 'Y')
             })
-            .andWhere('aktif', 'Y')
-            .fetch()
+            .orderBy('tgl', 'desc')
+            .paginate(halaman, limit)
         return data
     }
 
