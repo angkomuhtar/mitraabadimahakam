@@ -20,7 +20,7 @@ class MasEmployeeController {
   async list ({ auth, request, view }) {
     const usr = await auth.getUser()
     const req = request.all()
-    const limit = 25
+    const limit = 50
     const halaman = req.page === undefined ? 1:parseInt(req.page)
     let data 
     const logger = new Loggerx(request.url(), req, usr, request.method(), true)
@@ -28,16 +28,17 @@ class MasEmployeeController {
     if(req.keyword != ''){
       data = await Employee.query().where(whe => {
         whe.where('nik', 'like', `%${req.keyword}%`)
+        whe.orWhere('old_nik', 'like', `%${req.keyword}%`)
         whe.orWhere('fullname', 'like', `%${req.keyword}%`)
         whe.orWhere('email', 'like', `%${req.keyword}%`)
         whe.orWhere('phone', 'like', `%${req.keyword}%`)
         whe.orWhere('no_idcard', 'like', `%${req.keyword}%`)
         whe.orWhere('alamat', 'like', `%${req.keyword}%`)
         whe.orWhere('tipe_idcard', 'like', `%${req.keyword}%`)
-      }).andWhere('aktif', 'Y').orderBy('fullname', 'asc')
+      }).where('aktif', '!=', 'D').orderBy('fullname', 'asc')
       .paginate(halaman, limit)
     }else{
-      data = await Employee.query().where('aktif', 'Y').orderBy('fullname', 'asc').paginate(halaman, limit)
+      data = await Employee.query().where('aktif', '!=', 'D').orderBy('fullname', 'asc').paginate(halaman, limit)
     }
     // console.log(data.toJSON());
     return view.render('master.employee.list', {list: data.toJSON()})
@@ -48,8 +49,8 @@ class MasEmployeeController {
     const usr = await auth.getUser()
     const req = request.all()
 
-    req.tgl_lahir = new Date(req.tgl_lahir)
-    req.tgl_lahir = new Date(req.join_date)
+    // req.tgl_lahir = new Date(req.tgl_lahir)
+    // req.join_date = new Date(req.join_date)
     console.log(req)
     
 
@@ -93,8 +94,8 @@ class MasEmployeeController {
     const req = request.except(['_csrf', 'submit'])
     console.log(req);
     const employee = await Employee.findOrFail(id)
-    req.tgl_lahir = new Date(req.tgl_lahir)
-    req.tgl_lahir = new Date(req.join_date)
+    // req.tgl_lahir = new Date(req.tgl_lahir)
+    // req.tgl_lahir = new Date(req.join_date)
 
     employee.merge(req)
     try {
@@ -121,7 +122,7 @@ class MasEmployeeController {
     const { id } = params
     const req = request.except(['_csrf', 'submit'])
     const employee = await Employee.findOrFail(id)
-    employee.merge({aktif: 'N'})
+    employee.merge({aktif: 'D'})
     try {
       await employee.save()
       const logger = new Loggerx(request.url(), employee, usr, request.method(), true)

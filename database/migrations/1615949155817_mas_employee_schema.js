@@ -8,6 +8,9 @@ class MasEmployeeSchema extends Schema {
     this.create('mas_employees', (table) => {
       table.increments()
       table.string('nik', 25).notNullable().unique()
+      table.string('old_nik', 25).notNullable()
+      table.date('awal_kontrak').defaultTo(null)
+      table.date('akhir_kontrak').defaultTo(null)
       table.string('fullname').notNullable()
       table.text('alamat').defaultTo(null)
       table.enu('sex', ['m', 'f']).defaultTo('m')

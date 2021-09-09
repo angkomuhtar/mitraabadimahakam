@@ -24,6 +24,9 @@
                     <thead style="border-bottom: 2px solid;">
                         <tr>
                             <th class="text-center">
+                                No <br> &nbsp;
+                            </th>
+                            <th class="text-center">
                                 ACT <br> &nbsp;
                             </th>
                             <th class="sl text-center">
@@ -56,6 +59,9 @@
                             <th class="sl text-center">
                                 Phone/Email
                             </th>
+                            <th class="sl text-center">
+                                Efektif Kontrak
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,15 +71,23 @@
                           </tr>
                         @endif
                         @each(item in list.data)
-                            <tr>
+                            <tr style="background-color: {{item.aktif === 'N' ? '#ff767652': ''}}">
+                                <td>
+                                    {{$loop.index + 1}}
+                                </td>
                                 <td class="single-line text-center">
                                     <button class="btn btn-outline btn-warning btn-xs bt-show-form" data-id="{{item.id}}">Edit</button>
                                 </td>
                                 <td>
-                                    <strong>{{item.nik}}</strong> <br>
+                                    <strong>{{item.nik}}</strong> 
+                                    <br>
+                                    @if(item.old_nik)
+                                      <span class="text-danger">{{item.old_nik}}</span>
+                                      <br>
+                                    @endif
                                     {{item.fullname}}
                                 </td>
-                                <td>{{item.alamat}}</td>
+                                <td>{{item.alamat ? item.alamat : ''}}</td>
                                 <td class="myDateFormat" data-date="{{item.tgl_lahir}}" data-elm="span">
                                     {{item.t4_lahir}} <br>
                                     <span></span>
@@ -95,11 +109,20 @@
                                 </td>
                                 <td class="myDateFormat" data-date="{{item.join_date}}" data-elm="span">
                                     <span></span> <br>
-                                    <strong class="text-capitalize">{{item.sts_employee}}</strong>
+                                    <strong class="text-uppercase">{{item.sts_employee}}</strong>
                                 </td>
                                 <td class="text-right">
                                     {{item.phone}} <br>
                                     {{item.email}}
+                                </td>
+                                <td class="text-right">
+                                    @if(item.awal_kontrak)
+                                        <small>
+                                            <span class="text-success myDateFormat" data-date="{{item.awal_kontrak}}"></span>
+                                            <br>
+                                            <span class="text-warning myDateFormat" data-date="{{item.akhir_kontrak}}"></span>
+                                        </small>
+                                    @endif
                                 </td>
                             </tr>
                         @endeach
