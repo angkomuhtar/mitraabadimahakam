@@ -36,9 +36,10 @@ class MasEmployeeController {
         whe.orWhere('alamat', 'like', `%${req.keyword}%`)
         whe.orWhere('tipe_idcard', 'like', `%${req.keyword}%`)
       }).where('aktif', '!=', 'D').orderBy('fullname', 'asc')
+      .orderBy('old_nik', 'asc')
       .paginate(halaman, limit)
     }else{
-      data = await Employee.query().where('aktif', '!=', 'D').orderBy('fullname', 'asc').paginate(halaman, limit)
+      data = await Employee.query().where('aktif', '!=', 'D').orderBy('old_nik', 'asc').paginate(halaman, limit)
     }
     // console.log(data.toJSON());
     return view.render('master.employee.list', {list: data.toJSON()})
