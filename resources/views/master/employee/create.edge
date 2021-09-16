@@ -14,6 +14,59 @@
                                         <div class="col-md-12">
                                             <div class="col-md-4">
                                                 <div class="form-group">
+                                                    <label for="">NIK Lama</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                        <input type="text" class="form-control field-add" name="old_nik" required> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Status Employee</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
+                                                        <select class="form-control select2 field-add" data-title="sts-employee" data-check id="sts_employee" name="sts_employee"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Status Aktif</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
+                                                        <select class="form-control field-add" name="aktif">
+                                                            <option value="Y">Aktif</option>
+                                                            <option value="N">Resign</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="isKontrak" style="display:none">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Tanggal Mulai Kontrak</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                            <input type="date" class="form-control field-add" name="awal_kontrak"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Tanggal Akhir Kontrak</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                            <input type="date" class="form-control field-add" name="akhir_kontrak"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
                                                     <label for="">Nama Lengkap</label>
                                                     <div class="input-group">
                                                         <div class="input-group-addon"><i class="fa fa-user"></i></div>
@@ -62,7 +115,7 @@
                                                     <label for="">Tanggal Lahir</label>
                                                     <div class="input-group">
                                                         <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-                                                        <input type="datetime-local" class="form-control field-add" name="tgl_lahir"> 
+                                                        <input type="date" class="form-control field-add" name="tgl_lahir"> 
                                                     </div>
                                                 </div>
                                             </div>
@@ -98,7 +151,7 @@
                                                     <label for="">Tanggal Bergabung</label>
                                                     <div class="input-group">
                                                         <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                        <input type="datetime-local" class="form-control field-add" name="join_date"> 
+                                                        <input type="date" class="form-control field-add" name="join_date"> 
                                                     </div>
                                                 </div>
                                             </div>
@@ -138,15 +191,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="">Status Employee</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
-                                                        <select class="form-control select2 field-add" data-title="sts-employee" data-check id="sts_employee" name="sts_employee"></select>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                             <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label for="">Tipe Employee</label>
@@ -156,7 +201,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label for="">Operator</label>
                                                     <div class="input-group">
@@ -168,6 +213,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            
                                             <div class="col-md-7">
                                                 <div class="form-group">
                                                     <label for="">Alamat Lengkap</label>

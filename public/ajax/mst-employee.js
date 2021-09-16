@@ -12,6 +12,21 @@ $(function(){
     $('body').on('click', 'button#bt-back', function(){
         initDeafult()
     })
+
+    $('body').on('change', 'select[name="sts_employee"]', function(e){
+        if($(this).val() === 'pkwt'){
+            $('div#isKontrak').show()
+            $('input[name="awal_kontrak"]').prop('required', true)
+            $('input[name="akhir_kontrak"]').prop('required', true)
+        }else{
+            $('div#isKontrak').hide()
+            $('input[name="awal_kontrak"]').prop('required', false)
+            $('input[name="akhir_kontrak"]').prop('required', false)
+            $('input[name="awal_kontrak"]').val('')
+            $('input[name="akhir_kontrak"]').val('')
+        }
+    })
+
     function initDeafult(){
         $('div.content-module').each(function(){ $(this).hide() })
         $.get('/master/employee/list?keyword=', function(data){
