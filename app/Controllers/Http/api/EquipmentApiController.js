@@ -367,7 +367,7 @@ class EquipmentApiController {
                 let data = []
                 for (const item of dailyChecklist) {
                     data.push({
-                        timesheet_id: item.id,
+                        timesheet_id: null,
                         event_id: req.event_id,
                         user_id: req.user_id,
                         equip_id: item.unit_id,
@@ -462,7 +462,7 @@ class EquipmentApiController {
 
                 const dailyEvent = new DailyEvent()
                 dailyEvent.fill({
-                    timesheet_id: dailyChecklist.id,
+                    timesheet_id: null,
                     event_id: req.event_id,
                     user_id: req.user_id,
                     equip_id: dailyChecklist.unit_id,

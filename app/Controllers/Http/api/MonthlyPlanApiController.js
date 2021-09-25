@@ -19,6 +19,10 @@ const DailyRitase = use("App/Models/DailyRitase");
 const DailyRitaseCoal = use("App/Models/DailyRitaseCoal");
 const MasFleet = use("App/Models/MasFleet");
 const DailyChecklist = use("App/Models/DailyChecklist");
+const VRitaseOb = use('App/Models/VRitaseOb');
+const VRitaseCoal = use('App/Models/VRitaseCoal');
+const VTimeSheet = use('App/Models/VTimeSheet');
+const VDailyEvent = use('App/Models/VDailyEvent');
 
 class MonthlyPlanApiController {
   async index({ request, response, view }) {}
@@ -45,7 +49,6 @@ class MonthlyPlanApiController {
     const { date, pit_id } = request.only(["date", "pit_id"]);
     var t0 = performance.now();
     let durasi;
-
     const _pit_id = pit_id ? pit_id : 1;
 
     try {

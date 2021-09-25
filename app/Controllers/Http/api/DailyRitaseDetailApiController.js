@@ -117,6 +117,7 @@ class DailyRitaseDetailApiController {
       "hauler_id",
       "tipe",
       "distance",
+      "check_in"
     ]);
     let durasi;
 
@@ -164,7 +165,7 @@ class DailyRitaseDetailApiController {
           spv_id: req.spv_id,
           opr_id: req.opr_id,
           hauler_id: req.hauler_id,
-          check_in: new Date(),
+          check_in: moment(req.check_in).format('YYYY-MM-DD HH:mm:ss'),
         });
 
         await dailyRitaseDetail.save();

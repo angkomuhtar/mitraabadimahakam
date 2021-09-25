@@ -75,10 +75,14 @@ class DailyEventTimeSheet {
     }
 
     async POST (params, req) { 
-        const isAvalilable = await TimeSheet.query().where({id: params.id, unit_id: req.equip_id}).first()
-        if(!isAvalilable){
-            throw new Error("Equipment unit unavailble on this TimeSheet...") 
-        }
+        /**
+         * Note :
+         * for this time we don't need to lock the event based on timesheet id
+         */
+        // const isAvalilable = await TimeSheet.query().where({id: params.id, unit_id: req.equip_id}).first()
+        // if(!isAvalilable){
+        //     throw new Error("Equipment unit unavailble on this TimeSheet...") 
+        // }
 
         const engineOFF = await Event.find(req.event_id)
         if(engineOFF.engine === 'off'){
