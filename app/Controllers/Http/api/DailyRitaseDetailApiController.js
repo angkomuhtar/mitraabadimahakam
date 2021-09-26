@@ -165,7 +165,7 @@ class DailyRitaseDetailApiController {
           spv_id: req.spv_id,
           opr_id: req.opr_id,
           hauler_id: req.hauler_id,
-          check_in: moment(req.check_in).format('YYYY-MM-DD HH:mm:ss'),
+          check_in: req.check_in ? req.check_in : new Date(),
         });
 
         await dailyRitaseDetail.save();

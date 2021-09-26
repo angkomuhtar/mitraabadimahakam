@@ -71,7 +71,6 @@ class MonthlyPlanApiController {
     const monthlyPlans = await MonthlyPlans.query()
       .with("pit")
       .where("month", SoM)
-      .andWhere("pit_id", _pit_id)
       .andWhere("tipe", "OB")
       .first();
 
@@ -92,7 +91,6 @@ class MonthlyPlanApiController {
           .where("current_date", ">=", SoW)
           .andWhere("current_date", "<=", EoW)
           .andWhere("tipe", "OB")
-          .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
       ).toJSON();
 
@@ -178,7 +176,7 @@ class MonthlyPlanApiController {
           times: durasi,
           error: false,
         },
-        pit_name: monthlyPlans.toJSON().pit.name,
+        pit_name: 'GENERAL',
         data: data,
       });
     } catch (error) {
@@ -222,7 +220,6 @@ class MonthlyPlanApiController {
     const monthlyPlans = await MonthlyPlans.query()
       .with("pit")
       .where("month", SoM)
-      .andWhere("pit_id", _pit_id)
       .andWhere("tipe", "BB")
       .first();
 
@@ -244,7 +241,6 @@ class MonthlyPlanApiController {
           .where("current_date", ">=", SoW)
           .andWhere("current_date", "<=", EoW)
           .andWhere("tipe", "COAL")
-          .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
       ).toJSON();
 
@@ -328,7 +324,7 @@ class MonthlyPlanApiController {
           times: durasi,
           error: false,
         },
-        pit_name: monthlyPlans.toJSON().pit.name,
+        pit_name: 'GENERAL',
         data: data,
       });
     } catch (error) {
