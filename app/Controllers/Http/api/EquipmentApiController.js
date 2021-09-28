@@ -355,22 +355,39 @@ class EquipmentApiController {
         async function SAVE_EVENT_ALL_EQUIPMENT(){
             const trx = await Db.beginTransaction()
             try {
-                const dailyChecklist = 
-                    (
-                        await DailyChecklist
-                        .query()
-                        .where('dailyfleet_id', idfleet)
-                        .andWhere('tgl', moment(req.tgl).format("YYYY-MM-DD"))
-                        .fetch()
-                    ).toJSON()
+
+                const dailyFleet = (await DailyFleet.query()
+                .where('id', idfleet)
+                .andWhere('date', moment(req.tgl).format("YYYY-MM-DD"))).toJSON();
+
+                const timesheetCheck = async (df_id, unit_id) => {
+                    let ts_id = null;
+
+                    const data = await DailyChecklist.query()
+                    .where('dailyfleet_id', df_id)
+                    .andWhere('unit_id', unit_id)
+                    .andWhere('tgl',  moment(req.tgl).format("YYYY-MM-DD"))
+                    .first()
+
+                    ts_id = data?.id || null
+                    return ts_id;
+                }
+                // const dailyChecklist = 
+                //     (
+                //         await DailyChecklist
+                //         .query()
+                //         .where('dailyfleet_id', idfleet)
+                //         .andWhere('tgl', moment(req.tgl).format("YYYY-MM-DD"))
+                //         .fetch()
+                //     ).first()
 
                 let data = []
-                for (const item of dailyChecklist) {
+                for (const item of dailyFleet) {
                     data.push({
-                        timesheet_id: null,
+                        timesheet_id: await timesheetCheck(item.id, item.equipment.id),
                         event_id: req.event_id,
                         user_id: req.user_id,
-                        equip_id: item.unit_id,
+                        equip_id: item.equipment.id,
                         description: req.description,
                         time_duration: req.time_duration || null,
                         total_smu: req.total_smu || null,
