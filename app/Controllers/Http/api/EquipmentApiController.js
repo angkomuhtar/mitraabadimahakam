@@ -357,6 +357,7 @@ class EquipmentApiController {
             try {
 
                 const dailyFleet = (await DailyFleet.query()
+                .with('details', wh => wh.with('equipment'))
                 .where('id', idfleet)
                 .andWhere('date', moment(req.tgl).format("YYYY-MM-DD")).fetch()).toJSON();
 
@@ -372,28 +373,23 @@ class EquipmentApiController {
                     ts_id = data?.id || null
                     return ts_id;
                 }
-                // const dailyChecklist = 
-                //     (
-                //         await DailyChecklist
-                //         .query()
-                //         .where('dailyfleet_id', idfleet)
-                //         .andWhere('tgl', moment(req.tgl).format("YYYY-MM-DD"))
-                //         .fetch()
-                //     ).first()
-
+                
                 let data = []
                 for (const item of dailyFleet) {
-                    data.push({
-                        timesheet_id: await timesheetCheck(item.id, item.equipment.id),
-                        event_id: req.event_id,
-                        user_id: req.user_id,
-                        equip_id: item.equipment.id,
-                        description: req.description,
-                        time_duration: req.time_duration || null,
-                        total_smu: req.total_smu || null,
-                        start_at : moment(req.start_at).format('YYYY-MM-DD HH:mm:ss'),
-                        end_at : moment(req.end_at).format('YYYY-MM-DD HH:mm:ss')
-                    })
+                    for(const unit of item.details) {
+                        data.push({
+                            timesheet_id: await timesheetCheck(unit.equipment.id, unit.equipment.id),
+                            event_id: req.event_id,
+                            user_id: req.user_id,
+                            equip_id: unit.equipment.id,
+                            description: req.description,
+                            time_duration: req.time_duration || null,
+                            total_smu: req.total_smu || null,
+                            start_at : moment(req.start_at).format('YYYY-MM-DD HH:mm:ss'),
+                            end_at : moment(req.end_at).format('YYYY-MM-DD HH:mm:ss')
+                        })
+                    }
+                    
                 };
 
                 let result = await DailyEvent.createMany(data, trx)
