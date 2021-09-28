@@ -358,7 +358,7 @@ class EquipmentApiController {
 
                 const dailyFleet = (await DailyFleet.query()
                 .where('id', idfleet)
-                .andWhere('date', moment(req.tgl).format("YYYY-MM-DD"))).toJSON();
+                .andWhere('date', moment(req.tgl).format("YYYY-MM-DD")).fetch()).toJSON();
 
                 const timesheetCheck = async (df_id, unit_id) => {
                     let ts_id = null;
