@@ -145,16 +145,28 @@ class DailyEventTimeSheet {
         if(engineOFF.engine === 'off'){
             const validDatetime = await EventTimeSheet.query()
                 .where(w => {
-                    w.where('start_at', '<=', req.start_at)
-                    .andWhere('end_at', '>=', req.start_at)
-                    .andWhere('equip_id', req.equip_id)
-                    // .andWhere('timesheet_id', params.id)
+                    if(req.timesheet_id){
+                        w.where('start_at', '<=', req.start_at)
+                        .andWhere('end_at', '>=', req.start_at)
+                        .andWhere('equip_id', req.equip_id)
+                        .andWhere('timesheet_id', req.timesheet_id)
+                    }else{
+                        w.where('start_at', '<=', req.start_at)
+                        .andWhere('end_at', '>=', req.start_at)
+                        .andWhere('equip_id', req.equip_id)
+                    }
                 })
                 .orWhere(o => {
-                    o.where('start_at', '<=', req.end_at)
-                    .andWhere('end_at', '>=', req.end_at)
-                    .andWhere('equip_id', req.equip_id)
-                    // .andWhere('timesheet_id', params.id)
+                    if(req.timesheet_id){
+                        o.where('start_at', '<=', req.end_at)
+                        .andWhere('end_at', '>=', req.end_at)
+                        .andWhere('equip_id', req.equip_id)
+                        .andWhere('timesheet_id', req.timesheet_id)
+                    }else{
+                        o.where('start_at', '<=', req.end_at)
+                        .andWhere('end_at', '>=', req.end_at)
+                        .andWhere('equip_id', req.equip_id)
+                    }
                 })
                 .getCount()
             if(validDatetime > 0){
@@ -165,16 +177,28 @@ class DailyEventTimeSheet {
         if(engineOFF.engine === 'on'){
             const validDatetime = await EventTimeSheet.query()
                 .where(w => {
-                    w.where('start_at', '<=', req.start_at)
-                    .andWhere('end_at', '>=', req.start_at)
-                    .andWhere('equip_id', req.equip_id)
-                    // .andWhere('timesheet_id', params.id)
+                    if(req.timesheet_id){
+                        w.where('start_at', '<=', req.start_at)
+                        .andWhere('end_at', '>=', req.start_at)
+                        .andWhere('equip_id', req.equip_id)
+                        .andWhere('timesheet_id', req.timesheet_id)
+                    }else{
+                        w.where('start_at', '<=', req.start_at)
+                        .andWhere('end_at', '>=', req.start_at)
+                        .andWhere('equip_id', req.equip_id)
+                    }
                 })
                 .orWhere(o => {
-                    o.where('start_at', '<=', req.end_at)
-                    .andWhere('end_at', '>=', req.end_at)
-                    .andWhere('equip_id', req.equip_id)
-                    // .andWhere('timesheet_id', params.id)
+                    if(req.timesheet_id){
+                        o.where('start_at', '<=', req.end_at)
+                        .andWhere('end_at', '>=', req.end_at)
+                        .andWhere('equip_id', req.equip_id)
+                        .andWhere('timesheet_id', req.timesheet_id)
+                    }else{
+                        o.where('start_at', '<=', req.end_at)
+                        .andWhere('end_at', '>=', req.end_at)
+                        .andWhere('equip_id', req.equip_id)
+                    }
                 })
                 .getCount()
             if(validDatetime > 0){
@@ -184,6 +208,7 @@ class DailyEventTimeSheet {
 
         const eventTimeSheet = new EventTimeSheet()
         eventTimeSheet.fill({
+            timesheet_id: req.timesheet_id,
             event_id: req.event_id,
             user_id: req.user_id,
             equip_id: req.equip_id,
