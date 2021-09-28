@@ -140,6 +140,62 @@ class DailyEventTimeSheet {
         return eventTimeSheet
     }
 
+    async POST_WITHOUT_TIMESHEET (req) { 
+        const engineOFF = await Event.find(req.event_id)
+        if(engineOFF.engine === 'off'){
+            const validDatetime = await EventTimeSheet.query()
+                .where(w => {
+                    w.where('start_at', '<=', req.start_at)
+                    .andWhere('end_at', '>=', req.start_at)
+                    .andWhere('equip_id', req.equip_id)
+                    // .andWhere('timesheet_id', params.id)
+                })
+                .orWhere(o => {
+                    o.where('start_at', '<=', req.end_at)
+                    .andWhere('end_at', '>=', req.end_at)
+                    .andWhere('equip_id', req.equip_id)
+                    // .andWhere('timesheet_id', params.id)
+                })
+                .getCount()
+            if(validDatetime > 0){
+                throw new Error("Event dengan status engine off sudah ada pada range waktu ini...") 
+            }
+        }
+
+        if(engineOFF.engine === 'on'){
+            const validDatetime = await EventTimeSheet.query()
+                .where(w => {
+                    w.where('start_at', '<=', req.start_at)
+                    .andWhere('end_at', '>=', req.start_at)
+                    .andWhere('equip_id', req.equip_id)
+                    // .andWhere('timesheet_id', params.id)
+                })
+                .orWhere(o => {
+                    o.where('start_at', '<=', req.end_at)
+                    .andWhere('end_at', '>=', req.end_at)
+                    .andWhere('equip_id', req.equip_id)
+                    // .andWhere('timesheet_id', params.id)
+                })
+                .getCount()
+            if(validDatetime > 0){
+                throw new Error("Equipment Unit berada pada event lain dalam range waktu ini ...") 
+            }
+        }
+
+        const eventTimeSheet = new EventTimeSheet()
+        eventTimeSheet.fill({
+            event_id: req.event_id,
+            user_id: req.user_id,
+            equip_id: req.equip_id,
+            description: req.description,
+            start_at: req.start_at,
+            end_at: req.end_at,
+            engine: engineOFF.engine
+        })
+        await eventTimeSheet.save()
+        return eventTimeSheet
+    }
+
     async DELETE(params){
         const eventTimeSheet = await EventTimeSheet.find(params.dailyEventID)
         if(eventTimeSheet){

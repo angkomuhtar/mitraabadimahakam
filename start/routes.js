@@ -831,6 +831,8 @@ Route.group(() => {
 
     Route.get('/', 'DailyEventApiController.index')
 
+    Route.post('/', 'DailyEventApiController.saveWithoutTimeSheet')
+
     Route.post('/:id/time-sheet', 'DailyEventApiController.store')
     
     Route.get('/:timesheetID/time-sheet', 'DailyEventApiController.timesheetID')
