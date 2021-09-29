@@ -17,10 +17,10 @@ class EquipmentList {
                         word.orWhere('unit_model', 'like', `%${req.keyword}%`)
                     })
                     .andWhere({aktif: 'Y'})
-                    .orderBy('kode', 'asc')
+                    .orderBy('urut', 'asc')
                     .fetch()
         }else{
-            equipment = await MasEquipment.query().where({aktif: 'Y'}).orderBy('kode', 'asc').fetch()
+            equipment = await MasEquipment.query().where({aktif: 'Y'}).orderBy('urut', 'asc').fetch()
         }
         
         return equipment

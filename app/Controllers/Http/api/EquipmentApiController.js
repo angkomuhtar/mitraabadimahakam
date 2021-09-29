@@ -144,7 +144,7 @@ class EquipmentApiController {
             }
 
             let data = []
-            let equipment = (await Equipment.query().where({aktif: 'Y'}).orderBy('kode', 'asc').fetch()).toJSON()
+            let equipment = (await Equipment.query().where({aktif: 'Y'}).orderBy('urut', 'asc').fetch()).toJSON()
             for (const item of equipment) {
                 if(equipment_id.includes(item.id)){
                     data.push({...item, on_fleet: true})

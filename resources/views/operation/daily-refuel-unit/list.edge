@@ -1,0 +1,80 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Upload Data</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="inpKeywordFuelDist" class="form-control" placeholder="Search for...">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="150">PIT</th>
+                                <th class="sl" width="150">Refuel At</th>
+                                <th class="sl" width="150">SMU</th>
+                                <th class="sl" width="150">Top Up</th>
+                                <th class="sl" width="250">Equipment Unit</th>
+                                <th class="sl" width="200">Operator Unit</th>
+                                <th class="sl" width="200">Fuelman</th>
+                                <th class="sl" width="200">Fuel Truck</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td class="single-line">
+                                        {{item.timesheet.dailyFleet.pit.name}} 
+                                    </td>
+                                    <td class="single-line myDateTimeFormat" data-date="{{item.fueling_at}}">
+                                        {{item.smu}} 
+                                    </td>
+                                    <td class="">
+                                        {{item.smu}} 
+                                    </td>
+                                    <td class="text-right">
+                                        {{item.topup}} Liter
+                                    </td>
+                                    <td class="">
+                                        {{item.equipment.kode}}
+                                    </td>
+                                    <td>
+                                        {{item.operator_unit.fullname}}
+                                    </td>
+                                    <td class="{{item.user ? 'text-inverse':'text-danger'}}">
+                                        {{item.user ? item.user.nm_lengkap:'unset'}}
+                                    </td>
+                                    <td class="{{item.truck_fuel ? 'text-inverse':'text-danger'}}">
+                                        {{item.truck_fuel ? item.truck_fuel.kode:'unset'}}
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>

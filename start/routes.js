@@ -448,6 +448,11 @@ Route.group(() => {
 
     Route.post('/monthly-survey/:id/update', 'MonthlySurveyController.update').as('opr.monthly-survey.update').middleware('R')
 
+    // Daily Refuel Equipment
+    Route.get('/daily-refuel-unit', 'DailyRefuelEquipmentController.index').as('opr.daily-refuel-unit.index').middleware('R')
+
+    Route.get('/daily-refuel-unit/list', 'DailyRefuelEquipmentController.list').as('opr.daily-refuel-unit.list').middleware('R')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX

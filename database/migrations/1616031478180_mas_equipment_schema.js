@@ -27,6 +27,7 @@ class MasEquipmentSchema extends Schema {
       table.integer('dealer_id').unsigned().references('id').inTable('mas_dealers').onDelete('RESTRICT').onUpdate('CASCADE')
       table.integer('created_by').unsigned().references('id').inTable('users').onDelete('RESTRICT').onUpdate('CASCADE')
       table.enu('aktif', ['Y', 'N']).defaultTo('Y').comment('status data')
+      table.integer('urut').defaultTo(null)
       table.timestamps()
     })
   }

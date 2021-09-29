@@ -3,6 +3,7 @@
 const MasFuel = use("App/Models/MasFuel")
 const MasFuelAgen = use("App/Models/MasFuelAgen")
 const MamFuelDist = use("App/Models/MamFuelDist")
+const DailyRefueling = use("App/Models/DailyRefueling");
 
 
 class Fuels {
@@ -70,6 +71,46 @@ class Fuels {
         mamFuelDist.merge(req)
         await mamFuelDist.save()
         return mamFuelDist
+    }
+
+    // OPERATOR REFUEL EQUIPMENT UNIT
+
+    async LIST_REFUEL_UNIT (req) {
+        const limit = 100
+        const halaman = req.page === undefined ? 1 : parseInt(req.page)
+        let data = []
+        if(req.keyword){
+            data = await DailyRefueling
+                .query()
+                .with('timesheet', ts => {
+                    ts.with('dailyFleet', df => {
+                        df.with('pit')
+                        df.with('fleet')
+                    })
+                })
+                .with('equipment')
+                .with('truck_fuel')
+                .with('user')
+                .with('operator_unit')
+                .orderBy('fueling_at', 'desc')
+                .paginate(halaman, limit)
+        }else{
+            data = await DailyRefueling.query()
+                .with('timesheet', ts => {
+                    ts.with('dailyFleet', df => {
+                        df.with('pit')
+                        df.with('fleet')
+                    })
+                })
+                .with('equipment')
+                .with('truck_fuel')
+                .with('user')
+                .with('operator_unit')
+                .orderBy('fueling_at', 'desc').paginate(halaman, limit)
+        }
+
+        console.log(JSON.stringify(data.toJSON(), null, 4));
+        return data
     }
 }
 
