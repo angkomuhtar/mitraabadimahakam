@@ -2,13 +2,11 @@
 //
 //
 class Utils {
+  //
+  //
+  async infinityCheck(num) {
+    return typeof num === "number" && num === Infinity;
+  }
+}
 
-    //
-    //
-    async infinityCheck(num){
-        return typeof num === 'number' && num === Infinity
-    }
-
-};
-
-module.exports = new Utils()
+module.exports = new Utils();

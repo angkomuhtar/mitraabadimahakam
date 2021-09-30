@@ -250,7 +250,7 @@ class MonthlyPlanApiController {
       for (let x of dailyPlans) {
         let obj = {
           current_date: moment(x.current_date).format("ddd"),
-          actual: x.actual,
+          actual: (x.actual / 1000),
         };
         temp.push(obj);
       }
@@ -301,6 +301,8 @@ class MonthlyPlanApiController {
       const WEEKLY_COAL_ACTUAL = parseFloat(
         r.reduce((a, b) => a + b.actual, 0).toFixed(2)
       );
+
+      console.log('weekly coal actual >> ', WEEKLY_COAL_ACTUAL)
       const WEEKLY_COAL_PLAN = parseFloat(
         dailyPlans.reduce((a, b) => a + b.estimate, 0).toFixed(2)
       );
@@ -623,7 +625,7 @@ class MonthlyPlanApiController {
             coal: {
               value: convertCoalsToMonthName
                 .filter((x) => x.month_name === z.month_name)
-                .reduce((a, b) => a + b.value, 0),
+                .reduce((a, b) => a + (b.value / 1000), 0),
               plans:
                 convertCoalsToMonthName.filter(
                   (v) => v.month_name === z.month_name
@@ -633,7 +635,7 @@ class MonthlyPlanApiController {
                   (
                     (convertCoalsToMonthName
                       .filter((x) => x.month_name === z.month_name)
-                      .reduce((a, b) => a + b.value, 0) /
+                      .reduce((a, b) => a + (b.value / 1000), 0) /
                       convertCoalsToMonthName.filter(
                         (v) => v.month_name === z.month_name
                       )[0]?.plans) *
@@ -877,7 +879,7 @@ class MonthlyPlanApiController {
 
         const obj_1 = {
           name: v.kode.toUpperCase(),
-          actual: coalActual,
+          actual: coalActual / 1000,
         };
         RIT_COAL_ARR.push(obj_1);
 
@@ -909,7 +911,7 @@ class MonthlyPlanApiController {
             .andWhere("end_at", "<=", [_end])
             .orderBy("start_at", "asc")
             .fetch()
-        ).toJSON();
+        ).toJSON()
 
         for (let z of DAILY_EVENT) {
           let obj_2 = {
@@ -951,7 +953,7 @@ class MonthlyPlanApiController {
       ).toJSON();
 
       const _MTD_COAL_ACTUAL_BY_TC = parseInt(
-        mtd_coal_actual.reduce((a, b) => a + b.actual, 0)
+        mtd_coal_actual.reduce((a, b) => a + (b.actual / 1000), 0)
       );
       const _MTD_OB_ACTUAL_BY_TC = parseInt(
         mtd_ob_actual.reduce((a, b) => a + b.actual, 0)
