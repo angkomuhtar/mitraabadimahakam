@@ -5,6 +5,12 @@ $(function(){
         initDeafult()
     })
 
+    $('body').on('click', '#bt-download', function(e){
+        e.preventDefault();
+        var host = document.location.host
+        window.location.href = 'http://' + host + '/template-xls/refuel-unit-template.xlsx';
+    })
+
     $('body').on('click', 'button#bt-cancel-create', function(e){
         e.preventDefault()
         window.location.reload()
@@ -30,14 +36,15 @@ $(function(){
         var value = $('input#inpKeywordFuelDist').val()
         ajaxSearch(value)
     })
+    
 
-    $('body').on('submit', 'form#fm-fuel-distribution', function(e){
+    $('body').on('submit', 'form#fm-refuel-unit', function(e){
         e.preventDefault()
         var data = new FormData(this)
         $.ajax({
             async: true,
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
-            url: '/operation/fuel-dist',
+            url: '/operation/daily-refuel-unit',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -183,7 +190,7 @@ $(function(){
     function initCreate(){
         $.ajax({
             async: true,
-            url: '/operation/fuel-dist/create',
+            url: '/operation/daily-refuel-unit/create',
             method: 'GET',
             success: function(htm){
                 $('div.content-module').css('display', 'none')

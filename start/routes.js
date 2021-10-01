@@ -451,7 +451,11 @@ Route.group(() => {
     // Daily Refuel Equipment
     Route.get('/daily-refuel-unit', 'DailyRefuelEquipmentController.index').as('opr.daily-refuel-unit.index').middleware('R')
 
+    Route.post('/daily-refuel-unit', 'DailyRefuelEquipmentController.store').as('opr.daily-refuel-unit.store').middleware('C')
+    
     Route.get('/daily-refuel-unit/list', 'DailyRefuelEquipmentController.list').as('opr.daily-refuel-unit.list').middleware('R')
+    
+    Route.get('/daily-refuel-unit/create', 'DailyRefuelEquipmentController.create').as('opr.daily-refuel-unit.create').middleware('C')
 
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
@@ -493,6 +497,8 @@ Route.group(() => {
     Route.get('/material', 'AjaxMaterialController.getMaterial').as('equipment.getMaterial')
 
     Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
+
+    Route.get('/equipment/fuel-truck', 'AjaxEquipmentController.getEquipmentFuelTruck').as('equipment.getEquipmentFuelTruck')
 
     Route.get('/fuel-type', 'AjaxFuelController.getFuelType').as('fuel.getFuelType')
 

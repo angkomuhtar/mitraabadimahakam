@@ -20,6 +20,7 @@ class AjaxChartController {
     async grafik_COAL_MTD ({ request }) {
         const req = request.all()
         const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY_COAL(req)
+        console.log('grafik1 ::', grafik1);
         return grafik1
     }
 

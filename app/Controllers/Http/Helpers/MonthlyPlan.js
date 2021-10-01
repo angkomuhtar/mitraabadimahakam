@@ -109,7 +109,7 @@ class MonthlyPlan {
             const data = {
                 monthly_plan: dailyPlans[0].monthly_plan,
                 labels: currentMonthDates,
-                actual: dailyPlans.map(item => parseFloat(item.actual))
+                actual: dailyPlans.map(item => (parseFloat(item.actual)/1000))
             }
             data.monthly_plan.month = moment().format('MMMM YYYY')
             return data

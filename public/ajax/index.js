@@ -301,6 +301,29 @@ $(function(){
         })
     })
 
+    $('body select.select2fuelTruck').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/equipment/fuel-truck?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                if(data.length > 0){
+                    elm.prepend('<option value="">Pilih</option>')
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.kode+' --|-- '+nod.unit_model+'</option>')
+                    elm.append(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
     $('body select.select2operator').each(function(){
         var selected = $(this).data('check')
         var elm = $(this)
