@@ -19,10 +19,10 @@ const DailyRitase = use("App/Models/DailyRitase");
 const DailyRitaseCoal = use("App/Models/DailyRitaseCoal");
 const MasFleet = use("App/Models/MasFleet");
 const DailyChecklist = use("App/Models/DailyChecklist");
-const VRitaseOb = use('App/Models/VRitaseOb');
-const VRitaseCoal = use('App/Models/VRitaseCoal');
-const VTimeSheet = use('App/Models/VTimeSheet');
-const VDailyEvent = use('App/Models/VDailyEvent');
+const VRitaseOb = use("App/Models/VRitaseOb");
+const VRitaseCoal = use("App/Models/VRitaseCoal");
+const VTimeSheet = use("App/Models/VTimeSheet");
+const VDailyEvent = use("App/Models/VDailyEvent");
 
 class MonthlyPlanApiController {
   async index({ request, response, view }) {}
@@ -72,12 +72,11 @@ class MonthlyPlanApiController {
       .with("pit")
       .where("month", SoM)
       .andWhere("tipe", "OB")
-      .andWhere('pit_id', _pit_id)
+      .andWhere("pit_id", _pit_id)
       .first();
 
     const MONTHLYPLANS_ID = monthlyPlans?.id;
 
-      
     const currentWeekDays = Array.from({ length: 7 }, (x, i) =>
       moment().startOf("week").add(i, "days").format("ddd")
     );
@@ -93,9 +92,9 @@ class MonthlyPlanApiController {
           .where("current_date", ">=", SoW)
           .andWhere("current_date", "<=", EoW)
           .andWhere("tipe", "OB")
-          .andWhere('monthlyplans_id', MONTHLYPLANS_ID)
+          .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
-      ).toJSON()
+      ).toJSON();
 
       console.log("daily plans found ?? ", dailyPlans);
 
@@ -170,7 +169,7 @@ class MonthlyPlanApiController {
             parseFloat(
               ((WEEKLY_OB_ACTUAL / WEEKLY_OB_PLAN) * 100).toFixed(2)
             ) || 0,
-        }
+        },
       };
 
       durasi = await diagnoticTime.durasi(t0);
@@ -179,7 +178,7 @@ class MonthlyPlanApiController {
           times: durasi,
           error: false,
         },
-        pit_name: 'GENERAL',
+        pit_name: "GENERAL",
         data: data,
       });
     } catch (error) {
@@ -224,7 +223,7 @@ class MonthlyPlanApiController {
       .with("pit")
       .where("month", SoM)
       .andWhere("tipe", "BB")
-      .andWhere('pit_id', _pit_id)
+      .andWhere("pit_id", _pit_id)
       .first();
 
     const MONTHLYPLANS_ID = monthlyPlans?.id;
@@ -245,7 +244,7 @@ class MonthlyPlanApiController {
           .where("current_date", ">=", SoW)
           .andWhere("current_date", "<=", EoW)
           .andWhere("tipe", "COAL")
-          .andWhere('monthlyplans_id', MONTHLYPLANS_ID)
+          .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
       ).toJSON();
 
@@ -255,7 +254,7 @@ class MonthlyPlanApiController {
       for (let x of dailyPlans) {
         let obj = {
           current_date: moment(x.current_date).format("ddd"),
-          actual: (x.actual / 1000),
+          actual: x.actual / 1000,
         };
         temp.push(obj);
       }
@@ -307,7 +306,7 @@ class MonthlyPlanApiController {
         r.reduce((a, b) => a + b.actual, 0).toFixed(2)
       );
 
-      console.log('weekly coal actual >> ', WEEKLY_COAL_ACTUAL)
+      console.log("weekly coal actual >> ", WEEKLY_COAL_ACTUAL);
       const WEEKLY_COAL_PLAN = parseFloat(
         dailyPlans.reduce((a, b) => a + b.estimate, 0).toFixed(2)
       );
@@ -331,7 +330,7 @@ class MonthlyPlanApiController {
           times: durasi,
           error: false,
         },
-        pit_name: 'GENERAL',
+        pit_name: "GENERAL",
         data: data,
       });
     } catch (error) {
@@ -349,7 +348,7 @@ class MonthlyPlanApiController {
   }
 
   async getWeeklyFuelConsumption({ auth, request, response }) {
-    const { date, pit_id } = request.only(["date","pit_id"]);
+    const { date, pit_id } = request.only(["date", "pit_id"]);
 
     const SoW = moment(date).startOf("week").format("YYYY-MM-DD");
     const EoW = moment(date).endOf("week").format("YYYY-MM-DD");
@@ -381,7 +380,6 @@ class MonthlyPlanApiController {
     const _pit_id = pit_id ? pit_id : 1;
 
     try {
-
       const allDailyFleetInASpecificPit = (
         await DailyFleet.query()
           .where("pit_id", _pit_id)
@@ -389,7 +387,6 @@ class MonthlyPlanApiController {
           .andWhere("date", "<=", EoW)
           .fetch()
       ).toJSON();
-
 
       const timeSheetSpecificPit = (
         await DailyChecklist.query()
@@ -400,10 +397,12 @@ class MonthlyPlanApiController {
           .fetch()
       ).toJSON();
 
-      
       dataPeriode = (
         await DailyRefueling.query()
-          .whereIn('timesheet_id', timeSheetSpecificPit.map((x) => x.id))
+          .whereIn(
+            "timesheet_id",
+            timeSheetSpecificPit.map((x) => x.id)
+          )
           .fetch()
       ).toJSON();
 
@@ -502,7 +501,7 @@ class MonthlyPlanApiController {
       "page",
       "limit",
       "filter_month",
-      "pit_id"
+      "pit_id",
     ]);
     let durasi;
     var t0 = performance.now();
@@ -652,7 +651,7 @@ class MonthlyPlanApiController {
             coal: {
               value: convertCoalsToMonthName
                 .filter((x) => x.month_name === z.month_name)
-                .reduce((a, b) => a + (b.value / 1000), 0),
+                .reduce((a, b) => a + b.value / 1000, 0),
               plans:
                 convertCoalsToMonthName.filter(
                   (v) => v.month_name === z.month_name
@@ -662,7 +661,7 @@ class MonthlyPlanApiController {
                   (
                     (convertCoalsToMonthName
                       .filter((x) => x.month_name === z.month_name)
-                      .reduce((a, b) => a + (b.value / 1000), 0) /
+                      .reduce((a, b) => a + b.value / 1000, 0) /
                       convertCoalsToMonthName.filter(
                         (v) => v.month_name === z.month_name
                       )[0]?.plans) *
@@ -750,18 +749,32 @@ class MonthlyPlanApiController {
 
     const trx = await db.beginTransaction();
 
+    const checkIfStartOfMonth = () => {
+     const _date = moment(date).format("DD");
+
+     console.log('__date >> ', date)
+     let prevMonth = null;
+     if(_date === '01') {
+      prevMonth = moment(date).subtract(1,'days').startOf('month').format('YYYY-MM-DD HH:mm:ss')
+     } else { 
+      prevMonth = moment(date).startOf('month').format('YYYY-MM-DD HH:mm:ss')
+     }
+
+     console.log('prevMonth >> ', prevMonth)
+     return prevMonth
+    }
     const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
 
     const monthlyPlansOB = await MonthlyPlans.query()
       .with("pit")
-      .where("month", SoM)
+      .where("month", checkIfStartOfMonth(SoM))
       .andWhere("pit_id", _pit_id)
       .andWhere("tipe", "OB")
       .first();
 
     const monthlyPlansCoal = await MonthlyPlans.query()
       .with("pit")
-      .where("month", SoM)
+      .where("month", checkIfStartOfMonth(SoM))
       .andWhere("pit_id", _pit_id)
       .andWhere("tipe", "BB")
       .first();
@@ -776,20 +789,18 @@ class MonthlyPlanApiController {
       const shifts = (await MasShift.query().fetch()).toJSON();
 
       // Daily Plans, Breakdown from Monthly Plans / Number of Days in month
-      const coalPlanToday = (
-        await DailyPlans.query(trx)
-          .where("current_date", prevDay)
-          .andWhere("tipe", "COAL")
-          .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
-          .first()
-      ).toJSON();
-      const obPlanToday = (
-        await DailyPlans.query(trx)
-          .where("current_date", prevDay)
-          .andWhere("tipe", "OB")
-          .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
-          .first()
-      ).toJSON()
+      const coalPlanToday = await DailyPlans.query(trx)
+        .where("current_date", prevDay)
+        .andWhere("tipe", "COAL")
+        .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
+        .first();
+
+      const obPlanToday = await DailyPlans.query(trx)
+        .where("current_date", prevDay)
+        .andWhere("tipe", "OB")
+        .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
+        .first();
+
 
       let RIT_OB_ARR = [];
       let RIT_COAL_ARR = [];
@@ -807,7 +818,7 @@ class MonthlyPlanApiController {
         SHIFTS.push({
           kode: v.kode.toLowerCase(),
           name: v.name,
-        })
+        });
 
         const masFleetOB = (
           await MasFleet.query(trx).where("tipe", "OB").fetch()
@@ -855,11 +866,11 @@ class MonthlyPlanApiController {
 
         const obActual = parseInt(
           _ritOB.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0)
-        )
+        );
 
         const obj = {
           name: v.kode.toUpperCase(),
-          actual: obActual
+          actual: obActual,
         };
 
         RIT_OB_ARR.push(obj);
@@ -867,7 +878,7 @@ class MonthlyPlanApiController {
         // coal ritase
         const masFleetCoal = (
           await MasFleet.query(trx).where("tipe", "CO").fetch()
-        ).toJSON()
+        ).toJSON();
 
         const dailyFleetsCoalSpecificPit = (
           await DailyFleet.query(trx)
@@ -888,7 +899,7 @@ class MonthlyPlanApiController {
               dailyFleetsCoalSpecificPit.map((x) => x.id)
             )
             .fetch()
-        ).toJSON()
+        ).toJSON();
 
         const ritaseCoal = (
           await DailyRitaseCoalDetail.query(trx)
@@ -909,7 +920,7 @@ class MonthlyPlanApiController {
           name: v.kode.toUpperCase(),
           actual: coalActual / 1000,
         };
-        RIT_COAL_ARR.push(obj_1)
+        RIT_COAL_ARR.push(obj_1);
 
         const allDailyFleetInASpecificPit = (
           await DailyFleet.query(trx)
@@ -939,7 +950,7 @@ class MonthlyPlanApiController {
             .andWhere("end_at", "<=", _end)
             .orderBy("start_at", "asc")
             .fetch()
-        ).toJSON()
+        ).toJSON();
 
         for (let z of DAILY_EVENT) {
           let obj_2 = {
@@ -966,7 +977,7 @@ class MonthlyPlanApiController {
 
       const mtd_ob_actual = (
         await DailyPlans.query(trx)
-          .whereBetween("current_date", [SoM, now])
+          .whereBetween("current_date", [checkIfStartOfMonth(SoM), now])
           .where("tipe", "OB")
           .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
           .fetch()
@@ -974,14 +985,14 @@ class MonthlyPlanApiController {
 
       const mtd_coal_actual = (
         await DailyPlans.query(trx)
-          .whereBetween("current_date", [SoM, now])
+          .whereBetween("current_date", [checkIfStartOfMonth(SoM), now])
           .where("tipe", "COAL")
           .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
           .fetch()
       ).toJSON();
 
       const _MTD_COAL_ACTUAL_BY_TC = parseInt(
-        mtd_coal_actual.reduce((a, b) => a + (b.actual / 1000), 0)
+        mtd_coal_actual.reduce((a, b) => a + b.actual / 1000, 0)
       );
       const _MTD_OB_ACTUAL_BY_TC = parseInt(
         mtd_ob_actual.reduce((a, b) => a + b.actual, 0)
@@ -1033,7 +1044,7 @@ class MonthlyPlanApiController {
         coal_expose: COAL_EXPOSE,
         mtd_coal_expose: MTD_COAL_EXPOSE,
         mtd_coal_expose_sr: MTD_COAL_EXPOSE_SR,
-        event: _EVENTS
+        event: _EVENTS,
       };
 
       durasi = await diagnoticTime.durasi(t0);
