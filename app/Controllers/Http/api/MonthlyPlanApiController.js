@@ -349,7 +349,7 @@ class MonthlyPlanApiController {
   }
 
   async getWeeklyFuelConsumption({ auth, request, response }) {
-    const { date } = request.only(["date"]);
+    const { date, pit_id } = request.only(["date","pit_id"]);
 
     const SoW = moment(date).startOf("week").format("YYYY-MM-DD");
     const EoW = moment(date).endOf("week").format("YYYY-MM-DD");
@@ -378,18 +378,21 @@ class MonthlyPlanApiController {
 
     let dataPeriode = [];
 
+    const _pit_id = pit_id ? pit_id : 1;
+
     try {
 
       const allDailyFleetInASpecificPit = (
-        await DailyFleet.query(trx)
+        await DailyFleet.query()
           .where("pit_id", _pit_id)
-          .andWhere("created_at", ">=", _start)
-          .andWhere("created_at", "<=", _end)
+          .andWhere("date", ">=", SoW)
+          .andWhere("date", "<=", EoW)
           .fetch()
       ).toJSON();
 
+
       const timeSheetSpecificPit = (
-        await DailyChecklist.query(trx)
+        await DailyChecklist.query()
           .whereIn(
             "dailyfleet_id",
             allDailyFleetInASpecificPit.map((x) => x.id)
@@ -401,8 +404,6 @@ class MonthlyPlanApiController {
       dataPeriode = (
         await DailyRefueling.query()
           .whereIn('timesheet_id', timeSheetSpecificPit.map((x) => x.id))
-          .where("fueling_at", '>=', SoW)
-          .andWhere('fueling_at', '<=', EoW)
           .fetch()
       ).toJSON();
 
