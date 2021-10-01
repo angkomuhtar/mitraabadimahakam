@@ -23,7 +23,7 @@
                         <thead style="border-bottom: 2px solid;">
                             <tr>
                                 <th class="sl text-center" width="20">No</th>
-                                <th class="sl text-center" width="20">ACT</th>
+                                <!--  <th class="sl text-center" width="20">ACT</th>  -->
                                 <th class="sl" width="150">PIT</th>
                                 <th class="sl" width="150">Refuel At</th>
                                 <th class="sl" width="150">SMU</th>
@@ -41,11 +41,15 @@
                             @each(item in list.data)
                                 <tr>
                                     <td>{{$loop.index + 1}}</td>
-                                    <td>
+                                    <!--  <td>
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
-                                    </td>
+                                    </td>  -->
                                     <td class="single-line">
-                                        {{item.timesheet.dailyFleet.pit.name}} 
+                                        @if(item.timesheet)
+                                          {{item.timesheet.dailyFleet.pit.name}}
+                                        @else
+                                          <small class="text-warning">timesheet <br>blum ditentukan</small>
+                                        @endif
                                     </td>
                                     <td class="single-line myDateTimeFormat" data-date="{{item.fueling_at}}">
                                         {{item.smu}} 

@@ -1,8 +1,11 @@
 'use strict'
 
+const moment = use("moment")
 const MasFuel = use("App/Models/MasFuel")
 const MasFuelAgen = use("App/Models/MasFuelAgen")
 const MamFuelDist = use("App/Models/MamFuelDist")
+const ReFuelUnit = use("App/Models/DailyRefueling")
+const timeSheet = use("App/Models/DailyChecklist")
 const DailyRefueling = use("App/Models/DailyRefueling");
 
 
@@ -109,8 +112,33 @@ class Fuels {
                 .orderBy('fueling_at', 'desc').paginate(halaman, limit)
         }
 
-        console.log(JSON.stringify(data.toJSON(), null, 4));
+        // console.log(JSON.stringify(data.toJSON(), null, 4));
         return data
+    }
+
+    // POST DATA REFUEL UNIT BY DASHBOARD
+    async POST_REFUEL_UNIT (req) {
+        const refuelunit = new ReFuelUnit()
+        const timesheet = await timeSheet.query()
+            .where('unit_id', req.equip_id)
+            .andWhere('approved_at', 'like', `${moment(req.fueling_at).format('YYYY-MM-DD')}%`)
+            .last()
+        refuelunit.fill({...req, timesheet_id: timesheet ? timesheet.id : null})
+        // console.log('TIMESHEET :::', refuelunit.toJSON());
+        await refuelunit.save()
+        return refuelunit
+    }
+
+    // POST DATA REFUEL UNIT BY DASHBOARD
+    async UPDATE_REFUEL_UNIT (params, req) {
+        const refuelunit = await ReFuelUnit.query().where('id', params.id).last()
+        const timesheet = await timeSheet.query()
+            .where('unit_id', req.equip_id)
+            .andWhere('approved_at', 'like', `${moment(req.fueling_at).format('YYYY-MM-DD')}%`)
+            .last()
+        refuelunit.merge({...req, timesheet_id: timesheet ? timesheet.id : null})
+        await refuelunit.save()
+        return refuelunit
     }
 }
 

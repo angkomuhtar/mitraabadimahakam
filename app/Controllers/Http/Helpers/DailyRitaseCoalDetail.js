@@ -5,7 +5,7 @@ const DailyRitaseCoalDetail = use("App/Models/DailyRitaseCoalDetail")
 
 class RitaseCoalDetail {
     async ALL (req) { 
-        const limit = 25
+        const limit = 100
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let dailyRitaseCoalDetail
         if(req.keyword){
