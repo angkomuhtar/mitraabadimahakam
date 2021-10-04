@@ -2,10 +2,10 @@
 
 const RefuelUnitHelpers = use("App/Controllers/Http/Helpers/Fuel")
 const dailyRefueling = use("App/Models/DailyRefueling")
-const excelToJson = use("convert-excel-to-json")
+// const excelToJson = use("convert-excel-to-json")
 const Helpers = use('Helpers')
-const moment = use('moment')
-// const excelToJson = require('convert-excel-to-json');
+const moment = require('moment')
+const excelToJson = require('convert-excel-to-json');
 
 class DailyRefuelEquipmentController {
     async index ({ auth, view }) {
@@ -94,7 +94,7 @@ class DailyRefuelEquipmentController {
                     w.where('site_id', data.site_id)
                     w.where('equip_id', data.equip_id)
                 }).last()
-                
+
                 if(daily_refueling){
                     var params = {id: daily_refueling.id}
                     await RefuelUnitHelpers.UPDATE_REFUEL_UNIT(params, data)
