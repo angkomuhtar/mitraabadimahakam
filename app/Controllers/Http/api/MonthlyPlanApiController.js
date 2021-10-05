@@ -23,6 +23,7 @@ const VRitaseOb = use("App/Models/VRitaseOb");
 const VRitaseCoal = use("App/Models/VRitaseCoal");
 const VTimeSheet = use("App/Models/VTimeSheet");
 const VDailyEvent = use("App/Models/VDailyEvent");
+const DailyCoalExposed = use('App/Models/DailyCoalExposed');
 
 class MonthlyPlanApiController {
   async index({ request, response, view }) {}
@@ -752,7 +753,6 @@ class MonthlyPlanApiController {
     const checkIfStartOfMonth = () => {
      const _date = moment(date).format("DD");
 
-     console.log('__date >> ', date)
      let prevMonth = null;
      if(_date === '01') {
       prevMonth = moment(date).subtract(1,'days').startOf('month').format('YYYY-MM-DD HH:mm:ss')
@@ -760,7 +760,6 @@ class MonthlyPlanApiController {
       prevMonth = moment(date).startOf('month').format('YYYY-MM-DD HH:mm:ss')
      }
 
-     console.log('prevMonth >> ', prevMonth)
      return prevMonth
     }
     const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
@@ -972,8 +971,14 @@ class MonthlyPlanApiController {
         _EVENTS.push(obj);
       }
 
+
+
       const SoM = moment(date).startOf("month").format("YYYY-MM-DD");
       const now = moment(date).format("YYYY-MM-DD");
+
+
+      const _COAL_EXPOSE_TODAY = await DailyCoalExposed.query().where('tgl', now).andWhere('pit_id', _pit_id).andWhere('aktif', 'Y').first()
+      const _MTD_COAL_EXPOSE = (await DailyCoalExposed.query().where('tgl', '>=', checkIfStartOfMonth(SoM)).andWhere('tgl', '<=', now).andWhere('pit_id', _pit_id).andWhere('aktif', 'Y').fetch()).toJSON();
 
       const mtd_ob_actual = (
         await DailyPlans.query(trx)
@@ -1005,8 +1010,9 @@ class MonthlyPlanApiController {
         MTD_COAL_SR = 0;
       }
 
-      const COAL_EXPOSE = "28.500";
-      const MTD_COAL_EXPOSE = "49.900,94";
+      const COAL_EXPOSE = _COAL_EXPOSE_TODAY ? _COAL_EXPOSE_TODAY.volume / 1000 : 0
+      const MTD_COAL_EXPOSE = _MTD_COAL_EXPOSE ? _MTD_COAL_EXPOSE.reduce((a,b) => a + b.volume, 0) : 0
+
       let MTD_COAL_EXPOSE_SR = parseFloat(
         (
           _MTD_OB_ACTUAL_BY_TC /
