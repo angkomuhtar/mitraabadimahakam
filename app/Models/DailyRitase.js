@@ -12,6 +12,10 @@ class DailyRitase extends Model {
         return this.belongsTo("App/Models/MasMaterial", "material", "id")
     }
 
+    unit(){
+        return this.belongsTo("App/Models/MasEquipment", "exca_id", "id")
+    }
+
     ritase_details(){
         return this.hasMany("App/Models/DailyRitaseDetail", "id", "dailyritase_id")
     }

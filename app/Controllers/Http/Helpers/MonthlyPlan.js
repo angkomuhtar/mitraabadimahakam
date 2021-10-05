@@ -133,20 +133,23 @@ class MonthlyPlan {
         try {
             const data = (await DailyRitase
                 .query()
+                .with('unit')
                 .with('daily_fleet', a => a.with('fleet'))
                 .with('ritase_details')
                 .where('date', 'like', `${date}`)
                 .fetch()).toJSON()
+            // console.log('DATA>>>> ', data);
             return data.map(item => {
                 return {
                     fleet: item.daily_fleet.fleet.kode,
                     name: item.daily_fleet.fleet.name,
+                    exca: item.unit ? item.unit.kode : 'UNSET',
                     tot_ritase: item.tot_ritase
                 }
             })
         } catch (error) {
             return {
-                fleet: ['F01', 'F02', 'F03', 'F04'],
+                fleet: ['F01', 'F02', 'F03', 'F04', 'F05'],
                 tot_ritase: [0,0,0,0]
             }
         }
