@@ -134,7 +134,10 @@ class DailyRitaseCoalApiController {
 
       if (_isFilter) {
         const dailyFleet = await DailyFleet.query()
-          .with("pit", (site) => site.with("site"))
+          .with("pit", (site) => {
+            site.with("site")
+            site.with('seam')
+          })
           .with("fleet")
           .with("activities")
           .with("shift")
@@ -165,7 +168,10 @@ class DailyRitaseCoalApiController {
               details.with("details", (unit) => unit.with("equipment"));
               details.with("activities");
               details.with("fleet");
-              details.with("pit");
+              details.with("pit", (wh) => {
+                wh.with('site')
+                wh.with('seam')
+              });
             })
             .where((wh) => {
               wh.where("date", ">=", d1);
@@ -189,7 +195,10 @@ class DailyRitaseCoalApiController {
             details.with("details", (unit) => unit.with("equipment"));
             details.with("activities");
             details.with("fleet");
-            details.with("pit");
+            details.with("pit", (wh) => {
+              wh.with('seam')
+              wh.with('site')
+            });
           })
           .where("status", "Y")
           .whereBetween("date", [d1, d2])
