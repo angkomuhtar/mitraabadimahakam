@@ -7,6 +7,10 @@ class MasPit extends Model {
     site () {
         return this.belongsTo("App/Models/MasSite", "site_id", "id")
     }
+
+    seam(){
+        return this.hasMany('App/Models/MasSeam', 'id', 'pit_id')
+    }
 }
 
 module.exports = MasPit
