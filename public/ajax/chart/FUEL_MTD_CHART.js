@@ -19,6 +19,7 @@ $(function(){
             method: 'GET',
             success: function(result){
                 console.log('result::', result.y.length);
+                console.log('FUEL ::', result);
                 var total = result.y.reduce(function(x, y){ return x + y }, 0)
                 $('b#tot_fuel').html(total + ' Liter')
                 $('b#avg_day').html((total / result.y.length).toFixed(2) + ' Liter / Hari')
