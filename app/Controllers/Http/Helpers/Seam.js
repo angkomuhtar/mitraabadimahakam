@@ -13,11 +13,13 @@ class CoalSeam {
                 .query()
                 .with('pit', w => w.with('site'))
                 .where('kode', 'like', `%${req.keyword}%`)
+                .andWhere('aktif', 'Y')
                 .paginate(halaman, limit)
         }else{
             coalSeam = await MasSeam
                 .query()
                 .with('pit', w => w.with('site'))
+                .where('aktif', 'Y')
                 .paginate(halaman, limit)
         }
         
@@ -27,7 +29,10 @@ class CoalSeam {
     async GET_PIT_ID (params) {
         const coalSeam = await MasSeam.query()
             .with('pit')
-            .where('pit_id', params.pit_id)
+            .where(w => {
+                w.where('pit_id', params.pit_id)
+                w.where('aktif', 'Y')
+            })
             .fetch()
         return coalSeam
     }

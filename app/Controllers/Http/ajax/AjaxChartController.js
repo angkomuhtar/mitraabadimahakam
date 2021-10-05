@@ -27,22 +27,22 @@ class AjaxChartController {
     async grafik_OB_RITASE_EQUIPMENT ({ request }) {
         const req = request.all()
         const grafik2 = await MonthlyPlanHelpers.CHARTIST_RITASE_OB_EQUIPMENT(req)
-        const teksLabel = grafik2.map(item => item.exca)
+        const labels = grafik2.map(item => `........${item.exca}........(${item.tot_ritase} RIT)`)
 
-        let labels = teksLabel.filter((el, i, a) => i === a.indexOf(el))
-        // console.log('labels:::', grafik2);
+        // let labels = teksLabel.filter((el, i, a) => i === a.indexOf(el))
+        console.log('labels:::', grafik2);
 
           
-        let result = []
-        grafik2.reduce(function(res, value) {
-            if (!res[value.exca]) {
-                res[value.exca] = { exca: value.exca, tot_ritase: 0 }
-                result.push(res[value.exca])
-            }
-            res[value.exca].tot_ritase += value.tot_ritase;
-            return res
-        }, {})
-        const data = result.map(item => parseInt(item.tot_ritase));
+        // let result = []
+        // grafik2.reduce(function(res, value) {
+        //     if (!res[value.exca]) {
+        //         res[value.exca] = { exca: value.exca, tot_ritase: 0 }
+        //         result.push(res[value.exca])
+        //     }
+        //     res[value.exca].tot_ritase += value.tot_ritase;
+        //     return res
+        // }, {})
+        const data = grafik2.map(item => parseInt(item.tot_ritase));
 
         return {
             date: moment().format('Do, MMMM YYYY'),
