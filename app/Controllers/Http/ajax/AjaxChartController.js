@@ -20,7 +20,7 @@ class AjaxChartController {
     async grafik_COAL_MTD ({ request }) {
         const req = request.all()
         const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY_COAL(req)
-        console.log('grafik1 ::', grafik1);
+        // console.log('grafik1 ::', grafik1);
         return grafik1
     }
 
@@ -67,6 +67,7 @@ class AjaxChartController {
             ).toJSON()
         }
         
+        console.log('dataPeriode::', dataPeriode);
 
         dataPeriode = dataPeriode.map(item => { return {...item, fueling_at: moment(item.fueling_at).format('DD')} })
 
@@ -79,6 +80,8 @@ class AjaxChartController {
             res[value.fueling_at].topup += value.topup;
             return res;
           }, {});
+
+        
           
         return {
             x: _.pluck(result, 'fueling_at'),
