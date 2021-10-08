@@ -33,9 +33,9 @@ class DailyRefuelEquipmentController {
             types: 'application'
         }
 
-        console.log(req);
+        // console.log(req);
         const uploadData = request.file("refuel_xls", validateFile)
-        console.log(uploadData.extname);
+        // console.log(uploadData.extname);
 
         let aliasName
         
@@ -63,6 +63,8 @@ class DailyRefuelEquipmentController {
             });
 
             const filterData = convertJSON.FORM.filter(cell => cell.B != '#N/A')
+
+            console.log(convertJSON);
 
             const result = filterData.map(cell => {
                 var date = new Date(req.tgl+' '+moment(cell.F).format('HH:mm'))
