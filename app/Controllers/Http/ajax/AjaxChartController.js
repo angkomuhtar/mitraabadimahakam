@@ -27,7 +27,7 @@ class AjaxChartController {
     async grafik_OB_RITASE_EQUIPMENT ({ request }) {
         const req = request.all()
         const grafik2 = await MonthlyPlanHelpers.CHARTIST_RITASE_OB_EQUIPMENT(req)
-        const labels = grafik2.map(item => `........${item.exca}........(${item.tot_ritase} RIT)`)
+        const labels = grafik2.map(item => `${item.exca}`)
 
         // let labels = teksLabel.filter((el, i, a) => i === a.indexOf(el))
         console.log('labels:::', grafik2);

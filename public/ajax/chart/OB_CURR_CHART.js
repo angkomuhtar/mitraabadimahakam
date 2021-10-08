@@ -19,25 +19,47 @@ $(function(){
             success: function(result){
                 console.log(result);
                 var data = {
-                labels: result.labels,
+                    labels: result.labels,
                     series: [result.data]
                 };
 
                 var options = {
-                    seriesBarDistance: 5
+                    seriesBarDistance: 5,
+                    axisX: {
+                        offset: 50
+                    },
+                    plugins: [
+                        Chartist.plugins.ctPointLabels({
+                            textAnchor: 'top',
+                            labelInterpolationFnc: function(value) {
+                                if(value){
+                                    return value + ' RITASE'
+                                }else{
+                                    return 'NO RITASE'
+                                }
+                            }
+                        }),
+                        Chartist.plugins.tooltip({
+                            class: 'class1',
+                            appendToBody: true,
+                            anchorToPoint: true
+                        })
+                    ]
                 };
 
                 var responsiveOptions = [
                     ['screen and (max-width: 640px)', {
                         seriesBarDistance: 2,
                         axisX: {
-                        labelInterpolationFnc: function (value) {
-                            return value[0];
-                        }
+                            labelInterpolationFnc: function (value) {
+                                // console.log('VALUE ::::', value);
+                                return value[0];
+                            }
                         }
                     }]
                 ];
                 new Chartist.Bar('#sparkline10', data, options, responsiveOptions);
+                
                 $('b#current-ritase').html(result.date)
                 
             },
@@ -45,5 +67,6 @@ $(function(){
                 console.log(err);
             }
         })
+        
     }
 })

@@ -507,9 +507,8 @@ Route.group(() => {
     Route.get('/subcon', 'AjaxSubcontractorController.getSubcon').as('subcon.getSubcon')
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
-
     
-
+    // GRAFIK
     Route.get('/grafik1', 'AjaxChartController.grafik_OB_MTD')
     
     Route.get('/grafik2', 'AjaxChartController.grafik_OB_RITASE_EQUIPMENT')
@@ -527,6 +526,12 @@ Route.group(() => {
     Route.get('/doc/fitur', 'AjaxDocumentationController.getFitur')
     
 }).prefix('ajax').namespace('ajax').middleware(['MM'])
+
+Route.group(() => {
+
+    Route.get('/', 'HourlyRitaseObController.index')
+    
+}).prefix('download').namespace('report').middleware(['MM'])
 
 //  API MOBILE
 
