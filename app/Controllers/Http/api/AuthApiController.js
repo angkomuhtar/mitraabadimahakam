@@ -100,6 +100,50 @@ class AuthApiController {
         }
     }
 
+    async updatePasswordWithoutOldPassword ({ request, auth, response }) {
+        var t0 = performance.now()
+        const req = request.only(['user_id', 'new_password', 'retype_password'])
+        let durasi;
+
+        if(req.new_password != req.retype_password){
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(400).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: 'password not match...'
+                }
+            })
+        }
+
+        try {
+
+            const usr = await User.findOrFail(req.user_id)
+            usr.password = req.new_password
+            await usr.save()
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(201).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: false,
+                    message: 'Password updated!'
+                }
+            })
+
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            return response.status(403).json({
+                diagnostic: {
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: {}
+            })
+        }
+    }
+
     async logout ({ auth, response }) {
         try {
             const user = await auth.authenticator('jwt').getUser()

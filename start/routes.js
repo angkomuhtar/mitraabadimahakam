@@ -542,6 +542,8 @@ Route.group(() => {
 
     Route.post('/update-password', 'AuthApiController.updatePassword')
 
+    Route.post('/update-password/v2', 'AuthApiController.updatePasswordWithoutOldPassword')
+
     Route.post('/logout', 'AuthApiController.logout')
 
     Route.get('/', async () => ({ greeting: 'Welcome to Restfull API with Adonis.js.....' }))
