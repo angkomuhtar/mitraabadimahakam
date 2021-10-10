@@ -115,7 +115,7 @@ class DailyFleetApiController {
     }
 
     const d1 = moment(begin_date).format("YYYY-MM-DD");
-    const d2 = moment(end_date).format("YYYY-MM-DD");
+    const d2 = moment(end_date).subtract(1,'days').format("YYYY-MM-DD");
     // const prevDay = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
 
     // const twelveAM = `${now}T00:00:00`;
