@@ -30,7 +30,7 @@ class AjaxChartController {
         const labels = grafik2.map(item => `${item.exca}`)
 
         // let labels = teksLabel.filter((el, i, a) => i === a.indexOf(el))
-        console.log('labels:::', grafik2);
+        // console.log('labels:::', grafik2);
 
           
         // let result = []
