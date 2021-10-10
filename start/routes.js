@@ -529,7 +529,7 @@ Route.group(() => {
 
 Route.group(() => {
 
-    Route.get('/', 'HourlyRitaseObController.index')
+    Route.get('ritase-perjam/:hh', 'HourlyRitaseObController.index')
     
 }).prefix('download').namespace('report').middleware(['MM'])
 
