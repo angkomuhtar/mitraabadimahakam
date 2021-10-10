@@ -115,7 +115,7 @@ class DailyFleetApiController {
     }
 
     const d1 = moment(begin_date).format("YYYY-MM-DD");
-    const d2 = moment(end_date).subtract(1,'days').format("YYYY-MM-DD");
+    const d2 = moment(end_date).format("YYYY-MM-DD");
     // const prevDay = moment(date).subtract(1, 'days').format('YYYY-MM-DD');
 
     // const twelveAM = `${now}T00:00:00`;
@@ -190,7 +190,6 @@ class DailyFleetApiController {
             .fetch();
         }
 
-        console.log(dailyFleet.toJSON());
 
         // const t = await Database.raw(`select mas_fleets.name AS fleet_name, mas_shifts.name AS shift_name, mas_activities.name AS activity_name, mas_pits.name as pit_name from mas_fleets, mas_shifts, mas_activities, mas_pits, v_users, daily_fleet_equips, daily_fleets where mas_fleets.id = daily_fleets.fleet_id and mas_shifts.id = daily_fleets.shift_id and v_users.id = daily_fleets.user_id and daily_fleet_equips.dailyfleet_id = daily_fleets.id and mas_activities.id = daily_fleets.activity_id and mas_pits.id = daily_fleets.pit_id and daily_fleets.date >= '${d1}' and daily_fleets.date <= '${d2}' and (mas_fleets.kode LIKE '%${keyword}%' or mas_shifts.name LIKE '%${keyword}%' or mas_activities.name LIKE '%${keyword}%' or mas_fleets.name LIKE '%${keyword}%' or mas_pits.name LIKE '%${keyword}%')`)
 
