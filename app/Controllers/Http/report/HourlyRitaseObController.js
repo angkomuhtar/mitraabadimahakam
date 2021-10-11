@@ -83,7 +83,7 @@ class HourlyRitaseObController {
       x.map(i => {
         bodyTable.push(i)
       })
-      
+
       var docDefinition = {
         watermark: { 
           text: 'PT. Mitra Abadi Mahakam', 
@@ -141,7 +141,7 @@ class HourlyRitaseObController {
       if(process.env.NODE_ENV === 'development'){
         return response.redirect(`${url}/download/${fileName}.pdf`)
       }else{
-        return response.redirect(`http://offices.mitraabadimahakam.id/download/${fileName}.pdf`)
+        return response.redirect(`https://offices.mitraabadimahakam.id/download/${fileName}.pdf`)
       }
 
     }
