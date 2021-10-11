@@ -49,51 +49,41 @@ class HourlyRitaseObController {
         return {
           exca: obj.exca_unit,
           ritase: obj.details.length,
+          rowspan: GROUPING_DATA(obj.details).length,
           dtl: GROUPING_DATA(obj.details)
         }
       })
 
+      let x = []
+      data.map(v => {
+        v.dtl.map(z => {
+          x.push([
+            {text: v.exca, rowSpan: v.rowspan, margin: [ 0, 10, 0, 0 ], bold: true, fontSize: 16},
+            {text: v.ritase + ' RIT', rowSpan: v.rowspan, margin: [ 0, 10, 0, 0 ], alignment: 'right'},
+            {text: parseInt(v.ritase) * 22 + ' BCM', rowSpan: v.rowspan, margin: [ 0, 10, 0, 0 ], alignment: 'right'},
+            {text: z.hauler_unit},
+            {text: z.rit + ' RIT', alignment: 'right'},
+            {text: parseInt(z.rit) * 22 + ' BCM', alignment: 'right'}
+          ])
+        })
+      })
       
 
       let headerTable = [
         {text: 'Unit Excavator', alignment: 'center', margin: [5, 10, 0, 5], fillColor: '#dddddd'},
         {text: 'Tot.Ritase', alignment: 'center', margin: [5, 10, 0, 5], fillColor: '#dddddd'},
+        {text: 'Tot.Productivity', alignment: 'center', margin: [5, 10, 0, 5], fillColor: '#dddddd'},
         {text: 'Unit Hauler', alignment: 'center', margin: [5, 10, 0, 5], fillColor: '#dddddd'},
         {text: 'Hauler Ritase', alignment: 'center', margin: [5, 10, 0, 5], fillColor: '#dddddd'},
-        {text: 'BCM', alignment: 'center', margin: [5, 10, 0, 5], fillColor: '#dddddd'},
+        {text: 'Hauler BCM..', alignment: 'center', margin: [5, 10, 0, 5], fillColor: '#dddddd'},
       ]
 
       let bodyTable = []
       bodyTable.push(headerTable)
-
-      
-      const parsing = data.map(obj => {
-        var res = []
-        obj.dtl.map(x => {
-          res.push({
-            excavator: obj.exca,
-            ritase: obj.ritase,
-            volume: x.volume,
-            hauler_unit: x.hauler_unit,
-            rit: x.rit
-          })
-        })
-        return res
+      x.map(i => {
+        bodyTable.push(i)
       })
       
-      console.log(parsing);
-      for (const item of parsing) {
-        item.map(v => {
-          bodyTable.push([
-            {text: v.excavator, fontSize: 15, bold: true},
-            {text: v.ritase+' RIT'},
-            {text: v.hauler_unit, alignment: 'left'},
-            {text: `${v.rit} RIT`, alignment: 'right'},
-            {text: `${v.volume} BCM`, alignment: 'right'}
-          ])
-        })
-      }
-
       var docDefinition = {
         watermark: { 
           text: 'PT. Mitra Abadi Mahakam', 
@@ -111,7 +101,7 @@ class HourlyRitaseObController {
           {
             style: 'tabRitase',
             table: {
-              widths: ['auto', 'auto', 'auto', 100, '*'],
+              widths: ['auto', 'auto', 'auto', 'auto', 80, '*'],
               body: bodyTable
             }
           }
@@ -141,16 +131,19 @@ class HourlyRitaseObController {
       }
       await PDF_HOURLY_RITASE(docDefinition, fileName)
 
-      const url = request.headers().host
-      const protocol = request.protocol()
+      const url = process.env.APP_URL
       const mamDownload = new MamDownload()
       mamDownload.fill({
         user_id: usr.id,
         url_download: `${url}/download/${fileName}.pdf`
       })
       await mamDownload.save()
+      if(process.env.NODE_ENV === 'development'){
+        return response.redirect(`${url}/download/${fileName}.pdf`)
+      }else{
+        return response.redirect(`http://offices.mitraabadimahakam.id/download/${fileName}.pdf`)
+      }
 
-      return response.redirect(`${protocol}://${url}/download/${fileName}.pdf`)
     }
 }
 
@@ -174,4 +167,30 @@ function GROUPING_DATA(arr) {
       this[data.hauler_unit].rit += data.rit;
     }, Object.create(null));
   return grouped
+}
+
+
+function setTopMarginOfCellForVerticalCentering(ri, node){
+  const cellHeights = node.table.body[ri].map(cell => {
+    if(cell._inlines && cell._inlines.length) {
+      return cell._inlines[0].height
+    } else if(cell.stack) {
+      return cell.stack[0]._inlines[0].height * cell.stack.length
+    }
+    return null
+  })
+
+  const maxRowHeight = Math.max(...cellHeights)
+  node.table.body[ri].forEach((cell, ci) => {
+    if(cellHeights[ci] && maxRowHeight > cellHeights[ci]) {
+      let topMargin = (maxRowHeight - cellHeights[ci]) / 2
+      if(cell._margin) {
+        cell._margin[1] = topMargin
+      } else {
+        cell._margin = [0, topMargin, 0, 0]
+      }
+    }
+  })
+
+  return 2
 }

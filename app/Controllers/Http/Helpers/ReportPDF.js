@@ -20,17 +20,21 @@ class PDFReport {
         .orderBy([{ column: 'check_in', order: 'desc' }, { column: 'exca_id', order: 'asc' }])
         .fetch()).toJSON()
 
+        // console.log(jumlahData);
+        
         let result = jumlahData.map(item => {
             return {
                 exca_unit: item.kode,
+                exca_tot_rit: item.dailyritase.tot_ritase,
+                exca_productivity: parseFloat(item.dailyritase.tot_ritase) * parseFloat(item.vol),
                 jarak: item.distance,
                 volume: item.vol,
                 hauler_unit: item.hauler.kode,
                 jum: 1,
             }
         })
-
-        result = result.reduce(function (obj, item) {
+        
+        let groupingData = result.reduce(function (obj, item) {
             obj[item.exca_unit] = obj[item.exca_unit] || [];
             obj[item.exca_unit].push({
                 jarak: item.jarak,
@@ -40,12 +44,13 @@ class PDFReport {
             });    
             return obj;
         }, {});
-  
-        result = Object.keys(result).map(function (key) {    
-          return {exca_unit: key, details: result[key]}
+        
+        groupingData = Object.keys(groupingData).map(function (key) {    
+            return {exca_unit: key, details: groupingData[key]}
         });
-
-        return result
+        
+        // console.log(JSON.stringify(groupingData, null, 2));
+        return groupingData
 
         // for (let index = 0; index < 24; index++) {
         //     var len = '0'.repeat(2 - `${index}`.length)
