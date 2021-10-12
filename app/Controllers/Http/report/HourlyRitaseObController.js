@@ -145,6 +145,7 @@ class HourlyRitaseObController {
       await mamDownload.save()
 
       if(req.platform === 'mobile'){
+        let durasi = await diagnoticTime.durasi(t0)
         return response.status(200).json({
           diagnostic: {
               times: durasi, 
