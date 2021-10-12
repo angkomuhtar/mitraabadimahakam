@@ -1,5 +1,8 @@
 'use strict'
 
+const { performance } = require('perf_hooks')
+const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
+
 const ReportPDF = use("App/Controllers/Http/Helpers/ReportPDF")
 const MamDownload = use("App/Models/MamDownload")
 const moment = require('moment')
@@ -38,6 +41,7 @@ var fs = require('fs');
 class HourlyRitaseObController {
     async index ({ auth, request, params, response }) {
       const usr = await auth.getUser()
+      const req = request.all()
       const { hh } = params
       const fileName = `ritase-perjam-${moment().format('DDMMYYHHmmss')}`
 
@@ -135,16 +139,46 @@ class HourlyRitaseObController {
       const mamDownload = new MamDownload()
       mamDownload.fill({
         user_id: usr.id,
-        url_download: `${url}/download/${fileName}.pdf`
+        url_download: `/download/${fileName}.pdf`
       })
-      await mamDownload.save()
-      if(process.env.NODE_ENV === 'development'){
-        return response.redirect(`${url}/download/${fileName}.pdf`)
-      }else{
-        return response.redirect(`http://offices.mitraabadimahakam.id/download/${fileName}.pdf`)
-      }
 
+      await mamDownload.save()
+
+      if(req.platform === 'mobile'){
+        return response.status(200).json({
+          diagnostic: {
+              times: durasi, 
+              error: false
+          },
+          data: mamDownload
+        })
+      }else{
+        if(process.env.NODE_ENV === 'development'){
+          return response.redirect(`${url}/download/${fileName}.pdf`)
+        }else{
+          return response.redirect(`http://offices.mitraabadimahakam.id/download/${fileName}.pdf`)
+        }
+      }
     }
+
+    // async mobile ({ auth, request, params, response }) {
+    //   var t0 = performance.now()
+    //     const req = request.only(['keyword'])
+    //     try {
+    //         await auth.authenticator('jwt').getUser()
+    //     } catch (error) {
+    //         console.log(error)
+    //         let durasi = await diagnoticTime.durasi(t0)
+    //         return response.status(403).json({
+    //             diagnostic: {
+    //                 times: durasi, 
+    //                 error: true,
+    //                 message: error.message
+    //             },
+    //             data: {}
+    //         })
+    //     }
+    // }
 }
 
 module.exports = HourlyRitaseObController
