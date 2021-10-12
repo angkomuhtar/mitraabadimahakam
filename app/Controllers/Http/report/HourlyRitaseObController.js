@@ -40,6 +40,7 @@ var fs = require('fs');
 
 class HourlyRitaseObController {
     async index ({ auth, request, params, response }) {
+      var t0 = performance.now()
       const usr = await auth.getUser()
       const req = request.all()
       const { hh } = params
