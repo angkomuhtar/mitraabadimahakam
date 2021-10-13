@@ -26,9 +26,9 @@ class MasEquipmentController {
 
   async list ({request, view}) {
     const req = request.all()
-    const limit = 25
+    const limit = parseInt(req.limit) || 25
     const halaman = req.page === undefined ? 1:parseInt(req.page)
-    console.log(halaman);
+    console.log('limit :::', limit);
     let data
     if(req.keyword != ''){
       data = await Equipment.query().where(whe => {
@@ -45,7 +45,11 @@ class MasEquipmentController {
       data = await Equipment.query().where('aktif', 'Y').paginate(halaman, limit)
     }
 
-    return view.render('master.equipment.list', {list: data.toJSON()})
+    console.log('data :::', data.toJSON());
+    return view.render('master.equipment.list', {
+      limit: limit,
+      list: data.toJSON()
+    })
   }
 
   async store ({ auth, request, response }) {
