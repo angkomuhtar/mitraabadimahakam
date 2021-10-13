@@ -44,7 +44,7 @@ $(function(){
         $('div.content-module').css('display', 'none')
         $.ajax({
             async: true,
-            url: '/master/equipment/list?keyword=',
+            url: '/master/equipment/list?limit=25&keyword=',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -114,7 +114,8 @@ $(function(){
         e.preventDefault()
         var page = $(this).data('page')
         var keyword = $('#inpKeyword').val()
-        var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword
+        var limit = $('input#inpLimit').val()
+        var url = window.location.pathname+'/list?page='+page+'&limit='+limit+'&keyword='+keyword
         $.ajax({
             async: true,
             url: url,
