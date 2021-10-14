@@ -2,15 +2,23 @@
 $(function(){
     setDateString()
 
-    $('input#inpKeyword').on('keydown', function(e){
+    $('input#inpKeyword').on('keydown', async function(e){
+        var limit = $('input#inpLimit').val()
         if(e.keyCode === 13){
             var search = $(this).val()
-            $.get('/master/equipment/list?keyword='+search, function(data){
-                $('div#list-content').children().remove()
-                $('div#list-content').html(data)
-                setDateString()
-            })
+            await dataAjax(limit, search)
+            // $.get('/master/equipment/list?keyword='+search+'&limit='+limit, function(data){
+            //     $('div#list-content').children().remove()
+            //     $('div#list-content').html(data)
+            //     setDateString()
+            // })
         }
+    })
+
+    $('button#bt-go').on('click', async function(e){
+        var limit = $('input#inpLimit').val()
+        var search = $(this).val()
+        await dataAjax(limit, search)
     })
 
     $('button.bt-edit-data').on('click', function(){
@@ -21,6 +29,23 @@ $(function(){
             $('div#form-show').show()
         })
     })
+
+    async function dataAjax(limit, search){
+        $.ajax({
+            async: true,
+            url: '/master/equipment/list?keyword='+search+'&limit='+limit,
+            method: 'GET',
+            success: function(data){
+                console.log(data);
+                $('div#list-content').children().remove()
+                $('div#list-content').html(data)
+                setDateString()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
     
 
     function setDateString() {
