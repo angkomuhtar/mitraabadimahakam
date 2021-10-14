@@ -2,6 +2,8 @@
 
 const moment = require('moment')
 const DailyPlan = use("App/Models/DailyPlan")
+const DailyFleet = use("App/Models/DailyFleet")
+const MonthlyPlan = use("App/Models/MonthlyPlan")
 const DailyRitase = use("App/Models/DailyRitase")
 const MasMaterial = use("App/Models/MasMaterial")
 const MasEquipment = use("App/Models/MasEquipment")
@@ -39,9 +41,23 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
     /* GET VOLUME MATERIAL */
     const volume = await MasMaterial.query().where('id', dailyRitase.material).last()
 
+    /* GET PIT ID */
+    const dailyFleet = await DailyFleet.query().where('id', dailyRitase.dailyfleet_id).last()
+
+    /* GET MONTLY PLAN */
+    const montlyPlan = await MonthlyPlan.query().where(w => {
+            w.where('id', dailyFleet.pit_id)
+            w.where('tipe', 'OB')
+        }
+    ).last()
+
     /* GET PLAN DATE */
     const date = moment(dailyritasedetail.check_in).format('YYYY-MM-DD')
-    const dailyPlan = await DailyPlan.query().where('current_date', date).first()
+    const dailyPlan = await DailyPlan.query().where(w => {
+            w.where('current_date', date)
+            w.where('monthlyplans_id', montlyPlan.id)
+        }
+    ).first()
     dailyPlan.merge({
         actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol)
     })
