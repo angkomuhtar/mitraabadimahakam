@@ -71,13 +71,20 @@
                                         </div>
                                     </div>
                                     <div class="row p-t-20 p-b-10 b-all">
-                                        <div class="col-md-3">
-                                            <label for="">Stockpile/Sulphur <span class="text-danger">*</span></label>
+                                        <div class="col-md-2">
+                                            <label for="">Stockpile <span class="text-danger">*</span></label>
                                             <div class="form-group">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control text-right inp-coal-ritase" name="stockpile" value="{{data.stockpile ? data.stockpile:''}}" required>
-                                                    <span class="input-group-addon" id="basic-addon2">/{{data.coal_tipe}}</span>
-                                                </div>
+                                                <input type="text" class="form-control text-right inp-coal-ritase" name="stockpile" value="{{data.stockpile ? data.stockpile:''}}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label for="">Tipe <span class="text-danger">*</span></label>
+                                            <div class="form-group">
+                                                <select class="form-control text-right inp-coal-ritase" name="coal_tipe" id="coal_tipe">
+                                                    <option value="CC">CC</option>
+                                                    <option value="DCN">DCN</option>
+                                                    <option value="DCO">DCO</option>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
