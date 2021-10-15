@@ -170,7 +170,7 @@ class MonthlyPlan {
 
     async POST (req) { 
         const { pit_id, tipe, month, estimate, actual } = req
-        const satuan = tipe != 'BB' ? 'BCM':'MT'
+        const satuan = req.tipe === 'OB' ? 'BCM':'MT'
         try {
             const monthlyPlans = new MonthlyPlans()
             monthlyPlans.fill({pit_id, tipe, month, estimate, actual, satuan})

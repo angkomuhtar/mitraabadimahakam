@@ -46,7 +46,7 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
 
     /* GET MONTLY PLAN */
     const montlyPlan = await MonthlyPlan.query().where(w => {
-            w.where('id', dailyFleet.pit_id)
+            w.where('pit_id', dailyFleet.pit_id)
             w.where('tipe', 'OB')
         }
     ).last()

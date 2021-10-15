@@ -63,7 +63,7 @@ class DailyRitaseCoalController {
         req.checker_jt = usr.id
         try {
             const data = await DailyRitaseCoalDeatilHelpers.UPDATE(params, req)
-            console.log(data.toJSON());
+            // console.log(data.toJSON());
             return {
                 success: true,
                 message: 'Ritase Coal success akumulated...'
