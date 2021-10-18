@@ -209,6 +209,7 @@ class DailyRitaseCoalDetailApiController {
 
         try {
             const data = await DailyRitaseCoalDeatilHelpers.POST(req)
+            console.log('DailyRitaseCoalDeatilHelpers:::', data);
             durasi = await diagnoticTime.durasi(t0)
             return response.status(201).json({
                 diagnostic: {

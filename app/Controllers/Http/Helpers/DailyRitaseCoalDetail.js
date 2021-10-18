@@ -89,12 +89,14 @@ class RitaseCoalDetail {
 
     async UPDATE (params, req) {
         console.log(params);
+        console.log(req);
         try {
             const ritaseCoalDetail = await DailyRitaseCoalDetail.find(params.id)
             ritaseCoalDetail.merge(req)
             await ritaseCoalDetail.save()
             return ritaseCoalDetail
         } catch (error) {
+            console.log(error);
             return error
         }
     }

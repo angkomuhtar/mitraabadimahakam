@@ -54,6 +54,7 @@ class DailyRitaseCoalController {
             'checkout_jt', 
             'ticket', 
             'stockpile', 
+            'coal_tipe',
             'w_gross', 
             'w_tare', 
             'w_netto', 
@@ -61,9 +62,10 @@ class DailyRitaseCoalController {
         ])
         const usr = await auth.getUser()
         req.checker_jt = usr.id
+        req.stockpile = (req.stockpile).toUpperCase()
         try {
             const data = await DailyRitaseCoalDeatilHelpers.UPDATE(params, req)
-            console.log(data.toJSON());
+            // console.log(data.toJSON());
             return {
                 success: true,
                 message: 'Ritase Coal success akumulated...'
