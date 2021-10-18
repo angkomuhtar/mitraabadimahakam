@@ -41,13 +41,29 @@ var fs = require('fs');
 class HourlyRitaseObController {
     async index ({ auth, request, params, response }) {
       var t0 = performance.now()
-      const usr = await auth.getUser()
+      let usr
+      try {
+        usr = await auth.authenticator('jwt').getUser()
+      } catch (error) {
+          console.log(error)
+          let durasi = await diagnoticTime.durasi(t0)
+          return response.status(403).json({
+              diagnostic: {
+                  times: durasi, 
+                  error: true,
+                  message: error.message
+              },
+              data: {}
+          })
+      }
       const req = request.all()
       const { hh } = params
       const fileName = `ritase-perjam-${moment().format('DDMMYYHHmmss')}`
 
-      const start = moment().format('YYYY-MM-DD') + ' ' + '0'.repeat(2 - `${hh}`.length) + hh + ':00'
-      const end = moment().format('YYYY-MM-DD') + ' ' + '0'.repeat(2 - `${hh}`.length) + hh + ':59'
+      let tanggal = req.date ? req.date : moment().format('YYYY-MM-DD')
+
+      const start = tanggal + ' ' + '0'.repeat(2 - `${hh}`.length) + hh + ':00'
+      const end = tanggal + ' ' + '0'.repeat(2 - `${hh}`.length) + hh + ':59'
 
       let data = await ReportPDF.RIT_PER_JAM(start, end)
       data = data.map(obj => {
