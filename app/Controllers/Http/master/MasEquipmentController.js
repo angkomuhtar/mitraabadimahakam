@@ -48,6 +48,7 @@ class MasEquipmentController {
     console.log('data :::', data.toJSON());
     return view.render('master.equipment.list', {
       limit: limit,
+      search: req.keyword,
       list: data.toJSON()
     })
   }

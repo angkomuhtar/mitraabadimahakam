@@ -7,17 +7,12 @@ $(function(){
         if(e.keyCode === 13){
             var search = $(this).val()
             await dataAjax(limit, search)
-            // $.get('/master/equipment/list?keyword='+search+'&limit='+limit, function(data){
-            //     $('div#list-content').children().remove()
-            //     $('div#list-content').html(data)
-            //     setDateString()
-            // })
         }
     })
 
     $('button#bt-go').on('click', async function(e){
         var limit = $('input#inpLimit').val()
-        var search = $(this).val()
+        var search = $('input#inpKeyword').val()
         await dataAjax(limit, search)
     })
 
@@ -31,12 +26,13 @@ $(function(){
     })
 
     async function dataAjax(limit, search){
+        console.log(search);
         $.ajax({
             async: true,
             url: '/master/equipment/list?keyword='+search+'&limit='+limit,
             method: 'GET',
             success: function(data){
-                console.log(data);
+                // console.log(data);
                 $('div#list-content').children().remove()
                 $('div#list-content').html(data)
                 setDateString()
@@ -53,7 +49,7 @@ $(function(){
             var date = $(this).data(date)
             var elm = $(this).data('elm')
             var dateString = moment(date.date).format('DD-MM-YYYY')
-            console.log(date.date);
+            // console.log(date.date);
             if(elm != undefined){
                 $(this).find(elm).html(dateString)
             }else{

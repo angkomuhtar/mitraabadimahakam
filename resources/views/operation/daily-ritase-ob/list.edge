@@ -10,14 +10,12 @@
                         </button>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
-                        <!--
                         <div class="input-group">
-                            <input id="keywordTimeSheet" class="form-control" placeholder="Search for..." value="{{keyword}}">
-                            <span class="input-group-btn"> 
-                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                            <input id="limit" type="number" class="form-control text-right" name="limit" value="{{limit}}">
+                            <span class="input-group-btn">
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Limit Data</button> 
                             </span>
                         </div>
-                        -->
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -148,9 +146,9 @@
         $('body').on('click', 'a.btn-pagging', function(e){
             e.preventDefault()
             var page = $(this).data('page')
-            // var keyword = $('#keywordTimeSheet').val()
+            var limit = $('#limit').val()
             console.log(window.location.pathname);
-            var url = window.location.pathname+'/list?page='+page
+            var url = window.location.pathname+'/list?page='+page+'&limit='+limit
             $.ajax({
                 async: true,
                 url: url,

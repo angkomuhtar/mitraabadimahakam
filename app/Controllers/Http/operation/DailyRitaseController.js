@@ -12,10 +12,15 @@ class DailyRitaseController {
     }
 
     async list ({ request, view }) {
-        const req = request.only(['keyword', 'page'])
+        const req = request.only(['keyword', 'page', 'limit'])
         try {
-            const dailyRitase = (await DailyRitaseHelpers.ALL(req)).toJSON()
-            return view.render('operation.daily-ritase-ob.list', {list: dailyRitase})
+            const dailyRitase = (
+                await DailyRitaseHelpers.ALL(req)
+            ).toJSON()
+            return view.render('operation.daily-ritase-ob.list', {
+                list: dailyRitase,
+                limit: req.limit || 25
+            })
         } catch (error) {
             console.log(error)
             return {
@@ -26,7 +31,7 @@ class DailyRitaseController {
     }
 
     async listByPIT ({ params, request, view }) {
-        const req = request.only(['page'])
+        const req = request.only(['page', 'limit'])
         try {
             const dailyRitase = await DailyRitaseHelpers.BY_PIT(params, req)
             return view.render('operation.daily-ritase-ob.list-by', {
@@ -44,7 +49,7 @@ class DailyRitaseController {
     }
 
     async listByFLEET ({ params, request, view }) {
-        const req = request.only(['page'])
+        const req = request.only(['page', 'limit'])
         try {
             const dailyRitase = await DailyRitaseHelpers.BY_FLEET(params, req)
             
@@ -63,7 +68,7 @@ class DailyRitaseController {
     }
 
     async listBySHIFT ({ params, request, view }) {
-        const req = request.only(['page'])
+        const req = request.only(['page', 'limit'])
         try {
             const dailyRitase = await DailyRitaseHelpers.BY_SHIFT(params, req)
             return view.render('operation.daily-ritase-ob.list-by', {

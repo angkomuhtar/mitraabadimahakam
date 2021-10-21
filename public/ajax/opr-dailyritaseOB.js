@@ -1,10 +1,12 @@
 $(function(){
     initDeafult()
-    function initDeafult(){
+    function initDeafult(lim){
         $('div.content-module').css('display', 'none')
+        var limit = lim || 25
+        console.log('limit :::', limit);
         $.ajax({
             async: true,
-            url: '/operation/daily-ritase-ob/list?keyword=',
+            url: '/operation/daily-ritase-ob/list?limit='+limit,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -40,12 +42,19 @@ $(function(){
         window.location.reload()
     })
 
-    $('body').on('click', 'a.find-by', function(e){
+    // $('body').on('click', 'a.find-by', function(e){
+    //     e.preventDefault()
+    //     var id = $(this).data('id')
+    //     var itemid = $(this).data('item')
+    //     var group = $(this).data('search')
+    //     findRitasePit(id, group, itemid)
+    // })
+
+    $('body').on('click', '#bt-search-keyword', function(e){
         e.preventDefault()
-        var id = $(this).data('id')
-        var itemid = $(this).data('item')
-        var group = $(this).data('search')
-        findRitasePit(id, group, itemid)
+        var limit = $('#limit').val()
+        console.log(limit);
+        initDeafult(limit)
     })
 
     /* show ritase */

@@ -5,7 +5,7 @@ const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 
 class Ritase {
     async ALL (req) { 
-        const limit = 25
+        const limit = parseInt(req.limit)
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let dailyRitase
         if(req.keyword){
