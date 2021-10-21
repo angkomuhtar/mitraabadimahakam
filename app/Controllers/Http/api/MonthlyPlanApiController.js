@@ -23,7 +23,7 @@ const VRitaseOb = use("App/Models/VRitaseOb");
 const VRitaseCoal = use("App/Models/VRitaseCoal");
 const VTimeSheet = use("App/Models/VTimeSheet");
 const VDailyEvent = use("App/Models/VDailyEvent");
-const DailyCoalExposed = use('App/Models/DailyCoalExposed');
+const DailyCoalExposed = use("App/Models/DailyCoalExposed");
 
 class MonthlyPlanApiController {
   async index({ request, response, view }) {}
@@ -96,8 +96,6 @@ class MonthlyPlanApiController {
           .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
       ).toJSON();
-
-      console.log("daily plans found ?? ", dailyPlans);
 
       let temp = [];
       let _temp = [];
@@ -732,7 +730,7 @@ class MonthlyPlanApiController {
     var t0 = performance.now();
 
     const _pit_id = pit_id ? pit_id : 1;
-
+    
     try {
       await auth.authenticator("jwt").getUser();
     } catch (error) {
@@ -751,17 +749,20 @@ class MonthlyPlanApiController {
     const trx = await db.beginTransaction();
 
     const checkIfStartOfMonth = () => {
-     const _date = moment(date).format("DD");
+      const _date = moment(date).format("DD");
 
-     let prevMonth = null;
-     if(_date === '01') {
-      prevMonth = moment(date).subtract(1,'days').startOf('month').format('YYYY-MM-DD HH:mm:ss')
-     } else { 
-      prevMonth = moment(date).startOf('month').format('YYYY-MM-DD HH:mm:ss')
-     }
+      let prevMonth = null;
+      if (_date === "01") {
+        prevMonth = moment(date)
+          .subtract(1, "days")
+          .startOf("month")
+          .format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        prevMonth = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+      }
 
-     return prevMonth
-    }
+      return prevMonth;
+    };
     const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
 
     const monthlyPlansOB = await MonthlyPlans.query()
@@ -799,7 +800,6 @@ class MonthlyPlanApiController {
         .andWhere("tipe", "OB")
         .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
         .first();
-
 
       let RIT_OB_ARR = [];
       let RIT_COAL_ARR = [];
@@ -971,14 +971,22 @@ class MonthlyPlanApiController {
         _EVENTS.push(obj);
       }
 
-
-
       const SoM = moment(date).startOf("month").format("YYYY-MM-DD");
       const now = moment(date).format("YYYY-MM-DD");
 
-
-      const _COAL_EXPOSE_TODAY = await DailyCoalExposed.query().where('tgl', now).andWhere('pit_id', _pit_id).andWhere('aktif', 'Y').first()
-      const _MTD_COAL_EXPOSE = (await DailyCoalExposed.query().where('tgl', '>=', checkIfStartOfMonth(SoM)).andWhere('tgl', '<=', now).andWhere('pit_id', _pit_id).andWhere('aktif', 'Y').fetch()).toJSON();
+      const _COAL_EXPOSE_TODAY = await DailyCoalExposed.query()
+        .where("tgl", now)
+        .andWhere("pit_id", _pit_id)
+        .andWhere("aktif", "Y")
+        .first();
+      const _MTD_COAL_EXPOSE = (
+        await DailyCoalExposed.query()
+          .where("tgl", ">=", checkIfStartOfMonth(SoM))
+          .andWhere("tgl", "<=", now)
+          .andWhere("pit_id", _pit_id)
+          .andWhere("aktif", "Y")
+          .fetch()
+      ).toJSON();
 
       const mtd_ob_actual = (
         await DailyPlans.query(trx)
@@ -1010,8 +1018,12 @@ class MonthlyPlanApiController {
         MTD_COAL_SR = 0;
       }
 
-      const COAL_EXPOSE = _COAL_EXPOSE_TODAY ? _COAL_EXPOSE_TODAY.volume / 1000 : 0
-      const MTD_COAL_EXPOSE = _MTD_COAL_EXPOSE ? _MTD_COAL_EXPOSE.reduce((a,b) => a + b.volume, 0) : 0
+      const COAL_EXPOSE = _COAL_EXPOSE_TODAY
+        ? _COAL_EXPOSE_TODAY.volume / 1000
+        : 0;
+      const MTD_COAL_EXPOSE = _MTD_COAL_EXPOSE
+        ? _MTD_COAL_EXPOSE.reduce((a, b) => a + b.volume, 0)
+        : 0;
 
       let MTD_COAL_EXPOSE_SR = parseFloat(
         (
@@ -1052,7 +1064,6 @@ class MonthlyPlanApiController {
         mtd_coal_expose_sr: MTD_COAL_EXPOSE_SR,
         event: _EVENTS,
       };
-
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
         diagnostic: {
@@ -1062,6 +1073,7 @@ class MonthlyPlanApiController {
           server_time: moment(date).format("YYYY-MM-DD"),
         },
         data: data,
+        pit_name: (monthlyPlansCoal.toJSON())?.pit?.name,
       });
     } catch (error) {
       console.log(error);

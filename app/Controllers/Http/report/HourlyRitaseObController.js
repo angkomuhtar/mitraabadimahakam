@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 
 const { performance } = require('perf_hooks')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
@@ -7,36 +7,35 @@ const ReportPDF = use("App/Controllers/Http/Helpers/ReportPDF")
 const MamDownload = use("App/Models/MamDownload")
 const moment = require('moment')
 var fonts = {
-    Courier: {
-      normal: 'Courier',
-      bold: 'Courier-Bold',
-      italics: 'Courier-Oblique',
-      bolditalics: 'Courier-BoldOblique'
-    },
-    Helvetica: {
-      normal: 'Helvetica',
-      bold: 'Helvetica-Bold',
-      italics: 'Helvetica-Oblique',
-      bolditalics: 'Helvetica-BoldOblique'
-    },
-    Times: {
-      normal: 'Times-Roman',
-      bold: 'Times-Bold',
-      italics: 'Times-Italic',
-      bolditalics: 'Times-BoldItalic'
-    },
-    Symbol: {
-      normal: 'Symbol'
-    },
-    ZapfDingbats: {
-      normal: 'ZapfDingbats'
-    }
-}
-  
-var PdfPrinter = require('pdfmake');
-var printer = new PdfPrinter(fonts);
-var fs = require('fs');
+  Courier: {
+    normal: "Courier",
+    bold: "Courier-Bold",
+    italics: "Courier-Oblique",
+    bolditalics: "Courier-BoldOblique",
+  },
+  Helvetica: {
+    normal: "Helvetica",
+    bold: "Helvetica-Bold",
+    italics: "Helvetica-Oblique",
+    bolditalics: "Helvetica-BoldOblique",
+  },
+  Times: {
+    normal: "Times-Roman",
+    bold: "Times-Bold",
+    italics: "Times-Italic",
+    bolditalics: "Times-BoldItalic",
+  },
+  Symbol: {
+    normal: "Symbol",
+  },
+  ZapfDingbats: {
+    normal: "ZapfDingbats",
+  },
+};
 
+var PdfPrinter = require("pdfmake");
+var printer = new PdfPrinter(fonts);
+var fs = require("fs");
 
 class HourlyRitaseObController {
     async index ({ auth, request, params, response }) {
@@ -140,11 +139,6 @@ class HourlyRitaseObController {
           tabRitase: {
             margin: [0, 5, 0, 15]
           },
-          tableHeader: {
-            bold: true,
-            fontSize: 14,
-            color: 'black'
-          }
         },
         defaultStyle: {
           font: 'Helvetica'
@@ -199,7 +193,7 @@ class HourlyRitaseObController {
     // }
 }
 
-module.exports = HourlyRitaseObController
+module.exports = HourlyRitaseObController;
 
 async function PDF_HOURLY_RITASE(dd, fileName) {
   var pdfDoc = printer.createPdfKitDocument(dd);
