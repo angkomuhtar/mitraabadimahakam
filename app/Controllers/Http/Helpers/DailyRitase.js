@@ -26,6 +26,8 @@ class Ritase {
                 arrFilter = fleet.toJSON().map(item => item.id)
             }
 
+            console.log(req);
+
             dailyRitase = await DailyRitase
                 .query()
                 .with('material_details')
@@ -45,6 +47,15 @@ class Ritase {
                     if(req.distance){
                         whe.where('distance', req.distance)
                     }
+
+                    if(req.material){
+                        whe.where('material', req.material)
+                    }
+
+                    if(req.exca_id){
+                        whe.where('exca_id', req.exca_id)
+                    }
+
                     if(arrFilter.length > 0){
                         whe.where("status", "Y")
                         if(req.begin_date){

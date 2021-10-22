@@ -31,6 +31,11 @@ class EquipmentList {
         return data
     }
 
+    async EXCAVATOR () {
+        const data = await MasEquipment.query().where({aktif: 'Y', tipe: 'excavator'}).orderBy('urut', 'asc').fetch()
+        return data
+    }
+
     async LAST_SMU (req) {
         const equipment = await DailyTimeSheet.query()
             .with('equipment')

@@ -24,7 +24,10 @@ $(function(){
         var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
         var fleet_id = $('select[name="fleet_id"]').val() && '&fleet_id=' + $('select[name="fleet_id').val()
         var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
-        var url = `/operation/daily-ritase-ob/list?keyword=true&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}`
+        var material = $('select[name="material"]').val()  && '&material=' + $('select[name="material"]').val()
+        var exca_id = $('select[name="exca_id"]').val()  && '&exca_id=' + $('select[name="exca_id"]').val()
+        var url = `/operation/daily-ritase-ob/list?keyword=true&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}${material}${exca_id}`
+        console.log(url);
         initDeafult(limit, url)
     })
 
@@ -199,7 +202,9 @@ $(function(){
         var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
         var fleet_id = $('select[name="fleet_id"]').val() && '&fleet_id=' + $('select[name="fleet_id').val()
         var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
-        var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}`
+        var material = $('select[name="material"]').val()  && '&material=' + $('select[name="material"]').val()
+        var exca_id = $('select[name="exca_id"]').val()  && '&exca_id=' + $('select[name="exca_id"]').val()
+        var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}${material}${exca_id}`
         // var url = window.location.pathname+'/list?page='+page+'&limit='+limit
         initDeafult(limit, url)
         // $.ajax({

@@ -13,7 +13,7 @@ class AjaxFleetController {
 
     async getFleetsByTipe ({ request }) {
         const req = request.all()
-        const fleet = (await Fleet.query().where({status: 'Y', tipe: req.tipe}).orderBy('created_at', 'desc').fetch()).toJSON()
+        const fleet = (await Fleet.query().where({status: 'Y', tipe: req.tipe}).orderBy('name', 'desc').fetch()).toJSON()
         const list = fleet.map(el => el.id === parseInt(req.selected) ? {...el, selected: 'selected'} : {...el, selected: ''})
 
         return list

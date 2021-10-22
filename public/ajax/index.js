@@ -257,9 +257,9 @@ $(function(){
         elm.children().remove()
         $.get('/ajax/fleet?selected='+selected, function(data){
             if(data.length > 0){
-                elm.prepend('<option value="">Pilih</option>')
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
-                elm.append(list)
+                elm.html(list)
+                elm.prepend('<option value="">Pilih</option>')
             }else{
                 elm.prepend('<option value="">Belum ada data pilihan...</option>')
             }
@@ -304,6 +304,29 @@ $(function(){
         $.ajax({
             async: true,
             url: '/ajax/equipment?selected='+selected,
+            method: 'GET',
+            success: function(data){
+                if(data.length > 0){
+                    elm.prepend('<option value="">Pilih</option>')
+                    const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.kode+' --|-- '+nod.unit_model+'</option>')
+                    elm.append(list)
+                }else{
+                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                }
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    $('body select.select2Excavator').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.ajax({
+            async: true,
+            url: '/ajax/equipment/excavator?selected='+selected,
             method: 'GET',
             success: function(data){
                 if(data.length > 0){
@@ -427,9 +450,9 @@ $(function(){
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.tipe+' | '+nod.name+'</option>')
                     elm.html(list)
-                    // elm.append('<option value="" selected>Pilih</option>')
+                    elm.prepend('<option value="" selected>Pilih</option>')
                 }else{
-                    elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                    elm.html('<option value="">Belum ada data pilihan...</option>')
                 }
             },
             error: function(err){

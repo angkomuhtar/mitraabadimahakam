@@ -500,6 +500,8 @@ Route.group(() => {
 
     Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
 
+    Route.get('/equipment/excavator', 'AjaxEquipmentController.getEquipmentExcavator').as('equipment.getEquipmentExcavator')
+
     Route.get('/equipment/fuel-truck', 'AjaxEquipmentController.getEquipmentFuelTruck').as('equipment.getEquipmentFuelTruck')
 
     Route.get('/fuel-type', 'AjaxFuelController.getFuelType').as('fuel.getFuelType')
