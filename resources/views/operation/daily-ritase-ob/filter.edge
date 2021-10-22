@@ -9,19 +9,19 @@
                     <div class="col-md-4">
                         <label for="mulai_tanggal">Mulai Tanggal</label>
                         <div class="form-group">
-                            <input type="date" class="form-control input-sm setDate" data-date="{{data.date}}" name="mulai_tanggal" id="mulai_tanggal">
+                            <input type="date" class="form-control inp-filter input-sm setDate" data-date="{{data.date}}" name="mulai_tanggal" id="mulai_tanggal">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <label for="hingga_tanggal">Mulai Tanggal</label>
                         <div class="form-group">
-                            <input type="date" class="form-control input-sm setDate" data-date="{{data.date}}" name="hingga_tanggal" id="hingga_tanggal">
+                            <input type="date" class="form-control inp-filter input-sm setDate" data-date="{{data.date}}" name="hingga_tanggal" id="hingga_tanggal">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <label for="hingga_tanggal">Jarak</label>
                         <div class="form-group">
-                            <input type="number" class="form-control input-sm" name="distance" id="distance">
+                            <input type="number" class="form-control inp-filter input-sm" name="distance" id="distance">
                         </div>
                     </div>
                 </div>
@@ -29,25 +29,20 @@
                     <div class="col-md-6">
                         <label for="mulai_tanggal">Pilih Fleet</label>
                         <div class="form-group">
-                            <select class="form-control input-sm select2fleetByTipe" data-tipe="OB" name="fleet_id" id="fleet_id"></select>
+                            <select class="form-control inp-filter input-sm select2fleetByTipe" data-tipe="OB" name="fleet_id" id="fleet_id"></select>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <label for="mulai_tanggal">Pilih Shift</label>
                         <div class="form-group">
-                            <select class="form-control input-sm select2shift" name="shift_id" id="shift_id"></select>
+                            <select class="form-control inp-filter input-sm select2shift" name="shift_id" id="shift_id"></select>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="pull-left">
-                    <div class="checkbox">
-                        <input id="apply-filter" type="checkbox">
-                        <label for="apply-filter"> Apply Filter </label>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="reset-filter" class="btn btn-default" data-dismiss="modal">Reset Filter</button>
+                <button type="button" id="apply-filter" class="btn btn-info" data-dismiss="modal">Apply Filter</button>
             </div>
         </div>
     </div>
