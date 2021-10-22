@@ -1,5 +1,6 @@
 'use strict'
 
+const DailyFleet = use("App/Models/DailyFleet")
 const DailyRitase = use("App/Models/DailyRitase")
 const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 
@@ -8,7 +9,23 @@ class Ritase {
         const limit = parseInt(req.limit)
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let dailyRitase
+        let arrFilter
         if(req.keyword){
+            const fleet = await DailyFleet.query().where(w => {
+                
+                if(req.fleet_id){
+                    w.where('fleet_id', req.fleet_id)
+                }
+
+                if(req.shift_id){
+                    w.where('shift_id', req.shift_id)
+                }
+            }).fetch()
+
+            if(fleet){
+                arrFilter = fleet.toJSON().map(item => item.id)
+            }
+
             dailyRitase = await DailyRitase
                 .query()
                 .with('material_details')
@@ -25,11 +42,24 @@ class Ritase {
                     details.with('pit')
                 })
                 .where(whe => {
-                    whe.where('material', 'like', `%${req.keyword}%`)
-                    whe.orWhere('distance', 'like', `%${req.keyword}%`)
-                    whe.orWhere('date', 'like', `%${req.keyword}%`)
+                    if(req.distance){
+                        whe.where('distance', req.distance)
+                    }
+                    if(arrFilter.length > 0){
+                        whe.where("status", "Y")
+                        if(req.begin_date){
+                            whe.where('date', '>=', req.begin_date)
+                            whe.where('date', '<=', req.end_date)
+                        }
+                        whe.whereIn('dailyfleet_id', arrFilter)
+                    }else{
+                        if(req.begin_date){
+                            whe.where('date', '>=', req.begin_date)
+                            whe.where('date', '<=', req.end_date)
+                        }
+                        whe.where("status", "Y")
+                    }
                 })
-                .andWhere("status", "Y")
                 .orderBy('created_at', 'desc')
                 .paginate(halaman, limit)
         }else{
@@ -53,7 +83,6 @@ class Ritase {
                 .orderBy('created_at', 'desc')
                 .paginate(halaman, limit)
         }
-
         return dailyRitase
     }
 

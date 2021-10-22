@@ -209,11 +209,14 @@ $(function(){
         elm.children().remove()
         $.get('/ajax/shift?selected='+selected, function(data){
             if(data.length > 0){
+                var selectDefault = data.filter(item => item.selected)
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
-                elm.append(list)
-                elm.prepend('<option value="">Pilih</option>')
+                elm.html(list)
+                if(selectDefault.length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }
             }else{
-                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                elm.html('<option value="">Belum ada data pilihan...</option>')
             }
         })
     })
@@ -253,6 +256,22 @@ $(function(){
         var elm = $(this)
         elm.children().remove()
         $.get('/ajax/fleet?selected='+selected, function(data){
+            if(data.length > 0){
+                elm.prepend('<option value="">Pilih</option>')
+                const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
+                elm.append(list)
+            }else{
+                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
+        })
+    })
+
+    $('body select.select2fleetByTipe').each(function(){
+        var selected = $(this).data('check')
+        var tipe = $(this).data('tipe')
+        var elm = $(this)
+        elm.children().remove()
+        $.get('/ajax/fleet-by-tipe?selected='+selected+'&tipe='+tipe, function(data){
             if(data.length > 0){
                 elm.prepend('<option value="">Pilih</option>')
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')

@@ -12,7 +12,7 @@ class DailyRitaseController {
     }
 
     async list ({ request, view }) {
-        const req = request.only(['keyword', 'page', 'limit'])
+        const req = request.all()
         try {
             const dailyRitase = (
                 await DailyRitaseHelpers.ALL(req)

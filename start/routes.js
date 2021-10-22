@@ -476,6 +476,8 @@ Route.group(() => {
 
     Route.get('/fleet', 'AjaxFleetController.getFleets').as('fleet.getFleets')
 
+    Route.get('/fleet-by-tipe', 'AjaxFleetController.getFleetsByTipe').as('fleet.getFleetsByTipe')
+
     Route.get('/activity', 'AjaxActivityController.getActivities').as('actitivity.getActivities')
     
     Route.get('/activity/:id', 'AjaxActivityController.getActivitiesID').as('actitivity.getActivitiesID')

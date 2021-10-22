@@ -1,0 +1,90 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" class="" id="fm-upload-ritase-ob">
+                        <div class="panel panel-default">
+                            <!--<div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Time Sheet</div>-->
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="col-md-3">
+                                            <label for="tgl">TANGGAL</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control setDate" data-date="{{data.date}}" name="date" id="date">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Material</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                    <select class="form-control select2material" name="material" id="material" data-check="{{data.material}}"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="tgl">Distance</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control select2material text-right" name="distance" id="distance" value="{{data.distance}}"/>
+                                                    <span class="input-group-addon">Meter</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all m-b-20">
+                                        <div class="col-md-6 p-20">
+                                            <h5>{{data.daily_fleet.pit.name}}</h5>
+                                            <small>
+                                                {{data.daily_fleet.activities.kode}} - {{data.daily_fleet.activities.name}} <br>
+                                                <span class="maxText" data-max="200">{{data.daily_fleet.activities.keterangan}}</span>
+                                            </small>
+                                        </div>
+                                        <div class="col-md-4 p-20 b-r b-l">
+                                            <h5>{{data.daily_fleet.fleet.name}}</h5>
+                                            <h1 class="m-b-0">{{data.daily_fleet.shift.name}}</h1>
+                                            <small>
+                                                <span class="myDateFormat" data-date="{{data.date}}"></span> 
+                                                ( {{data.daily_fleet.shift.start_shift}} - {{data.daily_fleet.shift.end_shift}} ) 
+                                            </small>
+                                        </div>
+                                        <div class="col-md-2 p-20 text-center">
+                                            <small>Total Ritase</small>
+                                            <strong>
+                                                <h1 class="text-muted" id="noberkas" data-berkas="{{data.id}}">{{data.ritase_details.length}} <span><small>RIT</small></span></h1>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all p-t-20" id="list-ritase-unit"></div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            &nbsp;
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button type="submit" class="btn btn-warning waves-effect waves-light" id="bt-update-data" data-id="{{data.id}}"> 
+                                                <i class="fa fa-save"></i> <span>Update</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,12 +1,11 @@
 $(function(){
     initDeafult()
-    function initDeafult(lim){
+    function initDeafult(lim, url){
         $('div.content-module').css('display', 'none')
         var limit = lim || 25
-        console.log('limit :::', limit);
         $.ajax({
             async: true,
-            url: '/operation/daily-ritase-ob/list?limit='+limit,
+            url: url || '/operation/daily-ritase-ob/list?limit='+limit,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -18,21 +17,25 @@ $(function(){
         })
     }
 
-    function findRitasePit(id, group, itemid){
-        $('div.content-module').css('display', 'none')
-        $.ajax({
-            async: true,
-            url: '/operation/daily-ritase-ob/list/'+group+'/'+itemid,
-            method: 'GET',
-            success: function(result){
-                $('div#list-content').children().remove()
-                $('div#list-content').html(result).show()
-            },
-            error: function(err){
-                console.log(err);
-            }
-        })
-    }
+    $('body').on('click', '#apply-filter', function(){
+        if ($('input#apply-filter').is(':checked')) {
+            var limit = $('input[name="limit"]').val()
+            var jarak = $('input[name="distance"]').val() && '&distance=' + $('input[name="distance"]').val()
+            var begin_date = $('input[name="mulai_tanggal"]').val() && '&begin_date=' + $('input[name="mulai_tanggal"]').val()
+            var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
+            var fleet_id = $('select[name="fleet_id"]').val() && '&fleet_id=' + $('select[name="fleet_id').val()
+            var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
+            var url = `/operation/daily-ritase-ob/list?keyword=true&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}`
+            initDeafult(limit, url)
+        }else{
+            var limit = $('#limit').val()
+            initDeafult(limit)
+        }
+    })
+
+    $('body').on('hidden.bs.modal', '#filtermodal', function (e) {
+        console.log('...');
+    })
 
     $('body').on('click', 'button.btn-warning', function(e){
         e.preventDefault()
@@ -41,14 +44,6 @@ $(function(){
     $('body').on('click', 'button#bt-back', function(){
         window.location.reload()
     })
-
-    // $('body').on('click', 'a.find-by', function(e){
-    //     e.preventDefault()
-    //     var id = $(this).data('id')
-    //     var itemid = $(this).data('item')
-    //     var group = $(this).data('search')
-    //     findRitasePit(id, group, itemid)
-    // })
 
     $('body').on('click', '#bt-search-keyword', function(e){
         e.preventDefault()
@@ -192,6 +187,33 @@ $(function(){
                 swal("Opps,,,!", message, "warning")
             }
         })
+    })
+
+    $('body').on('click', 'a.btn-pagging', function(e){
+        e.preventDefault()
+        var page = $(this).data('page')
+        var limit = $('#limit').val()
+        console.log(window.location.pathname);
+        var jarak = $('input[name="distance"]').val() && '&distance=' + $('input[name="distance"]').val()
+        var begin_date = $('input[name="mulai_tanggal"]').val() && '&begin_date=' + $('input[name="mulai_tanggal"]').val()
+        var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
+        var fleet_id = $('select[name="fleet_id"]').val() && '&fleet_id=' + $('select[name="fleet_id').val()
+        var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
+        var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}`
+        // var url = window.location.pathname+'/list?page='+page+'&limit='+limit
+        initDeafult(limit, url)
+        // $.ajax({
+        //     async: true,
+        //     url: url,
+        //     method: 'GET',
+        //     success: function(result){
+        //         $('div#list-content').children().remove()
+        //         $('div#list-content').html(result).show()
+        //     },
+        //     error: function(err){
+        //         console.log(err);
+        //     }
+        // })
     })
 
     /* show list ritase equipment details */

@@ -1,0 +1,54 @@
+<div class="modal fade" id="filtermodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Filter Data Ritase</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="mulai_tanggal">Mulai Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control input-sm setDate" data-date="{{data.date}}" name="mulai_tanggal" id="mulai_tanggal">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="hingga_tanggal">Mulai Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control input-sm setDate" data-date="{{data.date}}" name="hingga_tanggal" id="hingga_tanggal">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="hingga_tanggal">Jarak</label>
+                        <div class="form-group">
+                            <input type="number" class="form-control input-sm" name="distance" id="distance">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="mulai_tanggal">Pilih Fleet</label>
+                        <div class="form-group">
+                            <select class="form-control input-sm select2fleetByTipe" data-tipe="OB" name="fleet_id" id="fleet_id"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mulai_tanggal">Pilih Shift</label>
+                        <div class="form-group">
+                            <select class="form-control input-sm select2shift" name="shift_id" id="shift_id"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-left">
+                    <div class="checkbox">
+                        <input id="apply-filter" type="checkbox">
+                        <label for="apply-filter"> Apply Filter </label>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

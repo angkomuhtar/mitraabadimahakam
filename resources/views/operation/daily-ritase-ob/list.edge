@@ -1,21 +1,24 @@
-{{ script('ajax/index') }}
 <div class="row">
     <div class="col-md-12">
         <div class="white-box">
             <div class="" id="content-list">
                 <div class="row sales-report">
-                    <div class="col-md-9 col-sm-9 col-xs-12">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                            <i class="fa fa-plus m-r-5"></i> <span>New Daily-Ritase</span>
+                            <i class="fa fa-file-excel-o m-r-5"></i> <span>Upload Excel</span>
                         </button>
                     </div>
-                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                    <div class="col-md-2 col-sm-2 col-xs-12 text-right">
                         <div class="input-group">
                             <input id="limit" type="number" class="form-control text-right" name="limit" value="{{limit}}">
-                            <span class="input-group-btn">
-                                <button class="btn btn-info" type="button" id="bt-search-keyword">Limit Data</button> 
-                            </span>
+                            <span class="input-group-addon" id="bt-search-keyword">Limit</span>
                         </div>
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                        <button class="btn btn-info" type="button" id="open-filter" data-toggle="modal" data-target="#filtermodal">
+                            <i class="fa fa-filter"></i>
+                            Filter Data
+                        </button>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -63,7 +66,7 @@
                                         <strong>{{item.material_details.kode}}</strong> -
                                         <span>{{item.material_details.name}}</span>
                                     </td>
-                                    <td class="myDateFormat" data-date="{{item.created_at}}"></td>
+                                    <td class="myDateFormat" data-date="{{item.created_at}}">{{item.created_at}}</td>
                                     <td class="text-right">{{item.distance}} Meter</td>
                                     <td class="text-right">{{item.tot_ritase}} Ritase</td>
                                     <td class="text-center">
@@ -143,24 +146,24 @@
 </div>
 <script>
     $(function(){
-        $('body').on('click', 'a.btn-pagging', function(e){
-            e.preventDefault()
-            var page = $(this).data('page')
-            var limit = $('#limit').val()
-            console.log(window.location.pathname);
-            var url = window.location.pathname+'/list?page='+page+'&limit='+limit
-            $.ajax({
-                async: true,
-                url: url,
-                method: 'GET',
-                success: function(result){
-                    $('div#list-content').children().remove()
-                    $('div#list-content').html(result).show()
-                },
-                error: function(err){
-                    console.log(err);
-                }
-            })
-        })
+        // $('body').on('click', 'a.btn-pagging', function(e){
+        //     e.preventDefault()
+        //     var page = $(this).data('page')
+        //     var limit = $('#limit').val()
+        //     console.log(window.location.pathname);
+        //     var url = window.location.pathname+'/list?page='+page+'&limit='+limit
+        //     $.ajax({
+        //         async: true,
+        //         url: url,
+        //         method: 'GET',
+        //         success: function(result){
+        //             $('div#list-content').children().remove()
+        //             $('div#list-content').html(result).show()
+        //         },
+        //         error: function(err){
+        //             console.log(err);
+        //         }
+        //     })
+        // })
     })
 </script>
