@@ -209,9 +209,9 @@ $(function(){
         elm.children().remove()
         $.get('/ajax/shift?selected='+selected, function(data){
             if(data.length > 0){
-                var selectDefault = data.filter(item => item.selected)
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                 elm.html(list)
+                var selectDefault = data.filter(item => item.selected)
                 if(selectDefault.length === 0){
                     elm.prepend('<option value="" selected>Pilih</option>')
                 }
@@ -259,7 +259,10 @@ $(function(){
             if(data.length > 0){
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                 elm.html(list)
-                elm.prepend('<option value="">Pilih</option>')
+                var selectDefault = data.filter(item => item.selected)
+                if(selectDefault.length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }
             }else{
                 elm.prepend('<option value="">Belum ada data pilihan...</option>')
             }
@@ -273,9 +276,12 @@ $(function(){
         elm.children().remove()
         $.get('/ajax/fleet-by-tipe?selected='+selected+'&tipe='+tipe, function(data){
             if(data.length > 0){
-                elm.prepend('<option value="">Pilih</option>')
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
-                elm.append(list)
+                elm.html(list)
+                var selectDefault = data.filter(item => item.selected)
+                if(selectDefault.length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }
             }else{
                 elm.prepend('<option value="">Belum ada data pilihan...</option>')
             }
@@ -330,9 +336,12 @@ $(function(){
             method: 'GET',
             success: function(data){
                 if(data.length > 0){
-                    elm.prepend('<option value="">Pilih</option>')
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.kode+' --|-- '+nod.unit_model+'</option>')
-                    elm.append(list)
+                    elm.html(list)
+                    var selectDefault = data.filter(item => item.selected)
+                    if(selectDefault.length === 0){
+                        elm.prepend('<option value="" selected>Pilih</option>')
+                    }
                 }else{
                     elm.prepend('<option value="">Belum ada data pilihan...</option>')
                 }
