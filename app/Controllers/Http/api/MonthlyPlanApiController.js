@@ -74,7 +74,7 @@ class MonthlyPlanApiController {
       .where("month", SoM)
       .andWhere("tipe", "OB")
       .andWhere("pit_id", _pit_id)
-      .first();
+      .first()
 
     const MONTHLYPLANS_ID = monthlyPlans?.id;
 
@@ -178,7 +178,12 @@ class MonthlyPlanApiController {
           error: false,
         },
         pit_name: "GENERAL",
-        data: data,
+        data: {
+          monthlyPlans,
+          dailyPlans,
+          weeklyOB : WEEKLY_OB_ACTUAL,
+          sow : SoW
+        },
       });
     } catch (error) {
       console.log(error);
