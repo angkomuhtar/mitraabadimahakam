@@ -74,7 +74,7 @@ class MonthlyPlanApiController {
       .where("month", SoM)
       .andWhere("tipe", "OB")
       .andWhere("pit_id", _pit_id)
-      .first()
+      .first();
 
     const MONTHLYPLANS_ID = monthlyPlans?.id;
 
@@ -181,8 +181,11 @@ class MonthlyPlanApiController {
         data: {
           monthlyPlans,
           dailyPlans,
-          weeklyOB : WEEKLY_OB_ACTUAL,
-          sow : SoW
+          weeklyOB: WEEKLY_OB_ACTUAL,
+          sow: SoW,
+          data: data,
+          temp: temp,
+          r: r,
         },
       });
     } catch (error) {
@@ -735,7 +738,7 @@ class MonthlyPlanApiController {
     var t0 = performance.now();
 
     const _pit_id = pit_id ? pit_id : 1;
-    
+
     try {
       await auth.authenticator("jwt").getUser();
     } catch (error) {
@@ -1078,7 +1081,7 @@ class MonthlyPlanApiController {
           server_time: moment(date).format("YYYY-MM-DD"),
         },
         data: data,
-        pit_name: (monthlyPlansCoal.toJSON())?.pit?.name,
+        pit_name: monthlyPlansCoal.toJSON()?.pit?.name,
       });
     } catch (error) {
       console.log(error);
