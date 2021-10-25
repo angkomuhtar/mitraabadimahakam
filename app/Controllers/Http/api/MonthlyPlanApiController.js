@@ -178,15 +178,7 @@ class MonthlyPlanApiController {
           error: false,
         },
         pit_name: "GENERAL",
-        data: {
-          monthlyPlans,
-          dailyPlans,
-          weeklyOB: WEEKLY_OB_ACTUAL,
-          sow: SoW,
-          data: data,
-          temp: temp,
-          r: r,
-        },
+        data: data,
       });
     } catch (error) {
       console.log(error);
