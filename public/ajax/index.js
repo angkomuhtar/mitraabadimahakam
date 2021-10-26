@@ -187,6 +187,42 @@ $(function(){
         })
     })
 
+    $('body select.select2userChecker').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.get('/ajax/checker?selected='+selected, function(data){
+            if(data.length > 0){
+                const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.nm_lengkap+'</option>')
+                elm.html(list)
+                var selectDefault = data.filter(item => item.selected)
+                if(selectDefault.length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }
+            }else{
+                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
+        })
+    })
+
+    $('body select.select2userForeman').each(function(){
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.get('/ajax/spv?selected='+selected, function(data){
+            if(data.length > 0){
+                const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.nm_lengkap+'</option>')
+                elm.html(list)
+                var selectDefault = data.filter(item => item.selected)
+                if(selectDefault.length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }
+            }else{
+                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
+        })
+    })
+
     $('body select.select2dealer').each(function(){
         var selected = $(this).data('check')
         var elm = $(this)
@@ -256,6 +292,25 @@ $(function(){
         var elm = $(this)
         elm.children().remove()
         $.get('/ajax/fleet?selected='+selected, function(data){
+            if(data.length > 0){
+                const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
+                elm.html(list)
+                var selectDefault = data.filter(item => item.selected)
+                if(selectDefault.length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }
+            }else{
+                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
+        })
+    })
+
+    $('body select.select2fleetByPit').each(function(){
+        var pit_id = $('input#pit_id').val() || null
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.get('/ajax/fleet-by-pit?pit_id='+pit_id+'&selected='+selected, function(data){
             if(data.length > 0){
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                 elm.html(list)

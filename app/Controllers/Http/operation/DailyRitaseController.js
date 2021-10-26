@@ -1,10 +1,14 @@
 'use strict'
 
-const DailyRitaseHelpers = use("App/Controllers/Http/Helpers/DailyRitase")
-const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
-const TimeSheet = use("App/Models/DailyChecklist")
 const db = use('Database')
+const moment = use('moment')
+const Helpers = use('Helpers')
 const _ = require("underscore")
+const DailyRitase = use("App/Models/DailyRitase")
+const TimeSheet = use("App/Models/DailyChecklist")
+const excelToJson = require('convert-excel-to-json');
+const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
+const DailyRitaseHelpers = use("App/Controllers/Http/Helpers/DailyRitase")
 
 class DailyRitaseController {
     async index ({ view }) {
@@ -28,6 +32,105 @@ class DailyRitaseController {
                 message: error.message
             }
         }
+    }
+
+    async create ({ view, auth }) {
+        try {
+            await auth.getUser()
+            return view.render('operation.daily-ritase-ob.create')
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async store ({ request, auth }) {
+        const req = request.all()
+        try {
+            await auth.getUser()
+        } catch (error) {
+            console.log(error);
+        }
+
+        const validateFile = {
+            types: ['xls', 'xlsx'],
+            size: '2mb',
+            types: 'application'
+        }
+
+        const uploadData = request.file("detail-ritase-ob", validateFile)
+
+        let aliasName
+
+        if(uploadData){
+            aliasName = `detail-ritase-ob-${moment().format('DDMMYYHHmmss')}.${uploadData.extname}`
+
+            await uploadData.move(Helpers.publicPath(`/upload/`), {
+                name: aliasName,
+                overwrite: true,
+            })
+    
+            if (!uploadData.moved()) {
+                return uploadData.error()
+            }
+
+            var pathData = Helpers.publicPath(`/upload/`)
+
+            const convertJSON = excelToJson({
+                sourceFile: `${pathData}${aliasName}`,
+                header:{
+                    rows: 1
+                },
+                sheets: ['FORM']
+            });
+
+            const data = convertJSON.FORM.filter(cell => cell.A != '#N/A')
+            
+            console.log(data);
+
+            // const trx = await db.beginTransaction()
+
+            try {
+                const dailyRitase = new DailyRitase()
+                dailyRitase.fill({
+                    dailyfleet_id: req.dailyfleet_id,
+                    exca_id: req.exca_id,
+                    material: req.material,
+                    distance: req.distance,
+                    date: req.date
+                })
+
+                await dailyRitase.save()
+                
+                for (const item of data) {
+                    var date = moment(req.date).format('YYYY-MM-DD')
+                    // var clock = (item.E).replace('.', ':')
+                    var clock = moment(item.E).format('HH:mm')
+                    const ritaseDetail = new DailyRitaseDetail()
+                    ritaseDetail.fill({
+                        dailyritase_id: dailyRitase.id,
+                        checker_id: req.checker_id,
+                        spv_id: req.spv_id,
+                        hauler_id: item.A,
+                        opr_id: item.D,
+                        check_in: date + ' ' + clock
+                    })
+                    await ritaseDetail.save()
+                }
+                
+                return {
+                    success: true,
+                    message: 'data berhasil di upload...'
+                } 
+            } catch (error) {
+                console.log(error);
+                return {
+                    success: false,
+                    message: error.message
+                }
+            }
+
+        }
+
     }
 
     async listByPIT ({ params, request, view }) {
@@ -104,24 +207,18 @@ class DailyRitaseController {
 
     async listUnitByRitase ({ request, view }) {
         const req = request.all()
-        // const trx = await db.beginTransaction()
         const dailyRitase = await DailyRitaseHelpers.RITASE_BY_DAILY_ID(req)
         let data = dailyRitase.toJSON()
         const timeSheet = (await TimeSheet.query().with('operator_unit').fetch()).toJSON()
-        // const timeSheet = await TimeSheet.query().with('operator_unit').where('dailyfleet_id', item.daily_ritase.dailyfleet_id).andWhere('unit_id', item.hauler_id).first()
         
         for (let [i, item] of data.entries()) {
             const xx = _.find(timeSheet, x => x.dailyfleet_id === item.daily_ritase.dailyfleet_id && x.unit_id === item.hauler_id)
-            // console.log('i :::', i);
             if(xx){
                 data[i] = {...item, operator: xx.operator_unit.fullname}
-                // data.push({operator: xx.operator_unit.fullname})
             }else{
-                // console.log('timeSheet :::', 'unset');
                 data[i] = {...item, operator: 'not set'}
             }
         }
-        console.log('data :::', data);
         return view.render('operation.daily-ritase-ob.show-detais-ritase', {list: data})
     }
 

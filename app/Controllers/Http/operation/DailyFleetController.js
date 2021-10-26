@@ -59,8 +59,8 @@ class DailyFleetController {
     const datetime = request.only(['datetime'])
     const reqEquip = request.collect(['equip_id'])
 
-    // Check duplicate Fleet
-    const cekMaster = await DailyFleet.query().where(req).first()
+    /* Check duplicate Fleet */
+    const cekMaster = await DailyFleet.query().where({...req, date: moment(datetime).format('YYYY-MM-DD')}).first()
     if(cekMaster){
       return {
         success: false,
@@ -69,7 +69,7 @@ class DailyFleetController {
     }
 
 
-    // Check available Equipment Unit
+    /* Check available Equipment Unit */
     const filterDateStart = moment(datetime.datetime).format('YYYY-MM-DD 00:00')
     const filterDateEnd = moment(datetime.datetime).format('YYYY-MM-DD 23:59')
 

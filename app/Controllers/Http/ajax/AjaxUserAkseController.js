@@ -29,6 +29,24 @@ class AjaxUserAkseController {
         }
         return data
     }
+
+    async getOptionChecker ({ request }) {
+        const req = request.all()
+        let data = (await VUser.query().where({status: 'Y', user_tipe: 'checker'}).fetch()).toJSON()
+        if(req.selected){
+            data = data.map(item => item.id === parseInt(req.selected) ? {...item, selected: 'selected'} : {...item, selected: ''})
+        }
+        return data
+    }
+
+    async getOptionForeman ({ request }) {
+        const req = request.all()
+        let data = (await VUser.query().where({status: 'Y', user_tipe: 'spv'}).fetch()).toJSON()
+        if(req.selected){
+            data = data.map(item => item.id === parseInt(req.selected) ? {...item, selected: 'selected'} : {...item, selected: ''})
+        }
+        return data
+    }
 }
 
 module.exports = AjaxUserAkseController
