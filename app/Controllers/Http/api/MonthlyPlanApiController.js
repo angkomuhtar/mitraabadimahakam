@@ -730,7 +730,7 @@ class MonthlyPlanApiController {
     var t0 = performance.now();
 
     const _pit_id = pit_id ? pit_id : 1;
-    
+
     try {
       await auth.authenticator("jwt").getUser();
     } catch (error) {
@@ -1073,7 +1073,7 @@ class MonthlyPlanApiController {
           server_time: moment(date).format("YYYY-MM-DD"),
         },
         data: data,
-        pit_name: (monthlyPlansCoal.toJSON())?.pit?.name,
+        pit_name: monthlyPlansCoal.toJSON()?.pit?.name,
       });
     } catch (error) {
       console.log(error);
