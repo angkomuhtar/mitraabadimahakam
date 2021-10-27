@@ -36,9 +36,21 @@ $(function(){
         initDeafult(limit)
     })
 
-    // $('body').on('hidden.bs.modal', '#filtermodal', function (e) {
-    //     console.log('...');
-    // })
+    $('body').on('click', 'button#create-form', function (e) {
+        e.preventDefault()
+        $.ajax({
+            async: true,
+            url: '/operation/daily-ritase-ob/create',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#form-create').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
 
     $('body').on('click', 'button.btn-warning', function(e){
         e.preventDefault()
@@ -72,6 +84,53 @@ $(function(){
                 console.log(err);
             }
         })
+    })
+
+    $('body').on('click', '#bt-download', function(e){
+        e.preventDefault();
+        var host = document.location.host
+        window.location.href = 'http://' + host + '/template-xls/daily-ritase-details-template.xlsx';
+    })
+
+    $('body').on('submit', 'form#fm-upload-ritase-ob', function(e){
+        e.preventDefault()
+        var data = new FormData(this)
+        swal({
+            title: "Apakah anda yakin?",
+            text: "Pastikan format data excel anda sudah sesuai!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-warning",
+            confirmButtonText: "Okey!",
+            closeOnConfirm: false
+          },
+          function(){
+            $.ajax({
+                async: true,
+                headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                url: '/operation/daily-ritase-ob',
+                method: 'POST',
+                data: data,
+                dataType: 'json',
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                success: function(result){
+                    console.log(result)
+                    if(result.success){
+                        swal("Okey!", result.message, "success");
+                        window.location.reload()
+                    }else{
+                        alert(result.message)
+                    }
+                },
+                error: function(err){
+                    console.log(err)
+                    const { message } = err.responseJSON
+                    swal("Opps,,,!", message, "warning")
+                }
+            })
+        });
     })
 
     $('body').on('click', 'button.bt-delete-data', function(e){
@@ -196,7 +255,6 @@ $(function(){
         e.preventDefault()
         var page = $(this).data('page')
         var limit = $('#limit').val()
-        console.log(window.location.pathname);
         var jarak = $('input[name="distance"]').val() && '&distance=' + $('input[name="distance"]').val()
         var begin_date = $('input[name="mulai_tanggal"]').val() && '&begin_date=' + $('input[name="mulai_tanggal"]').val()
         var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
@@ -205,20 +263,7 @@ $(function(){
         var material = $('select[name="material"]').val()  && '&material=' + $('select[name="material"]').val()
         var exca_id = $('select[name="exca_id"]').val()  && '&exca_id=' + $('select[name="exca_id"]').val()
         var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}${material}${exca_id}`
-        // var url = window.location.pathname+'/list?page='+page+'&limit='+limit
         initDeafult(limit, url)
-        // $.ajax({
-        //     async: true,
-        //     url: url,
-        //     method: 'GET',
-        //     success: function(result){
-        //         $('div#list-content').children().remove()
-        //         $('div#list-content').html(result).show()
-        //     },
-        //     error: function(err){
-        //         console.log(err);
-        //     }
-        // })
     })
 
     /* show list ritase equipment details */

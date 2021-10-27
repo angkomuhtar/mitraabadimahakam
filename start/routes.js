@@ -467,6 +467,10 @@ Route.group(() => {
     Route.get('/usr', 'AjaxUserAkseController.getOptionUsers').as('set.sys-options.getOptionUsers')
 
     Route.get('/fuelman', 'AjaxUserAkseController.getOptionFuelman').as('set.sys-options.getOptionFuelman')
+
+    Route.get('/checker', 'AjaxUserAkseController.getOptionChecker').as('set.sys-options.getOptionChecker')
+
+    Route.get('/spv', 'AjaxUserAkseController.getOptionForeman').as('set.sys-options.getOptionForeman')
     
     Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
 
@@ -475,6 +479,10 @@ Route.group(() => {
     Route.get('/pit', 'AjaxPitController.getPits').as('pit.getPits')
 
     Route.get('/fleet', 'AjaxFleetController.getFleets').as('fleet.getFleets')
+
+    Route.get('/fleet/dailyfleet', 'AjaxFleetController.listDailyFleet').as('fleet.listDailyFleet')
+
+    Route.get('/fleet-by-pit', 'AjaxFleetController.getFleetsByPit').as('fleet.getFleetsByPit')
 
     Route.get('/fleet-by-tipe', 'AjaxFleetController.getFleetsByTipe').as('fleet.getFleetsByTipe')
 

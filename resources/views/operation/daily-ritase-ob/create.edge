@@ -2,23 +2,35 @@
 <div class="row">
     <div class="col-md-12">
         <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <button class="btn btn-outline btn-warning waves-effect waves-light btn-sm pull-right" id="bt-download"> <i class="fa fa-file-excel-o"></i> <span>Download Template</span></button>
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
                     <form action="" class="" id="fm-upload-ritase-ob">
                         <div class="panel panel-default">
-                            <!--<div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Time Sheet</div>-->
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
                                     <div class="row b-all p-t-20 m-b-20">
-                                        <div class="col-md-3">
-                                            <label for="tgl">TANGGAL</label>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Tanggal</label>
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                    <input type="date" class="form-control setDate" data-date="{{data.date}}" name="date" id="date">
+                                                    <input type="date" class="form-control input-sm initDate" data-date="{{data.date}}" name="date" id="date" required>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Nama Fleet</label>
+                                            <div class="form-group">
+                                                <select class="form-control input-sm select2dailyfleet" name="dailyfleet_id" id="dailyfleet_id" required></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Excavator</label>
+                                            <div class="form-group">
+                                                <select class="form-control inp-filter input-sm select2Excavator" name="exca_id" id="exca_id" required></select>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -26,44 +38,41 @@
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-truck"></i></div>
-                                                    <select class="form-control select2material" name="material" id="material" data-check="{{data.material}}"></select>
+                                                    <select class="form-control input-sm select2material" name="material" id="material" data-check="{{data.material}}" required></select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <label for="tgl">Distance</label>
                                             <div class="form-group">
                                                 <div class="input-group">
-                                                    <input type="number" class="form-control select2material text-right" name="distance" id="distance" value="{{data.distance}}"/>
+                                                    <input type="number" class="form-control input-sm select2material text-right" name="distance" id="distance" value="{{data.distance}}" required/>
                                                     <span class="input-group-addon">Meter</span>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row b-all m-b-20">
-                                        <div class="col-md-6 p-20">
-                                            <h5>{{data.daily_fleet.pit.name}}</h5>
-                                            <small>
-                                                {{data.daily_fleet.activities.kode}} - {{data.daily_fleet.activities.name}} <br>
-                                                <span class="maxText" data-max="200">{{data.daily_fleet.activities.keterangan}}</span>
-                                            </small>
+                                        <div class="col-md-2">
+                                            <label for="tgl">Checker</label>
+                                            <div class="form-group">
+                                                <select class="form-control input-sm select2userChecker" name="checker_id" id="checker_id" required></select>
+                                            </div>
                                         </div>
-                                        <div class="col-md-4 p-20 b-r b-l">
-                                            <h5>{{data.daily_fleet.fleet.name}}</h5>
-                                            <h1 class="m-b-0">{{data.daily_fleet.shift.name}}</h1>
-                                            <small>
-                                                <span class="myDateFormat" data-date="{{data.date}}"></span> 
-                                                ( {{data.daily_fleet.shift.start_shift}} - {{data.daily_fleet.shift.end_shift}} ) 
-                                            </small>
+                                        <div class="col-md-4">
+                                            <label for="tgl">SPV / Foreman</label>
+                                            <div class="form-group">
+                                                <select class="form-control input-sm select2userForeman" name="spv_id" id="spv_id" required></select>
+                                            </div>
                                         </div>
-                                        <div class="col-md-2 p-20 text-center">
-                                            <small>Total Ritase</small>
-                                            <strong>
-                                                <h1 class="text-muted" id="noberkas" data-berkas="{{data.id}}">{{data.ritase_details.length}} <span><small>RIT</small></span></h1>
-                                            </strong>
+                                        <div class="col-md-6">
+                                            <label for="tgl">Upload File</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="fa fa-file-excel-o"></i></span>
+                                                    <input type="file" class="form-control input-sm" name="detail-ritase-ob" id="detail-ritase-ob" required/>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="row b-all p-t-20" id="list-ritase-unit"></div>
                                 </div>
                                 <div class="panel-footer">
                                     <div class="row">
@@ -74,8 +83,8 @@
                                             <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
                                                 <i class="fa fa-close"></i> <span>Cancel</span>
                                             </button>
-                                            <button type="submit" class="btn btn-warning waves-effect waves-light" id="bt-update-data" data-id="{{data.id}}"> 
-                                                <i class="fa fa-save"></i> <span>Update</span>
+                                            <button type="submit" class="btn btn-success waves-effect waves-light"> 
+                                                <i class="fa fa-save"></i> <span>Save</span>
                                             </button>
                                         </div>
                                     </div>
@@ -88,3 +97,33 @@
         </div>
     </div>
 </div>
+<script>
+    $(function(){
+        selectDailyFleet (moment().format('YYYY-MM-DD'))
+
+        $('input[name="date"]').on('change', function(){
+            var date = $(this).val() || moment().format('YYYY-MM-DD')
+            selectDailyFleet (date)
+        })
+
+        function selectDailyFleet (date) {
+            $('body select.select2dailyfleet').each(function(){
+                var selected = $(this).data('check')
+                var elm = $(this)
+                elm.children().remove()
+                $.get('/ajax/fleet/dailyfleet?date='+date+'&selected='+selected, function(data){
+                    console.log(data);
+                    if(data.length > 0){
+                        elm.html(
+                            data.map(title => '<optgroup label="'+title.nm_pit+'">'+
+                                title.item.map(list => '<option value="'+list.id+'">'+list.nm_fleet+' || '+list.nm_shift+'</option>')
+                                +'</optgroup>')
+                        )
+                    }else{
+                        elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                    }
+                })
+            })
+        }
+    })
+</script>
