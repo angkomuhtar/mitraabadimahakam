@@ -104,32 +104,37 @@ $(function(){
             confirmButtonText: "Okey!",
             closeOnConfirm: false
           },
-          function(){
-            $.ajax({
-                async: true,
-                headers: {'x-csrf-token': $('[name=_csrf]').val()},
-                url: '/operation/daily-ritase-ob',
-                method: 'POST',
-                data: data,
-                dataType: 'json',
-                processData: false,
-                mimeType: "multipart/form-data",
-                contentType: false,
-                success: function(result){
-                    console.log(result)
-                    if(result.success){
-                        swal("Okey!", result.message, "success");
-                        window.location.reload()
-                    }else{
-                        alert(result.message)
-                    }
-                },
-                error: function(err){
-                    console.log(err)
-                    const { message } = err.responseJSON
-                    swal("Opps,,,!", message, "warning")
-                }
-            })
+          function(isConfirm){
+            swal("Please wait.....")
+              if(isConfirm){
+                  $.ajax({
+                      async: true,
+                      headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                      url: '/operation/daily-ritase-ob',
+                      method: 'POST',
+                      data: data,
+                      dataType: 'json',
+                      processData: false,
+                      mimeType: "multipart/form-data",
+                      contentType: false,
+                      success: function(result){
+                          console.log(result)
+                          if(result.success){
+                              swal("Okey!", result.message, "success");
+                            //   window.location.reload()
+                          }else{
+                              alert(result.message)
+                          }
+                      },
+                      error: function(err){
+                          console.log(err)
+                          const { message } = err.responseJSON
+                          swal("Opps,,,!", message, "warning")
+                      }
+                  })
+              }else{
+                swal("Okey!", 'you cancel upload data...', "success");
+              }
         });
     })
 
