@@ -103,7 +103,6 @@ class DailyRitaseController {
                 
                 for (const item of data) {
                     var date = moment(req.date).format('YYYY-MM-DD')
-                    // var clock = (item.E).replace('.', ':')
                     var clock = moment(item.E).format('HH:mm')
                     const ritaseDetail = new DailyRitaseDetail()
                     ritaseDetail.fill({

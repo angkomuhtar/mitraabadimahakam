@@ -71,7 +71,7 @@ class Ritase {
                         whe.where("status", "Y")
                     }
                 })
-                .orderBy('created_at', 'desc')
+                .orderBy('date', 'desc')
                 .paginate(halaman, limit)
         }else{
             dailyRitase = await DailyRitase
@@ -91,7 +91,7 @@ class Ritase {
                     details.with('pit')
                 })
                 .where("status", "Y")
-                .orderBy('created_at', 'desc')
+                .orderBy('date', 'desc')
                 .paginate(halaman, limit)
         }
         return dailyRitase
