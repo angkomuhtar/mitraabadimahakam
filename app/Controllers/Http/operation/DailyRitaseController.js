@@ -111,7 +111,7 @@ class DailyRitaseController {
                         checker_id: req.checker_id,
                         spv_id: req.spv_id,
                         hauler_id: item.A,
-                        opr_id: item.D,
+                        opr_id: item.D != '#N/A' ? item.D : null,
                         check_in: date + ' ' + clock
                     })
                     await ritaseDetail.save()
