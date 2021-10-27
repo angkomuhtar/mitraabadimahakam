@@ -547,20 +547,20 @@ class TimeSheetApiController {
         .orderBy("id", "desc")
         .first();
       // console.log(last_smu);
-      if (last_smu) {
-        if (last_smu?.end_smu != req.begin_smu) {
-          durasi = await diagnoticTime.durasi(t0);
-          return response.status(403).json({
-            diagnostic: {
-              times: durasi,
-              error: true,
-              message:
-                "Data SMU Equipment Unit tidak sesuai dengan data terakhir",
-            },
-            data: last_smu,
-          });
-        }
-      }
+      // if (last_smu) {
+      //   if (last_smu?.end_smu != req.begin_smu) {
+      //     durasi = await diagnoticTime.durasi(t0);
+      //     return response.status(403).json({
+      //       diagnostic: {
+      //         times: durasi,
+      //         error: true,
+      //         message:
+      //           "Data SMU Equipment Unit tidak sesuai dengan data terakhir",
+      //       },
+      //       data: last_smu,
+      //     });
+      //   }
+      // }
 
       const trx = await db.beginTransaction();
       const {
