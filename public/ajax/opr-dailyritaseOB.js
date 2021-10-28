@@ -92,6 +92,14 @@ $(function(){
         window.location.href = 'http://' + host + '/template-xls/daily-ritase-details-template.xlsx';
     })
 
+    $('body').on('click', 'button#bt-cancel-create', function(){
+        $("body form#fm-upload-ritase-ob").trigger("reset");
+        $('input[type="date"].initDate').each(function(){
+            $(this).val(moment().format('YYYY-MM-DD'))
+        })
+    })
+
+
     $('body').on('submit', 'form#fm-upload-ritase-ob', function(e){
         e.preventDefault()
         var data = new FormData(this)
@@ -121,6 +129,7 @@ $(function(){
                           console.log(result)
                           if(result.success){
                               swal("Okey!", result.message, "success");
+                              $("body form#fm-upload-ritase-ob").trigger("reset");
                               window.location.reload()
                           }else{
                               alert(result.message)

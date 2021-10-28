@@ -68,18 +68,22 @@ class DailyFleetController {
       }
     }
 
+    /* Get Time Shift */
+    const dataShift = await Shift.query().where('id', req.shift_id).last()
+
 
     /* Check available Equipment Unit */
-    const filterDateStart = moment(datetime.datetime).format('YYYY-MM-DD 00:00')
-    const filterDateEnd = moment(datetime.datetime).format('YYYY-MM-DD 23:59')
+    const filterDateStart = moment(datetime.datetime).format('YYYY-MM-DD') + ' ' + dataShift.start_shift
+    const filterDateEnd = moment(datetime.datetime).format('YYYY-MM-DD') + ' ' + dataShift.end_shift
 
+    
     for (const itemUnit of reqEquip) {
       const checkEquipment = 
-        await DailyFleetEquip
-          .query()
-          .whereBetween('datetime', [filterDateStart, filterDateEnd])
-          .andWhere({equip_id: itemUnit.equip_id})
-          .first()
+      await DailyFleetEquip
+      .query()
+      .whereBetween('datetime', [filterDateStart, filterDateEnd])
+      .andWhere({equip_id: itemUnit.equip_id})
+      .last()
       if (checkEquipment) {
         const unit = await Equipment.findOrFail(checkEquipment.equip_id)
         return {
