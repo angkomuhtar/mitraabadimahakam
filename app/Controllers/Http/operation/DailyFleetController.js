@@ -90,7 +90,7 @@ class DailyFleetController {
     }
 
     const dailyFleet = new DailyFleet()
-    dailyFleet.fill({...req, date: moment().format('YYYY-MM-DD'), user_id: usr.id})
+    dailyFleet.fill({...req, date: moment(datetime.datetime).format('YYYY-MM-DD'), user_id: usr.id})
 
     const trx = await Database.beginTransaction()
     try {
