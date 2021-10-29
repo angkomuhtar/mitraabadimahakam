@@ -51,6 +51,9 @@ $(function(){
             processData: false,
             mimeType: "multipart/form-data",
             contentType: false,
+            beforeSend: function(){
+                swal("Please wait!", "Data sedang di proses...")
+            },
             success: function(result){
                 console.log(result)
                 const { message } = result
