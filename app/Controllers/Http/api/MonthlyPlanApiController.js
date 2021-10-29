@@ -179,6 +179,8 @@ class MonthlyPlanApiController {
         },
         pit_name: "GENERAL",
         data: data,
+        
+        pit_name: monthlyPlans.toJSON()?.pit?.name,
       });
     } catch (error) {
       console.log(error);
@@ -917,7 +919,7 @@ class MonthlyPlanApiController {
 
         const obj_1 = {
           name: v.kode.toUpperCase(),
-          actual: coalActual / 1000,
+          actual: coalActual / 1000
         };
         RIT_COAL_ARR.push(obj_1);
 
