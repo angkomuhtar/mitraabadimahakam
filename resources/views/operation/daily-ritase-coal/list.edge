@@ -6,14 +6,19 @@
                 <div class="row sales-report">
                     <div class="col-md-9 col-sm-9 col-xs-12">
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                            <i class="fa fa-plus m-r-5"></i> <span>New Daily Coal Production</span>
+                            <i class="fa fa-plus m-r-5"></i> <span>Upload Coal Production</span>
                         </button>
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
                         <div class="input-group">
-                            <input id="keywordCoalRitase" class="form-control" placeholder="Search for ticket or coupon..." value="{{keyword}}">
                             <span class="input-group-btn"> 
-                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" class="form-control" value="{{limit}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
                             </span>
                         </div>
                     </div>
@@ -49,7 +54,7 @@
                                         <strong class="text-warning">{{item.ritase_coal.daily_fleet.pit.name}} </strong> <br>
                                         <span class="text-red">BLOCK {{item.ritase_coal.block}} </span> <br>
                                         <small class="text-info">{{item.ritase_coal.shift.name}} </small> <br>
-                                        <small class="text-white myDateFormat" data-date="{{item.ritase_coal.date}}"></small>
+                                        <small class="text-white myDateFormat" data-date="{{item.checkout_pit}}"></small>
                                     </td>
                                     <td>
                                         <i class="ti-user"></i> <span>PIT CHECKER</span> 
@@ -66,6 +71,10 @@
                                             <i class="ti-share"></i><small> CHECK OUT PIT </small>
                                             <i class="ti-timer"></i> 
                                             <span></span>
+                                        </span>
+                                        <br>
+                                        <span class="text-white" style="font-size:10px">
+                                            {{item.keterangan ? item.keterangan : ''}}
                                         </span>
                                     </td>
                                     <td class="single-line">
@@ -124,24 +133,24 @@
 </div>
 <script>
     $(function(){
-        $('body').on('click', 'a.btn-pagging', function(e){
-            e.preventDefault()
-            var page = $(this).data('page')
-            // var keyword = $('#keywordTimeSheet').val()
-            console.log(window.location.pathname);
-            var url = window.location.pathname+'/list?page='+page
-            $.ajax({
-                async: true,
-                url: url,
-                method: 'GET',
-                success: function(result){
-                    $('div#list-content').children().remove()
-                    $('div#list-content').html(result).show()
-                },
-                error: function(err){
-                    console.log(err);
-                }
-            })
-        })
+        // $('body').on('click', 'a.btn-pagging', function(e){
+        //     e.preventDefault()
+        //     var page = $(this).data('page')
+        //     // var keyword = $('#keywordTimeSheet').val()
+        //     console.log(window.location.pathname);
+        //     var url = window.location.pathname+'/list?page='+page
+        //     $.ajax({
+        //         async: true,
+        //         url: url,
+        //         method: 'GET',
+        //         success: function(result){
+        //             $('div#list-content').children().remove()
+        //             $('div#list-content').html(result).show()
+        //         },
+        //         error: function(err){
+        //             console.log(err);
+        //         }
+        //     })
+        // })
     })
 </script>

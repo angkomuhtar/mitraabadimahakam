@@ -64,7 +64,7 @@ class DailyRefuelEquipmentController {
 
             const filterData = convertJSON.FORM.filter(cell => cell.B != '#N/A')
 
-            console.log(convertJSON);
+            // console.log(convertJSON);
 
             const result = filterData.map(cell => {
                 var date = new Date(req.tgl+' '+moment(cell.F).format('HH:mm'))
@@ -74,7 +74,7 @@ class DailyRefuelEquipmentController {
                     shift_id: req.shift_id,
                     fuel_truck: req.fuel_truck,
                     operator: cell.I != '#N/A' ? cell.I : null,
-                    smu: cell.G != '#N/A' ? parseFloat(cell.G) : 0,
+                    smu: cell.G ? parseFloat(cell.G) : 0,
                     topup: cell.H ? parseFloat(cell.H) : 0,
                     description: cell.K ? cell.K : null,
                     fm_awal: parseFloat(req.fm_awal),
@@ -82,7 +82,7 @@ class DailyRefuelEquipmentController {
                     fueling_at: moment(date).format('YYYY-MM-DD HH:mm')
                 }
             })
-            // console.log('DATA EXCEL ::::', result);
+            console.log('DATA EXCEL ::::', result);
 
             let resp = {
                 success: false,
