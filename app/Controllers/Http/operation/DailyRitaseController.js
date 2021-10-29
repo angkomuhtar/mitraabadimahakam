@@ -84,10 +84,6 @@ class DailyRitaseController {
             });
 
             const data = convertJSON.FORM.filter(cell => cell.A != '#N/A')
-            
-            console.log(data);
-
-            // const trx = await db.beginTransaction()
 
             try {
                 const dailyRitase = new DailyRitase()
@@ -103,7 +99,6 @@ class DailyRitaseController {
                 
                 for (const item of data) {
                     var date = moment(req.date).format('YYYY-MM-DD')
-                    // var clock = (item.E).replace('.', ':')
                     var clock = moment(item.E).format('HH:mm')
                     const ritaseDetail = new DailyRitaseDetail()
                     ritaseDetail.fill({
@@ -111,21 +106,24 @@ class DailyRitaseController {
                         checker_id: req.checker_id,
                         spv_id: req.spv_id,
                         hauler_id: item.A,
-                        opr_id: item.D,
+                        opr_id: item.D != '#N/A' ? item.D : null,
                         check_in: date + ' ' + clock
                     })
                     await ritaseDetail.save()
                 }
+
+                let result = (await DailyRitaseDetail.query().where('dailyritase_id', dailyRitase.id).fetch()).toJSON()
                 
                 return {
                     success: true,
-                    message: 'data berhasil di upload...'
+                    data: result,
+                    message: 'data berhasil di upload '+ result.length +' items...'
                 } 
             } catch (error) {
                 console.log(error);
                 return {
                     success: false,
-                    message: error.message
+                    message: error
                 }
             }
 

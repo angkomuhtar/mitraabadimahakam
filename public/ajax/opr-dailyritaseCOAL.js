@@ -62,12 +62,12 @@ $(function(){
         $('input[name="w_netto"]').val(parseFloat(gross) - parseFloat(tare))
     })
 
-    $('body').on('keyup', 'input#keywordCoalRitase', function(e){
+    $('body').on('keyup', 'input#limit-data', function(e){
         var values = $(this).val()
         if(e.keyCode === 13){
             $.ajax({
                 async: true,
-                url: '/operation/daily-ritase-coal/list?keyword='+values,
+                url: '/operation/daily-ritase-coal/list?limit='+values,
                 method: 'GET',
                 success: function(result){
                     $('div#list-content').children().remove()
@@ -78,6 +78,50 @@ $(function(){
                 }
             })
         }
+    })
+
+    $('body').on('click', '#bt-limit', function(){
+        var values = $('input#limit-data').val()
+        $.ajax({
+            async: true,
+            url: '/operation/daily-ritase-coal/list?limit='+values,
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    $('body div#openFilter').on('hidden.bs.modal', function (e) {
+        $.ajax({
+            async: true,
+            url: '/operation/daily-ritase-coal/list',
+            data: {
+                isFilter: true,
+                limit: $('input#limit-data').val(),
+                start_checkout_pit: $('input[name="start_checkout_pit"]').val() || null,
+                end_checkout_pit: $('input[name="end_checkout_pit"]').val() || null,
+                subkon_id: $('select[name="subkon_id"]').val() || null,
+                start_tiket: $('input[name="start_tiket"]').val() || null,
+                end_tiket: $('input[name="end_tiket"]').val() || null,
+                start_kupon: $('input[name="start_kupon"]').val() || null,
+                end_kupon: $('input[name="end_kupon"]').val() || null,
+                shift_id: $('select[name="shift_id"]').val() || null,
+                keyword: $('input[name="inp_keyword"]').val() || null
+            },
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
     })
 
     $('body').on('submit', 'form#fm-ritase-coal-upd', function(e){
@@ -114,8 +158,9 @@ $(function(){
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        var keyword = $('#keywordCoalRitase').val()
-        var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword
+        var limit = $('input#limit-data').val()
+        var keyword = $('#inp_keyword').val()
+        var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword+'&limit='+limit
         $.ajax({
             async: true,
             url: url,

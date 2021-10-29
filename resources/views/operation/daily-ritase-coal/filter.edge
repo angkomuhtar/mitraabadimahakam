@@ -1,0 +1,143 @@
+<div class="modal fade" id="openFilter" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="mulai_tanggal">Select Method Data Filter</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter input-sm" name="opt-filter" id="opt-filter">
+                                <option value="keyword">By Keyword</option>
+                                <option value="shift">By Shift</option>
+                                <option value="subcont">By SubContractor</option>
+                                <option value="range-date">By Range Date Out PIT</option>
+                                <option value="range-tiket">By Nomor Tiket</option>
+                                <option value="range-kupon">By Nomor Kupon</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row box-filter keyword" style="display:none;">
+                    <div class="col-md-12">
+                        <label for="mulai_tanggal">Keyword</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control inp-filter" name="inp_keyword" id="inp_keyword">
+                        </div>
+                    </div>
+                </div>
+                <div class="row box-filter shift" style="display:none;">
+                    <div class="col-md-12">
+                        <label for="mulai_tanggal">Select PIT</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter input-sm select2shift" data-check="" name="shift_id" id="shift_id"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row box-filter subcont" style="display:none;">
+                    <div class="col-md-12">
+                        <label for="mulai_tanggal">Sub Kontraktor</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter input-sm select2subcon" data-check="" name="subkon_id" id="subkon_id"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row box-filter date" style="display:none;">
+                    <div class="col-md-6">
+                        <label for="mulai_tanggal">Mulai Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control inp-filter input-sm setDate" data-date="{{data.date}}" name="start_checkout_pit" id="start_checkout_pit">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="hingga_tanggal">Mulai Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control inp-filter input-sm setDate" data-date="{{data.date}}" name="end_checkout_pit" id="end_checkout_pit">
+                        </div>
+                    </div>
+                </div>
+                <div class="row box-filter tiket" style="display:none;">
+                    <div class="col-xs-5">
+                        <label for="no_tiket">No. Tiket</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control inp-filter input-sm" name="start_tiket" id="start_tiket">
+                        </div>
+                    </div>
+                    <div class="col-xs-2 m-t-30">
+                        <label class="text-warning">Hingga</label>
+                    </div>
+                    <div class="col-xs-5">
+                        <label for="no_kupon">No. Tiket</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control inp-filter input-sm" name="end_tiket" id="end_tiket">
+                        </div>
+                    </div>
+                </div>
+                <div class="row box-filter kupon" style="display:none;">
+                    <div class="col-xs-5">
+                        <label for="no_tiket">No. Kupon</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control inp-filter input-sm" name="start_kupon" id="start_kupon">
+                        </div>
+                    </div>
+                    <div class="col-xs-2 m-t-30">
+                        <label class="text-warning">Hingga</label>
+                    </div>
+                    <div class="col-xs-5">
+                        <label for="no_kupon">No. Kupon</label>
+                        <div class="form-group">
+                            <input type="text" class="form-control inp-filter input-sm" name="end_kupon" id="end_kupon">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        initFilter()
+
+        $('select[name="opt-filter"]').on('change', function(){
+            initFilter()
+        })
+
+        function initFilter(){
+            var isFilter = $('select[name="opt-filter"]').val()
+            switch (isFilter) {
+                case "shift":
+                    setVisibleInput('shift')
+                    break;
+                case "subcont":
+                    setVisibleInput('subcont')
+                    break;
+                case "range-date":
+                    setVisibleInput('date')
+                    break;
+                case "range-tiket":
+                    setVisibleInput('tiket')
+                    break;
+                case "range-kupon":
+                    setVisibleInput('kupon')
+                    break;
+                default:
+                    setVisibleInput('keyword')
+                    break;
+            }
+        }
+
+        function setVisibleInput(teks){
+            $('div.box-filter').each(function(){
+                $(this).css('display', 'none')
+                $(this).find('input, select').val("")
+            })
+            $('div.'+teks).show()
+        }
+    })
+</script>

@@ -11,13 +11,17 @@ class DailyRitaseCoalController {
 
     async list ({ request, view }) {
         const req = request.all()
+        
         let data = []
         try {
             data = await DailyRitaseCoalDeatilHelpers.ALL(req)
         } catch (error) {
             console.log(error)
         }
-        return view.render('operation.daily-ritase-coal.list', {list: data.toJSON()})
+        return view.render('operation.daily-ritase-coal.list', {
+            limit: req.limit || 100,
+            list: data.toJSON()
+        })
     }
 
     async create ({ view }) {

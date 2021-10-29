@@ -66,7 +66,7 @@
                                         <strong>{{item.material_details.kode}}</strong> -
                                         <span>{{item.material_details.name}}</span>
                                     </td>
-                                    <td class="myDateFormat" data-date="{{item.created_at}}">{{item.created_at}}</td>
+                                    <td class="myDateFormat" data-date="{{item.date}}">{{item.date}}</td>
                                     <td class="text-right">{{item.distance}} Meter</td>
                                     <td class="text-right">{{item.tot_ritase}} Ritase</td>
                                     <td class="text-center">
@@ -146,24 +146,16 @@
 </div>
 <script>
     $(function(){
-        // $('body').on('click', 'a.btn-pagging', function(e){
-        //     e.preventDefault()
-        //     var page = $(this).data('page')
-        //     var limit = $('#limit').val()
-        //     console.log(window.location.pathname);
-        //     var url = window.location.pathname+'/list?page='+page+'&limit='+limit
-        //     $.ajax({
-        //         async: true,
-        //         url: url,
-        //         method: 'GET',
-        //         success: function(result){
-        //             $('div#list-content').children().remove()
-        //             $('div#list-content').html(result).show()
-        //         },
-        //         error: function(err){
-        //             console.log(err);
-        //         }
-        //     })
-        // })
+        $('.myDateFormat').each(function(){
+            var date = $(this).data(date)
+            var elm = $(this).data('elm')
+            var dateString = moment(date.date).format('DD-MM-YYYY')
+            // console.log(date.date);
+            if(elm != undefined){
+                $(this).find(elm).html(dateString)
+            }else{
+                $(this).html(dateString)
+            }
+        })
     })
 </script>

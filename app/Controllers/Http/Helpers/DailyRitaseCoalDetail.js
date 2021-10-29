@@ -1,12 +1,14 @@
 'use strict'
 
 const DailyRitaseCoal = use("App/Models/DailyRitaseCoal")
+const MasEquipmentSubcont = use("App/Models/MasEquipmentSubcont")
 const DailyRitaseCoalDetail = use("App/Models/DailyRitaseCoalDetail")
 
 class RitaseCoalDetail {
     async ALL (req) { 
-        const limit = 100
+        const limit = req.limit || 100
         const halaman = req.page === undefined ? 1:parseInt(req.page)
+        
         let dailyRitaseCoalDetail
         if(req.keyword){
             dailyRitaseCoalDetail = await DailyRitaseCoalDetail
@@ -22,9 +24,119 @@ class RitaseCoalDetail {
                 .with('opr')
                 .with('opr_subcon')
                 .with('checkerJT')
-                .where(w => w.where('kupon', 'like', `%${req.keyword}%`).orWhere('ticket', 'like', `%${req.keyword}%`))
+                .where(w => {
+                    w.where('kupon', 'like', `%${req.keyword}%`)
+                    w.orWhere('ticket', 'like', `%${req.keyword}%`)
+                    w.orWhere('coal_tipe', 'like', `%${req.keyword}%`)
+                    w.orWhere('stockpile', 'like', `%${req.keyword}%`)
+                    w.orWhere('keterangan', 'like', `%${req.keyword}%`)
+                })
                 .orderBy('created_at', 'desc')
                 .paginate(halaman, limit)
+        }else if(req.isFilter){
+            if(req.shift_id){
+                const arr = (await DailyRitaseCoal.query().where('shift_id', req.shift_id).fetch()).toJSON()
+                dailyRitaseCoalDetail = await DailyRitaseCoalDetail
+                    .query()
+                    .with('ritase_coal', a => {
+                        a.with('daily_fleet', aa => aa.with('pit'))
+                        a.with('shift')
+                        a.with('checker')
+                    })
+                    .with('seam')
+                    .with('transporter')
+                    .with('transporter_subcon')
+                    .with('opr')
+                    .with('opr_subcon')
+                    .with('checkerJT')
+                    .where(w => w.whereIn('ritasecoal_id', arr.map(x => x.id)))
+                    .orderBy('created_at', 'desc')
+                    .paginate(halaman, limit)
+            }else if(req.subkon_id){
+                try {
+                    const arr = (await MasEquipmentSubcont.query().where('subcont_id', req.subkon_id).fetch()).toJSON()
+                    dailyRitaseCoalDetail = await DailyRitaseCoalDetail
+                        .query()
+                        .with('ritase_coal', a => {
+                            a.with('daily_fleet', aa => aa.with('pit'))
+                            a.with('shift')
+                            a.with('checker')
+                        })
+                        .with('seam')
+                        .with('transporter')
+                        .with('transporter_subcon')
+                        .with('opr')
+                        .with('opr_subcon')
+                        .with('checkerJT')
+                        .where( w => {
+                            w.whereIn('subcondt_id', arr.map(x => x.id))
+                        })
+                        .orderBy('created_at', 'desc')
+                        .paginate(halaman, limit)
+                } catch (error) {
+                    return
+                }
+            }else if(req.start_checkout_pit){
+                dailyRitaseCoalDetail = await DailyRitaseCoalDetail
+                .query()
+                .with('ritase_coal', a => {
+                    a.with('daily_fleet', aa => aa.with('pit'))
+                    a.with('shift')
+                    a.with('checker')
+                })
+                .with('seam')
+                .with('transporter')
+                .with('transporter_subcon')
+                .with('opr')
+                .with('opr_subcon')
+                .with('checkerJT')
+                .where( w => {
+                    w.where('checkout_pit', '>=', req.start_checkout_pit + ' ' + '00:00:01')
+                    w.where('checkout_pit', '<=', req.end_checkout_pit + ' ' + '23:59:59')
+                })
+                .orderBy('created_at', 'desc')
+                .paginate(halaman, limit)
+            }else if(req.start_tiket && req.end_tiket){
+                dailyRitaseCoalDetail = await DailyRitaseCoalDetail
+                .query()
+                .with('ritase_coal', a => {
+                    a.with('daily_fleet', aa => aa.with('pit'))
+                    a.with('shift')
+                    a.with('checker')
+                })
+                .with('seam')
+                .with('transporter')
+                .with('transporter_subcon')
+                .with('opr')
+                .with('opr_subcon')
+                .with('checkerJT')
+                .where( w => {
+                    w.where('ticket', '>=', parseInt(req.start_tiket))
+                    w.where('ticket', '<=', parseInt(req.end_tiket))
+                })
+                .orderBy('created_at', 'desc')
+                .paginate(halaman, limit)
+            }else if(req.start_kupon && req.end_kupon){
+                dailyRitaseCoalDetail = await DailyRitaseCoalDetail
+                .query()
+                .with('ritase_coal', a => {
+                    a.with('daily_fleet', aa => aa.with('pit'))
+                    a.with('shift')
+                    a.with('checker')
+                })
+                .with('seam')
+                .with('transporter')
+                .with('transporter_subcon')
+                .with('opr')
+                .with('opr_subcon')
+                .with('checkerJT')
+                .where( w => {
+                    w.where('kupon', '>=', parseInt(req.start_kupon))
+                    w.where('kupon', '<=', parseInt(req.end_kupon))
+                })
+                .orderBy('created_at', 'desc')
+                .paginate(halaman, limit)
+            }
         }else{
             dailyRitaseCoalDetail = await DailyRitaseCoalDetail
                 .query()

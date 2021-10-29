@@ -587,7 +587,10 @@ $(function(){
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                     elm.html(list)
-                    // elm.append('<option value="" selected>Pilih</option>')
+                    var selectDefault = data.filter(item => item.selected)
+                    if(selectDefault.length === 0){
+                        elm.prepend('<option value="" selected>Pilih</option>')
+                    }
                 }else{
                     elm.prepend('<option value="">Belum ada data pilihan...</option>')
                 }
