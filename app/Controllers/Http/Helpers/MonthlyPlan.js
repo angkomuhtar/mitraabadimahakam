@@ -13,8 +13,29 @@ class MonthlyPlan {
         const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
 
-        const data = await MonthlyPlans.query().with('pit').orderBy('created_at', 'desc').paginate(halaman, limit)
-        return data
+        const data = (
+            await MonthlyPlans
+            .query()
+            .with('pit')
+            .orderBy('created_at', 'desc')
+            .paginate(halaman, limit)
+        ).toJSON()
+
+        let result = []
+
+        for (const item of data.data) {
+            result.push({
+                ...item,
+                actual: item.tipe === 'BB' ? 
+                (
+                    item.actual != 0 ? parseFloat(item.actual) / 1000 : 0
+                ) 
+                : 
+                item.actual
+            })
+        }
+
+        return {...data, data: result}
     }
 
     async CHARTIST_MONTHLY_OB (req) {
@@ -158,9 +179,16 @@ class MonthlyPlan {
     async ALL_DAILY (req) {
         const limit = 31
         const halaman = req.page === undefined ? 1:parseInt(req.page)
-        const data = await DailyPlans.query().with('monthly_plan').where('monthlyplans_id', req.monthlyplans_id).paginate(halaman, limit)
-
-        return data
+        // const data = await DailyPlans.query().with('monthly_plan').where('monthlyplans_id', req.monthlyplans_id).paginate(halaman, limit)
+        let data = (await DailyPlans.query().with('monthly_plan').where('monthlyplans_id', req.monthlyplans_id).paginate(halaman, limit)).toJSON()
+        let result = []
+        for (const item of data.data) {
+            result.push({
+                ...item,
+                actual: item.actual != 0 ? parseFloat(item.actual) / 1000 : 0
+            })
+        }
+        return {...data, data: result}
     }
 
     async GET_ID (params) {

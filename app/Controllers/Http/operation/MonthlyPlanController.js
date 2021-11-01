@@ -13,18 +13,18 @@ class MonthlyPlanController {
 
     try {
       const data = await MonthlyPlanHelpers.ALL_MONTHLY(req)
-      return view.render('operation.monthly-plan.list', {list: data.toJSON()})
+      return view.render('operation.monthly-plan.list', {list: data})
     } catch (error) {
       console.log(error);
     }
   }
-
+  
   async listHarian ({ request, response, view }) {
     const req = request.all()
-
+    
     try {
       const data = await MonthlyPlanHelpers.ALL_DAILY(req)
-      return view.render('operation.monthly-plan.list-details', {list: data.toJSON()})
+      return view.render('operation.monthly-plan.list-details', {list: data})
     } catch (error) {
       console.log(error);
     }

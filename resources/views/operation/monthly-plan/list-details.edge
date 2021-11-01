@@ -21,7 +21,7 @@
                                 <th class="sl text-right" width="250">Actual Daily</th>
                                 <th class="sl text-center" width="50">Satuan</th>
                                 <th class="sl text-center" width="*">Persentase</th>
-                                <th class="sl text-center" width="50">Status</th>
+                                <!--<th class="sl text-center" width="50">Status</th>-->
                             </tr>
                         </thead>
                         <tbody>
@@ -31,7 +31,7 @@
                                 @each(item in list.data)
                                     <tr class="persentase" data-actual="{{item.actual}}" data-estimate="{{item.estimate}}">
                                         <td><h5>{{$loop.index + 1}}</h5></td>
-                                        <td class="single-line myDateTimeFormatLong" data-date="{{item.current_date}}" data-elm="strong">
+                                        <td class="single-line myDateFormat" data-date="{{item.current_date}}" data-elm="strong">
                                             <h5>
                                                 <strong class="text-mute"></strong>
                                             </h5>
@@ -52,9 +52,10 @@
                                                 </div>
                                             </h5>
                                         </td>
+                                        <!--
                                         <td class="single-line text-center">
                                             <h5>{{item.status}}</h5>
-                                        </td>
+                                        </td>-->
                                     </tr>
                                 @endeach
                             @endif
