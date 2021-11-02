@@ -180,9 +180,9 @@ class RitaseCoalDetail {
 
     async POST (req) {
         const validTiket = await DailyRitaseCoalDetail.query().where({kupon: req.kupon}).first()
-        if(validTiket){
-            throw new Error('Duplicate kupon number...')
-        }
+        // if(validTiket){
+        //     throw new Error('Duplicate kupon number...')
+        // }
 
         const validID = await DailyRitaseCoal.query().where({id: req.ritasecoal_id}).first()
         if(!validID){

@@ -808,11 +808,11 @@ class MonthlyPlanApiController {
       let RIT_COAL_ARR = [];
       let EVENTS = [];
       let SHIFTS = [];
-      let CHECKER = {};
-      let DAILY_OB_RITASE_SPECIFIC_CHECKER;
-      let DAILY_FLEET_SPECIFIC_CHECKER;
-      let DAILY_FLEET_EQUIPMENTS_SPECIFIC_FLEET;
-      let DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER;
+      // let CHECKER = {};
+      // let DAILY_OB_RITASE_SPECIFIC_CHECKER;
+      // let DAILY_FLEET_SPECIFIC_CHECKER;
+      // let DAILY_FLEET_EQUIPMENTS_SPECIFIC_FLEET;
+      // let DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER;
       for (let v of shifts) {
         const _start = moment(`${prevDay} ${v.start_shift}`).format(
           "YYYY-MM-DD HH:mm:ss"
@@ -871,49 +871,49 @@ class MonthlyPlanApiController {
             .fetch()
         ).toJSON();
 
-        for (let ritase of _ritOB) {
-          const fullName =
-            ritase.checker.profile.nm_depan +
-            ritase.checker.profile.nm_belakang;
-          if (!CHECKER[fullName]) CHECKER[fullName] = [];
+        // for (let ritase of _ritOB) {
+        //   const fullName =
+        //     ritase.checker.profile.nm_depan +
+        //     ritase.checker.profile.nm_belakang;
+        //   if (!CHECKER[fullName]) CHECKER[fullName] = [];
 
-          DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER = (
-            await DailyRitaseDetail.query(trx)
-              .where("checker_id", ritase.checker_id)
-              .andWhere("check_in", ">=", _start)
-              .andWhere("check_in", "<=", _end)
-              .fetch()
-          ).toJSON();
+        //   DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER = (
+        //     await DailyRitaseDetail.query(trx)
+        //       .where("checker_id", ritase.checker_id)
+        //       .andWhere("check_in", ">=", _start)
+        //       .andWhere("check_in", "<=", _end)
+        //       .fetch()
+        //   ).toJSON();
 
-          for (const x of DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER) {
-            DAILY_OB_RITASE_SPECIFIC_CHECKER = (
-              await DailyRitase.query(trx).where("id", x.dailyritase_id).fetch()
-            ).toJSON();
-          }
+        //   for (const x of DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER) {
+        //     DAILY_OB_RITASE_SPECIFIC_CHECKER = (
+        //       await DailyRitase.query(trx).where("id", x.dailyritase_id).fetch()
+        //     ).toJSON();
+        //   }
 
-          for (const t of DAILY_OB_RITASE_SPECIFIC_CHECKER) {
-            DAILY_FLEET_SPECIFIC_CHECKER = (
-              await DailyFleet.query(trx).where("id", t.dailyfleet_id).fetch()
-            ).toJSON();
-          }
+        //   for (const t of DAILY_OB_RITASE_SPECIFIC_CHECKER) {
+        //     DAILY_FLEET_SPECIFIC_CHECKER = (
+        //       await DailyFleet.query(trx).where("id", t.dailyfleet_id).fetch()
+        //     ).toJSON();
+        //   }
 
-          for (const tu of DAILY_FLEET_SPECIFIC_CHECKER) {
-            DAILY_FLEET_EQUIPMENTS_SPECIFIC_FLEET = (
-              await DailyFleetEquip.query(trx)
-                .with("equipment")
-                .where("dailyfleet_id", tu.id)
-                .fetch()
-            ).toJSON();
-          }
+        //   for (const tu of DAILY_FLEET_SPECIFIC_CHECKER) {
+        //     DAILY_FLEET_EQUIPMENTS_SPECIFIC_FLEET = (
+        //       await DailyFleetEquip.query(trx)
+        //         .with("equipment")
+        //         .where("dailyfleet_id", tu.id)
+        //         .fetch()
+        //     ).toJSON();
+        //   }
 
-          // CHECKER[fullName].push(ritase);
-        }
+        //   // CHECKER[fullName].push(ritase);
+        // }
 
 
-        console.log(
-          "DAILY_FLEET_EQUIPMENTS_SPECIFIC_FLEET >>> ",
-          DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER
-        );
+        // console.log(
+        //   "DAILY_FLEET_EQUIPMENTS_SPECIFIC_FLEET >>> ",
+        //   DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER
+        // );
 
         const obActual = parseInt(
           _ritOB.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0)
@@ -1126,7 +1126,7 @@ class MonthlyPlanApiController {
         },
         data: data,
         pit_name: monthlyPlansCoal.toJSON()?.pit?.name,
-        checker: CHECKER,
+        checker: {},
       });
     } catch (error) {
       console.log(error);
