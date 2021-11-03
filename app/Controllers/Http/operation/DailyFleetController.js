@@ -81,8 +81,11 @@ class DailyFleetController {
       const checkEquipment = 
       await DailyFleetEquip
       .query()
-      .whereBetween('datetime', [filterDateStart, filterDateEnd])
-      .andWhere({equip_id: itemUnit.equip_id})
+      .where( w => {
+        w.where('datetime', '>=', filterDateStart)
+        w.where('datetime', '<=', filterDateEnd)
+        w.where('equip_id', itemUnit.equip_id)
+      })
       .last()
       if (checkEquipment) {
         const unit = await Equipment.findOrFail(checkEquipment.equip_id)
@@ -103,7 +106,7 @@ class DailyFleetController {
         await DailyFleetEquip.create({ 
           dailyfleet_id: dailyFleet.id,
           equip_id: item.equip_id,
-          datetime: moment().format('YYYY-MM-DD HH:mm'),
+          datetime: datetime
         }, trx)
       }
       await trx.commit()

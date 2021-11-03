@@ -355,6 +355,8 @@ Route.group(() => {
 
     Route.post('/daily-ritase-coal', 'DailyRitaseCoalController.store').as('opr.daily-ritase-coal.store').middleware('C')
 
+    Route.post('/daily-ritase-coal/file-validate', 'DailyRitaseCoalController.fileValidate').as('opr.daily-ritase-coal.fileValidate').middleware('C')
+
     Route.get('/daily-ritase-coal/list', 'DailyRitaseCoalController.list').as('opr.daily-ritase-coal.list').middleware('R')
 
     Route.get('/daily-ritase-coal/create', 'DailyRitaseCoalController.create').as('opr.daily-ritase-coal.create').middleware('R')
