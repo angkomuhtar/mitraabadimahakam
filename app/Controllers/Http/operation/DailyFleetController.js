@@ -137,10 +137,17 @@ class DailyFleetController {
     .with('shift')
     .with('user')
     .with('details', eq => eq.with('equipment'))
-    .where('id', id).first()
+    .where('id', id).last()
 
     const equipment = await Equipment.query().where('aktif', 'Y').fetch()
-    return view.render('operation.daily-fleet.show', {data: data.toJSON(), list: equipment.toJSON()})
+
+    const [currDate] = data.toJSON().details
+
+    return view.render('operation.daily-fleet.show', {
+      data: data.toJSON(), 
+      list: equipment.toJSON(),
+      date: currDate.datetime
+    })
   }
 
   async update ({ params, request, auth }) {
