@@ -18,19 +18,17 @@ $(function(){
             url: '/ajax/grafik1?periode='+bulan,
             method: 'GET',
             success: function(result){
-                var current_month = result.monthly_plan.month
-                var satuan = result.monthly_plan.satuan
-                var estimasi = result.monthly_plan.estimate
-                var actual = result.monthly_plan.actual
+                console.log('GRAFIK OB MTD ::',result);
+                var satuan = 'BCM'
+                var estimasi = result.sum_estimasi
+                var actual = result.sum_actual
                 var persen = (parseFloat(actual) / parseFloat(estimasi)) * 100
-                $('small#subtitle-monthly-ob').html(current_month)
                 $('b#ob_plan').html((estimasi).toLocaleString('ID') +' '+satuan)
                 $('b#ob_actual').html((actual).toLocaleString('ID') +' '+satuan)
                 $('b#ob_persen').html((persen).toFixed(2)+'%')
-                console.log('result.actual', result.actual);
                 new Chartist.Line('#sparkline8', {
                     labels: result.labels,
-                    series: [result.actual]
+                    series: result.series
                     }, {
                     plugins: [
                         Chartist.plugins.ctPointLabels({
