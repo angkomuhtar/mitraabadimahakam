@@ -3,7 +3,7 @@ $(function(){
     G3_MTD_COAL()
 
     setInterval(() => {
-        // G3_MTD_COAL()
+        G3_MTD_COAL()
     }, 5 * 1000);
 
     $('select#opt-chart3').on('change', function(e){
