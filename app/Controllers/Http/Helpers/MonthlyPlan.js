@@ -251,75 +251,6 @@ class MonthlyPlan {
         }
 
         return data
-
-        // const currentMonthDates = Array.from({length: moment().daysInMonth()}, 
-        // (x, i) => moment().startOf('month').add(i, 'days').format('DD'))
-
-        // const isCurrentMonth = req.periode === moment().format('YYYY-MM')
-        // try {
-        //     let dailyPlans
-        //     if(isCurrentMonth){
-        //         const awalBulan = moment(req.periode).startOf('month').format('YYYY-MM-DD')
-        //         dailyPlans = (
-        //                 await DailyPlans
-        //                 .query()
-        //                 .with('monthly_plan')
-        //                 .where('current_date', '>=', awalBulan)
-        //                 .andWhere('current_date', '<=', new Date())
-        //                 .andWhere('tipe', 'COAL')
-        //                 .fetch()
-        //             ).toJSON()
-        //     }else{
-        //         const arrDate = Array.from({length: moment(req.periode).daysInMonth()}, 
-        //         (x, i) => moment(req.periode).startOf('month').add(i, 'days').format('YYYY-MM-DD'))
-
-        //         dailyPlans = (
-        //             await DailyPlans
-        //             .query()
-        //             .with('monthly_plan')
-        //             .whereIn('current_date', arrDate)
-        //             .andWhere('tipe', 'COAL')
-        //             .fetch()
-        //         ).toJSON()
-        //     }
-
-        //     var result = [];
-        //     dailyPlans.reduce(function(res, value) {
-        //         if (!res[value.current_date]) {
-        //             res[value.current_date] = { 
-        //                 current_date: value.current_date,
-        //                 monthlyplans_id: value.monthlyplans_id,
-        //                 tipe: value.tipe,
-        //                 estimate: value.estimate,
-        //                 monthly_plan: value.monthly_plan,
-        //                 actual: 0 
-        //             };
-        //             result.push(res[value.current_date])
-        //         }
-        //         res[value.current_date].actual += value.actual;
-        //         return res;
-        //     }, {});
-
-        //     const data = {
-        //         monthly_plan: dailyPlans[0].monthly_plan,
-        //         labels: currentMonthDates,
-        //         actual: result.map(item => (parseFloat(item.actual)/1000))
-        //     }
-        //     data.monthly_plan.month = moment().format('MMMM YYYY')
-        //     return data
-        // } catch (error) {
-        //     console.log(error);
-        //     return {
-        //         monthly_plan: {
-        //             month: moment().format('MMMM YYYY'),
-        //             satuan: 'BCM',
-        //             estimate: 0,
-        //             actual: 0
-        //         },
-        //         labels: currentMonthDates,
-        //         actual: []
-        //     }
-        // }
     }
 
     async CHARTIST_RITASE_OB_EQUIPMENT(req) {
@@ -436,6 +367,9 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
         obj.push({...fleet, data: elm1})
     }
 
+    console.log('====================================');
+    console.log(JSON.stringify(obj, null, 2));
+    console.log('====================================');
     
     for (const val of obj) {
         let tmp = []
@@ -453,7 +387,7 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
             tmp.push({
                 pit: val.pit_name,
                 tgl: obj.tgl,
-                value: obj.data.reduce((x, y) => {return x + y.total_kg}, 0)
+                value: obj.data.reduce((x, y) => {return x + parseFloat(y.total_kg)}, 0)
             })
         }
         result.push({meta: val.pit_name, data: tmp})
