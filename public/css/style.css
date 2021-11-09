@@ -18,6 +18,8 @@
 
 .ct-label {
 	fill: #fff !important;
+	font-size: 1.2rem !important;
+    line-height: 1;
 }
 
 span.ct-label {
@@ -43,6 +45,11 @@ span.ct-label {
 	stroke: rgb(60, 23, 226);
 	/* Control the thikness of your lines */
 	stroke-width: 1px;
+}
+
+.ct-point {
+    stroke-width: 5px !important;
+    stroke-linecap: round;
 }
 
 .ct-bar {

@@ -18,7 +18,9 @@ $(function(){
             url: '/ajax/grafik1?periode='+bulan,
             method: 'GET',
             success: function(result){
-                console.log('GRAFIK OB MTD ::',result);
+                console.log('====================================');
+                console.log('OB MTD :::', result);
+                console.log('====================================');
                 var satuan = 'BCM'
                 var estimasi = result.sum_estimasi
                 var actual = result.sum_actual
