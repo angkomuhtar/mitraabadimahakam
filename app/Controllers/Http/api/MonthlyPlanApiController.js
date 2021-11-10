@@ -304,6 +304,18 @@ class MonthlyPlanApiController {
         }
       }
 
+      /**
+       * {
+        value: 65,
+        label: 'Jun',
+        spacing: 2,
+        labelWidth: 30,
+        labelTextStyle: { color: 'gray' },
+        frontColor: '#177AD5',
+    },
+    { value: 30, frontColor: '#ED6665' },
+       */
+
       const WEEKLY_COAL_ACTUAL = parseFloat(
         r.reduce((a, b) => a + b.actual, 0).toFixed(2)
       );
@@ -348,6 +360,527 @@ class MonthlyPlanApiController {
       });
     }
   }
+
+  async getWeeklyOBProduction_v2({ request, response, auth }) {
+    const { date, pit_id } = request.only(["date", "pit_id"]);
+    var t0 = performance.now();
+    let durasi;
+
+    console.log('body >> ', date, pit_id)
+
+    const _pit_id = pit_id ? pit_id : 1;
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+    const trx = await db.beginTransaction();
+
+    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+
+    const monthlyPlans = await MonthlyPlans.query()
+      .with("pit")
+      .where("month", SoM)
+      .andWhere("tipe", "BB")
+      .andWhere("pit_id", _pit_id)
+      .first();
+
+    const MONTHLYPLANS_ID = monthlyPlans?.id;
+
+    const currentWeekDays = Array.from({ length: 7 }, (x, i) =>
+      moment(date).startOf("week").add(i, "days").format("DD")
+    );
+
+    const currentWeekDate = Array.from({ length: 7 }, (x, i) =>
+      moment(date).startOf("week").add(i, "days").format("YYYY-MM-DD")
+    );
+
+    const SoW = moment(date).startOf("week").format("YYYY-MM-DD HH:mm:ss");
+    const EoW = moment(date).endOf("week").format("YYYY-MM-DD HH:mm:ss");
+    const SoW1 = moment(SoW).subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
+    let dailyPlans;
+    let OB_ARR_SHIFT = [];
+    let _OB_ARR = [];
+
+    const obj = {};
+    try {
+      const shifts = (await MasShift.query().fetch()).toJSON();
+      const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
+
+      const masFleetOB = (
+        await MasFleet.query(trx).where("tipe", "OB").fetch()
+      ).toJSON();
+
+      let counter = 0;
+
+      for (let y of currentWeekDate) {
+        for (let m of shifts) {
+          const ctx = 1;
+          counter += ctx;
+          const _start = moment(`${y} ${m.start_shift}`).format(
+            "YYYY-MM-DD HH:mm:ss"
+          );
+          const _end = moment(`${y} ${m.start_shift}`)
+            .add(12, "hour")
+            .format("YYYY-MM-DD HH:mm:ss");
+
+          const dailyFleetsOBSpecificPit = (
+            await DailyFleet.query(trx)
+              .whereIn(
+                "fleet_id",
+                masFleetOB.map((x) => x.id)
+              )
+              .andWhere("pit_id", _pit_id)
+              .andWhere("created_at", ">=", _start)
+              .andWhere("created_at", "<=", _end)
+              .fetch()
+          ).toJSON();
+
+          const dailyRitaseOBSpecificFleet = (
+            await DailyRitase.query(trx)
+              .whereIn(
+                "dailyfleet_id",
+                dailyFleetsOBSpecificPit.map((x) => x.id)
+              )
+              .fetch()
+          ).toJSON();
+
+          const RITASE_OB = (
+            await DailyRitaseDetail.query()
+              .with("daily_ritase", (wh) => {
+                wh.with("material_details");
+              })
+              .with("checker", (wh) => {
+                wh.with("profile");
+              })
+              .with("spv", (wh) => {
+                wh.with("profile");
+              })
+              .whereIn(
+                "dailyritase_id",
+                dailyRitaseOBSpecificFleet.map((v) => v.id)
+              )
+              .where("check_in", ">=", _start)
+              .andWhere("check_in", "<=", _end)
+              .fetch()
+          ).toJSON();
+
+          const ritaseDay = moment(y).format("ddd");
+          const ritaseDate = moment(y).format("YYYY-MM-DD");
+
+          //   {
+          //     value: 65,
+          //     label: 'Jun',
+          //     spacing: 2,
+          //     labelWidth: 30,
+          //     labelTextStyle: { color: 'gray' },
+          //     frontColor: '#177AD5',
+          // },
+          // { value: 30, frontColor: '#ED6665' },
+          let _obj = null;
+
+          if (counter % 2 === 0) {
+            _obj = {
+              value: RITASE_OB.reduce(
+                (a, b) => a + b.daily_ritase.material_details.vol,
+                0
+              ),
+              frontColor: "#ED6665",
+            };
+          } else {
+            _obj = {
+              value: RITASE_OB.reduce(
+                (a, b) => a + b.daily_ritase.material_details.vol,
+                0
+              ),
+              label: ritaseDay.toLowerCase(),
+              spacing: 2,
+              labelWidth: 30,
+              labelTextStyle: { color: "gray" },
+              frontColor: "#177AD5",
+            };
+          }
+          // if (!obj[ritaseDay.toLowerCase()]) obj[ritaseDay.toLowerCase()] = [];
+          // obj[ritaseDay.toLowerCase()].push({
+          //   [m.kode.toLowerCase()]: {
+          //     value: RITASE_OB.reduce(
+          //       (a, b) => a + b.daily_ritase.material_details.vol,
+          //       0
+          //     ),
+          //     date: ritaseDate
+          //   },
+          // });
+          _OB_ARR.push(_obj);
+        }
+      }
+
+      // let data = {
+      //   labels: [],
+      //   actual: _OB_ARR
+      // };
+
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(200).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+        },
+        pit_name: "GENERAL",
+        data: _OB_ARR,
+      });
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(404).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error,
+        },
+        data: {},
+      });
+    }
+  }
+
+  async getWeeklyCoalProduction_v2({ request, response, auth }) {
+    const { date, pit_id } = request.only(["date", "pit_id"]);
+    var t0 = performance.now();
+    let durasi;
+
+    const _pit_id = pit_id ? pit_id : 1;
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+    const trx = await db.beginTransaction();
+
+    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+
+    const monthlyPlans = await MonthlyPlans.query()
+      .with("pit")
+      .where("month", SoM)
+      .andWhere("tipe", "BB")
+      .andWhere("pit_id", _pit_id)
+      .first();
+
+
+    const currentWeekDate = Array.from({ length: 7 }, (x, i) =>
+      moment(date).startOf("week").add(i, "days").format("YYYY-MM-DD")
+    );
+
+    const SoW = moment(date).startOf("week").format("YYYY-MM-DD HH:mm:ss");
+
+    let _OB_ARR = [];
+
+    const obj = {};
+    try {
+      const shifts = (await MasShift.query().fetch()).toJSON();
+      const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
+
+      const masFleetCoal = (
+        await MasFleet.query(trx).where("tipe", "CO").fetch()
+      ).toJSON();
+
+      let counter = 0;
+
+      for (let y of currentWeekDate) {
+        for (let m of shifts) {
+          const ctx = 1;
+          counter += ctx;
+          const _start = moment(`${y} ${m.start_shift}`).format(
+            "YYYY-MM-DD HH:mm:ss"
+          );
+          const _end = moment(`${y} ${m.start_shift}`)
+            .add(12, "hour")
+            .format("YYYY-MM-DD HH:mm:ss");
+
+          const dailyFleetsCoalSpecificPit = (
+            await DailyFleet.query(trx)
+              .whereIn(
+                "fleet_id",
+                masFleetCoal.map((x) => x.id)
+              )
+              .andWhere("pit_id", _pit_id)
+              .andWhere("created_at", ">=", _start)
+              .andWhere("created_at", "<=", _end)
+              .fetch()
+          ).toJSON();
+
+          const dailyRitaseCoalSpecificFleet = (
+            await DailyRitaseCoal.query(trx)
+              .whereIn(
+                "dailyfleet_id",
+                dailyFleetsCoalSpecificPit.map((x) => x.id)
+              )
+              .fetch()
+          ).toJSON();
+  
+          const RITASE_COAL = (
+            await DailyRitaseCoalDetail.query(trx)
+              .whereIn(
+                "ritasecoal_id",
+                dailyRitaseCoalSpecificFleet.map((x) => x.id)
+              )
+              .where("checkout_jt", ">=", _start)
+              .andWhere("checkout_jt", "<=", _end)
+              .fetch()
+          ).toJSON();
+
+          const ritaseDay = moment(y).format("ddd");
+          const ritaseDate = moment(y).format("YYYY-MM-DD");
+
+          //   {
+          //     value: 65,
+          //     label: 'Jun',
+          //     spacing: 2,
+          //     labelWidth: 30,
+          //     labelTextStyle: { color: 'gray' },
+          //     frontColor: '#177AD5',
+          // },
+          // { value: 30, frontColor: '#ED6665' },
+          let _obj = null;
+
+          if (counter % 2 === 0) {
+            _obj = {
+              value: RITASE_COAL.reduce(
+                (a, b) => a + b.w_netto,
+                0
+              ),
+              frontColor: "#ED6665",
+            };
+          } else {
+            _obj = {
+              value: RITASE_COAL.reduce(
+                (a, b) => a + b.w_netto,
+                0
+              ),
+              label: ritaseDay.toLowerCase(),
+              spacing: 2,
+              labelWidth: 30,
+              labelTextStyle: { color: "gray" },
+              frontColor: "#177AD5",
+            };
+          }
+          // if (!obj[ritaseDay.toLowerCase()]) obj[ritaseDay.toLowerCase()] = [];
+          // obj[ritaseDay.toLowerCase()].push({
+          //   [m.kode.toLowerCase()]: {
+          //     value: RITASE_OB.reduce(
+          //       (a, b) => a + b.daily_ritase.material_details.vol,
+          //       0
+          //     ),
+          //     date: ritaseDate
+          //   },
+          // });
+          _OB_ARR.push(_obj);
+        }
+      }
+
+      // let data = {
+      //   labels: [],
+      //   actual: _OB_ARR
+      // };
+
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(200).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+        },
+        pit_name: "GENERAL",
+        data: _OB_ARR,
+      });
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(404).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error,
+        },
+        data: {},
+      });
+    }
+  }
+
+
+  async getWeeklyFuel_v2({ request, response, auth }) {
+    const { date, pit_id } = request.only(["date", "pit_id"]);
+    var t0 = performance.now();
+    let durasi;
+
+    const _pit_id = pit_id ? pit_id : 1;
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+    const trx = await db.beginTransaction();
+
+    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+
+    const currentWeekDate = Array.from({ length: 7 }, (x, i) =>
+      moment(date).startOf("week").add(i, "days").format("YYYY-MM-DD")
+    );
+
+    const SoW = moment(date).startOf("week").format("YYYY-MM-DD HH:mm:ss");
+
+    let _OB_ARR = [];
+
+    const obj = {};
+    try {
+      const shifts = (await MasShift.query().fetch()).toJSON();
+      const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
+
+      let counter = 0;
+
+      for (let y of currentWeekDate) {
+        for (let m of shifts) {
+          const ctx = 1;
+          counter += ctx;
+          const _start = moment(`${y} ${m.start_shift}`).format(
+            "YYYY-MM-DD HH:mm:ss"
+          );
+          const _end = moment(`${y} ${m.start_shift}`)
+            .add(12, "hour")
+            .format("YYYY-MM-DD HH:mm:ss");
+
+          const dailyFleetsCoalSpecificPit = (
+            await DailyFleet.query(trx)
+              .where("pit_id", _pit_id)
+              .andWhere("created_at", ">=", _start)
+              .andWhere("created_at", "<=", _end)
+              .fetch()
+          ).toJSON();
+
+          const dailyFleetEquipmentSpecificFleet = (
+            await DailyFleetEquip.query(trx)
+              .whereIn(
+                "dailyfleet_id",
+                dailyFleetsCoalSpecificPit.map((x) => x.id)
+              )
+              .fetch()
+          ).toJSON();
+  
+          const REFUELING = (
+            await DailyRefueling.query(trx)
+              .whereIn(
+                "equip_id",
+                dailyFleetEquipmentSpecificFleet.map((x) => x.equip_id)
+              )
+              .where("fueling_at", ">=", _start)
+              .andWhere("fueling_at", "<=", _end)
+              .fetch()
+          ).toJSON();
+
+          const ritaseDay = moment(y).format("ddd");
+          const ritaseDate = moment(y).format("YYYY-MM-DD");
+
+          //   {
+          //     value: 65,
+          //     label: 'Jun',
+          //     spacing: 2,
+          //     labelWidth: 30,
+          //     labelTextStyle: { color: 'gray' },
+          //     frontColor: '#177AD5',
+          // },
+          // { value: 30, frontColor: '#ED6665' },
+          let _obj = null;
+
+          if (counter % 2 === 0) {
+            _obj = {
+              value: REFUELING.reduce(
+                (a, b) => a + b.top_up,
+                0
+              ) || 0,
+              frontColor: "#ED6665",
+            };
+          } else {
+            _obj = {
+              value: REFUELING.reduce(
+                (a, b) => a + b.top_up,
+                0
+              ) || 0,
+              label: ritaseDay.toLowerCase(),
+              spacing: 2,
+              labelWidth: 30,
+              labelTextStyle: { color: "gray" },
+              frontColor: "#177AD5",
+            };
+          }
+          // if (!obj[ritaseDay.toLowerCase()]) obj[ritaseDay.toLowerCase()] = [];
+          // obj[ritaseDay.toLowerCase()].push({
+          //   [m.kode.toLowerCase()]: {
+          //     value: RITASE_OB.reduce(
+          //       (a, b) => a + b.daily_ritase.material_details.vol,
+          //       0
+          //     ),
+          //     date: ritaseDate
+          //   },
+          // });
+          _OB_ARR.push(_obj);
+        }
+      }
+
+      // let data = {
+      //   labels: [],
+      //   actual: _OB_ARR
+      // };
+
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(200).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+        },
+        pit_name: "GENERAL",
+        data: _OB_ARR,
+      });
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(404).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error,
+        },
+        data: {},
+      });
+    }
+  }
+
 
   async getWeeklyFuelConsumption({ auth, request, response }) {
     const { date, pit_id } = request.only(["date", "pit_id"]);
@@ -482,7 +1015,7 @@ class MonthlyPlanApiController {
           error: false,
         },
         data: data,
-      });
+      })
     } catch (error) {
       console.log(error);
       durasi = await diagnoticTime.durasi(t0);
@@ -909,11 +1442,377 @@ class MonthlyPlanApiController {
         //   // CHECKER[fullName].push(ritase);
         // }
 
-
         // console.log(
         //   "DAILY_FLEET_EQUIPMENTS_SPECIFIC_FLEET >>> ",
         //   DAILY_OB_RITASE_DETAIL_SPECIFIC_CHECKER
         // );
+
+        const obActual = parseInt(
+          _ritOB.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0)
+        );
+
+        const obj = {
+          name: v.kode.toUpperCase(),
+          actual: obActual,
+        };
+
+        RIT_OB_ARR.push(obj);
+
+        // coal ritase
+        const masFleetCoal = (
+          await MasFleet.query(trx).where("tipe", "CO").fetch()
+        ).toJSON();
+
+        const dailyFleetsCoalSpecificPit = (
+          await DailyFleet.query(trx)
+            .whereIn(
+              "fleet_id",
+              masFleetCoal.map((x) => x.id)
+            )
+            .where("pit_id", _pit_id)
+            .andWhere("created_at", ">=", _start)
+            .andWhere("created_at", "<=", _end)
+            .fetch()
+        ).toJSON();
+
+        const dailyRitaseCoalSpecificFleet = (
+          await DailyRitaseCoal.query(trx)
+            .whereIn(
+              "dailyfleet_id",
+              dailyFleetsCoalSpecificPit.map((x) => x.id)
+            )
+            .fetch()
+        ).toJSON();
+
+        const ritaseCoal = (
+          await DailyRitaseCoalDetail.query(trx)
+            .whereIn(
+              "ritasecoal_id",
+              dailyRitaseCoalSpecificFleet.map((x) => x.id)
+            )
+            .where("checkout_jt", ">=", _start)
+            .andWhere("checkout_jt", "<=", _end)
+            .fetch()
+        ).toJSON();
+
+        const coalActual = parseInt(
+          ritaseCoal.reduce((a, b) => a + b.w_netto, 0)
+        );
+
+        const obj_1 = {
+          name: v.kode.toUpperCase(),
+          actual: coalActual / 1000,
+        };
+        RIT_COAL_ARR.push(obj_1);
+
+        const allDailyFleetInASpecificPit = (
+          await DailyFleet.query(trx)
+            .where("pit_id", _pit_id)
+            .andWhere("created_at", ">=", _start)
+            .andWhere("created_at", "<=", _end)
+            .fetch()
+        ).toJSON();
+
+        const timeSheetSpecificPit = (
+          await DailyChecklist.query(trx)
+            .whereIn(
+              "dailyfleet_id",
+              allDailyFleetInASpecificPit.map((x) => x.id)
+            )
+            .fetch()
+        ).toJSON();
+
+        const DAILY_EVENT = (
+          await DailyEvent.query(trx)
+            .with("event")
+            .whereIn(
+              "timesheet_id",
+              timeSheetSpecificPit.map((x) => x.id)
+            )
+            .where("start_at", ">=", _start)
+            .andWhere("end_at", "<=", _end)
+            .orderBy("start_at", "asc")
+            .fetch()
+        ).toJSON();
+
+        for (let z of DAILY_EVENT) {
+          let obj_2 = {
+            shift: v.kode.toLowerCase(),
+            event_name: z.event.narasi,
+            range_time: `${moment(z.start_at).format("LT")} - ${moment(
+              z.end_at
+            ).format("LT")}`,
+          };
+          EVENTS.push(obj_2);
+        }
+      }
+      const _EVENTS = [];
+      for (let x of SHIFTS) {
+        const obj = {
+          shift: x.name.toUpperCase(),
+          data: EVENTS.filter((v) => v.shift === x.kode),
+        };
+        _EVENTS.push(obj);
+      }
+
+      const SoM = moment(date).startOf("month").format("YYYY-MM-DD");
+      const now = moment(date).format("YYYY-MM-DD");
+
+      const _COAL_EXPOSE_TODAY = await DailyCoalExposed.query()
+        .where("tgl", now)
+        .andWhere("pit_id", _pit_id)
+        .andWhere("aktif", "Y")
+        .first();
+      const _MTD_COAL_EXPOSE = (
+        await DailyCoalExposed.query()
+          .where("tgl", ">=", checkIfStartOfMonth(SoM))
+          .andWhere("tgl", "<=", now)
+          .andWhere("pit_id", _pit_id)
+          .andWhere("aktif", "Y")
+          .fetch()
+      ).toJSON();
+
+      const mtd_ob_actual = (
+        await DailyPlans.query(trx)
+          .whereBetween("current_date", [checkIfStartOfMonth(SoM), now])
+          .where("tipe", "OB")
+          .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
+          .fetch()
+      ).toJSON();
+
+      const mtd_coal_actual = (
+        await DailyPlans.query(trx)
+          .whereBetween("current_date", [checkIfStartOfMonth(SoM), now])
+          .where("tipe", "COAL")
+          .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
+          .fetch()
+      ).toJSON();
+
+      const _MTD_COAL_ACTUAL_BY_TC = parseInt(
+        mtd_coal_actual.reduce((a, b) => a + b.actual / 1000, 0)
+      );
+      const _MTD_OB_ACTUAL_BY_TC = parseInt(
+        mtd_ob_actual.reduce((a, b) => a + b.actual, 0)
+      );
+      let MTD_COAL_SR = parseFloat(
+        (_MTD_OB_ACTUAL_BY_TC / _MTD_COAL_ACTUAL_BY_TC).toFixed(2)
+      );
+
+      if (await infinityCheck(MTD_COAL_SR)) {
+        MTD_COAL_SR = 0;
+      };
+
+      const COAL_EXPOSE = _COAL_EXPOSE_TODAY
+        ? _COAL_EXPOSE_TODAY.volume / 1000
+        : 0;
+      const MTD_COAL_EXPOSE = _MTD_COAL_EXPOSE
+        ? _MTD_COAL_EXPOSE.reduce((a, b) => a + b.volume, 0)
+        : 0;
+
+      let MTD_COAL_EXPOSE_SR = parseFloat(
+        (
+          _MTD_OB_ACTUAL_BY_TC /
+          (_MTD_COAL_ACTUAL_BY_TC + parseInt(COAL_EXPOSE))
+        ).toFixed(2)
+      );
+
+      if (await infinityCheck(MTD_COAL_EXPOSE_SR)) {
+        MTD_COAL_EXPOSE_SR = 0;
+      }
+
+      const obActualToday = RIT_OB_ARR.reduce((a, b) => a + b.actual, 0);
+      const coalActualToday = RIT_COAL_ARR.reduce((a, b) => a + b.actual, 0);
+
+      let data = {
+        daily_ob: {
+          shift: RIT_OB_ARR,
+          achieved: parseFloat(
+            ((obActualToday / obPlanToday.estimate) * 100).toFixed(2)
+          ),
+          total: obActualToday,
+          plan: obPlanToday.estimate,
+        },
+        daily_coal: {
+          shift: RIT_COAL_ARR,
+          total: coalActualToday,
+          achieved: parseFloat(
+            ((coalActualToday / coalPlanToday.estimate) * 100).toFixed(2)
+          ),
+          plan: coalPlanToday.estimate,
+        },
+        mtd_ob_actual_by_tc: _MTD_OB_ACTUAL_BY_TC,
+        mtd_coal_actual_by_tc: _MTD_COAL_ACTUAL_BY_TC,
+        mtd_coal_actual_by_tc_sr: MTD_COAL_SR,
+        coal_expose: COAL_EXPOSE,
+        mtd_coal_expose: MTD_COAL_EXPOSE,
+        mtd_coal_expose_sr: MTD_COAL_EXPOSE_SR,
+        event: _EVENTS,
+      };
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(200).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+          request_time: date,
+          server_time: moment(date).format("YYYY-MM-DD"),
+        },
+        data: data,
+        pit_name: monthlyPlansCoal.toJSON()?.pit?.name,
+        checker: {},
+      });
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(404).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error,
+        },
+        data: {},
+      });
+    }
+  }
+
+  async getDailyReport_v2({ auth, request, response }) {
+    const { date, pit_id } = request.only(["date", "pit_id"]);
+    let durasi;
+    var t0 = performance.now();
+
+    const _pit_id = pit_id ? pit_id : 1;
+    
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+
+    const trx = await db.beginTransaction();
+
+    const checkIfStartOfMonth = () => {
+      const _date = moment(date).format("DD");
+
+      let prevMonth = null;
+      if (_date === "01") {
+        prevMonth = moment(date)
+          .subtract(1, "days")
+          .startOf("month")
+          .format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        prevMonth = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+      }
+
+      return prevMonth;
+    };
+    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+
+    const monthlyPlansOB = await MonthlyPlans.query()
+      .with("pit")
+      .where("month", checkIfStartOfMonth(SoM))
+      .andWhere("pit_id", _pit_id)
+      .andWhere("tipe", "OB")
+      .first();
+
+    const monthlyPlansCoal = await MonthlyPlans.query()
+      .with("pit")
+      .where("month", checkIfStartOfMonth(SoM))
+      .andWhere("pit_id", _pit_id)
+      .andWhere("tipe", "BB")
+      .first();
+
+    const MONTHLYPLANS_OB_ID = monthlyPlansOB?.id;
+    const MONTHLYPLANS_CO_ID = monthlyPlansCoal?.id;
+
+    try {
+      const today = moment(date).format("YYYY-MM-DD");
+      const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
+
+      const shifts = (await MasShift.query().fetch()).toJSON();
+
+      // Daily Plans, Breakdown from Monthly Plans / Number of Days in month
+      const coalPlanToday = await DailyPlans.query(trx)
+        .where("current_date", prevDay)
+        .andWhere("tipe", "COAL")
+        .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
+        .first();
+
+      const obPlanToday = await DailyPlans.query(trx)
+        .where("current_date", prevDay)
+        .andWhere("tipe", "OB")
+        .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
+        .first();
+
+      let RIT_OB_ARR = [];
+      let RIT_COAL_ARR = [];
+      let EVENTS = [];
+      let SHIFTS = [];
+
+      for (let v of shifts) {
+        const _start = moment(`${prevDay} ${v.start_shift}`).format(
+          "YYYY-MM-DD HH:mm:ss"
+        );
+        const _end = moment(`${prevDay} ${v.start_shift}`)
+          .add(v.duration, "hour")
+          .format("YYYY-MM-DD HH:mm:ss");
+
+        SHIFTS.push({
+          kode: v.kode.toLowerCase(),
+          name: v.name,
+        });
+
+        const masFleetOB = (
+          await MasFleet.query(trx).where("tipe", "OB").fetch()
+        ).toJSON();
+
+        const dailyFleetsOBSpecificPit = (
+          await DailyFleet.query(trx)
+            .whereIn(
+              "fleet_id",
+              masFleetOB.map((x) => x.id)
+            )
+            .andWhere("pit_id", _pit_id)
+            .andWhere("created_at", ">=", _start)
+            .andWhere("created_at", "<=", _end)
+            .fetch()
+        ).toJSON();
+
+        const dailyRitaseOBSpecificFleet = (
+          await DailyRitase.query(trx)
+            .whereIn(
+              "dailyfleet_id",
+              dailyFleetsOBSpecificPit.map((x) => x.id)
+            )
+            .fetch()
+        ).toJSON();
+
+        const _ritOB = (
+          await DailyRitaseDetail.query(trx)
+            .with("daily_ritase", (wh) => {
+              wh.with("material_details");
+            })
+            .with("checker", (wh) => {
+              wh.with("profile");
+            })
+            .with("spv", (wh) => {
+              wh.with("profile");
+            })
+            .whereIn(
+              "dailyritase_id",
+              dailyRitaseOBSpecificFleet.map((x) => x.id)
+            )
+            .where("check_in", ">=", _start)
+            .andWhere("check_in", "<=", _end)
+            .fetch()
+        ).toJSON();
 
         const obActual = parseInt(
           _ritOB.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0)
