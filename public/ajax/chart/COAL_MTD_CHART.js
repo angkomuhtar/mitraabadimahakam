@@ -18,20 +18,20 @@ $(function(){
             url: '/ajax/grafik3?periode='+bulan,
             method: 'GET',
             success: function(result){
+                // console.log('COAL DATA ::', JSON.stringify(result, null, 2));
+                console.log('COAL DATA ::', result);
                 var current_month = result.monthly_plan.month
                 var satuan = result.monthly_plan.satuan
                 var estimasi = result.monthly_plan.estimate
                 var actual = parseFloat(result.monthly_plan.actual)/1000
-                var persen = (parseFloat(actual) / parseFloat(estimasi)) * 100
+                var persen = result.monthly_plan.persen
                 $('small#subtitle-monthly-coal').html(current_month)
                 $('b#coal_plan').html((estimasi).toLocaleString('ID') +' '+satuan)
                 $('b#coal_actual').html((actual).toLocaleString('ID') +' '+satuan)
-                $('b#coal_persen').html((persen).toFixed(2)+'%')
+                $('b#coal_persen').html(persen+'%')
                 new Chartist.Line('#sparkline9', {
                     labels: result.labels,
-                    series: [
-                        result.actual
-                    ]
+                    series: result.actual
                     }, {
                     plugins: [
                         Chartist.plugins.ctPointLabels({

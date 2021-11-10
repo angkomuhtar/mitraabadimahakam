@@ -21,6 +21,27 @@ class AjaxFleetController {
         return list
     }
 
+    async getFleetsByPit ({ request }) {
+        const req = request.all()
+        const fleet = (
+            await Fleet
+            .query()
+            // .where({status: 'Y', pit_id: req.pit_id})
+            .where( w => {
+                if(req.tipe){
+                    w.where('tipe', req.tipe)
+                }
+                w.where('pit_id', req.pit_id)
+                w.where('status', 'Y')
+            })
+            .orderBy('name', 'desc')
+            .fetch()
+        ).toJSON()
+        const list = fleet.map(el => el.id === parseInt(req.selected) ? {...el, selected: 'selected'} : {...el, selected: ''})
+
+        return list
+    }
+
     async listDailyFleet ({ request }) {
         const req = request.all()
         try {

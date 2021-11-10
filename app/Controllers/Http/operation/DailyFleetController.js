@@ -81,8 +81,11 @@ class DailyFleetController {
       const checkEquipment = 
       await DailyFleetEquip
       .query()
-      .whereBetween('datetime', [filterDateStart, filterDateEnd])
-      .andWhere({equip_id: itemUnit.equip_id})
+      .where( w => {
+        w.where('datetime', '>=', filterDateStart)
+        w.where('datetime', '<=', filterDateEnd)
+        w.where('equip_id', itemUnit.equip_id)
+      })
       .last()
       if (checkEquipment) {
         const unit = await Equipment.findOrFail(checkEquipment.equip_id)
@@ -103,7 +106,7 @@ class DailyFleetController {
         await DailyFleetEquip.create({ 
           dailyfleet_id: dailyFleet.id,
           equip_id: item.equip_id,
-          datetime: moment().format('YYYY-MM-DD HH:mm'),
+          datetime: datetime
         }, trx)
       }
       await trx.commit()
@@ -134,10 +137,17 @@ class DailyFleetController {
     .with('shift')
     .with('user')
     .with('details', eq => eq.with('equipment'))
-    .where('id', id).first()
+    .where('id', id).last()
 
     const equipment = await Equipment.query().where('aktif', 'Y').fetch()
-    return view.render('operation.daily-fleet.show', {data: data.toJSON(), list: equipment.toJSON()})
+
+    const [currDate] = data.toJSON().details
+
+    return view.render('operation.daily-fleet.show', {
+      data: data.toJSON(), 
+      list: equipment.toJSON(),
+      date: currDate.datetime
+    })
   }
 
   async update ({ params, request, auth }) {

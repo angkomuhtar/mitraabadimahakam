@@ -92,9 +92,9 @@ async function UPDATE_DATA_MASTER (data) {
             })
             await dailyRitaseCoal.save(trx)
 
+            await trx.commit()
             
             dailyPlan.merge({actual: tw_netto})
-            await trx.commit()
             await dailyPlan.save()
         }
     } catch (error) {

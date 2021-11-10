@@ -18,6 +18,8 @@
 
 .ct-label {
 	fill: #fff !important;
+	font-size: 1.2rem !important;
+    line-height: 1;
 }
 
 span.ct-label {
@@ -28,7 +30,26 @@ span.ct-label {
 	/* Set the colour of this series line */
 	stroke: rgb(226, 196, 23);
 	/* Control the thikness of your lines */
-	stroke-width: 2px;
+	stroke-width: 1px;
+}
+
+.ct-series-b .ct-line {
+	/* Set the colour of this series line */
+	stroke: rgb(226, 23, 23);
+	/* Control the thikness of your lines */
+	stroke-width: 1px;
+}
+
+.ct-series-c .ct-line {
+	/* Set the colour of this series line */
+	stroke: rgb(60, 23, 226);
+	/* Control the thikness of your lines */
+	stroke-width: 1px;
+}
+
+.ct-point {
+    stroke-width: 5px !important;
+    stroke-linecap: round;
 }
 
 .ct-bar {
