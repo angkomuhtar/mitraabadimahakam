@@ -64,7 +64,7 @@ class DailyRefuelEquipmentController {
 
             const filterData = convertJSON.FORM.filter(cell => cell.B != '#N/A')
 
-            // console.log(convertJSON);
+            console.log(convertJSON);
 
             const result = filterData.map(cell => {
                 var date = new Date(req.tgl+' '+moment(cell.F).format('HH:mm'))
@@ -95,6 +95,8 @@ class DailyRefuelEquipmentController {
                 .where(w => {
                     w.where('site_id', data.site_id)
                     w.where('equip_id', data.equip_id)
+                    w.where('fueling_at', '>=', moment(data.fueling_at).format('YYYY-MM-DD') + ' 00:00:01')
+                    w.where('fueling_at', '<=', moment(data.fueling_at).format('YYYY-MM-DD') + ' 23:59:59')
                 }).last()
 
                 if(daily_refueling){

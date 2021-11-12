@@ -103,6 +103,7 @@
                 },
                 method: 'GET',
                 success: function(data){
+                    console.log('DATA >>>>>', data);
                     if(data.length > 0){
                         const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                         elm.html(list)

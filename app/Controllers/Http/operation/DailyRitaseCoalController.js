@@ -158,7 +158,6 @@ class DailyRitaseCoalController {
                 activity_id: 8
             }).last()
 
-            // console.log(dailyFleet);
 
             if(!dailyFleet){
                 return {

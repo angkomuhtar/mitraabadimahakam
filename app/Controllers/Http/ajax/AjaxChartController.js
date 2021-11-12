@@ -56,6 +56,7 @@ class AjaxChartController {
             })
             .fetch()
         ).toJSON()
+        
 
         let grouping = _.groupBy(
             data.map(
@@ -66,6 +67,7 @@ class AjaxChartController {
                     }
                 }), grp => grp.fueling_at)
 
+        // console.log(grouping);
         grouping = Object.keys(grouping).map(
             el => {
                 return {
@@ -80,6 +82,7 @@ class AjaxChartController {
                     grouping.push({tgl: item, topup: 0})
                 }
             }
+
             
         let resultData = _.sortBy(grouping, 'tgl')
           
