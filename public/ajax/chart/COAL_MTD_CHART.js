@@ -18,12 +18,13 @@ $(function(){
             url: '/ajax/grafik3?periode='+bulan,
             method: 'GET',
             success: function(result){
-                // console.log('COAL DATA ::', JSON.stringify(result, null, 2));
+                
                 console.log('COAL DATA ::', result);
+
                 var current_month = result.monthly_plan.month
                 var satuan = result.monthly_plan.satuan
                 var estimasi = result.monthly_plan.estimate
-                var actual = parseFloat(result.monthly_plan.actual)/1000
+                var actual = parseFloat(result.monthly_plan.actual)
                 var persen = result.monthly_plan.persen
                 $('small#subtitle-monthly-coal').html(current_month)
                 $('b#coal_plan').html((estimasi).toLocaleString('ID') +' '+satuan)

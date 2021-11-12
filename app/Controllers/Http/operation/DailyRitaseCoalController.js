@@ -123,28 +123,30 @@ class DailyRitaseCoalController {
         /* Generate Filter Object */
         const [selectSheet] = parsing.filter(function(obj){ return obj.nm_sheet === req.nm_sheet })
 
-        let genData = selectSheet.details.filter(item => item.O > 0 && moment(item.F).add(1, 'minutes').format('YYYY-MM-DD') === req.date)
-        .map(item => {
-            if(item.B){
-                var date = moment(item.F).add(1, 'minutes').format('YYYY-MM-DD')
-                return {
-                    checker_jt: usr.id,
-                    shift_id: item.E,
-                    date: date,
-                    checkout_pit: date + ' ' + '00:00',
-                    checkin_jt: date + ' ' + moment(item.H).add(3, 'minutes').format('HH:mm'),
-                    checkout_jt: date + ' ' + moment(item.I).add(3, 'minutes').format('HH:mm'),
-                    no_kupon: item.J,
-                    ticket: item.Q,
-                    seam_id: item.L,
-                    subcondt_id: item.K,
-                    w_gross: item.M * 1000,
-                    w_tare: item.N * 1000,
-                    w_netto: item.O * 1000,
-                    block: parseInt((item.P).replace('BL.', ''))
+        let genData = selectSheet.details.filter(
+            item => item.O > 0 && moment(item.F).add(1, 'minutes').format('YYYY-MM-DD') === req.date)
+            .map(item => {
+                if(item.B){
+                    var date = moment(item.F).add(1, 'minutes').format('YYYY-MM-DD')
+                    var parsingSeam = (item.L).split('.').length > 1 ? (item.L).split('.')[1] : ((item.L).split('.')[0]).replace(/\s/g, '')
+                    return {
+                        checker_jt: usr.id,
+                        shift_id: item.E,
+                        date: date,
+                        checkout_pit: date + ' ' + '00:00',
+                        checkin_jt: date + ' ' + moment(item.H).add(3, 'minutes').format('HH:mm'),
+                        checkout_jt: date + ' ' + moment(item.I).add(3, 'minutes').format('HH:mm'),
+                        no_kupon: item.J,
+                        ticket: item.Q,
+                        seam_id: parsingSeam,
+                        subcondt_id: item.K,
+                        w_gross: item.M * 1000,
+                        w_tare: item.N * 1000,
+                        w_netto: item.O * 1000,
+                        block: parseInt((item.P).replace('BL.', ''))
+                    }
                 }
-            }
-        })
+            })
        
 
         for (const obj of genData) {
@@ -155,6 +157,8 @@ class DailyRitaseCoalController {
                 date: req.date,
                 activity_id: 8
             }).last()
+
+            // console.log(dailyFleet);
 
             if(!dailyFleet){
                 return {
@@ -213,128 +217,140 @@ class DailyRitaseCoalController {
             }
         })
 
-
-        for (const obj of parsingShift) {
-
-            var shift = obj.shift_id
-
-            for (const item of obj.data) {
-
-                /* Cari ID Unit Excavator */
-                const unitExcavator = (await DailyFleetEquip.query().with('equipment').where('dailyfleet_id', dailyFleet.id).fetch()).toJSON()
-
-                const [excavator] = unitExcavator.filter(obj => obj.equipment.tipe === 'excavator')
-
-                exca_id = excavator.equipment.id
-
-                dailyRitaseCoal = await DailyRitaseCoal
-                    .query()
-                    .where(w => {
-                        w.where('shift_id', shift)
-                        w.where('block', item.block)
-                        w.where('date', '>=', req.date + ' ' + '00:00:01')
-                        w.where('date', '<=', req.date + ' ' + '23:59:59')
-                    }).last()
-
-                if(!dailyRitaseCoal){
-                    dailyRitaseCoal = new DailyRitaseCoal()
-                    dailyRitaseCoal.fill({
-                        distance: 23,
-                        dailyfleet_id: dailyFleet.id,
-                        exca_id: exca_id,
-                        checker_id: usr.id,
-                        shift_id: shift,
-                        block: item.block,
-                        date: req.date + ' ' + '00:00:01'
-                    })
-                    try {
-                        await dailyRitaseCoal.save()
-                    } catch (error) {
-                        return {
-                            success: false,
-                            message: 'Save data daily ritase coal failed....'
+        try {
+            for (const obj of parsingShift) {
+            
+                var shift = obj.shift_id
+                
+    
+                for (const item of obj.data) {
+    
+                    /* Cari ID Unit Excavator */
+                    const unitExcavator = (await DailyFleetEquip.query().with('equipment').where('dailyfleet_id', dailyFleet.id).fetch()).toJSON()
+    
+                    const [excavator] = unitExcavator.filter(obj => obj.equipment.tipe === 'excavator')
+    
+                    exca_id = excavator.equipment.id
+    
+                    dailyRitaseCoal = await DailyRitaseCoal
+                        .query()
+                        .where(w => {
+                            w.where('shift_id', shift)
+                            w.where('block', item.block)
+                            w.where('date', '>=', req.date + ' ' + '00:00:01')
+                            w.where('date', '<=', req.date + ' ' + '23:59:59')
+                        }).last()
+    
+    
+                    if(!dailyRitaseCoal){
+                        dailyRitaseCoal = new DailyRitaseCoal()
+                        dailyRitaseCoal.fill({
+                            distance: 23,
+                            dailyfleet_id: dailyFleet.id,
+                            exca_id: exca_id,
+                            checker_id: usr.id,
+                            shift_id: shift,
+                            block: item.block,
+                            date: req.date + ' ' + '00:00:01'
+                        })
+                        try {
+                            await dailyRitaseCoal.save()
+                        } catch (error) {
+                            console.log(error);
+                            return {
+                                success: false,
+                                message: 'Save data daily ritase coal failed....'
+                            }
                         }
                     }
-                }
-
-                for (const val of item.details) {
-                    const unitDT = (
-                        await UnitSubcont
-                        .query()
-                        .where('kode', 'like', `${val.subcondt_id}`)
-                        .last()
-                    ).toJSON()
-
-                    let seam
-                    try {
-                        seam = (
-                            await MasSeam
+    
+                    for (const val of item.details) {
+                        const unitDT = (
+                            await UnitSubcont
+                            .query()
+                            .where('kode', 'like', `${val.subcondt_id}`)
+                            .last()
+                        ).toJSON()
+    
+                        let seam
+                        try {
+                            seam = (
+                                await MasSeam
+                                .query()
+                                .where( w => {
+                                    w.where('kode', val.seam_id)
+                                    w.where('pit_id', req.pit_id)
+                                }).last()
+                            ).toJSON()
+    
+                        } catch (error) {
+                            console.log(error);
+                            return {
+                                success: false,
+                                message: 'Kode Seam '+val.seam_id+' tdk ditemukan....'
+                            }
+                        }
+    
+                        const formatKupon = '0'.repeat( 7 - `${val.no_kupon}`.length) + val.no_kupon
+    
+                        const detailUpload = {
+                            ritasecoal_id: dailyRitaseCoal.id,
+                            kupon: formatKupon,
+                            ticket: val.ticket,
+                            seam_id: seam.id,
+                            subcondt_id: unitDT.id,
+                            checkout_pit: val.checkout_pit,
+                            checkin_jt: val.checkin_jt,
+                            checkout_jt: val.checkout_jt,
+                            w_gross: val.w_gross,
+                            w_tare: val.w_tare,
+                            w_netto: val.w_netto,
+                            checker_jt: usr.id
+                        }
+    
+                        let dailyRitaseCoalDetail
+    
+                        dailyRitaseCoalDetail = await DailyRitaseCoalDetail
                             .query()
                             .where( w => {
-                                w.where('kode', val.seam_id)
-                                w.where('pit_id', req.pit_id)
-                            }).last()
-                        ).toJSON()
-
-                    } catch (error) {
-                        console.log(error);
-                        return {
-                            success: false,
-                            message: 'Kode Seam tdk ditemukan....'
+                                w.where('ritasecoal_id', dailyRitaseCoal.id)
+                                w.where('ticket', val.ticket)
+                                w.where('kupon', formatKupon)
+                            })
+                            .first()
+    
+                        if(!dailyRitaseCoalDetail){
+    
+                            dailyRitaseCoalDetail = new DailyRitaseCoalDetail()
+                            dailyRitaseCoalDetail.fill({
+                                ...detailUpload,
+                                keterangan: 'Upload file manual....'
+                            })
+                            await dailyRitaseCoalDetail.save()
+                        }else{
+    
+                            dailyRitaseCoalDetail.merge({
+                                ...detailUpload,
+                                keterangan: 'ReUpload file manual....'
+                            })
+                            await dailyRitaseCoalDetail.save()
                         }
-                    }
-
-                    const formatKupon = '0'.repeat( 7 - `${val.no_kupon}`.length) + val.no_kupon
-
-                    const detailUpload = {
-                        ritasecoal_id: dailyRitaseCoal.id,
-                        kupon: formatKupon,
-                        ticket: val.ticket,
-                        seam_id: seam.id,
-                        subcondt_id: unitDT.id,
-                        checkout_pit: val.checkout_pit,
-                        checkin_jt: val.checkin_jt,
-                        checkout_jt: val.checkout_jt,
-                        w_gross: val.w_gross,
-                        w_tare: val.w_tare,
-                        w_netto: val.w_netto,
-                        checker_jt: usr.id
-                    }
-
-                    let dailyRitaseCoalDetail
-
-                    dailyRitaseCoalDetail = await DailyRitaseCoalDetail
-                        .query()
-                        .where( w => {
-                            w.where('ritasecoal_id', dailyRitaseCoal.id)
-                            w.where('ticket', val.ticket)
-                            w.where('kupon', formatKupon)
-                        })
-                        .first()
-
-                    if(!dailyRitaseCoalDetail){
-
-                        dailyRitaseCoalDetail = new DailyRitaseCoalDetail()
-                        dailyRitaseCoalDetail.fill({
-                            ...detailUpload,
-                            keterangan: 'Upload file manual....'
-                        })
-                        await dailyRitaseCoalDetail.save()
-                    }else{
-
-                        dailyRitaseCoalDetail.merge({
-                            ...detailUpload,
-                            keterangan: 'ReUpload file manual....'
-                        })
-                        await dailyRitaseCoalDetail.save()
                     }
                 }
             }
             return {
                 success: true,
+                data: genData,
+                message: 'Upload data ritase coal success....'
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error,
                 message: 'Upload data ritase coal success....'
             }
         }
+        
     }
 
     async show ({ params, view }) {

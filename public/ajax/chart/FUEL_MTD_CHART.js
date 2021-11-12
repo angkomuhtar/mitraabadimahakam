@@ -8,7 +8,7 @@ $(function(){
     
 
     setInterval(() => {
-        G4_MTD_FUEL()
+        // G4_MTD_FUEL()
     }, 5 * 1000)
 
     function G4_MTD_FUEL(){

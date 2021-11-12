@@ -38,6 +38,7 @@ class AjaxFleetController {
             .fetch()
         ).toJSON()
         const list = fleet.map(el => el.id === parseInt(req.selected) ? {...el, selected: 'selected'} : {...el, selected: ''})
+        // console.log(req);
 
         return list
     }
