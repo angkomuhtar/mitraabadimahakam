@@ -887,8 +887,12 @@ Route.group(() => {
 
     Route.get('/weekly/ob', 'MonthlyPlanApiController.getWeeklyOBProduction')
 
-    Route.get('/weekly/coal', 'MonthlyPlanApiController.getWeeklyCoalProduction')
+    Route.get('/v1/weekly/ob', 'MonthlyPlanApiController.getWeeklyOBProduction_v2')
 
+    Route.get('/v1/weekly/coal', 'MonthlyPlanApiController.getWeeklyCoalProduction_v2')
+
+    Route.get('/v1/weekly/fuel', 'MonthlyPlanApiController.getWeeklyFuel_v2')
+    
     Route.get('/weekly/fuel', 'MonthlyPlanApiController.getWeeklyFuelConsumption')
     
     Route.get('/monthly/recap', 'MonthlyPlanApiController.getMonthlyRecap')
