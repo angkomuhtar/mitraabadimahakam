@@ -898,6 +898,10 @@ Route.group(() => {
     Route.get('/monthly/recap', 'MonthlyPlanApiController.getMonthlyRecap')
 
     Route.get('/report/daily', 'MonthlyPlanApiController.getDailyReport')
+
+    Route.get('/exca/productivity/ob', 'MonthlyPlanApiController.getExcaProductivity_OB')
+
+    Route.get('/exca/productivity/coal', 'MonthlyPlanApiController.getExcaProductivity_COAL')
     
 }).prefix('api/monthly-plan').namespace('api')
 
