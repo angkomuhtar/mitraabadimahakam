@@ -139,7 +139,7 @@ $(function(){
     $('body').on('click', 'button#bt-check-excel', async function(e){
         e.preventDefault()
         await uploadBar(0)
-        
+
         $('body div#progressbar-upload').show()
         $('body div#myBar').html('Uploading file...')
 
@@ -206,7 +206,7 @@ $(function(){
                           console.log(result)
                           if(result.success){
                               swal("Okey!", result.message, "success");
-                              $("body form#fm-ritase-coal").trigger("reset");
+                            //   $("body form#fm-ritase-coal").trigger("reset");
                             //   window.location.reload()
                           }else{
                             swal('Opps...', result.message, 'error')

@@ -29,19 +29,6 @@ class AjaxChartController {
         const grafik2 = await MonthlyPlanHelpers.CHARTIST_RITASE_OB_EQUIPMENT(req)
         const labels = grafik2.map(item => `${item.exca}`)
 
-        // let labels = teksLabel.filter((el, i, a) => i === a.indexOf(el))
-        // console.log('labels:::', grafik2);
-
-          
-        // let result = []
-        // grafik2.reduce(function(res, value) {
-        //     if (!res[value.exca]) {
-        //         res[value.exca] = { exca: value.exca, tot_ritase: 0 }
-        //         result.push(res[value.exca])
-        //     }
-        //     res[value.exca].tot_ritase += value.tot_ritase;
-        //     return res
-        // }, {})
         const data = grafik2.map(item => parseInt(item.tot_ritase));
 
         return {
@@ -54,52 +41,54 @@ class AjaxChartController {
     async grafik_FUEL_MTD ({ request }) {
         const req = request.all()
         const arrDate = Array.from({length: moment(req.periode).daysInMonth()}, 
-            (x, i) => moment(req.periode).startOf('month').add(i, 'days').format('DD'))
+            (x, i) => moment(req.periode).startOf('month').add(i, 'days').format('YYYY-MM-DD'))
 
-        /* Get Semua data equipment pada periode */
-        let dataPeriode = []
-        const isCurrentMonth = req.periode === moment().format('YYYY-MM')
-        if(isCurrentMonth){
-            const awalData = moment(req.periode).startOf('month').format('YYYY-MM-DD')
-            dataPeriode = (
-                await DailyRefueling
-                    .query()
-                    .where('fueling_at', '>=', awalData)
-                    .andWhere('fueling_at', '<=', new Date())
-                    .select('id', 'topup', 'fueling_at')
-                    .fetch()
-            ).toJSON()
-        }else{
-            const beginDate = moment(_.first(arrDate)).startOf('day').format('YYYY-MM-DD HH:mm:ss')
-            const lastDate = moment(_.last(arrDate)).endOf('day').format('YYYY-MM-DD HH:mm:ss')
-            dataPeriode = (
-                await DailyRefueling
-                    .query()
-                    .where('fueling_at', '>=', beginDate)
-                    .andWhere('fueling_at', '<=', lastDate)
-                    .fetch()
-            ).toJSON()
-        }
+            
+        const start = moment(req.periode).startOf('month').format('YYYY-MM-DD')
+        const finish = moment(req.periode).endOf('month').format('YYYY-MM-DD')
+
+        const data = (
+            await DailyRefueling
+            .query()
+            .where( w => {
+                w.where('fueling_at', '>=', start)
+                w.where('fueling_at', '<=', finish)
+            })
+            .fetch()
+        ).toJSON()
         
-        // console.log('dataPeriode::', dataPeriode);
 
-        dataPeriode = dataPeriode.map(item => { return {...item, fueling_at: moment(item.fueling_at).format('DD')} })
+        let grouping = _.groupBy(
+            data.map(
+                el => { 
+                    return {
+                        ...el, 
+                        fueling_at: moment(el.fueling_at).format('YYYY-MM-DD')
+                    }
+                }), grp => grp.fueling_at)
 
-        var result = [];
-        dataPeriode.reduce(function(res, value) {
-            if (!res[value.fueling_at]) {
-              res[value.fueling_at] = { fueling_at: value.fueling_at, topup: 0 };
-              result.push(res[value.fueling_at])
+        // console.log(grouping);
+        grouping = Object.keys(grouping).map(
+            el => {
+                return {
+                    tgl: el, topup: grouping[el].reduce((a, b) => { return a + b.topup }, 0)
+                }
+            })
+        
+            
+            for (const item of arrDate) {
+                console.log(!grouping.map(obj => obj.tgl).includes(item), item);
+                if(!grouping.map(obj => obj.tgl).includes(item)){
+                    grouping.push({tgl: item, topup: 0})
+                }
             }
-            res[value.fueling_at].topup += value.topup;
-            return res;
-          }, {});
 
-        
+            
+        let resultData = _.sortBy(grouping, 'tgl')
           
         return {
-            x: _.pluck(result, 'fueling_at'),
-            y: _.pluck(result, 'topup')
+            x: resultData.map(el => (el.tgl).substr(8, 2)),
+            y: resultData.map(el => el.topup)
         }
 
     }

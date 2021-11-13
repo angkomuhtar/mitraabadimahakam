@@ -200,7 +200,7 @@ class MonthlyPlan {
         for (const item of res_GET_COAL_BY_ID_DAILY_FLEET) {
             let arr = []
             for (const val of item.data) {
-                arr.push({meta: item.meta, date: val.tgl, value: val.value})
+                arr.push({meta: item.meta, date: val.tgl, value: (val.value).toFixed(2)})
             }
             tmp.push(arr)
         }
@@ -243,8 +243,8 @@ class MonthlyPlan {
                 month: moment(bulan).format('MMMM YYYY'),
                 satuan: 'MT',
                 estimate: estimasi,
-                actual: aktual,
-                persen: persen
+                actual: (aktual).toFixed(2),
+                persen: (persen).toFixed(2)
             },
             labels: currentMonthDates.map(list => list.substr(8, 2)),
             actual: result
@@ -367,9 +367,6 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
         obj.push({...fleet, data: elm1})
     }
 
-    console.log('====================================');
-    console.log(JSON.stringify(obj, null, 2));
-    console.log('====================================');
     
     for (const val of obj) {
         let tmp = []

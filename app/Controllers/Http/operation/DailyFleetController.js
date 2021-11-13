@@ -103,11 +103,13 @@ class DailyFleetController {
     try {
       await dailyFleet.save(trx)
       for (const item of reqEquip) {
-        await DailyFleetEquip.create({ 
+        const dailyFleetEquip = new DailyFleetEquip()
+        dailyFleetEquip.fill({ 
           dailyfleet_id: dailyFleet.id,
           equip_id: item.equip_id,
-          datetime: datetime
-        }, trx)
+          datetime: datetime.datetime
+        })
+        await dailyFleetEquip.save(trx)
       }
       await trx.commit()
       new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
