@@ -4,7 +4,7 @@ $(function(){
 
     setInterval(() => {
         G1_MTD_OB()
-    }, 5 * 1000);
+    }, 45 * 1000);
 
     $('select#opt-chart1').on('change', function(e){
         e.preventDefault()
@@ -18,9 +18,7 @@ $(function(){
             url: '/ajax/grafik1?periode='+bulan,
             method: 'GET',
             success: function(result){
-                console.log('====================================');
-                console.log('OB MTD :::', result);
-                console.log('====================================');
+                // console.log('RESULT OB ::', result);
                 var satuan = 'BCM'
                 var estimasi = result.sum_estimasi
                 var actual = result.sum_actual
@@ -43,6 +41,15 @@ $(function(){
                                 }
                             }
                         }),
+                        Chartist.plugins.legend({
+                            legendNames: result.series.map(x => x[0].meta),
+                            clickable: true,
+                            position: 'bottom',
+                            className: 'ob-legend',
+                            onClick: function(val){
+                                console.log('VAL :::', val);
+                            }
+                        }),
                         Chartist.plugins.tooltip({
                             class: 'class1',
                             appendToBody: true,
@@ -52,6 +59,7 @@ $(function(){
                     low: 0,
                     showArea: true,
                 });
+               
             },
             error: function(err){
                 console.log(err);

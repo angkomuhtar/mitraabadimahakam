@@ -88,7 +88,7 @@ class AjaxChartController {
           
         return {
             x: resultData.map(el => (el.tgl).substr(8, 2)),
-            y: resultData.map(el => el.topup)
+            y: resultData.map(el => (el.topup))
         }
 
     }
