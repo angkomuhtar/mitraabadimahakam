@@ -18,7 +18,7 @@ $(function(){
             url: '/ajax/grafik1?periode='+bulan,
             method: 'GET',
             success: function(result){
-                console.log('RESULT OB ::', result);
+                // console.log('RESULT OB ::', result);
                 var satuan = 'BCM'
                 var estimasi = result.sum_estimasi
                 var actual = result.sum_actual
