@@ -25,14 +25,14 @@ $(function(){
                 $('b#avg_day').html((total / result.y.length).toFixed(2) + ' Liter / Hari')
                 new Chartist.Line('#sparkline11', {
                     labels: result.x,
-                    series: [result.y]
+                    series: [result.y.map(val => val.toLocaleString('ID'))]
                     }, {
                     plugins: [
                         Chartist.plugins.ctPointLabels({
                             textAnchor: 'right',
                             labelInterpolationFnc: function(value) {
                                 if(value){
-                                    return value + ' Lt'
+                                    return (value) + ' L'
                                 }else{
                                     return 0
                                 }

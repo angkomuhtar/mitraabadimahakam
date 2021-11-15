@@ -4,7 +4,7 @@ $(function(){
 
     setInterval(() => {
         G3_MTD_COAL()
-    }, 5 * 1000);
+    }, 60 * 1000);
 
     $('select#opt-chart3').on('change', function(e){
         e.preventDefault()
@@ -35,6 +35,12 @@ $(function(){
                     series: result.actual
                     }, {
                     plugins: [
+                        Chartist.plugins.legend({
+                            legendNames: result.actual.map(x => 'PIT ' + x[0].meta),
+                            // clickable: true,
+                            className: 'coal-legend',
+                            position: 'top'
+                        }),
                         Chartist.plugins.ctPointLabels({
                             textAnchor: 'right',
                             labelInterpolationFnc: function(value) {
