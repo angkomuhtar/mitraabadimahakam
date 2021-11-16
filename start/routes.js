@@ -903,6 +903,8 @@ Route.group(() => {
 
     Route.get('/exca/productivity/coal', 'MonthlyPlanApiController.getExcaProductivity_COAL')
     
+    Route.get('/unit/refueling/recent', 'MonthlyPlanApiController.recentUnitRefueling')
+    
 }).prefix('api/monthly-plan').namespace('api')
 
 Route.group(() => {

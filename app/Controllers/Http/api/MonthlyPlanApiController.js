@@ -13,16 +13,12 @@ const db = use("Database");
 const DailyEvent = use("App/Models/DailyEvent");
 const MasShift = use("App/Models/MasShift");
 const MonthlyPlans = use("App/Models/MonthlyPlan");
-const { infinityCheck } = use("App/Controllers/Http/customClass/utils");
+const { infinityCheck, equipmentTypeCheck } = use("App/Controllers/Http/customClass/utils");
 const DailyFleet = use("App/Models/DailyFleet");
 const DailyRitase = use("App/Models/DailyRitase");
 const DailyRitaseCoal = use("App/Models/DailyRitaseCoal");
 const MasFleet = use("App/Models/MasFleet");
 const DailyChecklist = use("App/Models/DailyChecklist");
-const VRitaseOb = use("App/Models/VRitaseOb");
-const VRitaseCoal = use("App/Models/VRitaseCoal");
-const VTimeSheet = use("App/Models/VTimeSheet");
-const VDailyEvent = use("App/Models/VDailyEvent");
 const DailyCoalExposed = use("App/Models/DailyCoalExposed");
 const DailyFleetEquip = use("App/Models/DailyFleetEquip");
 
@@ -444,8 +440,6 @@ class MonthlyPlanApiController {
               .fetch()
           ).toJSON();
 
-          console.log(dailyFleetsOBSpecificPit);
-
           const ritaseDay = moment(y).format("ddd");
           const ritaseDate = moment(y).format("YYYY-MM-DD");
 
@@ -472,7 +466,6 @@ class MonthlyPlanApiController {
               frontColor: "#177AD5",
             };
           }
-
           _OB_ARR.push(_obj);
         }
       }
@@ -2273,9 +2266,6 @@ class MonthlyPlanApiController {
               .fetch()
           ).toJSON();
 
-          console.log("start >> ", _start);
-          console.log("end >>> ", _end);
-
           hours = Array.from({ length: x.duration + 1 }, (a, y) => {
             return moment(`${date} ${x.start_shift}`)
               .add(60 * y, "minutes")
@@ -2291,13 +2281,6 @@ class MonthlyPlanApiController {
             )
             .fetch()
         ).toJSON();
-
-        console.log(
-          "fleets id >> ",
-          dailyFleets.map((v) => v.id)
-        );
-        console.log("hours >> ", hours);
-        console.log("daily ritase >> ", dailyRitase);
 
         let arr = [];
         for (let i = 1; i < hours.length; i++) {
@@ -2443,6 +2426,143 @@ class MonthlyPlanApiController {
       data: data.slice(0, endIndex),
       arrLength: data.length,
       onShift: onShift,
+    });
+  }
+
+  async recentUnitRefueling({ auth, request, response }) {
+    const { date, page, limit } = request.only(["date", "page", "limit"]);
+
+    // top level variables
+    let durasi;
+    var t0 = performance.now();
+    const _page = parseInt(page) || 1;
+    const _limit = parseInt(limit) || 2;
+    const startIndex = _page - 1;
+    const endIndex = _page * _limit;
+    const paginate = {};
+    let data = [];
+    let ids = [];
+    // auth check
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+
+    // vars
+    const StartOfDay = moment(date)
+      .startOf("day")
+      .format("YYYY-MM-DD HH:mm:ss");
+    const EndOfDay = moment(date).endOf("day").format("YYYY-MM-DD HH:mm:ss");
+
+    // master data
+    const shifts = (await MasShift.query().fetch()).toJSON();
+
+    // queries
+
+    const equipsRefueling = (
+      await DailyRefueling.query()
+        .where("fueling_at", ">=", StartOfDay)
+        .andWhere("fueling_at", "<=", EndOfDay)
+        .andWhere("topup", "!=", "0.00")
+        .fetch()
+    ).toJSON();
+
+    const GET_REFUELING_UNIT_BY_UNIT_ID = async (unitId) => {
+      let result = null;
+
+      const dailyFleetEquips = await DailyFleetEquip.query()
+        .with("dailyFleet", (wh) => {
+          wh.with("pit");
+        })
+        .with("equipment")
+        .where("datetime", ">=", StartOfDay)
+        .andWhere("equip_id", unitId)
+        .andWhere("datetime", "<=", EndOfDay)
+        .first();
+
+      if (dailyFleetEquips) {
+        const singleUnit = dailyFleetEquips?.toJSON();
+        const equipName = singleUnit?.equipment?.kode;
+        const pitName = singleUnit?.dailyFleet?.pit?.name;
+        return {
+          pitName,
+          equipName,
+          equipmentImg: singleUnit?.equipment.img_uri
+            ? singleUnit?.equipment.img_uri
+            : `${process.env.APP_URL}/images/img_not_found.png`,
+          brand: singleUnit?.equipment.brand,
+          type: await equipmentTypeCheck(singleUnit?.equipment.tipe),
+        };
+      } else {
+        result = null;
+      }
+
+      return result;
+    };
+
+    for (const x of equipsRefueling) {
+      const unitData = await GET_REFUELING_UNIT_BY_UNIT_ID(x.equip_id);
+
+      /**
+       *  topup: equipsRefueling.topup,
+          smu: equipsRefueling.smu,
+          fuelTruck: equipsRefueling.truck_fuel,
+          refuelAt: equipsRefueling.fueling_at,
+          id: equipsRefueling.id,
+       */
+      if (unitData) {
+        const _data = {
+          pitName: unitData.pitName,
+          equipName: unitData.equipName,
+          equipmentImg: unitData.equipmentImg,
+          topup: x.topup,
+          smu: x.smu,
+          topupAt: moment(x.fueling_at).format("DD MMM HH:mm"),
+          unit: "L",
+          equipType: unitData.type,
+          equipBrand: unitData.brand,
+        };
+        data.push(_data);
+      }
+    }
+
+    // pagination
+    if (endIndex < data.length) {
+      paginate.next = {
+        page: _page + 1,
+        limit: _limit,
+      };
+    }
+    if (startIndex > 0) {
+      paginate.previous = {
+        page: _page - 1,
+        limit: _limit,
+      };
+    }
+
+    console.log("ids >> ", ids);
+
+    // response to client
+    return response.status(200).json({
+      ...paginate,
+      diagnostic: {
+        times: durasi,
+        error: false,
+        request_time: date,
+        server_time: moment(date).format("YYYY-MM-DD"),
+      },
+      data: data.slice(0, endIndex),
+      arrLength: data.length,
     });
   }
 }
