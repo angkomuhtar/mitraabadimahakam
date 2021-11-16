@@ -3,6 +3,7 @@ $(function(){
     function initDeafult(lim, url){
         $('div.content-module').css('display', 'none')
         var limit = lim || 25
+        $('div#list-content').html('<h4 style="text-align: center;">Please wait,,, System still loading data</h4>').show()
         $.ajax({
             async: true,
             url: url || '/operation/daily-ritase-ob/list?limit='+limit,

@@ -367,8 +367,8 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
         obj.push({...fleet, data: elm1})
     }
 
-    
-    for (const val of obj) {
+
+    for (const val of _.sortBy(obj, 'pit_name')) {
         let tmp = []
         delete val['dailyfleet_id']
         let grpTanggal = _.groupBy(val.data, num => { return num.date })

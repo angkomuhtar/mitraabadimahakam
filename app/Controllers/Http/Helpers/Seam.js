@@ -8,6 +8,7 @@ class CoalSeam {
         let coalSeam
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         const limit = 10
+        console.log('COAL LIST ::', req);
         if(req.keyword){
             coalSeam = await MasSeam
                 .query()
@@ -46,6 +47,7 @@ class CoalSeam {
     }
 
     async POST (req) {
+        req.kode = (req.kode).replace(/[^a-z0-9]/gi,'')
         const coalSeam = new MasSeam()
         coalSeam.fill(req)
         await coalSeam.save()

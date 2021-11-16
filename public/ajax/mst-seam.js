@@ -146,18 +146,19 @@ $(function(){
 
     function initDeafult(){
         $('div.content-module').css('display', 'none')
-        $.ajax({
-            async: true,
-            url: '/master/seam/list?keyword=',
-            method: 'GET',
-            success: function(result){
-                $('div#list-content').children().remove()
-                $('div#list-content').html(result).show()
-            },
-            error: function(err){
-                console.log(err);
-            }
-        })
+        ajaxSearch('')
+        // $.ajax({
+        //     async: true,
+        //     url: '/master/seam/list?keyword=',
+        //     method: 'GET',
+        //     success: function(result){
+        //         $('div#list-content').children().remove()
+        //         $('div#list-content').html(result).show()
+        //     },
+        //     error: function(err){
+        //         console.log(err);
+        //     }
+        // })
     }
 
     function initCreate(){
@@ -183,6 +184,7 @@ $(function(){
     }
 
     function ajaxSearch(value){
+        console.log(value);
         $.ajax({
             async: true,
             url: '/master/seam/list?keyword='+value,
