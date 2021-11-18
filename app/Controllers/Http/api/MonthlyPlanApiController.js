@@ -13,7 +13,9 @@ const db = use("Database");
 const DailyEvent = use("App/Models/DailyEvent");
 const MasShift = use("App/Models/MasShift");
 const MonthlyPlans = use("App/Models/MonthlyPlan");
-const { infinityCheck, equipmentTypeCheck } = use("App/Controllers/Http/customClass/utils");
+const { infinityCheck, equipmentTypeCheck } = use(
+  "App/Controllers/Http/customClass/utils"
+);
 const DailyFleet = use("App/Models/DailyFleet");
 const DailyRitase = use("App/Models/DailyRitase");
 const DailyRitaseCoal = use("App/Models/DailyRitaseCoal");
@@ -21,6 +23,7 @@ const MasFleet = use("App/Models/MasFleet");
 const DailyChecklist = use("App/Models/DailyChecklist");
 const DailyCoalExposed = use("App/Models/DailyCoalExposed");
 const DailyFleetEquip = use("App/Models/DailyFleetEquip");
+const MasPit = use("App/Models/MasPit");
 
 class MonthlyPlanApiController {
   async index({ request, response, view }) {}
@@ -2468,7 +2471,6 @@ class MonthlyPlanApiController {
     const shifts = (await MasShift.query().fetch()).toJSON();
 
     // queries
-
     const equipsRefueling = (
       await DailyRefueling.query()
         .where("fueling_at", ">=", StartOfDay)
@@ -2506,20 +2508,11 @@ class MonthlyPlanApiController {
       } else {
         result = null;
       }
-
       return result;
     };
 
     for (const x of equipsRefueling) {
       const unitData = await GET_REFUELING_UNIT_BY_UNIT_ID(x.equip_id);
-
-      /**
-       *  topup: equipsRefueling.topup,
-          smu: equipsRefueling.smu,
-          fuelTruck: equipsRefueling.truck_fuel,
-          refuelAt: equipsRefueling.fueling_at,
-          id: equipsRefueling.id,
-       */
       if (unitData) {
         const _data = {
           pitName: unitData.pitName,
@@ -2550,8 +2543,6 @@ class MonthlyPlanApiController {
       };
     }
 
-    console.log("ids >> ", ids);
-
     // response to client
     return response.status(200).json({
       ...paginate,
@@ -2563,6 +2554,132 @@ class MonthlyPlanApiController {
       },
       data: data.slice(0, endIndex),
       arrLength: data.length,
+    });
+  }
+
+  async getRangeMonthFuelBurn({ request, auth, response }) {
+    const { date, pit_id } = request.only(["date", "pit_id"]);
+
+    // top level variables
+    let durasi;
+    var t0 = performance.now();
+    const _pit_id = pit_id ? pit_id : 6;
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+
+    const monthArrays = Array.from({ length: 12 }).map((v, y) => {
+      return moment().startOf("year").add(y, "M").format("YYYY-MM-DD");
+    });
+
+    const months = [];
+
+    for (const x of monthArrays) {
+      const obj = {
+        monthName: moment(x).format("MMM"),
+        startOfMonth: moment(x).startOf("M").format("YYYY-MM-DD HH:mm:ss"),
+        endOfMonth: moment(x).endOf("M").format("YYYY-MM-DD HH:mm:ss"),
+      };
+      months.push(obj);
+    }
+    let arrOfMonth = [
+      {
+        data: months.slice(0, 6),
+      },
+      {
+        data: months.slice(6, 12),
+      },
+    ];
+
+    const currentMonth = moment(date).format("MMM");
+
+    const _months = [];
+    for (const x of arrOfMonth) {
+      for (const y of x.data) {
+        if (y.monthName === currentMonth) {
+          _months.push(x);
+        }
+      }
+    }
+
+    const pitName = (await MasPit.query().where("id", _pit_id).first())?.name;
+
+    const dats = [];
+    for (const x of _months[0].data) {
+      const dailyFleetSpecificPit = (
+        await DailyFleet.query()
+          .where("created_at", ">=", x.startOfMonth)
+          .andWhere("created_at", "<=", x.endOfMonth)
+          .andWhere("pit_id", _pit_id)
+          .fetch()
+      ).toJSON();
+
+      const dailyTimeSheetSpecificFleet = (
+        await DailyChecklist.query()
+          .whereIn(
+            "dailyfleet_id",
+            dailyFleetSpecificPit.map((v) => v.id)
+          )
+          .whereNotNull("used_smu")
+          .andWhere("used_smu", "!=", "0.00")
+          .fetch()
+      ).toJSON();
+
+      const dailyRefuelings = (
+        await DailyRefueling.query()
+          .with("timesheet")
+          .whereIn(
+            "timesheet_id",
+            dailyTimeSheetSpecificFleet.map((v) => v.id)
+          )
+          .whereNotNull("timesheet_id")
+          .andWhere("topup", "!=", "0.00")
+          .andWhere("fueling_at", ">=", x.startOfMonth)
+          .andWhere("fueling_at", "<=", x.endOfMonth)
+          .fetch()
+      ).toJSON();
+
+      dats.push({
+        value: parseInt(
+          parseFloat(
+            dailyRefuelings.reduce((a, b) => a + b.timesheet.used_smu, 0)
+          ).toFixed(2)
+        ),
+        frontColor: "#ED6665",
+        label: x.monthName,
+        spacing: 2,
+        labelWidth: 30,
+        labelTextStyle: { color: "gray" },
+      });
+
+      dats.push({
+        value: dailyRefuelings.reduce((a, b) => a + b.topup, 0),
+        frontColor: "#177AD5",
+      });
+    }
+
+    // response to client
+    return response.status(200).json({
+      diagnostic: {
+        times: durasi,
+        error: false,
+        request_time: date,
+        server_time: moment(date).format("YYYY-MM-DD"),
+      },
+      data: dats,
+      pitName: pitName,
     });
   }
 }
