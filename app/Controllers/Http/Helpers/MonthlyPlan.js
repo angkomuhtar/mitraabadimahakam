@@ -349,7 +349,6 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
 
             if(coal_rit.length > 0){
                 let elm2 = []
-
                 for (const val of coal_rit) {
                     const sum_total = await DailyRitaseCoalDetail.query().where('ritasecoal_id', val.id).getSum('w_netto')
                     elm1.push({
@@ -380,9 +379,7 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
                 data: grpTanggal[key]
             }
         })
-
         for (const obj of grpTanggal) {
-
             tmp.push({
                 pit: val.pit_name,
                 tgl: obj.tgl,
