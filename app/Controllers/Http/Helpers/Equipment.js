@@ -5,6 +5,7 @@ const DailyTimeSheet = use("App/Models/DailyChecklist")
 
 class EquipmentList {
     async ALL (req) {
+        await equipUnit()
         let equipment
         if(req.keyword){
             equipment = 
@@ -22,6 +23,8 @@ class EquipmentList {
         }else{
             equipment = await MasEquipment.query().where({aktif: 'Y'}).orderBy('urut', 'asc').fetch()
         }
+
+        
         
         return equipment
     }
@@ -48,3 +51,4 @@ class EquipmentList {
 }
 
 module.exports = new EquipmentList()
+

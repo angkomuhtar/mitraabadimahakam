@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs');
+const _ = require('underscore');
 const db = use('Database')
 const moment = require("moment")
 const MasSeam = use("App/Models/MasSeam")
@@ -110,9 +111,8 @@ class DailyRitaseCoalController {
             }
         }
 
+        let data = JSON.parse(req.jsonData)
         
-        const data = JSON.parse(req.jsonData)
-
         let parsing = Object.keys(data).map(function (key) {
             return {
                 nm_sheet: key, 
@@ -120,13 +120,15 @@ class DailyRitaseCoalController {
             }
         })
 
+
         /* Generate Filter Object */
         const [selectSheet] = parsing.filter(function(obj){ return obj.nm_sheet === req.nm_sheet })
-
+        
+        
         let genData = selectSheet.details.filter(
             item => item.O > 0 && moment(item.F).add(1, 'minutes').format('YYYY-MM-DD') === req.date)
             .map(item => {
-                if(item.B){
+                if(item.E){
                     var date = moment(item.F).add(1, 'minutes').format('YYYY-MM-DD')
                     var parsingSeam = (item.L).split('.').length > 1 ? (item.L).split('.')[1] : ((item.L).split('.')[0]).replace(/\s/g, '')
                     return {
@@ -147,7 +149,17 @@ class DailyRitaseCoalController {
                     }
                 }
             })
-       
+
+        /* Check Data tiket is not NULL */
+        for (const [i, obj] of genData.entries()) {
+            if(obj.ticket === undefined){
+                return {
+                    success: false,
+                    message: 'Data kupon ' + obj.no_kupon + ' tdk memiliki nomor tiket...'
+                }
+            }
+        }
+        
 
         for (const obj of genData) {
             dailyFleet = await DailyFleet.query().where({
@@ -298,6 +310,7 @@ class DailyRitaseCoalController {
                             ticket: val.ticket,
                             seam_id: seam.id,
                             subcondt_id: unitDT.id,
+                            // subcondt_id: unitDT.subcont_id,
                             checkout_pit: val.checkout_pit,
                             checkin_jt: val.checkin_jt,
                             checkout_jt: val.checkout_jt,
@@ -323,14 +336,14 @@ class DailyRitaseCoalController {
                             dailyRitaseCoalDetail = new DailyRitaseCoalDetail()
                             dailyRitaseCoalDetail.fill({
                                 ...detailUpload,
-                                keterangan: 'Upload file manual....'
+                                keterangan: 'Upload file excel....'
                             })
                             await dailyRitaseCoalDetail.save()
                         }else{
     
                             dailyRitaseCoalDetail.merge({
                                 ...detailUpload,
-                                keterangan: 'ReUpload file manual....'
+                                keterangan: 'ReUpload excel file datetime ' + moment().format('DD-MM-YYYY HH:mm:ss') + ' By ' + usr.nm_lengkap
                             })
                             await dailyRitaseCoalDetail.save()
                         }
@@ -343,6 +356,7 @@ class DailyRitaseCoalController {
                 message: 'Upload data ritase coal success....'
             }
         } catch (error) {
+            console.log(error);
             return {
                 success: false,
                 data: error,

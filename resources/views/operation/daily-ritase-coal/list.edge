@@ -106,17 +106,17 @@
                                     </td>
                                     <td class="">
                                         <i class="mdi mdi-weight-kilogram"></i> GROSS <span class="pull-right m-t-3">
-                                            <strong class="text-white">
+                                            <strong class="text-white w_gross" data-value="{{item.w_gross}}">
                                                 {{(item.w_gross).toLocaleString('ID')}}
                                             </strong> KG
                                         </span> <br>
                                         <i class="mdi mdi-weight-kilogram"></i> TARE <span class="pull-right m-t-3">
-                                            <strong class="text-white">
+                                            <strong class="text-white w_tare" data-value="{{item.w_tare}}">
                                                 {{(item.w_tare).toLocaleString('ID')}}
                                             </strong> KG
                                         </span> <br>
                                         <i class="mdi mdi-weight-kilogram"></i> NET  <span class="pull-right m-t-3">
-                                            <strong class="text-white">
+                                            <strong class="text-white w_netto" data-value="{{item.w_netto}}">
                                                 {{(item.w_netto).toLocaleString('ID')}}
                                             </strong> KG
                                         </span>
@@ -124,6 +124,14 @@
                                 </tr>
                             @endeach
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">Total summary per pages</td>
+                                <td id="sumGross">GROSS :</td>
+                                <td id="sumTare">TARE :</td>
+                                <td id="sumNetto">NETTO :</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
                 @include('_component.pagination')
@@ -133,24 +141,28 @@
 </div>
 <script>
     $(function(){
-        // $('body').on('click', 'a.btn-pagging', function(e){
-        //     e.preventDefault()
-        //     var page = $(this).data('page')
-        //     // var keyword = $('#keywordTimeSheet').val()
-        //     console.log(window.location.pathname);
-        //     var url = window.location.pathname+'/list?page='+page
-        //     $.ajax({
-        //         async: true,
-        //         url: url,
-        //         method: 'GET',
-        //         success: function(result){
-        //             $('div#list-content').children().remove()
-        //             $('div#list-content').html(result).show()
-        //         },
-        //         error: function(err){
-        //             console.log(err);
-        //         }
-        //     })
-        // })
+        var arrGross = []
+        var arrTare = []
+        var arrNetto = []
+        $('strong.w_gross').each(function(){
+            var x = $(this).data('value')
+            arrGross.push(x)
+        })
+        $('strong.w_tare').each(function(){
+            var x = $(this).data('value')
+            arrTare.push(x)
+        })
+        $('strong.w_netto').each(function(){
+            var x = $(this).data('value')
+            arrNetto.push(x)
+        })
+
+        var sumGross = arrGross.reduce((a, b) => { return a + b }, 0)
+        var sumTare = arrTare.reduce((a, b) => { return a + b }, 0)
+        var sumNetto = arrNetto.reduce((a, b) => { return a + b }, 0)
+
+        $('td#sumGross').html("<span class='text-right'>G : " + sumGross.toLocaleString('ID') + " KG</span>")
+        $('td#sumTare').html("<span class='text-right'>T : " + sumTare.toLocaleString('ID') + " KG</span>")
+        $('td#sumNetto').html("<span class='text-right'>N : " + sumNetto.toLocaleString('ID') + " KG</span>")
     })
 </script>

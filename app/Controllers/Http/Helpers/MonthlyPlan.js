@@ -335,6 +335,7 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
     let result = []
     let obj = []
 
+    
     for (const fleet of data) {
         let elm1 = []
 
@@ -367,6 +368,7 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
         obj.push({...fleet, data: elm1})
     }
 
+    // console.log('DATA ::', JSON.stringify(obj, null, 2));
 
     for (const val of _.sortBy(obj, 'pit_name')) {
         let tmp = []
@@ -389,6 +391,8 @@ async function GET_COAL_BY_ID_DAILY_FLEET (data) {
         }
         result.push({meta: val.pit_name, data: tmp})
     }
+
+
     
     return result
 }

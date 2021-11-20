@@ -16,6 +16,7 @@ class DailyRefuelingSchema extends Schema {
       table.float('smu').notNullable()
       table.float('topup').notNullable()
       table.text('description').defaultTo(null)
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE').onUpdate('CASCADE')
       table.enu('status', ['OPERATIONAL', 'MAINTENANCE']).defaultTo('OPERATIONAL')
       table.timestamps()
     })

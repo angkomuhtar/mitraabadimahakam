@@ -115,8 +115,8 @@ $(function(){
             data: {
                 isFilter: true,
                 limit: $('input#limit-data').val(),
-                start_checkout_pit: $('input[name="start_checkout_pit"]').val() || null,
-                end_checkout_pit: $('input[name="end_checkout_pit"]').val() || null,
+                start_checkout_jt: $('input[name="start_checkout_jt"]').val() || null,
+                end_checkout_jt: $('input[name="end_checkout_jt"]').val() || null,
                 subkon_id: $('select[name="subkon_id"]').val() || null,
                 start_tiket: $('input[name="start_tiket"]').val() || null,
                 end_tiket: $('input[name="end_tiket"]').val() || null,

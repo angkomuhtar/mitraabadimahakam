@@ -24,7 +24,8 @@ class DailyRefuelEquipmentController {
         return view.render('operation.daily-refuel-unit.create')
     }
 
-    async store ({ request }) {
+    async store ({ auth, request }) {
+        const usr = await auth.getUser()
         const req = request.only(['tgl', 'site_id', 'fuel_truck', 'shift_id', 'fm_awal', 'fm_akhir'])
         const host = request.headers().origin
         const validateFile = {
@@ -33,15 +34,12 @@ class DailyRefuelEquipmentController {
             types: 'application'
         }
 
-        // console.log(req);
         const uploadData = request.file("refuel_xls", validateFile)
-        // console.log(uploadData.extname);
 
         let aliasName
         
         if(uploadData){
             aliasName = `refuel-unit-${moment().format('DDMMYYHHmmss')}.${uploadData.extname}`
-            // let uriImages = host + '/upload/'+aliasName
             await uploadData.move(Helpers.publicPath(`/upload/`), {
                 name: aliasName,
                 overwrite: true,
@@ -79,10 +77,10 @@ class DailyRefuelEquipmentController {
                     description: cell.K ? cell.K : null,
                     fm_awal: parseFloat(req.fm_awal),
                     fm_akhir: parseFloat(req.fm_akhir),
-                    fueling_at: moment(date).format('YYYY-MM-DD HH:mm')
+                    fueling_at: moment(date).format('YYYY-MM-DD HH:mm'),
+                    user_id: usr.id
                 }
             })
-            console.log('DATA EXCEL ::::', result);
 
             let resp = {
                 success: false,

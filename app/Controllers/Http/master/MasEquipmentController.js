@@ -28,7 +28,6 @@ class MasEquipmentController {
     const req = request.all()
     const limit = parseInt(req.limit) || 25
     const halaman = req.page === undefined ? 1:parseInt(req.page)
-    console.log('limit :::', limit);
     let data
     if(req.keyword != ''){
       data = await Equipment.query().where(whe => {
@@ -44,8 +43,25 @@ class MasEquipmentController {
     }else{
       data = await Equipment.query().where('aktif', 'Y').paginate(halaman, limit)
     }
+    const dataUnit = await equipUnit()
 
-    console.log('data :::', data.toJSON());
+    let errUnit = []
+
+    for (const [i, obj] of dataUnit.entries()) {
+      try {
+        (await Equipment.query().where('kode', obj).last()).toJSON()
+      } catch (error) {
+        // console.log('Data '+ obj + ' tidak ditemukan...' + i+1);
+        errUnit.push(obj)
+      }
+    }
+
+    console.log('*log data equipment*');
+    console.log(errUnit);
+    console.log(errUnit.length);
+    console.log('*log data equipment*');
+
+
     return view.render('master.equipment.list', {
       limit: limit,
       search: req.keyword,
@@ -123,7 +139,7 @@ class MasEquipmentController {
   async update ({ auth, params, request }) {
     const usr = await auth.getUser()
     const { id } = params
-    const req = request.only(['kode', 'tipe', 'brand', 'received_date', 'received_hm', 'is_warranty', 'warranty_date', 'is_owned', 'remark', 'unit_sn', 'unit_model', 'engine_sn', 'engine_model', 'fuel_capacity', 'qty_capacity', 'satuan', 'dealer_id'])
+    const req = request.only(['kode', 'tipe', 'brand', 'received_date', 'received_hm', 'is_warranty', 'warranty_date', 'is_owned', 'remark', 'unit_sn', 'unit_model', 'engine_sn', 'engine_model', 'fuel_capacity', 'qty_capacity', 'satuan'])
 
     const host = request.headers().origin
     const validatePhoto = {
@@ -207,3 +223,161 @@ class MasEquipmentController {
 }
 
 module.exports = MasEquipmentController
+
+const equip = [
+  "ME 0001",
+  "ME 0006",
+  "ME 0010",
+  "ME 0011",
+  "ME 0016",
+  "ME 0017",
+  "ME 0018",
+  "ME 0019",
+  "ME 0020",
+  "ME 0021",
+  "ME 0022",
+  "ME 0023",
+  "ME 0025",
+  "ME 0026",
+  "ME 0027",
+  "ME 0028",
+  "ME 0029",
+  "ME 0030",
+  "ME 0031",
+  "ME 0032",
+  "ME 0033",
+  "OHT 001",
+  "OHT 002",
+  "OHT 003",
+  "OHT 005",
+  "OHT 006",
+  "OHT 007",
+  "OHT 008",
+  "OHT 009",
+  "OHT 010",
+  "OHT 011",
+  "OHT 012",
+  "OHT 015",
+  "OHT 016",
+  "OHT 017",
+  "OHT 018",
+  "OHT 019",
+  "OHT 020",
+  "OHT 021",
+  "OHT 022",
+  "OHT 023",
+  "OHT 025",
+  "OHT 026",
+  "OHT 027",
+  "OHT 028",
+  "OHT 029",
+  "OHT 030",
+  "OHT 031",
+  "OHT 032",
+  "OHT 033",
+  "OHT 034",
+  "OHT 035",
+  "OHT 036",
+  "OHT 037",
+  "OHT 038",
+  "ADT 010",
+  "ADT 011",
+  "ADT 012",
+  "MCD10R001",
+  "MD0002",
+  "MD0005",
+  "MD0006",
+  "MD0007",
+  "MD0008",
+  "MD0009",
+  "MD0010",
+  "MD0011",
+  "MD0012",
+  "MD0015",
+  "MG 001",
+  "MG 002",
+  "MG 003",
+  "MG 005",
+  "MG 006",
+  "MG 007",
+  "MDR0001",
+  "MDR0002",
+  "WT 001",
+  "WT 002",
+  "WT 003",
+  "WT 005",
+  "MCP01",
+  "MCP02",
+  "MF01",
+  "MF02",
+  "MWP03",
+  "MWP05",
+  "CT 001",
+  "CT 002",
+  "FT 001",
+  "FT 002",
+  "FT 003",
+  "LT 001",
+  "LT 002",
+  "LT 003",
+  "MF 001",
+  "MB 019",
+  "TES FLOW FT 03",
+  "ATE",
+  "HO-01",
+  "T-01",
+  "T-02",
+  "A-01",
+  "A-02",
+  "A-03",
+  "B-01",
+  "B-02",
+  "B-03",
+  "B-05",
+  "B-08",
+  "C-01",
+  "C-02",
+  "D-01",
+  "D-02",
+  "D-03",
+  "D-05",
+  "D-06",
+  "E-01",
+  "F-01",
+  "F-02",
+  "G-01",
+  "H-01",
+  "D-07",
+  "MASRI",
+  "LV ATE",
+  "LV IPS",
+  "LV-HO",
+  "LPDKT",
+  "MLT01",
+  "MLT02",
+  "MLT03",
+  "MLT04",
+  "MLT05",
+  "MLT06",
+  "MLT07",
+  "MLT08",
+  "MLT09",
+  "MLT10",
+  "MLT11",
+  "MLT12",
+  "MLT13",
+  "MLT15",
+  "MLT16",
+  "MLT17",
+  "GEP33-3",
+  "G-036",
+  "MILLER",
+  "DOOSAN-1",
+  "DOOSAN-2",
+  "ATLAS-3"
+  ]
+  
+  async function equipUnit(){
+      const x = equip.map(obj => obj.replace(/[^a-z0-9]/gi,''))
+      return x
+  }

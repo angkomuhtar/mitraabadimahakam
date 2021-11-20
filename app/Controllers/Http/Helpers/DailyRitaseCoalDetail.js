@@ -8,7 +8,7 @@ class RitaseCoalDetail {
     async ALL (req) { 
         const limit = req.limit || 100
         const halaman = req.page === undefined ? 1:parseInt(req.page)
-        
+        console.log(req);
         let dailyRitaseCoalDetail
         if(req.keyword){
             dailyRitaseCoalDetail = await DailyRitaseCoalDetail
@@ -76,7 +76,7 @@ class RitaseCoalDetail {
                 } catch (error) {
                     return
                 }
-            }else if(req.start_checkout_pit){
+            }else if(req.start_checkout_jt){
                 dailyRitaseCoalDetail = await DailyRitaseCoalDetail
                 .query()
                 .with('ritase_coal', a => {
@@ -91,8 +91,8 @@ class RitaseCoalDetail {
                 .with('opr_subcon')
                 .with('checkerJT')
                 .where( w => {
-                    w.where('checkout_pit', '>=', req.start_checkout_pit + ' ' + '00:00:01')
-                    w.where('checkout_pit', '<=', req.end_checkout_pit + ' ' + '23:59:59')
+                    w.where('checkout_jt', '>=', req.start_checkout_jt + ' ' + '00:00:01')
+                    w.where('checkout_jt', '<=', req.end_checkout_jt + ' ' + '23:59:59')
                 })
                 .orderBy('created_at', 'desc')
                 .paginate(halaman, limit)
