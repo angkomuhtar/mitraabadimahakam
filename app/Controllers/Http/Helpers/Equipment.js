@@ -5,7 +5,7 @@ const DailyTimeSheet = use("App/Models/DailyChecklist")
 
 class EquipmentList {
     async ALL (req) {
-        await equipUnit()
+        // await equipUnit() commented
         let equipment
         if(req.keyword){
             equipment = 

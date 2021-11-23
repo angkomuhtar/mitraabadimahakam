@@ -95,7 +95,7 @@ class MonthlyPlanApiController {
           .andWhere("tipe", "OB")
           .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
-      ).toJSON();
+      ).toJSON()
 
       let temp = [];
       let _temp = [];
@@ -555,7 +555,7 @@ class MonthlyPlanApiController {
             "YYYY-MM-DD HH:mm:ss"
           );
           const _end = moment(`${y} ${m.start_shift}`)
-            .add(12, "hour")
+            .add(m.duration, "hour")
             .format("YYYY-MM-DD HH:mm:ss");
           const dailyFleetsCoalSpecificPit = (
             await DailyFleet.query(trx)
