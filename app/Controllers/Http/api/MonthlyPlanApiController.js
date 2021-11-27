@@ -95,7 +95,7 @@ class MonthlyPlanApiController {
           .andWhere("tipe", "OB")
           .andWhere("monthlyplans_id", MONTHLYPLANS_ID)
           .fetch()
-      ).toJSON()
+      ).toJSON();
 
       let temp = [];
       let _temp = [];
@@ -399,7 +399,8 @@ class MonthlyPlanApiController {
             "YYYY-MM-DD HH:mm:ss"
           );
           const _end = moment(`${y} ${m.start_shift}`)
-            .add(12, "hour")
+            .add(m.duration, "hour")
+            .subtract(1, "minutes")
             .format("YYYY-MM-DD HH:mm:ss");
 
           const dailyFleetsOBSpecificPit = (
@@ -556,6 +557,7 @@ class MonthlyPlanApiController {
           );
           const _end = moment(`${y} ${m.start_shift}`)
             .add(m.duration, "hour")
+            .subtract(1, "minutes")
             .format("YYYY-MM-DD HH:mm:ss");
           const dailyFleetsCoalSpecificPit = (
             await DailyFleet.query(trx)
@@ -684,7 +686,8 @@ class MonthlyPlanApiController {
             "YYYY-MM-DD HH:mm:ss"
           );
           const _end = moment(`${y} ${m.start_shift}`)
-            .add(12, "hour")
+            .add(m.duration, "hour")
+            .subtract(1, "minutes")
             .format("YYYY-MM-DD HH:mm:ss");
 
           const dailyFleetsCoalSpecificPit = (
@@ -1920,6 +1923,7 @@ class MonthlyPlanApiController {
       );
       const _end = moment(`${date} ${x.start_shift}`)
         .add(x.duration, "hour")
+        .subtract(1, "minutes")
         .format("YYYY-MM-DD HH:mm:ss");
 
       const masFleetOB = (
@@ -2206,6 +2210,7 @@ class MonthlyPlanApiController {
       );
       const _end = moment(`${date} ${x.start_shift}`)
         .add(x.duration, "hour")
+        .subtract(1, "minutes")
         .format("YYYY-MM-DD HH:mm:ss");
 
       if (
@@ -2614,7 +2619,7 @@ class MonthlyPlanApiController {
       }
     }
 
-    const pitName = (await MasPit.query().where("id", _pit_id).first())?.name;
+    const pitName = (await MasPit.query().where("id", _pit_id).first())?.kode;
 
     const dats = [];
     for (const x of _months[0].data) {
@@ -2680,6 +2685,371 @@ class MonthlyPlanApiController {
       },
       data: dats,
       pitName: pitName,
+    });
+  }
+
+  async getMTDReports({ request, auth, response }) {
+    const { date, pit_id } = request.only(["date", "pit_id"]);
+    let durasi;
+    var t0 = performance.now();
+
+    const _pit_id = pit_id ? pit_id : 1;
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+
+    const trx = await db.beginTransaction();
+
+    const checkIfStartOfMonth = () => {
+      const _date = moment(date).format("DD");
+
+      let prevMonth = null;
+      if (_date === "01") {
+        prevMonth = moment(date)
+          .subtract(1, "days")
+          .startOf("month")
+          .format("YYYY-MM-DD HH:mm:ss");
+      } else {
+        prevMonth = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+      }
+
+      return prevMonth;
+    };
+    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
+
+    const monthlyPlansOB = await MonthlyPlans.query()
+      .with("pit")
+      .where("month", checkIfStartOfMonth(SoM))
+      .andWhere("pit_id", _pit_id)
+      .andWhere("tipe", "OB")
+      .first();
+
+    const monthlyPlansCoal = await MonthlyPlans.query()
+      .with("pit")
+      .where("month", checkIfStartOfMonth(SoM))
+      .andWhere("pit_id", _pit_id)
+      .andWhere("tipe", "BB")
+      .first();
+
+    const MONTHLYPLANS_OB_ID = monthlyPlansOB?.id;
+    const MONTHLYPLANS_CO_ID = monthlyPlansCoal?.id;
+
+    try {
+      const today = moment(date).format("YYYY-MM-DD");
+      const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
+
+      const shifts = (await MasShift.query().fetch()).toJSON();
+
+      // Daily Plans, Breakdown from Monthly Plans / Number of Days in month
+      const coalPlanToday = await DailyPlans.query(trx)
+        .where("current_date", prevDay)
+        .andWhere("tipe", "COAL")
+        .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
+        .first();
+
+      const obPlanToday = await DailyPlans.query(trx)
+        .where("current_date", prevDay)
+        .andWhere("tipe", "OB")
+        .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
+        .first();
+
+      const SoM = moment(date).startOf("month").format("YYYY-MM-DD");
+      const now = moment(date).format("YYYY-MM-DD");
+
+      const _COAL_EXPOSE_TODAY = await DailyCoalExposed.query()
+        .where("tgl", now)
+        .andWhere("pit_id", _pit_id)
+        .andWhere("aktif", "Y")
+        .first();
+      const _MTD_COAL_EXPOSE = (
+        await DailyCoalExposed.query()
+          .where("tgl", ">=", checkIfStartOfMonth(SoM))
+          .andWhere("tgl", "<=", now)
+          .andWhere("pit_id", _pit_id)
+          .andWhere("aktif", "Y")
+          .fetch()
+      ).toJSON();
+
+      const mtd_ob_actual = (
+        await DailyPlans.query(trx)
+          .whereBetween("current_date", [checkIfStartOfMonth(SoM), now])
+          .where("tipe", "OB")
+          .andWhere("monthlyplans_id", MONTHLYPLANS_OB_ID)
+          .fetch()
+      ).toJSON();
+
+      const mtd_coal_actual = (
+        await DailyPlans.query(trx)
+          .whereBetween("current_date", [checkIfStartOfMonth(SoM), now])
+          .where("tipe", "COAL")
+          .andWhere("monthlyplans_id", MONTHLYPLANS_CO_ID)
+          .fetch()
+      ).toJSON();
+
+      const _MTD_COAL_ACTUAL_BY_TC = parseInt(
+        mtd_coal_actual.reduce((a, b) => a + b.actual / 1000, 0)
+      );
+      const _MTD_OB_ACTUAL_BY_TC = parseInt(
+        mtd_ob_actual.reduce((a, b) => a + b.actual, 0)
+      );
+      let MTD_COAL_SR = parseFloat(
+        (_MTD_OB_ACTUAL_BY_TC / _MTD_COAL_ACTUAL_BY_TC).toFixed(2)
+      );
+
+      if (await infinityCheck(MTD_COAL_SR)) {
+        MTD_COAL_SR = 0;
+      }
+
+      const COAL_EXPOSE = _COAL_EXPOSE_TODAY
+        ? _COAL_EXPOSE_TODAY.volume / 1000
+        : 0;
+      const MTD_COAL_EXPOSE = _MTD_COAL_EXPOSE
+        ? _MTD_COAL_EXPOSE.reduce((a, b) => a + b.volume, 0)
+        : 0;
+
+      let MTD_COAL_EXPOSE_SR = parseFloat(
+        (
+          _MTD_OB_ACTUAL_BY_TC /
+          (_MTD_COAL_ACTUAL_BY_TC + parseInt(COAL_EXPOSE))
+        ).toFixed(2)
+      );
+
+      if (await infinityCheck(MTD_COAL_EXPOSE_SR)) {
+        MTD_COAL_EXPOSE_SR = 0;
+      }
+
+      let data = {
+        mtd_ob_actual_by_tc: _MTD_OB_ACTUAL_BY_TC,
+        mtd_coal_actual_by_tc: _MTD_COAL_ACTUAL_BY_TC,
+        mtd_coal_actual_by_tc_sr: MTD_COAL_SR,
+        coal_expose: COAL_EXPOSE,
+        mtd_coal_expose: MTD_COAL_EXPOSE,
+        mtd_coal_expose_sr: MTD_COAL_EXPOSE_SR,
+      };
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(200).json({
+        diagnostic: {
+          times: durasi,
+          error: false,
+          request_time: date,
+          server_time: moment(date).format("YYYY-MM-DD"),
+        },
+        data: data,
+        pit_name: monthlyPlansCoal.toJSON()?.pit?.name,
+        checker: {},
+      });
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(404).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error,
+        },
+        data: {},
+      });
+    }
+  }
+
+  async getRecentEvents({ request, auth, response }) {
+    const { __date, pit_id, page, limit } = request.only([
+      "__date",
+      "page",
+      "limit",
+    ]);
+    let durasi;
+
+    console.log("date >> ", __date);
+    var t0 = performance.now();
+
+    const _page = parseInt(page) || 1;
+    const _limit = parseInt(limit) || 2;
+    const startIndex = _page - 1;
+    const endIndex = _page * _limit;
+    const paginate = {};
+
+    try {
+      await auth.authenticator("jwt").getUser();
+    } catch (error) {
+      console.log(error);
+      durasi = await diagnoticTime.durasi(t0);
+      return response.status(403).json({
+        diagnostic: {
+          times: durasi,
+          error: true,
+          message: error.message,
+        },
+        data: {},
+      });
+    }
+
+    const shifts = (await MasShift.query().fetch()).toJSON();
+    const date = moment(__date).format("YYYY-MM-DD");
+
+    let data = [];
+    let onShift = null;
+
+    for (let x of shifts) {
+      let _start = moment(`${date} ${x.start_shift}`).format(
+        "YYYY-MM-DD HH:mm:ss"
+      );
+      let _end = moment(`${date} ${x.start_shift}`)
+        .add(x.duration, "hour")
+        .subtract(1, "minutes")
+        .format("YYYY-MM-DD HH:mm:ss");
+        
+      const hour_check_1 = moment(__date).format("HH:mm");
+      const hour_check_2 = moment(_end).format("HH:mm");
+
+      if (hour_check_1 === hour_check_2) {
+        console.log("hour check >> ", hour_check_1, hour_check_2);
+        console.log("is this running ?? ");
+        console.log("this is found >> ", _start, _end);
+        _start = moment(`${_start}`)
+          .subtract(x.duration, "hour")
+          .format("YYYY-MM-DD HH:mm:ss");
+      }
+
+      if (
+        new Date(__date) >= new Date(_start) &&
+        new Date(__date) <= new Date(_end)
+      ) {
+        onShift = x.kode;
+        let dailyFleets = [];
+
+        const check = (
+          await DailyFleet.query()
+            .with("pit")
+            .where("created_at", ">=", _start)
+            .andWhere("created_at", "<=", _end)
+            .fetch()
+        ).toJSON();
+
+        let hours = [];
+
+        if (!check.length) {
+          const prevShiftStart = moment(_start)
+            .subtract(x.duration, "hour")
+            .format("YYYY-MM-DD HH:mm:ss");
+          const prevShiftEnd = moment(_start).format("YYYY-MM-DD HH:mm:ss");
+
+          dailyFleets = (
+            await DailyFleet.query()
+              .with("pit")
+              .where("created_at", ">=", prevShiftStart)
+              .andWhere("created_at", "<=", prevShiftEnd)
+              .fetch()
+          ).toJSON();
+
+          hours = Array.from({ length: x.duration + 1 }, (a, y) => {
+            return moment(`${prevShiftStart}`)
+              .add(60 * y, "minutes")
+              .format("YYYY-MM-DD HH:mm:ss");
+          });
+        } else {
+          dailyFleets = (
+            await DailyFleet.query()
+              .with("pit")
+              .where("created_at", ">=", _start)
+              .andWhere("created_at", "<=", _end)
+              .fetch()
+          ).toJSON();
+
+          hours = Array.from({ length: x.duration + 1 }, (a, y) => {
+            return moment(`${date} ${x.start_shift}`)
+              .add(60 * y, "minutes")
+              .format("YYYY-MM-DD HH:mm:ss");
+          });
+        }
+
+        const dailyEvents = (
+          await DailyEvent.query()
+            .where("start_at", _start)
+            .andWhere("start_at", _end)
+            .fetch()
+        ).toJSON();
+
+        const GET_EQUIPMENT_DETAIL = async (equipId) => {
+          let result = null;
+
+          const dailyFleetEquips = await DailyFleetEquip.query()
+            .with("equipments")
+            .with("dailyFleet", (wh) => {
+              wh.with("pit");
+            })
+            .whereIn(
+              "dailyfleet_id",
+              dailyFleets.map((v) => v.id)
+            )
+            .where("equip_id", equipId)
+            .first();
+
+          if (dailyFleetEquips || dailyFleetEquips.toJSON()) {
+            const pitName = dailyFleetEquips.toJSON().pit.kode;
+            const equipName = dailyFleetEquips.toJSON().equipment.kode;
+            result = {
+              pitName: pitName,
+              equipName: equipName,
+            };
+          } else {
+            result = null;
+          }
+          return result;
+        };
+
+        for (const m of dailyEvents) {
+          const endAtCheck = m.end_at
+            ? moment(y.data.end).format("HH:mm")
+            : "ON GOING";
+
+          const obj = {
+            equipName: await (await GET_EQUIPMENT_DETAIL(m.equip_id)).equipName,
+            date: moment(m.start_at).format("DD MMM"),
+            rangeTime: `${moment(m.start_at).format("HH:mm")} ~ ${endAtCheck}`,
+            onPit: await (await GET_EQUIPMENT_DETAIL(m.equip_id)).pitName,
+          };
+          data.push(obj);
+        }
+      }
+    }
+
+    if (endIndex < data.length) {
+      paginate.next = {
+        page: _page + 1,
+        limit: _limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      paginate.previous = {
+        page: _page - 1,
+        limit: _limit,
+      };
+    }
+
+    return response.status(200).json({
+      diagnostic: {
+        times: durasi,
+        error: false,
+        request_time: date,
+        server_time: moment(date).format("YYYY-MM-DD"),
+      },
+      data: data.slice(0, endIndex),
+      arrLength: data.length,
+      onShift: onShift,
     });
   }
 }
