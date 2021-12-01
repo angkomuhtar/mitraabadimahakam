@@ -65,9 +65,11 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
     .last();
 
   /* GET MONTLY PLAN */
+  const awalBulan = moment(dailyritasedetail.check_in).startOf('month').format('YYYY-MM-DD')
   const montlyPlan = await MonthlyPlan.query()
     .where((w) => {
       w.where("pit_id", dailyFleet.pit_id);
+      w.where('month', awalBulan)
       w.where("tipe", "OB");
     })
     .last();

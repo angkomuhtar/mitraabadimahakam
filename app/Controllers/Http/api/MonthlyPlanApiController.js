@@ -379,6 +379,8 @@ class MonthlyPlanApiController {
 
     const SoW = moment(date).startOf("week").format("YYYY-MM-DD HH:mm:ss");
     let _OB_ARR = [];
+    const shiftData = [];
+    const daysArr = [];
 
     const obj = {};
     try {
@@ -395,13 +397,30 @@ class MonthlyPlanApiController {
         for (let m of shifts) {
           const ctx = 1;
           counter += ctx;
-          const _start = moment(`${y} ${m.start_shift}`).format(
+          let _start = moment(`${y} ${m.start_shift}`).format(
             "YYYY-MM-DD HH:mm:ss"
           );
-          const _end = moment(`${y} ${m.start_shift}`)
+          let _end = moment(`${y} ${m.start_shift}`)
             .add(m.duration, "hour")
             .subtract(1, "minutes")
             .format("YYYY-MM-DD HH:mm:ss");
+
+          const hour_check_1 = moment(date).format("HH:mm");
+          const hour_check_2 = moment(_end).format("HH:mm");
+
+          const day_check_1 = moment(date).format("DD");
+          const day_check_2 = moment(_end).format("DD");
+
+          if (day_check_1 !== day_check_2 && hour_check_1 === hour_check_2) {
+            _start = moment(`${_start}`)
+              .subtract(m.duration * shifts.length, "hour")
+              .format("YYYY-MM-DD HH:mm:ss");
+
+            _end = moment(`${date} ${m.start_shift}`)
+              .subtract(m.duration, "hour")
+              .subtract(1, "minutes")
+              .format("YYYY-MM-DD HH:mm:ss");
+          }
 
           const dailyFleetsOBSpecificPit = (
             await DailyFleet.query(trx)
@@ -448,6 +467,38 @@ class MonthlyPlanApiController {
           const ritaseDate = moment(y).format("YYYY-MM-DD");
 
           let _obj = null;
+          shiftData.push({
+            dayName: ritaseDay.toLowerCase(),
+            shiftName: m.kode.toUpperCase(),
+            value:
+              RITASE_OB.reduce(
+                (a, b) => a + b.daily_ritase.material_details.vol,
+                0
+              ) || 0,
+            shiftStart: _start,
+            endShift: _end,
+            shiftDuration: m.duration,
+          });
+
+          const daysObj = {
+            day: ritaseDay.toLowerCase(),
+            date: `${moment(ritaseDate).format("ddd")}, ${moment(
+              ritaseDate
+            ).format("MMM")} ${moment(ritaseDate).format("DD")}${
+              moment(ritaseDate).format("DD") === "01"
+                ? "st"
+                : moment(ritaseDate).format("DD") === "02"
+                ? "nd"
+                : moment(ritaseDate).format("DD") === "03"
+                ? "rd"
+                : "th"
+            }`,
+            data: shiftData.filter(
+              (x) => x.dayName === ritaseDay.toLowerCase()
+            ),
+          };
+
+          daysArr.push(daysObj);
 
           if (counter % 2 === 0) {
             _obj = {
@@ -482,6 +533,7 @@ class MonthlyPlanApiController {
         },
         pit_name: "GENERAL",
         data: _OB_ARR,
+        daysArr: daysArr.filter((v, i) => i % 2 !== 0),
       });
     } catch (error) {
       console.log(error);
@@ -536,6 +588,8 @@ class MonthlyPlanApiController {
     const SoW = moment(date).startOf("week").format("YYYY-MM-DD HH:mm:ss");
 
     let _OB_ARR = [];
+    const shiftData = [];
+    const daysArr = [];
 
     const obj = {};
     try {
@@ -552,13 +606,31 @@ class MonthlyPlanApiController {
         for (let m of shifts) {
           const ctx = 1;
           counter += ctx;
-          const _start = moment(`${y} ${m.start_shift}`).format(
+          let _start = moment(`${y} ${m.start_shift}`).format(
             "YYYY-MM-DD HH:mm:ss"
           );
-          const _end = moment(`${y} ${m.start_shift}`)
+          let _end = moment(`${y} ${m.start_shift}`)
             .add(m.duration, "hour")
             .subtract(1, "minutes")
             .format("YYYY-MM-DD HH:mm:ss");
+
+          const hour_check_1 = moment(date).format("HH:mm");
+          const hour_check_2 = moment(_end).format("HH:mm");
+
+          const day_check_1 = moment(date).format("DD");
+          const day_check_2 = moment(_end).format("DD");
+
+          if (day_check_1 !== day_check_2 && hour_check_1 === hour_check_2) {
+            _start = moment(`${_start}`)
+              .subtract(m.duration * shifts.length, "hour")
+              .format("YYYY-MM-DD HH:mm:ss");
+
+            _end = moment(`${date} ${m.start_shift}`)
+              .subtract(m.duration, "hour")
+              .subtract(1, "minutes")
+              .format("YYYY-MM-DD HH:mm:ss");
+          }
+
           const dailyFleetsCoalSpecificPit = (
             await DailyFleet.query(trx)
               .whereIn(
@@ -596,6 +668,34 @@ class MonthlyPlanApiController {
 
           let _obj = null;
 
+          shiftData.push({
+            dayName: ritaseDay.toLowerCase(),
+            shiftName: m.kode.toUpperCase(),
+            value: RITASE_COAL.reduce((a, b) => a + b.w_netto, 0) || 0,
+            shiftStart: _start,
+            endShift: _end,
+            shiftDuration: m.duration,
+          });
+
+          const daysObj = {
+            day: ritaseDay.toLowerCase(),
+            date: `${moment(ritaseDate).format("ddd")}, ${moment(
+              ritaseDate
+            ).format("MMM")} ${moment(ritaseDate).format("DD")}${
+              moment(ritaseDate).format("DD") === "01"
+                ? "st"
+                : moment(ritaseDate).format("DD") === "02"
+                ? "nd"
+                : moment(ritaseDate).format("DD") === "03"
+                ? "rd"
+                : "th"
+            }`,
+            data: shiftData.filter(
+              (x) => x.dayName === ritaseDay.toLowerCase()
+            ),
+          };
+
+          daysArr.push(daysObj);
           if (counter % 2 === 0) {
             _obj = {
               value: RITASE_COAL.reduce((a, b) => a + b.w_netto, 0),
@@ -623,6 +723,7 @@ class MonthlyPlanApiController {
         },
         pit_name: "GENERAL",
         data: _OB_ARR,
+        daysArr: daysArr.filter((v, i) => i % 2 !== 0),
       });
     } catch (error) {
       console.log(error);
@@ -670,7 +771,8 @@ class MonthlyPlanApiController {
     const SoW = moment(date).startOf("week").format("YYYY-MM-DD HH:mm:ss");
 
     let _OB_ARR = [];
-
+    const daysArr = [];
+    const shiftData = [];
     const obj = {};
     try {
       const shifts = (await MasShift.query().fetch()).toJSON();
@@ -682,13 +784,30 @@ class MonthlyPlanApiController {
         for (let m of shifts) {
           const ctx = 1;
           counter += ctx;
-          const _start = moment(`${y} ${m.start_shift}`).format(
+          let _start = moment(`${y} ${m.start_shift}`).format(
             "YYYY-MM-DD HH:mm:ss"
           );
-          const _end = moment(`${y} ${m.start_shift}`)
+          let _end = moment(`${y} ${m.start_shift}`)
             .add(m.duration, "hour")
             .subtract(1, "minutes")
             .format("YYYY-MM-DD HH:mm:ss");
+
+          const hour_check_1 = moment(date).format("HH:mm");
+          const hour_check_2 = moment(_end).format("HH:mm");
+
+          const day_check_1 = moment(date).format("DD");
+          const day_check_2 = moment(_end).format("DD");
+
+          if (day_check_1 !== day_check_2 && hour_check_1 === hour_check_2) {
+            _start = moment(`${_start}`)
+              .subtract(m.duration * shifts.length, "hour")
+              .format("YYYY-MM-DD HH:mm:ss");
+
+            _end = moment(`${date} ${m.start_shift}`)
+              .subtract(m.duration, "hour")
+              .subtract(1, "minutes")
+              .format("YYYY-MM-DD HH:mm:ss");
+          }
 
           const dailyFleetsCoalSpecificPit = (
             await DailyFleet.query(trx)
@@ -722,6 +841,34 @@ class MonthlyPlanApiController {
           const ritaseDate = moment(y).format("YYYY-MM-DD");
 
           let _obj = null;
+          shiftData.push({
+            dayName: ritaseDay.toLowerCase(),
+            shiftName: m.kode.toUpperCase(),
+            value: REFUELING.reduce((a, b) => a + b.top_up, 0) || 0,
+            startShift: _start,
+            endShift: _end,
+            shiftDuration: m.duration,
+          });
+
+          const daysObj = {
+            day: ritaseDay.toLowerCase(),
+            date: `${moment(ritaseDate).format("ddd")}, ${moment(
+              ritaseDate
+            ).format("MMM")} ${moment(ritaseDate).format("DD")}${
+              moment(ritaseDate).format("DD") === "01"
+                ? "st"
+                : moment(ritaseDate).format("DD") === "02"
+                ? "nd"
+                : moment(ritaseDate).format("DD") === "03"
+                ? "rd"
+                : "th"
+            }`,
+            data: shiftData.filter(
+              (x) => x.dayName === ritaseDay.toLowerCase()
+            ),
+          };
+
+          daysArr.push(daysObj);
 
           if (counter % 2 === 0) {
             _obj = {
@@ -750,6 +897,7 @@ class MonthlyPlanApiController {
         },
         pit_name: "GENERAL",
         data: _OB_ARR,
+        daysArr: daysArr.filter((v, i) => i % 2 !== 0),
       });
     } catch (error) {
       console.log(error);
@@ -1918,13 +2066,30 @@ class MonthlyPlanApiController {
     let onShift = null;
 
     for (let x of shifts) {
-      const _start = moment(`${date} ${x.start_shift}`).format(
+      let _start = moment(`${date} ${x.start_shift}`).format(
         "YYYY-MM-DD HH:mm:ss"
       );
-      const _end = moment(`${date} ${x.start_shift}`)
+      let _end = moment(`${date} ${x.start_shift}`)
         .add(x.duration, "hour")
         .subtract(1, "minutes")
         .format("YYYY-MM-DD HH:mm:ss");
+
+      const hour_check_1 = moment(__date).format("HH:mm");
+      const hour_check_2 = moment(_end).format("HH:mm");
+
+      const day_check_1 = moment(__date).format("DD");
+      const day_check_2 = moment(_end).format("DD");
+
+      if (day_check_1 !== day_check_2 && hour_check_1 === hour_check_2) {
+        _start = moment(`${_start}`)
+          .subtract(x.duration * shifts.length, "hour")
+          .format("YYYY-MM-DD HH:mm:ss");
+
+        _end = moment(`${date} ${x.start_shift}`)
+          .subtract(x.duration, "hour")
+          .subtract(1, "minutes")
+          .format("YYYY-MM-DD HH:mm:ss");
+      }
 
       const masFleetOB = (
         await MasFleet.query().where("tipe", "OB").fetch()
@@ -2205,13 +2370,30 @@ class MonthlyPlanApiController {
     let onShift = null;
 
     for (let x of shifts) {
-      const _start = moment(`${date} ${x.start_shift}`).format(
+      let _start = moment(`${date} ${x.start_shift}`).format(
         "YYYY-MM-DD HH:mm:ss"
       );
-      const _end = moment(`${date} ${x.start_shift}`)
+      let _end = moment(`${date} ${x.start_shift}`)
         .add(x.duration, "hour")
         .subtract(1, "minutes")
         .format("YYYY-MM-DD HH:mm:ss");
+
+      const hour_check_1 = moment(__date).format("HH:mm");
+      const hour_check_2 = moment(_end).format("HH:mm");
+
+      const day_check_1 = moment(__date).format("DD");
+      const day_check_2 = moment(_end).format("DD");
+
+      if (day_check_1 !== day_check_2 && hour_check_1 === hour_check_2) {
+        _start = moment(`${_start}`)
+          .subtract(x.duration * shifts.length, "hour")
+          .format("YYYY-MM-DD HH:mm:ss");
+
+        _end = moment(`${date} ${x.start_shift}`)
+          .subtract(x.duration, "hour")
+          .subtract(1, "minutes")
+          .format("YYYY-MM-DD HH:mm:ss");
+      }
 
       if (
         new Date(__date) >= new Date(_start) &&
@@ -2590,6 +2772,7 @@ class MonthlyPlanApiController {
     });
 
     const months = [];
+    const monthsArr = [];
 
     for (const x of monthArrays) {
       const obj = {
@@ -2656,6 +2839,18 @@ class MonthlyPlanApiController {
           .fetch()
       ).toJSON();
 
+      monthsArr.push({
+        monthName: x.monthName,
+        data: {
+          hm: parseInt(
+            parseFloat(
+              dailyRefuelings.reduce((a, b) => a + b.timesheet.used_smu, 0)
+            ).toFixed(2)
+          ),
+          fuel: dailyRefuelings.reduce((a, b) => a + b.topup, 0),
+        },
+      });
+
       dats.push({
         value: parseInt(
           parseFloat(
@@ -2685,6 +2880,7 @@ class MonthlyPlanApiController {
       },
       data: dats,
       pitName: pitName,
+      monthsArr,
     });
   }
 
@@ -2871,8 +3067,6 @@ class MonthlyPlanApiController {
       "limit",
     ]);
     let durasi;
-
-    console.log("date >> ", __date);
     var t0 = performance.now();
 
     const _page = parseInt(page) || 1;
@@ -2910,16 +3104,21 @@ class MonthlyPlanApiController {
         .add(x.duration, "hour")
         .subtract(1, "minutes")
         .format("YYYY-MM-DD HH:mm:ss");
-        
+
       const hour_check_1 = moment(__date).format("HH:mm");
       const hour_check_2 = moment(_end).format("HH:mm");
 
-      if (hour_check_1 === hour_check_2) {
-        console.log("hour check >> ", hour_check_1, hour_check_2);
-        console.log("is this running ?? ");
-        console.log("this is found >> ", _start, _end);
+      const day_check_1 = moment(__date).format("DD");
+      const day_check_2 = moment(_end).format("DD");
+
+      if (day_check_1 !== day_check_2 && hour_check_1 === hour_check_2) {
         _start = moment(`${_start}`)
+          .subtract(x.duration * shifts.length, "hour")
+          .format("YYYY-MM-DD HH:mm:ss");
+
+        _end = moment(`${date} ${x.start_shift}`)
           .subtract(x.duration, "hour")
+          .subtract(1, "minutes")
           .format("YYYY-MM-DD HH:mm:ss");
       }
 
@@ -2977,29 +3176,33 @@ class MonthlyPlanApiController {
 
         const dailyEvents = (
           await DailyEvent.query()
-            .where("start_at", _start)
-            .andWhere("start_at", _end)
+            .where("start_at", ">=", _start)
+            .andWhere("start_at", "<=", _end)
             .fetch()
         ).toJSON();
 
         const GET_EQUIPMENT_DETAIL = async (equipId) => {
           let result = null;
 
-          const dailyFleetEquips = await DailyFleetEquip.query()
-            .with("equipments")
-            .with("dailyFleet", (wh) => {
-              wh.with("pit");
-            })
-            .whereIn(
-              "dailyfleet_id",
-              dailyFleets.map((v) => v.id)
-            )
-            .where("equip_id", equipId)
-            .first();
+          const dailyFleetEquips = (
+            await DailyFleetEquip.query()
+              .with("equipment")
+              .with("dailyFleet", (wh) => {
+                wh.with("pit");
+              })
+              .whereIn(
+                "dailyfleet_id",
+                dailyFleets.map((v) => v.id)
+              )
+              .fetch()
+          ).toJSON();
 
-          if (dailyFleetEquips || dailyFleetEquips.toJSON()) {
-            const pitName = dailyFleetEquips.toJSON().pit.kode;
-            const equipName = dailyFleetEquips.toJSON().equipment.kode;
+          if (dailyFleetEquips) {
+            const filterEquipment = dailyFleetEquips.filter(
+              (v) => v.equip_id === equipId
+            )[0];
+            const pitName = filterEquipment?.pit?.kode;
+            const equipName = filterEquipment?.equipment?.kode;
             result = {
               pitName: pitName,
               equipName: equipName,
@@ -3012,10 +3215,11 @@ class MonthlyPlanApiController {
 
         for (const m of dailyEvents) {
           const endAtCheck = m.end_at
-            ? moment(y.data.end).format("HH:mm")
+            ? moment(m.end_at).format("HH:mm")
             : "ON GOING";
 
           const obj = {
+            eventId: m.id,
             equipName: await (await GET_EQUIPMENT_DETAIL(m.equip_id)).equipName,
             date: moment(m.start_at).format("DD MMM"),
             rangeTime: `${moment(m.start_at).format("HH:mm")} ~ ${endAtCheck}`,
