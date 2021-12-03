@@ -19,7 +19,8 @@ class AjaxChartController {
 
     async grafik_COAL_MTD ({ request }) {
         const req = request.all()
-        const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY_COAL(req)
+        // const grafik1 = await MonthlyPlanHelpers.CHARTIST_MONTHLY_COAL(req)
+        const grafik1 = await MonthlyPlanHelpers.CHART_MOTHLY_COAL(req)
         // console.log('grafik1 ::', grafik1);
         return grafik1
     }
@@ -77,7 +78,7 @@ class AjaxChartController {
         
             
             for (const item of arrDate) {
-                console.log(!grouping.map(obj => obj.tgl).includes(item), item);
+                // console.log(!grouping.map(obj => obj.tgl).includes(item), item);
                 if(!grouping.map(obj => obj.tgl).includes(item)){
                     grouping.push({tgl: item, topup: 0})
                 }
