@@ -906,7 +906,10 @@ Route.group(() => {
     Route.get('/unit/refueling/recent', 'MonthlyPlanApiController.recentUnitRefueling')
 
     Route.get('/ranges/fuel/ratio', 'MonthlyPlanApiController.getRangeMonthFuelBurn')
-    
+
+    Route.get('/mtd-reports/get', 'MonthlyPlanApiController.getMTDReports')
+
+    Route.get('/unit/event/recent', 'MonthlyPlanApiController.getRecentEvents')
 
 }).prefix('api/monthly-plan').namespace('api')
 

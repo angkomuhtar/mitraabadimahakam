@@ -77,24 +77,25 @@ class DailyFleetController {
     const filterDateEnd = moment(datetime.datetime).format('YYYY-MM-DD') + ' ' + dataShift.end_shift
 
     
-    for (const itemUnit of reqEquip) {
-      const checkEquipment = 
-      await DailyFleetEquip
-      .query()
-      .where( w => {
-        w.where('datetime', '>=', filterDateStart)
-        w.where('datetime', '<=', filterDateEnd)
-        w.where('equip_id', itemUnit.equip_id)
-      })
-      .last()
-      if (checkEquipment) {
-        const unit = await Equipment.findOrFail(checkEquipment.equip_id)
-        return {
-          success: false,
-          message: 'Used another fleet equipment data '+unit.kode
-        }
-      }
-    }
+    // check for duplicate equipment
+    // for (const itemUnit of reqEquip) {
+    //   const checkEquipment = 
+    //   await DailyFleetEquip
+    //   .query()
+    //   .where( w => {
+    //     w.where('datetime', '>=', filterDateStart)
+    //     w.where('datetime', '<=', filterDateEnd)
+    //     w.where('equip_id', itemUnit.equip_id)
+    //   })
+    //   .last()
+    //   if (checkEquipment) {
+    //     const unit = await Equipment.findOrFail(checkEquipment.equip_id)
+    //     return {
+    //       success: false,
+    //       message: 'Used another fleet equipment data '+unit.kode
+    //     }
+    //   }
+    // }
 
     const dailyFleet = new DailyFleet()
     dailyFleet.fill({...req, date: moment(datetime.datetime).format('YYYY-MM-DD'), user_id: usr.id})
