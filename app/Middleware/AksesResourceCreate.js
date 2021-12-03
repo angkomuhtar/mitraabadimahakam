@@ -20,7 +20,6 @@ class AksesResourceCreate {
       if(akses){
         await next()
       }else{
-        // response.redirect('back')
         response.status(404).json({success: false, message: 'You not authorized....'})
       }
     }

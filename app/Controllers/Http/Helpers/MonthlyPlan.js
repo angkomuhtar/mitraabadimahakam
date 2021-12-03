@@ -253,6 +253,131 @@ class MonthlyPlan {
         return data
     }
 
+    async CHART_MOTHLY_COAL (req) {
+        const bulan = new Date(req.periode)
+        const currentMonthDates = Array.from({length: moment(bulan).daysInMonth()}, 
+        (x, i) => moment(bulan).startOf('month').add(i, 'days').format('YYYY-MM-DD'))
+
+        let sumData = []
+        
+        for (const tgl of currentMonthDates) {
+            const tgl_awal = tgl + ' 07:00:59'
+            const tgl_akhir = moment(tgl_awal).add(1, 'days').format('YYYY-MM-DD HH:mm:ss')
+            
+            try {
+                let arrData = []
+                
+                const dailyData = (
+                    await DailyRitaseCoalDetail
+                    .query()
+                    .with('seam', a => a.with('pit'))
+                    .with('transporter')
+                    .with('ritase_coal')
+                    .where(
+                        w => {
+                            w.where('checkout_jt', '>=', tgl_awal)
+                            w.where('checkout_jt', '<=', tgl_akhir)
+                        }
+                    ).fetch()
+                ).toJSON()
+
+               
+                if(dailyData.length > 0){
+                    for (const val of dailyData) {
+                        arrData.push({...val, tgl: tgl})
+                    }
+                }
+
+                for (const elm of arrData) {
+                    sumData.push({
+                        pit_name: elm.seam.pit.name,
+                        tgl: tgl,
+                        w_gross: elm.w_gross,
+                        w_tare: elm.w_tare,
+                        w_netto: elm.w_netto
+                    })
+                }
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+
+        sumData = _.groupBy(sumData, 'pit_name')
+
+        sumData = Object.keys(sumData).map(elm => {
+
+            let data = _.groupBy(sumData[elm], 'tgl')
+
+            console.log(data);
+
+            let grpByDate = Object.keys(data).map(val => {
+                return {
+                    tgl: val,
+                    w_netto: data[val].reduce((a, b) => { return a + b.w_netto }, 0)
+                }
+            })
+
+            return {
+                pit: elm,
+                data: grpByDate
+            }
+        })
+
+        let result = []
+        let totalActual = []
+
+        for (const elm of  _.sortBy(sumData, 'pit')) {
+            var x = elm.data.map(val => val.tgl)
+            for (const tgl of currentMonthDates) {
+                if(!x.includes(tgl)){
+                    elm.data.push({tgl: tgl, w_netto: 0})
+                }
+            }
+            let tmp = []
+            for (const res of _.sortBy(elm.data, 'tgl')) {
+                tmp.push({
+                    meta: elm.pit,
+                    date: res.tgl,
+                    value: res.w_netto
+                })
+                totalActual.push(res.w_netto)
+            }
+            result.push(tmp)
+        }
+
+
+        const monthlyAvg = (
+            await MonthlyPlans.query().where( w => {
+                w.where('tipe', 'BB')
+                w.where('month', 'like', `${moment(bulan).format('YYYY-MM')}%`)
+            })
+            .fetch()
+        ).toJSON()
+
+        // let xxx = result.reduce((a, b) => {return a + b.})
+
+        console.log(totalActual.reduce((a, b) => {return a + b}, 0));
+
+        const estimasi = monthlyAvg.reduce((a, b) => {return a + b.estimate}, 0)
+        const aktual = totalActual.reduce((a, b) => {return a + b}, 0) / 1000
+        const persen = (aktual / estimasi) * 100
+        const dataRes = {
+            monthly_plan: {
+                month: moment(bulan).format('MMMM YYYY'),
+                satuan: 'MT',
+                estimate: estimasi,
+                actual: (aktual),
+                persen: (persen).toFixed(2)
+            },
+            labels: currentMonthDates.map(list => list.substr(8, 2)),
+            actual: result
+        }
+
+        return dataRes
+    }
+
     async CHARTIST_RITASE_OB_EQUIPMENT(req) {
         const date = req.periode ? moment(req.periode).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')
         try {

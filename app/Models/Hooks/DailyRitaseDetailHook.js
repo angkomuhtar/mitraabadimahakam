@@ -83,6 +83,7 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
     })
     .first();
 
+
   /** check whether this is a OHT or SFI */
   const regTest = /SFI/i;
   const equipmentName = hauler.kode;

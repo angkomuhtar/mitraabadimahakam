@@ -602,9 +602,9 @@ class TimeSheetApiController {
         // }
         // await DailyCheckp2H.createMany(p2hDetails, trx)
 
-        const dailyRefueling = new DailyRefueling();
-        dailyRefueling.fill({ ...refueling, timesheet_id: dailyChecklist.id });
-        await dailyRefueling.save(trx);
+        // const dailyRefueling = new DailyRefueling();
+        // dailyRefueling.fill({ ...refueling, timesheet_id: dailyChecklist.id });
+        // await dailyRefueling.save(trx);
 
         await trx.commit();
         const result = await DailyChecklist.query().last();
