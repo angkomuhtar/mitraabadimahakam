@@ -671,7 +671,10 @@ class MonthlyPlanApiController {
           shiftData.push({
             dayName: ritaseDay.toLowerCase(),
             shiftName: m.kode.toUpperCase(),
-            value: RITASE_COAL.reduce((a, b) => a + b.w_netto, 0) || 0,
+            value:
+              parseFloat(
+                RITASE_COAL.reduce((a, b) => a + b.w_netto, 0) / 1000
+              ) || 0,
             shiftStart: _start,
             endShift: _end,
             shiftDuration: m.duration,
@@ -698,12 +701,16 @@ class MonthlyPlanApiController {
           daysArr.push(daysObj);
           if (counter % 2 === 0) {
             _obj = {
-              value: RITASE_COAL.reduce((a, b) => a + b.w_netto, 0),
+              value: parseFloat(
+                RITASE_COAL.reduce((a, b) => a + b.w_netto, 0) / 1000
+              ),
               frontColor: "#ED6665",
             };
           } else {
             _obj = {
-              value: RITASE_COAL.reduce((a, b) => a + b.w_netto, 0),
+              value: parseFloat(
+                RITASE_COAL.reduce((a, b) => a + b.w_netto, 0) / 1000
+              ),
               label: ritaseDay.toLowerCase(),
               spacing: 2,
               labelWidth: 30,

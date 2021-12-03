@@ -11,7 +11,6 @@ const DailyRitaseCoalDetailHook = exports = module.exports = {}
 
 DailyRitaseCoalDetailHook.afterSave = async (coalDetailRit) => {
     
-    console.log('dailyPlan-COAL', coalDetailRit);
     await UPDATE_DATA_MASTER (coalDetailRit)
 }
 
