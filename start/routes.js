@@ -925,6 +925,20 @@ Route.group(() => {
 
 Route.group(() => {
 
+    Route.get('/', 'TravelDocumentApiController.index')
+
+    Route.post('/', 'TravelDocumentApiController.store')
+
+    Route.get('/:id/show', 'TravelDocumentApiController.show')
+
+    Route.post('/:id/update', 'TravelDocumentApiController.update')
+
+    Route.delete('/:id/destroy', 'TravelDocumentApiController.destroy')
+    
+}).prefix('api/travel-document').namespace('api')
+
+Route.group(() => {
+
     Route.get('/', 'DailyCoalExposedApiController.index')
 
     Route.get('/filter', 'DailyCoalExposedApiController.filter')
