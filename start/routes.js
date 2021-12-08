@@ -939,7 +939,7 @@ Route.group(() => {
     Route.post('/shift/night', 'NotificationController.nightShiftNotification')
 
     Route.post('/user/device-id/update', 'NotificationController.storeUserDevice')
-    
+    Route.post('/', 'NotificationController.index')
 }).prefix('api/notifications').namespace('api')
 
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))

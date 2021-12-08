@@ -11,6 +11,8 @@ const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime");
 const DailyChecklist = use("App/Models/DailyChecklist");
 const db = use("Database");
 const UserDevice = use("App/Models/UserDevice");
+const User = use("App/Models/User");
+const { sendMessage } = use("App/Controllers/Http/customClass/utils");
 
 /**
  * Resourceful controller for interacting with notifications
@@ -25,7 +27,17 @@ class NotificationController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ request, response, view }) {}
+  async index({ request, response, view }) {
+
+    const { platform } = request.only(['platform']);
+    const owner = (await User.query()
+      .with("deviceId")
+      .where("user_tipe", "owner")
+      .last()).toJSON()
+
+    const data = {};
+    await sendMessage(owner?.deviceId?.playerId, "Test qqqq", data, owner?.deviceId?.platform);
+  }
 
   /**
    * Render a form to be used for creating a new notification.
@@ -195,8 +207,8 @@ class NotificationController {
             console.error("Error:", body.errors);
           }
         }
-      );
-    };
+      )
+    }
 
     const timeNow = moment().format("YYYY-MM-DD");
 
@@ -236,11 +248,12 @@ class NotificationController {
     var t0 = performance.now();
     let durasi;
 
-    const { user_id, device_model, userId, playerId } = request.only([
+    const { user_id, device_model, userId, playerId, platform } = request.only([
       "user_id",
       "device_model",
       "userId",
       "playerId",
+      "platform"
     ]);
 
     try {
@@ -297,6 +310,7 @@ class NotificationController {
           device_model,
           user_id,
           playerId,
+          platform
         });
         await userDevice.save();
       } catch (err) {
