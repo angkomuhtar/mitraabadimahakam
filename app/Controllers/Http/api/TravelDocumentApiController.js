@@ -112,6 +112,8 @@ class TravelDocumentController {
         const req = request.only(['checkby', 'site_id', 'kode', 'delman', 'narasi', 'tipe', 'recived_at'])
         const reqPhoto = request.file('photo', validateFile)
 
+        // console.log('reqPhoto ::', reqPhoto);
+
         req.kode = req.kode ? req.kode : `SJ${moment().format('YYMMDD')}.${moment().format('HHmmss')}`
         req.recived_at = req.recived_at ? req.recived_at : new Date()
         try {

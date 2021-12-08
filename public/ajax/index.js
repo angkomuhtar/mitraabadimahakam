@@ -1,4 +1,7 @@
 $(function(){
+
+    console.log('ajax/index');
+
     $('document.body').on('click', 'i.close-msg', function(){
         $('div#panel-message').toggleClass('in')
     })
