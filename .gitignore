@@ -19,4 +19,4 @@ database/*.sqlite
 public/upload
 
 # Template Excel
-public/template-xls
+public/template-xls/*.*
