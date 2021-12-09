@@ -2,6 +2,10 @@ $(function(){
 
     console.log('ajax/index');
 
+    $(function(){
+        $('select.select2x').select2()
+    })
+
     $('document.body').on('click', 'i.close-msg', function(){
         $('div#panel-message').toggleClass('in')
     })

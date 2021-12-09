@@ -382,6 +382,8 @@ Route.group(() => {
 
     Route.get('/daily-timesheet/list', 'DailyTimesheetController.list').as('opr.daily-timesheet.list').middleware('R')
 
+    Route.get('/daily-timesheet/add-event', 'DailyTimesheetController.addEvent').as('opr.daily-timesheet.addEvent').middleware('R')
+
     Route.get('/daily-timesheet/list-p2h', 'DailyTimesheetController.listP2H').as('opr.daily-timesheet.listP2H').middleware('R')
 
     Route.get('/daily-timesheet/create', 'DailyTimesheetController.create').as('opr.daily-timesheet.create').middleware('R')
