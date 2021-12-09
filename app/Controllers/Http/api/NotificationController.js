@@ -137,7 +137,7 @@ class NotificationController {
         dailyfleet_id: x.dailyfleet_id,
         unit_id: x.unit_id,
         id: x.id,
-        unit_name: x.equipment.kode,
+        unit_name: x.equipment.kode
       };
       const msg = `Jangan lupa untuk menutup HM akhir unit ${x.equipment.kode}`;
       sendMessage(x.userCheck.deviceId.playerId, msg, data);
@@ -300,7 +300,7 @@ class NotificationController {
             error: true,
             message: err.message,
           },
-          data: {},
+          data: {}
         });
       }
     } else {

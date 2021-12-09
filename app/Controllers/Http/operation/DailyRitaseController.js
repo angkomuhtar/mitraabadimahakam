@@ -136,46 +136,50 @@ class DailyRitaseController {
 
         /** after being uploaded, then throw a notif to the company's owner */
         const owner = (
-          await User.query().with("deviceId").where("user_tipe", "owner").last()
+          await User.query().where("user_tipe", "owner").last()
         ).toJSON();
 
-        const hours = moment(data[0].E).add(3, 'minutes').format('HH:mm')
-        const excaName = (
-          await MasEquipment.query().where("id", req.exca_id).first()
-        ).toJSON().kode;
+        const ownerDevices = (
+          await UserDevice.query().where("user_id", owner?.id).fetch()
+        ).toJSON();
 
-        const pitName = (
-          await DailyFleet.query()
-            .with("pit")
-            .where("id", req.dailyfleet_id)
-            .first()
-        ).toJSON().pit.name;
-        const materialName = (
-          await MasMaterial.query().where("id", req.material).first()
-        ).toJSON().name;
+        if (ownerDevices) {
+          const hours = moment(data[0].E).add(3, "minutes").format("HH:mm");
+          const excaName = (
+            await MasEquipment.query().where("id", req.exca_id).first()
+          ).toJSON().kode;
 
-        const start = moment(`${date} ${hours}`)
-          .startOf("hour")
-          .format("HH:mm");
-        const end = moment(`${date} ${hours}`)
-          .endOf("hour")
-          .format("HH:mm");
+          const pitName = (
+            await DailyFleet.query()
+              .with("pit")
+              .where("id", req.dailyfleet_id)
+              .first()
+          ).toJSON().pit.name;
+          const materialName = (
+            await MasMaterial.query().where("id", req.material).first()
+          ).toJSON().name;
 
-        const totalBCM =
-          result.reduce((a, b) => a + b.daily_ritase.material_details.vol, 0) ||
-          0;
-        let msg = `Hourly Report OB ${start} - ${end}
+          const start = moment(`${date} ${hours}`)
+            .startOf("hour")
+            .format("HH:mm");
+          const end = moment(`${date} ${hours}`).endOf("hour").format("HH:mm");
+
+          const totalBCM =
+            result.reduce(
+              (a, b) => a + b.daily_ritase.material_details.vol,
+              0
+            ) || 0;
+          let msg = `Hourly Report OB ${start} - ${end}
         ${pitName} - ${excaName} - ${materialName}
          BCM : ${await numberFormatter(String(totalBCM))}
         `;
 
-        const _dat = {};
-        await sendMessage(
-          owner?.deviceId?.playerId,
-          msg,
-          _dat,
-          owner?.deviceId?.platform
-        );
+          const _dat = {};
+
+          for (const x of ownerDevices) {
+            await sendMessage(x.playerId, msg, _dat, x.platform);
+          }
+        }
 
         return {
           success: true,
