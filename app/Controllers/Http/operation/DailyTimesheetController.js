@@ -20,6 +20,23 @@ class DailyTimesheetController {
         return view.render('operation.daily-timesheet.create')
     }
 
+    async store ( { auth, request } ) {
+        let usr
+        try {
+            usr = await auth.getUser()
+        } catch (error) {
+            return {
+                success: false,
+                message: 'You not authorized...'
+            }
+        }
+        const req = request.raw()
+        const reqJson = JSON.parse(req)
+
+        const data = await TimeSheet.POST(reqJson, usr)
+        return data
+    }
+
     async listP2H ({ view, request }){
         const req = request.only(['id', 'keyword', 'page'])
         try {
@@ -30,11 +47,11 @@ class DailyTimesheetController {
         }
     }
 
-    async addEvent ({ view, request }){
+    async addEvent ({ view }){
         return view.render('_component.list-event-timesheet')
     }
 
-    async show ({ view, request, params, auth }) {
+    async show ({ view, params, auth }) {
         const data = (await TimeSheet.GET_ID(params)).toJSON()
         console.log(data);
         return view.render('operation.daily-timesheet.show', {data: data})
@@ -55,9 +72,9 @@ class DailyTimesheetController {
             }
         })
         
-        console.log(req);
         try {
-            await TimeSheet.UPDATE(params, req)
+            const data = await TimeSheet.UPDATE(params, req)
+            console.log(data);
             return {
                 success: true,
                 message: 'TIME SHEET update success...'

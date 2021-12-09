@@ -33,7 +33,13 @@
                                                 <select class="form-control select2x select2pit inp-timesheet" name="pit_id" id="pit_id" data-check="" required></select>
                                             </div>
                                         </div>
-                                        <div class="col-md-7">
+                                        <div class="col-md-3">
+                                            <label for="tgl">Shift</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2shift inp-timesheet" name="shift_id" id="shift_id" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
                                             <label for="tgl">Kegiatan</label>
                                             <div class="form-group">
                                                 <select class="form-control select2x select2activities inp-timesheet" name="activity_id" id="activity_id" data-check="" required></select>
@@ -227,7 +233,7 @@
                                                             <tr>
                                                                 <td class="text-center">
                                                                     <span class="m-t-20 m-b-30">ttd</span>
-                                                                    <select class="form-control select2x select2userForeman inp-timesheet" data-check="" name="spv_id" id="spv_id" required></select>
+                                                                    <select class="form-control m-t-30 select2x select2userForeman inp-timesheet" data-check="" name="spv_id" id="spv_id" required></select>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -243,8 +249,8 @@
                                             <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
                                                 <i class="fa fa-close"></i> <span>Cancel</span>
                                             </button>
-                                            <button type="submit" class="btn btn-warning waves-effect waves-light" id="bt-update-data"> 
-                                                <i class="fa fa-save"></i> <span>Update</span>
+                                            <button type="submit" class="btn btn-success waves-effect waves-light" id="bt-update-data"> 
+                                                <i class="fa fa-save"></i> <span>Save</span>
                                             </button>
                                         </div>
                                     </div>

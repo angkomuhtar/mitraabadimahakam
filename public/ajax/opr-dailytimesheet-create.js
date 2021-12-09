@@ -42,7 +42,6 @@ $(function(){
 
         var obj = _.object(keys, values)
         delete obj['undefined']
-        console.log(obj);
         return obj
     }
 
@@ -178,39 +177,41 @@ $(function(){
         e.preventDefault()
         var DATA_TIMESHEET = GET_INPUT_DATA_TIMESHEET()
         // var DATA_P2H = GET_INPUT_DATA_P2H()
-        var DATA_EVENT = GET_INPUT_DATA_EVENT()
+        // var DATA_EVENT = GET_INPUT_DATA_EVENT()
         // var DATA_REFUELING = GET_INPUT_DATA_REFUEL()
-        var SUM_DATA = {
-            ...DATA_TIMESHEET, 
-            // p2h: DATA_P2H,
-            // event: DATA_EVENT,
-            // refueling: DATA_REFUELING
-        }
-        console.log(SUM_DATA);
-        // $.ajax({
-        //     async: true,
-        //     headers: {'x-csrf-token': $('[name=_csrf]').val()},
-        //     url: '/operation/daily-timesheet/'+id+'/update',
-        //     method: 'POST',
-        //     data: JSON.stringify(SUM_DATA),
-        //     dataType: 'json',
-        //     processData: false,
-        //     mimeType: "multipart/form-data",
-        //     contentType: false,
-        //     success: function(result){
-        //         console.log(result)
-        //         if(result.success){
-        //             swal("Okey,,,!", result.message, "success")
-        //             window.location.reload()
-        //         }else{
-        //             alert(result.message)
-        //         }
-        //     },
-        //     error: function(err){
-        //         console.log(err)
-        //         const { message } = err.responseJSON
-        //         swal("Opps,,,!", message, "warning")
-        //     }
-        // })
+        // var SUM_DATA = {
+        //     ...DATA_TIMESHEET, 
+        //     p2h: DATA_P2H,
+        //     event: DATA_EVENT,
+        //     refueling: DATA_REFUELING
+        // }
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-timesheet',
+            method: 'POST',
+            data: JSON.stringify(DATA_TIMESHEET),
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                if(result.success){
+                    swal("Okey,,,!", result.message, "success")
+                    
+                }else{
+                    alert(result.message)
+                }
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            },
+            complete: function() {
+                window.location.reload()
+            }
+        })
     })
 })

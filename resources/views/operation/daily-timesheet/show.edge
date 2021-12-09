@@ -8,7 +8,6 @@
                 <div class="col-md-12">
                     <form action="" class="" id="fm-timesheeet-upd" data-id="{{data.id}}">
                         <div class="panel panel-default">
-                            <!--<div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Time Sheet</div>-->
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
@@ -81,6 +80,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!--
                                     <div class="row b-all">
                                         <div class="white-box">
                                             <div class="table-responsive">
@@ -113,7 +113,7 @@
                                                         <td class="text-center" width="250">
                                                             <label for="">Waktu</label>
                                                             <div class="input-group m-b-30">
-                                                                <input type="datetime-local" class="form-control set-datetime inp-dailyrefuel" data-datetime="{{data.dailyRefueling.fueling_at}}" name="fueling_at" id="fueling_at">
+                                                                <input type="datetime-local" class="form-control {{data.dailyRefueling.fueling_at ? 'set-datetime': 'init-datetime'}} inp-dailyrefuel" data-datetime="{{data.dailyRefueling.fueling_at}}" name="fueling_at" id="fueling_at">
                                                                 <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
                                                             </div>
                                                         </td>
@@ -129,7 +129,7 @@
                                                 </table>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>-->
                                     <div class="row b-all">
                                         <div class="white-box">
                                             <div class="table-responsive">
@@ -171,10 +171,10 @@
                                                                 <input type="text" class="form-control inp-timesheet" name="end_smu" id="end_smu" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control set-datetime inp-timesheet" name="approved_at" id="approved_at" data-datetime="{{data.approved_at}}">
+                                                                <input type="datetime-local" class="form-control {{data.approved_at ? 'set-datetime' : 'init-datetime'}} inp-timesheet" name="approved_at" id="approved_at" data-datetime="{{data.approved_at}}">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control set-datetime inp-timesheet" name="finish_at" id="finish_at" data-datetime="{{data.finish_at ? data.finish_at : data.approved_at}}">
+                                                                <input type="datetime-local" class="form-control {{data.finish_at ? 'set-datetime' : 'init-datetime'}} inp-timesheet" name="finish_at" id="finish_at" data-datetime="{{data.finish_at ? data.finish_at : data.approved_at}}">
                                                             </td>
                                                             <td>
                                                                 <input type="text" class="form-control inp-timesheet" placeholder="HM" name="used_smu" id="used_smu" value="{{data.used_smu != null ? data.used_smu : '-'}}">
@@ -233,7 +233,7 @@
                                                                     </div>
                                                                     <label for="tgl">Waktu Akhir</label>
                                                                     <div class="form-group m-b-5">
-                                                                        <input type="datetime-local" class="form-control set-datetime inp-dailyevent" data-id="{{$loop.index + 1}}" id="end_at{{$loop.index + 1}}" name="end_at" data-datetime="{{item.end_at}}">
+                                                                        <input type="datetime-local" class="form-control {{item.end_at ? 'set-datetime' : ''}} inp-dailyevent" data-id="{{$loop.index + 1}}" id="end_at{{$loop.index + 1}}" name="end_at" data-datetime="{{item.end_at}}">
                                                                     </div>
                                                                 </td>
                                                                 <td>
@@ -253,7 +253,7 @@
                                                                     </div>
                                                                     <label for="tgl">Penjelasan</label>
                                                                     <div class="form-group">
-                                                                        <input type="text" class="form-control inp-dailyevent" data-id="{{$loop.index + 1}}" id="description{{$loop.index + 1}}" name="description" value="{{item.description}}">
+                                                                        <input type="text" class="form-control inp-dailyevent" data-id="{{$loop.index + 1}}" id="description{{$loop.index + 1}}" name="description" value="{{item.description ? item.description : ''}}">
                                                                     </div>
                                                                 </td>
                                                                 <td style="vertical-align: middle;">

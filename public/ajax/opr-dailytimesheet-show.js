@@ -226,9 +226,7 @@ $(function(){
         var id = $(this).data('id')
         var values = $(this).val()
         var isRequired = values != ''
-        $('input#smu_event'+id).prop('required', isRequired)
         $('input#start_at'+id).prop('required', isRequired)
-        $('input#end_at'+id).prop('required', isRequired)
     })
 
     $('body').on('click', 'button.bt-remove-event', function(e){
@@ -259,7 +257,7 @@ $(function(){
             ...DATA_TIMESHEET, 
             p2h: DATA_P2H,
             event: DATA_EVENT,
-            refueling: DATA_REFUELING
+            // refueling: DATA_REFUELING
         }
         $.ajax({
             async: true,

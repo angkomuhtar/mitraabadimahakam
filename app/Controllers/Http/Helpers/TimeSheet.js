@@ -3,6 +3,7 @@
 const db = use('Database')
 const MasP2H = use("App/Models/MasP2H")
 const DailyEvent = use("App/Models/DailyEvent")
+const DailyFleet = use("App/Models/DailyFleet")
 const DailyCheckp2H = use("App/Models/DailyCheckp2H")
 const DailyRefueling = use("App/Models/DailyRefueling")
 const DailyChecklist = use("App/Models/DailyChecklist")
@@ -80,11 +81,11 @@ class TimeSheet {
     }
 
     async UPDATE (params, req) {
-        console.log('TimeSheet ::', req);
+        // console.log('TimeSheet ::', req);
         const trx = await db.beginTransaction()
         try {
             
-            const { p2h, event, refueling } = req
+            const { p2h, event } = req
             const dailyChecklist = await DailyChecklist.find(params.id)
     
             const dataMerge = {
@@ -104,19 +105,19 @@ class TimeSheet {
             dailyChecklist.merge(dataMerge)
             await dailyChecklist.save(trx)
 
-            let dailyRefueling = await DailyRefueling.query().where({timesheet_id: params.id, equip_id: refueling.equip_id}).first()
-            if(dailyRefueling){
-                dailyRefueling.merge(refueling)
-            }else{
-                dailyRefueling = new DailyRefueling()
-                dailyRefueling.fill(refueling)
-            }
-            await dailyRefueling.save(trx)
+            // let dailyRefueling = await DailyRefueling.query().where({timesheet_id: params.id, equip_id: refueling.equip_id}).first()
+            // if(dailyRefueling){
+            //     dailyRefueling.merge(refueling)
+            // }else{
+            //     dailyRefueling = new DailyRefueling()
+            //     dailyRefueling.fill(refueling)
+            // }
+            // await dailyRefueling.save(trx)
             
             await dailyChecklist.p2h().detach(null, null, trx)
             let arrP2H = []
             for (const item of p2h) {
-                let p2h_item = await MasP2H.findOrFail(item.p2h_id, trx)
+                let p2h_item = await MasP2H.findOrFail(item.p2h_id)
                 arrP2H.push({
                     checklist_id: dailyChecklist.id, 
                     p2h_id: p2h_item.id, 
@@ -127,12 +128,28 @@ class TimeSheet {
             await DailyCheckp2H.createMany(arrP2H, trx)
             
             
-            await DailyEvent.query(trx).where('timesheet_id', params.id).delete()
+            let arrEventRemove = (
+                await DailyEvent.query().where('timesheet_id', params.id).fetch()
+            ).toJSON()
+
+            for (const itemRem of arrEventRemove) {
+                const exEvent = await DailyEvent.query().where('id', itemRem.id).last()
+                await exEvent.delete()
+            }
+
+            console.log('arrEventRemove', arrEventRemove);
             for (const item of event) {
-                delete item['id']
-                const dailyEvent = new DailyEvent()
-                dailyEvent.fill(item)
-                await dailyEvent.save(trx)
+                const dataEvent = new DailyEvent()
+                dataEvent.fill({
+                    start_at: item.start_at,
+                    end_at: item.end_at || null,
+                    user_id: item.user_id,
+                    event_id: item.event_id,
+                    description: item.description,
+                    timesheet_id: item.timesheet_id,
+                    equip_id: item.equip_id
+                })
+                await dataEvent.save(trx)
             }
 
 
@@ -162,6 +179,54 @@ class TimeSheet {
             console.log(error);
             await trx.rollback(trx)
             return error.message
+        }
+    }
+
+    async POST(req, user){
+        const dailyFleet = await DailyFleet.query().where( w => {
+            w.where('date', req.tgl)
+            w.where('pit_id', req.pit_id)
+            w.where('shift_id', req.shift_id)
+            w.where('activity_id', req.activity_id)
+        }).last()
+        
+        console.log(req);
+        if (!dailyFleet) {
+            return {
+                success: false,
+                message: 'Daily Fleet tidak ditemukan...'
+            }
+        }
+
+
+        const dailyChecklist = new DailyChecklist()
+        
+        try {
+            dailyChecklist.fill({
+                dailyfleet_id: dailyFleet.id,
+                user_chk: user.id || null,
+                user_spv: req.spv_id,
+                operator: req.operator,
+                unit_id: req.unit_id,
+                tgl: req.tgl,
+                description: req.description,
+                begin_smu: req.begin_smu,
+                end_smu: req.end_smu || 0.00,
+                used_smu: req.end_smu ? parseFloat(req.end_smu) - parseFloat(req.begin_smu) : 0.00,
+                approved_at: new Date()
+            })
+
+            await dailyChecklist.save()
+            return {
+                success: true,
+                message: 'Success save data...'
+            }
+        } catch (error) {
+            console.log(error);
+            return {
+                success: false,
+                message: 'Failed save data...'
+            }
         }
     }
 }
