@@ -15,6 +15,11 @@ class DailyTimesheetController {
         return view.render('operation.daily-timesheet.list', {list: data, keyword: req.keyword})
     }
 
+    async create ( { auth, view } ) {
+        console.log('....');
+        return view.render('operation.daily-timesheet.create')
+    }
+
     async listP2H ({ view, request }){
         const req = request.only(['id', 'keyword', 'page'])
         try {

@@ -98,6 +98,22 @@ $(function(){
         })
     }
 
+    function initCreate(){
+        $.ajax({
+            async: true,
+            url: '/operation/daily-timesheet/create',
+            method: 'GET',
+            success: function(result){
+                $('div#form-create').html(result).show()
+                $('div#form-show').html('')
+                $('div#list-content').html('')
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
+
     function initShow(id){
         console.log(id);
         $('div.content-module').css('display', 'none')
