@@ -1,5 +1,5 @@
 {{ script('ajax/index') }}
-{{--  {{ script('ajax/opr-dailytimesheet-show') }}  --}}
+{{ script('ajax/opr-dailytimesheet-create') }}
 <div class="row">
     <div class="col-md-12">
         <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
@@ -8,18 +8,14 @@
                 <div class="col-md-12">
                     <form action="" class="" id="fm-timesheeet" data-id="">
                         <div class="panel panel-default">
-                            <!--<div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Time Sheet</div>-->
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
                                     <div class="row b-all p-t-20 m-b-20">
-                                        <div class="col-md-2">
+                                        <div class="col-md-3">
                                             <label for="tgl">Date Document</label>
                                             <div class="form-group">
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                    <input type="date" class="form-control initDate input-sm inp-timesheet" name="tgl" id="tgl">
-                                                </div>
+                                                <input type="date" class="form-control initDate inp-timesheet" name="tgl" id="tgl">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -27,11 +23,30 @@
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-truck"></i></div>
-                                                    <select class="form-control input-sm select2equipment inp-timesheet" name="unit_id" id="unit_id" data-check=""></select>
+                                                    <select class="form-control select2x select2equipment inp-timesheet" name="unit_id" id="unit_id" data-check="" required></select>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Lokasi</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2pit inp-timesheet" name="pit_id" id="pit_id" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <label for="tgl">Kegiatan</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2activities inp-timesheet" name="activity_id" id="activity_id" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label for="tgl">Operator</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2operator inp-timesheet" name="operator" id="operator" data-check="" required></select>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <!--
                                     <div class="row b-all">
                                         <div class="col-md-10 p-20">
                                             <h5>DAILY CHECK LIST OPERATOR</h5>
@@ -58,9 +73,8 @@
                                                 </table>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> 
 
-                                    
                                     <div class="row b-all">
                                         <div class="white-box">
                                             <div class="table-responsive">
@@ -99,17 +113,17 @@
                                                         </td>
                                                         <td class="text-center" width="200">
                                                             <label for="">Nama Operator</label>
-                                                            <select class="form-control select2operator inp-dailyrefuel" data-check="{{data.operator}}" name="operator" id="operator_onfuel" required></select>
+                                                            <select class="form-control select2x select2operator inp-dailyrefuel" data-check="" name="operator" id="operator_onfuel" required></select>
                                                         </td>
                                                         <td class="text-center" width="*">
                                                             <label for="">Fuelman</label>
-                                                            <select type="text" class="form-control select2fuelman inp-dailyrefuel" name="fuelman" id="fuelman" data-check="{{data.dailyRefueling.fuelman}}" value="{{data.dailyRefueling != null ? data.dailyRefueling.fuelman : '' }}" required></select>
+                                                            <select type="text" class="form-control select2x select2fuelman inp-dailyrefuel" name="fuelman" id="fuelman" data-check="{{data.dailyRefueling.fuelman}}" value="{{data.dailyRefueling != null ? data.dailyRefueling.fuelman : '' }}" required></select>
                                                         </td>
                                                     </tr>
                                                 </table>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                    
                                     <div class="row b-all">
                                         <div class="white-box">
@@ -127,11 +141,8 @@
                                                             </th>
                                                         </tr>
                                                         <tr>
-                                                            <th class="text-center v-middle" width="200" rowspan="2">Operator Unit</th>
                                                             <th class="text-center" colspan="4">SMU Jam Kerja</th>
                                                             <th class="text-center v-middle" width="100" rowspan="2">Pencapaian <br> SMU</th>
-                                                            <th class="text-center v-middle" width="150" rowspan="2">Lokasi</th>
-                                                            <th class="text-center v-middle" width="250" rowspan="2">Kegiatan</th>
                                                         </tr>
                                                         <tr>
                                                             <th class="text-center" width="100">SMU Mulai</th>
@@ -143,28 +154,19 @@
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <select class="form-control select2operator inp-timesheet" data-check="{{data.operator}}" name="operator" id="operator" required></select>
+                                                                <input type="text" class="form-control inp-timesheet" name="begin_smu" id="begin_smu" placeholder="HM" value="">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control inp-timesheet" name="begin_smu" id="begin_smu" placeholder="HM" value="{{data.begin_smu}}">
+                                                                <input type="text" class="form-control inp-timesheet" name="end_smu" id="end_smu" placeholder="HM" value="">
                                                             </td>
                                                             <td>
-                                                                <input type="text" class="form-control inp-timesheet" name="end_smu" id="end_smu" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
+                                                                <input type="datetime-local" class="form-control init-datetime inp-timesheet" name="approved_at" id="approved_at" data-datetime="">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control init-datetime inp-timesheet" name="approved_at" id="approved_at" data-datetime="{{data.approved_at}}">
+                                                                <input type="datetime-local" class="form-control inp-timesheet" name="finish_at" id="finish_at" data-datetime="">
                                                             </td>
                                                             <td>
-                                                                <input type="datetime-local" class="form-control init-datetime inp-timesheet" name="finish_at" id="finish_at" data-datetime="{{data.finish_at ? data.finish_at : data.approved_at}}">
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" class="form-control inp-timesheet" placeholder="HM" name="used_smu" id="used_smu" value="{{data.used_smu != null ? data.used_smu : '-'}}">
-                                                            </td>
-                                                            <td>
-                                                                <input type="text" class="form-control" placeholder="Lokasi" value="{{data.dailyFleet.pit.name}}" readonly>
-                                                            </td>
-                                                            <td>
-                                                                <select class="form-control select2activities inp-timesheet" data-check="{{data.dailyFleet.activities.id}}" name="activity_id"></select>
+                                                                <input type="text" class="form-control inp-timesheet" placeholder="HM" name="used_smu" id="used_smu" value="">
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -172,7 +174,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                     
+                                     <!--
                                     <div class="row b-all">
                                         <div class="white-box">
                                             <div class="table-responsive">
@@ -200,121 +202,33 @@
                                                             <th class="text-center" width="50">ACT</th>
                                                         </tr>
                                                     </thead>
-                                                    @if(data.dailyEvent.length > 0)
-                                                        <tbody class="item-event">
-                                                            @each(item in data.dailyEvent)
-                                                            <tr class="item-event" id="TR{{$loop.index + 1}}" data-id="{{$loop.index + 1}}">
-                                                                <td class="text-center">
-                                                                    <h1>{{$loop.index + 1}}</h1>
-                                                                    <input type="hidden" class="form-control inp-dailyevent" id="id{{$loop.index + 1}}" name="id" value="{{item.id}}">
-                                                                </td>
-                                                                <td>
-                                                                    <label for="tgl">Waktu Mulai</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="{{$loop.index + 1}}" id="start_at{{$loop.index + 1}}" name="start_at" data-datetime="{{item.start_at}}">
-                                                                    </div>
-                                                                    <label for="tgl">Waktu Akhir</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="{{$loop.index + 1}}" id="end_at{{$loop.index + 1}}" name="end_at" data-datetime="{{item.end_at}}">
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <label for="tgl">Used</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <input type="text" class="form-control text-right inp-dailyevent" data-id="{{$loop.index + 1}}" id="smu_event{{$loop.index + 1}}" value="{{item.total_smu}}" disabled>
-                                                                    </div>
-                                                                    <label for="tgl">CreatedBy</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <select class="form-control select2user inp-dailyevent" data-id="{{$loop.index + 1}}" data-check="{{item.user_id}}" name="user_id" id="user_id{{$loop.index + 1}}" data-id="{{$loop.index + 1}}" required></select>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <label for="tgl">Pilih Event</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <select class="form-control select2event inp-dailyevent" data-id="{{$loop.index + 1}}" data-check="{{item.event_id}}" name="event_id" id="event_id{{$loop.index + 1}}" data-id="{{$loop.index + 1}}" required></select>
-                                                                    </div>
-                                                                    <label for="tgl">Penjelasan</label>
-                                                                    <div class="form-group">
-                                                                        <input type="text" class="form-control inp-dailyevent" data-id="{{$loop.index + 1}}" id="description{{$loop.index + 1}}" name="description" value="{{item.description}}">
-                                                                    </div>
-                                                                </td>
-                                                                <td style="vertical-align: middle;">
-                                                                    <button class="btn btn-danger btn-sm bt-remove-event" data-id="{{$loop.index + 1}}">
-                                                                        <i class="ti-close"></i>
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                            @endeach
-                                                        </tbody>
-                                                    @else
-                                                        <tbody class="item-event">
-                                                            <tr class="item-event" id="TR1" data-id="1">
-                                                                <td class="text-center">
-                                                                    <h1>1</h1>
-                                                                    <input type="hidden" class="form-control inp-dailyevent" id="id1" name="id">
-                                                                </td>
-                                                                <td>
-                                                                    <label for="tgl">Waktu Mulai</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="1" id="start_at1" name="start_at" data-datetime="{{item.start_at}}">
-                                                                    </div>
-                                                                    <label for="tgl">Waktu Akhir</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="1" id="end_at1" name="end_at" data-datetime="{{item.end_at}}">
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <label for="tgl">Used</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <input type="text" class="form-control text-right inp-dailyevent" data-id="1" id="smu_event1" disabled>
-                                                                    </div>
-                                                                    <label for="tgl">CreatedBy</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <select class="form-control select2user inp-dailyevent" data-id="1" data-check="" name="user_id" id="user_id1" data-id="1" required></select>
-                                                                    </div>
-                                                                </td>
-                                                                <td>
-                                                                    <label for="tgl">Pilih Event</label>
-                                                                    <div class="form-group m-b-5">
-                                                                        <select class="form-control select2event inp-dailyevent" data-id="1" data-check="{{item.event_id}}" name="event_id" id="event_id1" data-id="1" required></select>
-                                                                    </div>
-                                                                    <label for="tgl">Penjelasan</label>
-                                                                    <div class="form-group">
-                                                                        <input type="text" class="form-control inp-dailyevent" data-id="1" id="description1" name="description">
-                                                                    </div>
-                                                                </td>
-                                                                <td style="vertical-align: middle;">
-                                                                    <button class="btn btn-danger btn-sm bt-remove-event" data-id="1">
-                                                                        <i class="ti-close"></i>
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    @endif
+                                                    <tbody class="item-event"></tbody>
                                                 </table>
                                             </div>
                                         </div>
                                     </div>
+                                    -->
                                     <div class="row b-all p-t-20 m-t-20">
-                                        <div class="col-md-8">
+                                        <div class="col-md-6">
                                             <label for="">Catatan Tambahan</label>
                                             <div class="form-group">
-                                                <textarea class="form-control inp-timesheet" name="description" id="description" rows="5">{{data.description}}</textarea>
+                                                <textarea class="form-control inp-timesheet" name="description" id="description" rows="5"></textarea>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <label for="">Tanda Tangan</label>
                                             <div class="row p-t-10">
                                                 <div class="col-md-12">
                                                     <table class="table table-bordered">
                                                         <thead>
-                                                            <th class="text-center">Nama Operator</th>
                                                             <th class="text-center">Nama Pengawas</th>
                                                         </thead>
                                                         <tbody>
                                                             <tr>
-                                                                <td class="text-center">{{data.operator_unit.fullname}}</td>
-                                                                <td class="text-center">{{data.spv.profile.nm_depan}}</td>
+                                                                <td class="text-center">
+                                                                    <span class="m-t-20 m-b-30">ttd</span>
+                                                                    <select class="form-control select2x select2userForeman inp-timesheet" data-check="" name="spv_id" id="spv_id" required></select>
+                                                                </td>
                                                             </tr>
                                                         </tbody>
                                                     </table>

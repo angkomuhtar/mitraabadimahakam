@@ -1,0 +1,41 @@
+<tr class="item-event" id="TR1" data-id="1">
+    <td class="text-center">
+        <h1></h1>
+    </td>
+    <td>
+        <label for="tgl">Waktu Mulai</label>
+        <div class="form-group m-b-5">
+            <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="1" id="start_at1" name="start_at" data-datetime="">
+        </div>
+        <label for="tgl">Waktu Akhir</label>
+        <div class="form-group m-b-5">
+            <input type="datetime-local" class="form-control inp-dailyevent" data-id="1" id="end_at1" name="end_at" data-datetime="">
+        </div>
+    </td>
+    <td>
+        <label for="tgl">Used</label>
+        <div class="form-group m-b-5">
+            <input type="text" class="form-control text-right inp-dailyevent" data-id="1" id="smu_event">
+        </div>
+        <label for="tgl">CreatedBy</label>
+        <div class="form-group m-b-5">
+            <select class="form-control select2x select2user inp-dailyevent" data-id="1" data-check="" name="user_id" id="user_id" data-id="1" required></select>
+        </div>
+    </td>
+    <td>
+        <label for="tgl">Pilih Event</label>
+        <div class="form-group m-b-5">
+            <select class="form-control select2x select2event inp-dailyevent" data-id="1" data-check="" name="event_id" id="event_id" data-id="1" required></select>
+        </div>
+        <label for="tgl">Penjelasan</label>
+        <div class="form-group">
+            <input type="text" class="form-control inp-dailyevent" data-id="1" id="description1" name="description">
+        </div>
+    </td>
+    <td style="vertical-align: middle;">
+        <button class="btn btn-danger btn-sm bt-remove-event" data-id="1">
+            <i class="ti-close"></i>
+        </button>
+    </td>
+</tr>
+{{ script('ajax/index') }}

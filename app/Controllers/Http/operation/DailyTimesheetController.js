@@ -30,6 +30,10 @@ class DailyTimesheetController {
         }
     }
 
+    async addEvent ({ view, request }){
+        return view.render('_component.list-event-timesheet')
+    }
+
     async show ({ view, request, params, auth }) {
         const data = (await TimeSheet.GET_ID(params)).toJSON()
         console.log(data);
