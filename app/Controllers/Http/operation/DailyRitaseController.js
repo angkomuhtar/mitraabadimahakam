@@ -169,7 +169,7 @@ class DailyRitaseController {
               (a, b) => a + b.daily_ritase.material_details.vol,
               0
             ) || 0;
-          let msg = `Hourly Report OB ${start} - ${end}
+          let msg = `Hourly Report OB ${start} - ${end} | ${moment(date).format('DD MMM')}
         ${pitName} - ${excaName} - ${materialName}
          BCM : ${await numberFormatter(String(totalBCM))}
         `;
