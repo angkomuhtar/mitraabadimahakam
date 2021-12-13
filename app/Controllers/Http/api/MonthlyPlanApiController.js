@@ -429,8 +429,8 @@ class MonthlyPlanApiController {
                 masFleetOB.map((x) => x.id)
               )
               .andWhere("pit_id", _pit_id)
-              .andWhere("created_at", ">=", _start)
-              .andWhere("created_at", "<=", _end)
+              .andWhere("shift_id", m.id)
+              .andWhere("date", y)
               .fetch()
           ).toJSON();
 
@@ -458,7 +458,7 @@ class MonthlyPlanApiController {
                 "dailyritase_id",
                 dailyRitaseOBSpecificFleet.map((v) => v.id)
               )
-              .where("check_in", ">=", _start)
+              .andWhere("check_in", ">=", _start)
               .andWhere("check_in", "<=", _end)
               .fetch()
           ).toJSON();
@@ -638,8 +638,8 @@ class MonthlyPlanApiController {
                 masFleetCoal.map((x) => x.id)
               )
               .andWhere("pit_id", _pit_id)
-              .andWhere("created_at", ">=", _start)
-              .andWhere("created_at", "<=", _end)
+              .andWhere("shift_id", m.id)
+              .andWhere("date", y)
               .fetch()
           ).toJSON();
 
@@ -819,8 +819,8 @@ class MonthlyPlanApiController {
           const dailyFleetsCoalSpecificPit = (
             await DailyFleet.query(trx)
               .where("pit_id", _pit_id)
-              .andWhere("created_at", ">=", _start)
-              .andWhere("created_at", "<=", _end)
+              .andWhere("shift_id", m.id)
+              .andWhere("date", y)
               .fetch()
           ).toJSON();
 
