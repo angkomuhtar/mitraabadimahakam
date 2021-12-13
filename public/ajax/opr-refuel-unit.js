@@ -1,4 +1,5 @@
 $(function(){
+
     initDeafult()
 
     $('body').on('click', 'button#bt-back', function(){
@@ -35,6 +36,53 @@ $(function(){
     $('body').on('click', 'button#bt-search-keyword', function(){
         var value = $('input#inpKeywordFuelDist').val()
         ajaxSearch(value)
+    })
+
+    $('body').on('click', 'button#reset-filter', function(e){
+        e.preventDefault()
+        $(this).parents('div#filtermodal').find('input.form-control, select.form-control').val('')
+        $(this).parents('div#filtermodal').find('select.select2x').val(null).trigger('change')
+        initDeafult()
+    })
+
+    $('body').on('click', 'button#apply-filter', function(e){
+        e.preventDefault()
+        var limit = $('body').find('input[name="limit"]').val() || 100
+        if($('input[name="mulai_tanggal"]').val() != '' && $('input[name="hingga_tanggal"]').val() != ''){
+            var data = {
+                keyword: true,
+                limit: limit,
+                begin: $('input[name="mulai_tanggal"]').val(),
+                end: $('input[name="hingga_tanggal"]').val(),
+                shift_id: $('select[name="shift_id"]').val(),
+                fuel_truck: $('select[name="fuel_truck"]').val(),
+                equip_id: $('select[name="equip_id"]').val()
+            }
+            $.ajax({
+                async: true,
+                url: '/operation/daily-refuel-unit/list',
+                method: 'GET',
+                data: data,
+                dataType: 'html',
+                beforeSend: function(){
+
+                },
+                success: function(result){
+                    console.log('result');
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err)
+                },
+                complete: function(){
+
+                }
+            })
+
+        }else{
+            alert('Tanggal filter blum ditentukan...')
+        }
     })
     
 
@@ -174,7 +222,7 @@ $(function(){
         })
     })
 
-    function initDeafult(){
+    function initDeafult(limit){
         $('div.content-module').css('display', 'none')
         $.ajax({
             async: true,

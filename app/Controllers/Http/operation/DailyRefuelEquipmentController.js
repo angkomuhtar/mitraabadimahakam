@@ -15,7 +15,7 @@ class DailyRefuelEquipmentController {
     async list ({ request, view }) {
         const req = request.all()
         const data = await RefuelUnitHelpers.LIST_REFUEL_UNIT(req)
-        // console.log(data.toJSON());
+        // return data
         return view.render('operation.daily-refuel-unit.list', {list: data.toJSON()})
     }
 
