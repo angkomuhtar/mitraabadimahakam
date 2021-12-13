@@ -84,6 +84,35 @@ $(function(){
             alert('Tanggal filter blum ditentukan...')
         }
     })
+
+    $('body').on('change', 'input[name="refuel_xls"]', function(){
+        var data = new FormData()
+        data.append('refuel_xls', $(this)[0].files[0])
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-refuel-unit/upload-file',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            beforeSend: function(){
+                swal("Please wait!", "Data sedang di proses...")
+            },
+            success: function(result){
+                $('body').find('select[name="sheet"]').html(result.title.map(s => '<option value="'+s+'"> Sheet [ '+s+' ]</option>'))
+                $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
+                $('body').find('textarea[name="dataJson"]').val(JSON.stringify(result.data, null, 2))
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
     
 
     $('body').on('submit', 'form#fm-refuel-unit', function(e){

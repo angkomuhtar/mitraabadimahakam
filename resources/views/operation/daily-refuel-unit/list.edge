@@ -64,9 +64,11 @@
                             @each(item in list.data)
                                 <tr>
                                     <td>{{$loop.index + 1}}</td>
-                                    <!--  <td>
+                                    <!--
+                                    <td>
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
-                                    </td>  -->
+                                    </td>
+                                    -->
                                     <td class="single-line">
                                         @if(item.timesheet)
                                           {{item.timesheet.dailyFleet.pit.name}}

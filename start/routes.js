@@ -456,8 +456,10 @@ Route.group(() => {
     Route.get('/daily-refuel-unit', 'DailyRefuelEquipmentController.index').as('opr.daily-refuel-unit.index').middleware('R')
 
     Route.post('/daily-refuel-unit', 'DailyRefuelEquipmentController.store').as('opr.daily-refuel-unit.store').middleware('C')
-    
+
     Route.get('/daily-refuel-unit/list', 'DailyRefuelEquipmentController.list').as('opr.daily-refuel-unit.list').middleware('R')
+    
+    Route.post('/daily-refuel-unit/upload-file', 'DailyRefuelEquipmentController.uploadFile').as('opr.daily-refuel-unit.uploadFile').middleware('C')
     
     Route.get('/daily-refuel-unit/create', 'DailyRefuelEquipmentController.create').as('opr.daily-refuel-unit.create').middleware('C')
 
