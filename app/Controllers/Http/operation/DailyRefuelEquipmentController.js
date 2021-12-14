@@ -1,8 +1,10 @@
 'use strict'
 
+const DB = use('Database')
+const _ = require('underscore')
 const RefuelUnitHelpers = use("App/Controllers/Http/Helpers/Fuel")
 const MasEquipment = use("App/Models/MasEquipment")
-const dailyRefueling = use("App/Models/DailyRefueling")
+const DailyRefueling = use("App/Models/DailyRefueling")
 const Helpers = use('Helpers')
 const moment = require('moment')
 const excelToJson = require('convert-excel-to-json');
@@ -20,8 +22,34 @@ class DailyRefuelEquipmentController {
     }
 
     async create ( { auth, view } ) {
-        const usr = await auth.getUser()
-        return view.render('operation.daily-refuel-unit.create')
+        let usr
+        try {
+            usr = await auth.getUser()
+        } catch (error) {
+            return view.render('404')
+        }
+
+        const fuelTruck = (await MasEquipment.query().where('tipe', 'fuel truck').fetch()).toJSON()
+        let dataFT = []
+        for (let i = 0; i < (fuelTruck.length); i++) {
+            dataFT.push({
+                kode: fuelTruck[i].kode,
+                brand: fuelTruck[i].brand,
+                unit_sn: fuelTruck[i].unit_sn,
+                shift_id: 1
+            })
+        }
+
+        for (let i = 0; i < (fuelTruck.length); i++) {
+            dataFT.push({
+                kode: fuelTruck[i].kode,
+                brand: fuelTruck[i].brand,
+                unit_sn: fuelTruck[i].unit_sn,
+                shift_id: 2
+            })
+        }
+
+        return view.render('operation.daily-refuel-unit.create', {fuelTruck: dataFT})
     }
 
     async uploadFile ( { auth, request } ) {
@@ -74,7 +102,9 @@ class DailyRefuelEquipmentController {
 
     async store ({ auth, request }) {
         const usr = await auth.getUser()
-        const req = request.only(['tgl', 'site_id', 'fuel_truck', 'shift_id', 'fm_awal', 'fm_akhir', 'sheet', 'dataJson'])
+        const req = request.only(['tgl', 'site_id', 'sheet', 'dataJson'])
+        const reqArr = request.collect(['ft_name', 'shift_id', 'fm_awal', 'fm_akhir'])
+        console.log(reqArr);
         let xlsJSON = JSON.parse(req.dataJson)
 
         xlsJSON = Object.keys(xlsJSON).map(key => {
@@ -88,127 +118,174 @@ class DailyRefuelEquipmentController {
 
         const initData = data.data.filter( u => u.C)
 
-        let arrData = []
+        let parsingData = []
+        let limitData
 
-        for (const OBJ of initData) {
-            const Unit = await MasEquipment.query().where('kode', OBJ.C).last()
-            let tmp = {}
-            if(Unit){
-                tmp = {...tmp, unit_id: Unit.kode}
-            }else{
-                tmp = {...tmp, unit_id: null}
+        for (const [idx, EL] of initData.entries()) {
+            if(EL.B === 'Stock :'){
+                limitData = idx + 1
             }
-            arrData.push(tmp)
         }
-        console.log(arrData);
 
-        let parsingShift = initData.map( EL => {
-            let dayShift = { fuel_at: EL.D || null }
-            let nightShift = { fuel_at: EL.H || null }
-            return {
-                kode: EL.C,
-                details: [
+        for (let i = 0; i < limitData; i++) {
+            if(initData[i].F && initData[i].G === undefined){
+                throw new Error('Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...')
+            }
 
-                ]
-                // shift_siang: EL.D ? 1 : null,
-                // shift_malam: EL.H ? 2 : null,
-                // hm_siang: EL.E ? EL.E : null,
-                // hm_malam: EL.I ? EL.I : null,
-                // topup_siang: EL.F ? EL.F : null,
-                // topup_malam: EL.J ? EL.J : null,
-                // fuelBy_malam: EL.G ? EL.G : null,
-                // fuelBy_siang: EL.G ? EL.G : null,
+            if(initData[i].J && initData[i].K === undefined){
+                throw new Error('Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...')
+            }
+        }
 
+        for (let i = 0; i < limitData; i++) {
+            if(initData[i].F && initData[i].G){
+                
+                let dayShift = { 
+                    fuel_at: initData[i].D ? moment(initData[i].D).format('HH:mm') : null, 
+                    shift_id: 1,
+                    hm: initData[i].E ? initData[i].E : null,
+                    topup: initData[i].F ? initData[i].F : 0,
+                    fuel_truck: initData[i].G ? initData[i].G : null
+                }
+                let nightShift = { 
+                    fuel_at: initData[i].H ? moment(initData[i].H).format('HH:mm') : null, 
+                    shift_id: 2,
+                    hm: initData[i].I ? initData[i].I : null,
+                    topup: initData[i].J ? initData[i].J : 0,
+                    fuel_truck: initData[i].K ? initData[i].K : null
+                }
+
+                parsingData.push({
+                    kode: initData[i].C,
+                    description: initData[i].M || null,
+                    details: [
+                        dayShift,
+                        nightShift
+                    ]
+                })
+            }
+            
+        }
+
+        let datax = []
+        
+        for (const obj of parsingData) {
+            for (const val of obj.details) {
+                datax.push({
+                    description: obj.description,
+                    kode: obj.kode,
+                    fuel_at: val.fuel_at,
+                    fuel_truck: val.fuel_truck,
+                    hm: val.hm,
+                    shift_id: val.shift_id,
+                    topup: val.topup,
+                })
+            }
+        }
+        
+        datax = datax.map(c => {
+            const [tmp] = _.where(reqArr, {ft_name: c.fuel_truck, shift_id: `${c.shift_id}`})
+            return{
+                ...c,
+                fueling_at: c.fuel_at ? req.tgl +' '+ c.fuel_at : moment(req.tgl).format('YYYY-MM-DD HH:mm'),
+                ft_awal: tmp ? tmp.fm_awal : 0,
+                ft_akhir: tmp ? tmp.fm_akhir : 0,
             }
         })
-
-        return parsingShift
         
-        // const validateFile = {
-        //     types: ['xls', 'xlsx'],
-        //     size: '2mb',
-        //     types: 'application'
-        // }
-
-        // const uploadData = request.file("refuel_xls", validateFile)
-
-        // let aliasName
         
-        // if(uploadData){
-        //     aliasName = `refuel-unit-${moment().format('DDMMYYHHmmss')}.${uploadData.extname}`
-        //     await uploadData.move(Helpers.publicPath(`/upload/`), {
-        //         name: aliasName,
-        //         overwrite: true,
-        //     })
-    
-        //     if (!uploadData.moved()) {
-        //         return uploadData.error()
-        //     }
+        datax = datax.filter(e => e.topup > 0 && e.fuel_truck)
+        
+        /** ADD OBJECT DAILY FUELING **/
+        for (const obj of datax) {
+            const unit = await MasEquipment.query().where('kode', obj.kode).last()
+            const fuel_truck = await MasEquipment.query().where( w => {
+                w.where('kode', obj.fuel_truck)
+            }).last()
 
+            if(!unit){
+                throw new Error(obj.kode + ' tidak ditemukan dalam database system...')
+            }
 
-        //     var pathData = Helpers.publicPath(`/upload/`)
+            if(!fuel_truck){
+                throw new Error(obj.fuel_truck + ' tidak ditemukan dalam database system...')
+            }
 
-        //     const convertJSON = excelToJson({
-        //         sourceFile: `${pathData}${aliasName}`,
-        //         header:{
-        //             rows: 1
-        //         },
-        //         sheets: ['FORM']
-        //     });
+            const addData = {
+                description: obj.description,
+                site_id: req.site_id,
+                shift_id: obj.shift_id,
+                site_id: req.site_id,
+                equip_id: unit ? unit.id : null,
+                fuel_truck: fuel_truck.id,
+                fueling_at: obj.fueling_at,
+                smu: obj.hm || 0,
+                topup: obj.topup,
+                fm_awal: obj.ft_awal,
+                fm_akhir: obj.ft_akhir,
+                user_id: usr.id
+            }
 
-        //     const filterData = convertJSON.FORM.filter(cell => cell.B != '#N/A')
+            const trx = await DB.beginTransaction()
 
-        //     console.log(convertJSON);
+            const refuelUnit = new DailyRefueling()
+            refuelUnit.fill(addData)
+            try {
+                await refuelUnit.save()
+                await trx.commit()
+            } catch (error) {
+                console.log(error);
+                await trx.rollback()
+                return {
+                    success: false, 
+                    message: 'Failed save data...'+ JSON.stringify(error)
+                }
+            }
+        }
 
-        //     const result = filterData.map(cell => {
-        //         var date = new Date(req.tgl+' '+moment(cell.F).format('HH:mm'))
-        //         return {
-        //             equip_id: cell.B,
-        //             site_id: req.site_id,
-        //             shift_id: req.shift_id,
-        //             fuel_truck: req.fuel_truck,
-        //             operator: cell.I != '#N/A' ? cell.I : null,
-        //             smu: cell.G ? parseFloat(cell.G) : 0,
-        //             topup: cell.H ? parseFloat(cell.H) : 0,
-        //             description: cell.K ? cell.K : null,
-        //             fm_awal: parseFloat(req.fm_awal),
-        //             fm_akhir: parseFloat(req.fm_akhir),
-        //             fueling_at: moment(date).format('YYYY-MM-DD HH:mm'),
-        //             user_id: usr.id
-        //         }
-        //     })
+        return {
+            success: true,
+            message: 'Success save data...'
+        }
+    }
 
-        //     let resp = {
-        //         success: false,
-        //         message: 'data failed success'
-        //     }
+    async show ({ auth, params, view}) {
+        let usr
+        try {
+            usr = await auth.getUser()
+        } catch (error) {
+            return view.render('404')
+        }
 
-        //     for (const data of result) {
-        //         const daily_refueling = await dailyRefueling
-        //         .query()
-        //         .where(w => {
-        //             w.where('site_id', data.site_id)
-        //             w.where('equip_id', data.equip_id)
-        //             w.where('fueling_at', '>=', moment(data.fueling_at).format('YYYY-MM-DD') + ' 00:00:01')
-        //             w.where('fueling_at', '<=', moment(data.fueling_at).format('YYYY-MM-DD') + ' 23:59:59')
-        //         }).last()
+        const data = (await DailyRefueling.query().where('id', params.id).last()).toJSON()
+        return view.render('operation.daily-refuel-unit.show', {data: data})
+    }
 
-        //         if(daily_refueling){
-        //             var params = {id: daily_refueling.id}
-        //             await RefuelUnitHelpers.UPDATE_REFUEL_UNIT(params, data)
-        //             resp = {...resp, success: true, message: 'data update success'}
-        //         }else{
-        //             const add = await RefuelUnitHelpers.POST_REFUEL_UNIT(data)
-        //             console.log(add)
-        //             resp = {...resp, success: true, message: 'data save success'}
-        //         }
-        //     }
+    async update ( { auth, params, request } ) {
+        let usr
+        try {
+            usr = await auth.getUser()
+        } catch (error) {
+            return view.render('404')
+        }
 
-        //     return resp
-
-        // }
-
-
+        const req = request.except(['_csrf', 'submit'])
+        console.log(req);
+        try {
+            const dailyRefueling = await DailyRefueling.query().where('id', params.id).last()
+            dailyRefueling.merge(req)
+            await dailyRefueling.save()
+            return {
+                success: true,
+                message: 'Success update data...'
+            }
+        } catch (error) {
+            console.log(error);
+            return {
+                success: false,
+                message: 'Success update data...'+ JSON.stringify(error)
+            }
+        }
     }
 }
 

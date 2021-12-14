@@ -463,6 +463,10 @@ Route.group(() => {
     
     Route.get('/daily-refuel-unit/create', 'DailyRefuelEquipmentController.create').as('opr.daily-refuel-unit.create').middleware('C')
 
+    Route.get('/daily-refuel-unit/:id/show', 'DailyRefuelEquipmentController.show').as('opr.daily-refuel-unit.show').middleware('U')
+
+    Route.post('/daily-refuel-unit/:id/update', 'DailyRefuelEquipmentController.update').as('opr.daily-refuel-unit.update').middleware('U')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX

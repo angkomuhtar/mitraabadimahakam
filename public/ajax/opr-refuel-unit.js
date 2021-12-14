@@ -38,6 +38,20 @@ $(function(){
         ajaxSearch(value)
     })
 
+    $('body').on('keyup', 'input[name="fm_awal"]', function(){
+        var elm = $(this)
+        var awal = elm.val()
+        var akhir = elm.parents('tr').find('input[name="fm_akhir"]').val()
+        elm.parents('tr').find('input[name="subtotal"]').val(parseFloat(akhir) - parseFloat(awal))
+    })
+
+    $('body').on('keyup', 'input[name="fm_akhir"]', function(){
+        var elm = $(this)
+        var akhir = elm.val()
+        var awal = elm.parents('tr').find('input[name="fm_awal"]').val()
+        elm.parents('tr').find('input[name="subtotal"]').val(parseFloat(akhir) - parseFloat(awal))
+    })
+
     $('body').on('click', 'button#reset-filter', function(e){
         e.preventDefault()
         $(this).parents('div#filtermodal').find('input.form-control, select.form-control').val('')
@@ -143,20 +157,19 @@ $(function(){
             },
             error: function(err){
                 console.log(err)
-                const { message } = err.responseJSON
-                swal("Opps,,,!", message, "warning")
+                swal("Opps,,,!", err.responseJSON.error.message, "error")
             }
         })
     })
 
-    $('body').on('submit', 'form#fm-fuel-distribution_upd', function(e){
+    $('body').on('submit', 'form#fm-refuel-unit-upd', function(e){
         e.preventDefault()
         var id = $(this).data('id')
         var data = new FormData(this)
         $.ajax({
             async: true,
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
-            url: '/operation/fuel-dist/'+id+'/update',
+            url: '/operation/daily-refuel-unit/'+id+'/update',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -186,7 +199,7 @@ $(function(){
         var id = $(this).data('id')
         $.ajax({
             async: true,
-            url: '/operation/fuel-dist/'+id+'/show',
+            url: '/operation/daily-refuel-unit/'+id+'/show',
             method: 'GET',
             success: function(result){
                 $('div#form-show').html(result)
