@@ -48,10 +48,20 @@ class DailyRitaseController {
     }
   }
 
-  async store({ request, auth }) {
-    const req = request.all();
+  async addItems({ view, auth }) {
     try {
       await auth.getUser();
+      return view.render("_component.trTable-ritase-ob-details");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async store({ request, auth }) {
+    const req = request.all();
+    let xuser
+    try {
+      xuser = await auth.getUser();
     } catch (error) {
       console.log(error);
     }
@@ -186,6 +196,126 @@ class DailyRitaseController {
           data: result,
           message: "data berhasil di upload " + result.length + " items...",
         };
+      } catch (error) {
+        console.log(error);
+        return {
+          success: false,
+          message: error,
+        };
+      }
+    }else{
+      const reqx = request.only(['date', 'dailyfleet_id', 'exca_id', 'material', 'distance', 'checker_id', 'spv_id'])
+      const reqCollect = request.collect(['hauler_id', 'opr_id', 'check_in', 'qty'])
+      
+      try {
+        const xDailyRitase = new DailyRitase();
+        xDailyRitase.fill({
+          dailyfleet_id: reqx.dailyfleet_id,
+          exca_id: reqx.exca_id,
+          material: reqx.material,
+          distance: reqx.distance,
+          date: reqx.date,
+        });
+
+        await xDailyRitase.save();
+
+        let prepData = reqCollect.map(el => {
+          return {
+            ...el,
+            checker_id: xuser.id,
+            spv_id: reqx.spv_id
+          }
+        })
+
+        for (const obj of prepData) {
+          if(parseInt(obj.qty) > 0){
+            for (let i = 0; i < parseInt(obj.qty); i++) {
+              const xRitaseDetail = new DailyRitaseDetail();
+              xRitaseDetail.fill({
+                hauler_id: obj.hauler_id,
+                opr_id: obj.opr_id,
+                check_in: moment(reqx.date).format('YYYY-MM-DD') + ' ' + obj.check_in,
+                checker_id: obj.checker_id,
+                spv_id: obj.spv_id,
+                dailyritase_id: xDailyRitase.id,
+              });
+              await xRitaseDetail.save();
+            }
+          }
+        }
+
+        let xresult = (
+          await DailyRitaseDetail.query()
+            .with("daily_ritase", (wh) => {
+              wh.with("material_details");
+            })
+            .with("checker", (wh) => {
+              wh.with("profile");
+            })
+            .with("spv", (wh) => {
+              wh.with("profile");
+            })
+            .where("dailyritase_id", xDailyRitase.id)
+            .fetch()
+        ).toJSON();
+        
+        /** after being uploaded, then throw a notif to the company's owner */
+        const userRec = (
+          await User.query().whereIn("user_tipe", ["owner", "administrator", "checker"]).fetch()
+        ).toJSON();
+
+        for (const obj of userRec) {
+          const userDevices = (
+            await UserDevice.query().where("user_id", obj.id).fetch()
+          ).toJSON();
+
+          
+          if (userDevices) {
+            const xhours = reqCollect[0].check_in
+
+            const xexcaName = (
+              await MasEquipment.query().where("id", reqx.exca_id).first()
+            ).toJSON().kode;
+  
+            const xpitName = (
+              await DailyFleet.query()
+                .with("pit")
+                .where("id", reqx.dailyfleet_id)
+                .first()
+            ).toJSON().pit.name;
+
+            const xmaterialName = (
+              await MasMaterial.query().where("id", reqx.material).first()
+              ).toJSON().name;
+              
+            const xstart = moment(`${reqx.date} ${xhours}`)
+            .startOf("hour")
+            .format("HH:mm");
+            const xend = moment(`${reqx.date} ${xhours}`).endOf("hour").format("HH:mm");
+            const totalBCM =
+              xresult.reduce(
+                (a, b) => a + b.daily_ritase.material_details.vol,
+                0
+              ) || 0;
+            let msg = `Hourly Report OB ${xstart} - ${xend} | ${moment(reqx.date).format('DD MMM')}
+          ${xpitName} - ${xexcaName} - ${xmaterialName}
+           BCM : ${await numberFormatter(String(totalBCM))}
+          `;
+  
+            const _dat = {};
+  
+            for (const x of userDevices) {
+              await sendMessage(x.playerId, msg, _dat, x.platform);
+            }
+          }
+        }
+
+        return {
+          success: true,
+          data: xresult,
+          message: "data berhasil di simpan " + xresult.length + " items...",
+        };
+
       } catch (error) {
         console.log(error);
         return {
