@@ -132,6 +132,7 @@ $(function(){
 
     $('body').on('submit', 'form#fm-upload-ritase-ob', function(e){
         e.preventDefault()
+        $('body').find('button[type="submit"]').attr('disabled', 'disabled')
         var data = new FormData(this)
         var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
         if(isUploadFile){
@@ -154,6 +155,7 @@ $(function(){
                             $(this).find('input[name="qty"]').val('')
                         })
                         swal("Okey!", result.message, "success");
+                        $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
                     }else{
                         alert(result.message)
                     }
@@ -162,6 +164,7 @@ $(function(){
                     console.log(err)
                     const { message } = err.responseJSON
                     swal("Opps,,,!", message, "warning")
+                    $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
                 }
             })
         }else{
