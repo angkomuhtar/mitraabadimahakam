@@ -79,41 +79,70 @@ class Fuels {
     // OPERATOR REFUEL EQUIPMENT UNIT
 
     async LIST_REFUEL_UNIT (req) {
-        const limit = 100
+        console.log(req);
+        const limit = req.limit || 100
         const halaman = req.page === undefined ? 1 : parseInt(req.page)
         let data = []
-        if(req.keyword){
-            data = await DailyRefueling
-                .query()
-                .with('timesheet', ts => {
-                    ts.with('dailyFleet', df => {
-                        df.with('pit')
-                        df.with('fleet')
+        try {
+            if(req.keyword){
+                data = await DailyRefueling
+                    .query()
+                    .with('timesheet', ts => {
+                        ts.with('dailyFleet', df => {
+                            df.with('pit')
+                            df.with('fleet')
+                        })
                     })
-                })
-                .with('equipment')
-                .with('truck_fuel')
-                .with('user')
-                .with('operator_unit')
-                .orderBy('fueling_at', 'desc')
-                .paginate(halaman, limit)
-        }else{
-            data = await DailyRefueling.query()
-                .with('timesheet', ts => {
-                    ts.with('dailyFleet', df => {
-                        df.with('pit')
-                        df.with('fleet')
+                    .with('equipment')
+                    .with('truck_fuel')
+                    .with('user')
+                    .with('operator_unit')
+                    .where( function(){
+                        this.where('topup', '>', 0)
+                        this.where('fueling_at', '>=', moment(req.begin).startOf('day').format('YYYY-MM-DD HH:mm'))
+                        this.where('fueling_at', '<=', moment(req.end).endOf('day').format('YYYY-MM-DD HH:mm'))
+                        if(req.shift_id){
+                            this.where('shift_id', req.shift_id)
+                        }
+                        if(req.fuel_truck){
+                            this.where('fuel_truck', req.fuel_truck)
+                        }
+                        if(req.equip_id){
+                            this.whereIn('equip_id', req.equip_id)
+                        }
                     })
-                })
-                .with('equipment')
-                .with('truck_fuel')
-                .with('user')
-                .with('operator_unit')
-                .orderBy('fueling_at', 'desc').paginate(halaman, limit)
+                    .orderBy('fueling_at', 'desc')
+                    .paginate(halaman, limit)
+            }else{
+                data = await DailyRefueling.query()
+                    .with('timesheet', ts => {
+                        ts.with('dailyFleet', df => {
+                            df.with('pit')
+                            df.with('fleet')
+                        })
+                    })
+                    .with('equipment')
+                    .with('truck_fuel')
+                    .with('user')
+                    .with('operator_unit')
+                    .where(function(){
+                        this.where('topup', '>', 0)
+                    })
+                    .orderBy('fueling_at', 'desc').paginate(halaman, limit)
+            }
+    
+            return data
+            
+        } catch (error) {
+            console.log(error);
+            return {
+                total: 0,
+                perPage: 100,
+                page: 1,
+                lastPage: 1,
+                data: []
+            }
         }
-
-        // console.log(JSON.stringify(data.toJSON(), null, 4));
-        return data
     }
 
     // POST DATA REFUEL UNIT BY DASHBOARD

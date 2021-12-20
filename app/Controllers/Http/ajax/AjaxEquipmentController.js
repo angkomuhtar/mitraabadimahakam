@@ -25,6 +25,13 @@ class AjaxEquipmentController {
         const data = equipment.map(item => item.id === parseInt(req.selected) ? {...item, selected: 'selected'} : {...item, selected: ''})
         return data
     }
+
+    async getEquipmentHauler ({ request }) {
+        const req = request.all()
+        const equipment = (await EquipmentHelpers.HAULER()).toJSON()
+        const data = equipment.map(item => item.id === parseInt(req.selected) ? {...item, selected: 'selected'} : {...item, selected: ''})
+        return data
+    }
 }
 
 module.exports = AjaxEquipmentController

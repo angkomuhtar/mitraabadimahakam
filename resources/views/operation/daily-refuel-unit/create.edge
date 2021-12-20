@@ -5,10 +5,12 @@
             <i class="ti-arrow-left"></i> 
             <span>Back</span>
         </button>
+        <!--
         <button class="btn btn-outline btn-warning waves-effect waves-light btn-sm pull-right" id="bt-download"> 
             <i class="fa fa-file-excel-o"></i> 
             <span>Template XLS</span>
         </button>
+        -->
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
@@ -24,7 +26,7 @@
                                                 <label for="">Tanggal</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-                                                    <input class="form-control input-sm" type="date" name="tgl" id="tgl" required>
+                                                    <input class="form-control" type="date" name="tgl" id="tgl" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -33,55 +35,82 @@
                                                 <label for="">Nama SITE</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
-                                                    <select class="form-control input-sm select2site" data-check="" name="site_id"></select>
+                                                    <select class="form-control select2site" data-check="" name="site_id"></select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="">Fuel Truck</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
-                                                    <select class="form-control input-sm select2fuelTruck" data-check="" name="fuel_truck"></select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="">Shift Schedule</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="icon-clock"></i></div>
-                                                    <select class="form-control input-sm select2shift" data-check="" name="shift_id"></select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">Upload Excel</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-upload"></i></div>
-                                                    <input class="form-control input-sm" type="file" name="refuel_xls" id="refuel_xls">
+                                                    <input class="form-control" type="file" name="refuel_xls" id="refuel_xls">
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <label for="">Flowmeter Awal</label>
+                                                <label for="">Pilih Sheet</label>
                                                 <div class="input-group">
-                                                    <div class="input-group-addon"><i class="icon-speedometer"></i></div>
-                                                    <input class="form-control input-sm" type="text" name="fm_awal" id="fm_awal" required>
+                                                    <div class="input-group-addon"><i class="icon-layers"></i></div>
+                                                    <select class="form-control" type="text" name="sheet" id="sheet" required></select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="">Flowmeter Akhir</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="icon-speedometer"></i></div>
-                                                    <input class="form-control input-sm" type="text" name="fm_akhir" id="fm_akhir" required>
-                                                </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <textarea class="form-control hidden" name="dataJson" rows="5" required></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="well">
+                                                <small>Tentukan Flowmeter setiap Fuel Truck</small>
+                                                <hr>
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center" width="50">No</th>
+                                                            <th width="*">Nama Fuel Truck</th>
+                                                            <th width="200">Flow Awal</th>
+                                                            <th width="200">Flow Akhir</th>
+                                                            <th width="200">Subtotal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @each(item in fuelTruck)
+                                                        <tr class="item-list">
+                                                            <td align="center">{{$loop.index + 1}}</td>
+                                                            <td>
+                                                                <h3 class="m-b-0">
+                                                                    {{item.kode}}
+                                                                    @if(item.shift_id === 1)
+                                                                        <small class="text-success"><span>DAY SHIFT</span></small>
+                                                                    @else
+                                                                        <small class="text-warning"><span>NIGHT SHIFT</span></small>
+                                                                    @endif
+                                                                    <span class="pull-right text-muted">{{item.brand}}</span>
+                                                                </h3>
+                                                                <small>{{item.unit_sn}}</small>
+                                                                <input class="form-control text-right input-sm" type="hidden" name="ft_name" id="ft_name" value="{{item.kode}}" required>
+                                                                <input class="form-control text-right input-sm" type="hidden" name="shift_id" id="shift_id" value="{{item.shift_id}}" required>
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control text-right input-sm" type="text" name="fm_awal" id="fm_awal" value="0" required>
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control text-right input-sm" type="text" name="fm_akhir" id="fm_akhir" value="0" required>
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control text-right input-sm" type="text" name="subtotal" id="subtotal" value="0" disabled>
+                                                            </td>
+                                                        </tr>
+                                                        @endeach
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>

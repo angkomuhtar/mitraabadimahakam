@@ -4,34 +4,57 @@
         <div class="white-box">
             <div class="" id="content-list">
                 <div class="row sales-report">
-                    <div class="col-md-9 col-sm-9 col-xs-12">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
                             <i class="fa fa-plus m-r-5"></i> <span>Upload Data</span>
                         </button>
                     </div>
-                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                    <div class="col-md-2 col-sm-2 col-xs-12 text-right">
                         <div class="input-group">
-                            <input id="inpKeywordFuelDist" class="form-control" placeholder="Search for...">
-                            <span class="input-group-btn"> 
-                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
-                            </span>
+                            <input id="limit" type="number" class="form-control text-right" name="limit" placeholder="100" value="{{limit}}">
+                            <span class="input-group-addon" id="bt-search-keyword">Limit</span>
                         </div>
                     </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                        <button class="btn btn-info" type="button" id="open-filter" data-toggle="modal" data-target="#filtermodal">
+                            <i class="fa fa-filter"></i>
+                            Filter Data
+                        </button>
+                    </div>
                 </div>
+                <!--<div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Upload Data</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="limit" type="number" class="form-control text-right" name="limit" value="{{limit}}">
+                            <span class="input-group-addon" id="bt-search-keyword">Limit</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                        <button class="btn btn-info" type="button" id="open-filter" data-toggle="modal" data-target="#filtermodal">
+                            <i class="fa fa-filter"></i>
+                            Filter Data
+                        </button>
+                    </div>
+                </div>-->
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead style="border-bottom: 2px solid;">
                             <tr>
                                 <th class="sl text-center" width="20">No</th>
-                                <!--  <th class="sl text-center" width="20">ACT</th>  -->
-                                <th class="sl" width="150">PIT</th>
-                                <th class="sl" width="150">Refuel At</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="50">Refuel At</th>
                                 <th class="sl" width="150">SMU</th>
                                 <th class="sl" width="150">Top Up</th>
-                                <th class="sl" width="250">Equipment Unit</th>
-                                <th class="sl" width="200">Operator Unit</th>
-                                <th class="sl" width="200">Fuelman</th>
-                                <th class="sl" width="200">Fuel Truck</th>
+                                <th class="sl" width="150">Equipment Unit</th>
+                                <th class="sl" width="150">Operator Unit</th>
+                                <th class="sl" width="150">Fuelman</th>
+                                <th class="sl" width="150">Fuel Truck</th>
+                                <th class="sl" width="*">Narasi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,36 +64,32 @@
                             @each(item in list.data)
                                 <tr>
                                     <td>{{$loop.index + 1}}</td>
-                                    <!--  <td>
+                                    <td>
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
-                                    </td>  -->
-                                    <td class="single-line">
-                                        @if(item.timesheet)
-                                          {{item.timesheet.dailyFleet.pit.name}}
-                                        @else
-                                          <small class="text-warning">timesheet <br>blum ditentukan</small>
-                                        @endif
                                     </td>
                                     <td class="single-line myDateTimeFormat" data-date="{{item.fueling_at}}">
-                                        {{item.smu}} 
+                                        xxx
                                     </td>
-                                    <td class="">
+                                    <td class="text-right">
                                         {{item.smu}} 
                                     </td>
                                     <td class="text-right">
                                         {{item.topup}} Liter
                                     </td>
                                     <td class="">
-                                        {{item.equipment.kode}}
+                                        {{item.equipment ? item.equipment.kode : '-'}}
                                     </td>
                                     <td>
-                                        {{item.operator_unit.fullname}}
+                                        {{item.operator_unit ? item.operator_unit.fullname : '-'}}
                                     </td>
                                     <td class="{{item.user ? 'text-inverse':'text-danger'}}">
-                                        {{item.user ? item.user.nm_lengkap:'unset'}}
+                                        {{item.user ? item.user.nm_lengkap:'-'}}
                                     </td>
                                     <td class="{{item.truck_fuel ? 'text-inverse':'text-danger'}}">
-                                        {{item.truck_fuel ? item.truck_fuel.kode:'unset'}}
+                                        {{item.truck_fuel ? item.truck_fuel.kode:'-'}}
+                                    </td>
+                                    <td>
+                                        {{item.description || ''}}
                                     </td>
                                 </tr>
                             @endeach

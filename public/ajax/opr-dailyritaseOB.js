@@ -53,8 +53,37 @@ $(function(){
         })
     })
 
-    $('body').on('click', 'button.btn-warning', function(e){
+    $('body').on('click', 'input[name="metodeInput"]', function(e){
+        var value = $(this).is(':checked')
+        if(value){
+            console.log('show input list');
+            $('div#manual-input').show()
+            $('div#upload-file').hide()
+            $('input[type="file"]').removeAttr('required').val(null)
+            addHauler()
+        }else{
+            console.log('show upload file');
+            $('body').find('tbody#item-details').children().remove()
+            $('div#manual-input').hide()
+            $('div#upload-file').show()
+            $('input[type="file"]').prop('required', 'true')
+        }
+    })
+
+    $('body').on('click', 'button.bt-add-items', function(e){
         e.preventDefault()
+        addHauler()
+    })
+
+    $('body').on('change', 'select.form-control', function(){
+        console.log($(this));
+        var value = $(this).val()
+        $(this).attr('data-check', value)
+    })
+
+    $('body').on('click', 'button.bt-delete-items', function(e){
+        e.preventDefault()
+        $(this).parents('tr').remove()
     })
 
     $('body').on('click', 'button#bt-back', function(){
@@ -103,49 +132,85 @@ $(function(){
 
     $('body').on('submit', 'form#fm-upload-ritase-ob', function(e){
         e.preventDefault()
+        $('body').find('button[type="submit"]').attr('disabled', 'disabled')
         var data = new FormData(this)
-        swal({
-            title: "Apakah anda yakin?",
-            text: "Pastikan format data excel anda sudah sesuai!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonClass: "btn-warning",
-            confirmButtonText: "Okey!",
-            closeOnConfirm: false
-          },
-          function(isConfirm){
-            swal("Please wait.....")
-              if(isConfirm){
-                  $.ajax({
-                      async: true,
-                      headers: {'x-csrf-token': $('[name=_csrf]').val()},
-                      url: '/operation/daily-ritase-ob',
-                      method: 'POST',
-                      data: data,
-                      dataType: 'json',
-                      processData: false,
-                      mimeType: "multipart/form-data",
-                      contentType: false,
-                      success: function(result){
-                          console.log(result)
-                          if(result.success){
-                              swal("Okey!", result.message, "success");
-                              $("body form#fm-upload-ritase-ob").trigger("reset");
-                              window.location.reload()
-                          }else{
-                              alert(result.message)
+        var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
+        if(isUploadFile){
+            console.log('input manual....');
+            $.ajax({
+                async: true,
+                headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                url: '/operation/daily-ritase-ob',
+                method: 'POST',
+                data: data,
+                dataType: 'json',
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                success: function(result){
+                    console.log(result)
+                    if(result.success){
+                        $("body").find('tr.advance-table-row').each(function(){
+                            $(this).find('select').val(null).trigger('change')
+                            $(this).find('input[name="qty"]').val('')
+                        })
+                        swal("Okey!", result.message, "success");
+                        $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
+                    }else{
+                        alert(result.message)
+                    }
+                },
+                error: function(err){
+                    console.log(err)
+                    const { message } = err.responseJSON
+                    swal("Opps,,,!", message, "warning")
+                    $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
+                }
+            })
+        }else{
+            swal({
+                title: "Apakah anda yakin?",
+                text: "Pastikan format data excel anda sudah sesuai!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-warning",
+                confirmButtonText: "Okey!",
+                closeOnConfirm: false
+              },
+              function(isConfirm){
+                swal("Please wait.....")
+                  if(isConfirm){
+                      $.ajax({
+                          async: true,
+                          headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                          url: '/operation/daily-ritase-ob',
+                          method: 'POST',
+                          data: data,
+                          dataType: 'json',
+                          processData: false,
+                          mimeType: "multipart/form-data",
+                          contentType: false,
+                          success: function(result){
+                              console.log(result)
+                              if(result.success){
+                                  swal("Okey!", result.message, "success");
+                                  $("body form#fm-upload-ritase-ob").trigger("reset");
+                                  window.location.reload()
+                              }else{
+                                  alert(result.message)
+                              }
+                          },
+                          error: function(err){
+                              console.log(err)
+                              const { message } = err.responseJSON
+                              swal("Opps,,,!", message, "warning")
                           }
-                      },
-                      error: function(err){
-                          console.log(err)
-                          const { message } = err.responseJSON
-                          swal("Opps,,,!", message, "warning")
-                      }
-                  })
-              }else{
-                swal("Okey!", 'you cancel upload data...', "success");
-              }
-        });
+                      })
+                  }else{
+                    swal("Okey!", 'you cancel upload data...', "success");
+                  }
+            });
+        }
     })
 
     $('body').on('click', 'button.bt-delete-data', function(e){
@@ -290,6 +355,24 @@ $(function(){
             success: function(result){
                 $('div#list-ritase-unit').children().remove()
                 $('div#list-ritase-unit').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
+
+    function addHauler(){
+        $.ajax({
+            async: true,
+            url: '/operation/daily-ritase-ob/create/addItems',
+            method: 'GET',
+            success: function(result){
+                $('tbody#item-details').append(result)
+                $('body').find('tbody > tr.advance-table-row').each(function(i, e){
+                    console.log($(this));
+                    $(this).find('td.urut').html(i + 1)
+                })
             },
             error: function(err){
                 console.log(err);

@@ -331,6 +331,8 @@ Route.group(() => {
 
     Route.get('/daily-ritase-ob/create', 'DailyRitaseController.create').as('opr.daily-ritase-ob.create').middleware('R')
 
+    Route.get('/daily-ritase-ob/create/addItems', 'DailyRitaseController.addItems').as('opr.daily-ritase-ob.addItems').middleware('R')
+
     Route.get('/daily-ritase-ob/:id/show', 'DailyRitaseController.show').as('opr.daily-ritase-ob.show').middleware('U')
     
     Route.post('/daily-ritase-ob/:id/update', 'DailyRitaseController.update').as('opr.daily-ritase-ob.update').middleware('U')
@@ -456,10 +458,16 @@ Route.group(() => {
     Route.get('/daily-refuel-unit', 'DailyRefuelEquipmentController.index').as('opr.daily-refuel-unit.index').middleware('R')
 
     Route.post('/daily-refuel-unit', 'DailyRefuelEquipmentController.store').as('opr.daily-refuel-unit.store').middleware('C')
-    
+
     Route.get('/daily-refuel-unit/list', 'DailyRefuelEquipmentController.list').as('opr.daily-refuel-unit.list').middleware('R')
     
+    Route.post('/daily-refuel-unit/upload-file', 'DailyRefuelEquipmentController.uploadFile').as('opr.daily-refuel-unit.uploadFile').middleware('C')
+    
     Route.get('/daily-refuel-unit/create', 'DailyRefuelEquipmentController.create').as('opr.daily-refuel-unit.create').middleware('C')
+
+    Route.get('/daily-refuel-unit/:id/show', 'DailyRefuelEquipmentController.show').as('opr.daily-refuel-unit.show').middleware('U')
+
+    Route.post('/daily-refuel-unit/:id/update', 'DailyRefuelEquipmentController.update').as('opr.daily-refuel-unit.update').middleware('U')
 
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
@@ -513,6 +521,8 @@ Route.group(() => {
     Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
 
     Route.get('/equipment/excavator', 'AjaxEquipmentController.getEquipmentExcavator').as('equipment.getEquipmentExcavator')
+
+    Route.get('/equipment/hauler', 'AjaxEquipmentController.getEquipmentHauler').as('equipment.getEquipmentHauler')
 
     Route.get('/equipment/fuel-truck', 'AjaxEquipmentController.getEquipmentFuelTruck').as('equipment.getEquipmentFuelTruck')
 

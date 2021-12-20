@@ -1,4 +1,5 @@
 $(function(){
+
     initDeafult()
 
     $('body').on('click', 'button#bt-back', function(){
@@ -36,6 +37,96 @@ $(function(){
         var value = $('input#inpKeywordFuelDist').val()
         ajaxSearch(value)
     })
+
+    $('body').on('keyup', 'input[name="fm_awal"]', function(){
+        var elm = $(this)
+        var awal = elm.val()
+        var akhir = elm.parents('tr').find('input[name="fm_akhir"]').val()
+        elm.parents('tr').find('input[name="subtotal"]').val(parseFloat(akhir) - parseFloat(awal))
+    })
+
+    $('body').on('keyup', 'input[name="fm_akhir"]', function(){
+        var elm = $(this)
+        var akhir = elm.val()
+        var awal = elm.parents('tr').find('input[name="fm_awal"]').val()
+        elm.parents('tr').find('input[name="subtotal"]').val(parseFloat(akhir) - parseFloat(awal))
+    })
+
+    $('body').on('click', 'button#reset-filter', function(e){
+        e.preventDefault()
+        $(this).parents('div#filtermodal').find('input.form-control, select.form-control').val('')
+        $(this).parents('div#filtermodal').find('select.select2x').val(null).trigger('change')
+        initDeafult()
+    })
+
+    $('body').on('click', 'button#apply-filter', function(e){
+        e.preventDefault()
+        var limit = $('body').find('input[name="limit"]').val() || 100
+        if($('input[name="mulai_tanggal"]').val() != '' && $('input[name="hingga_tanggal"]').val() != ''){
+            var data = {
+                keyword: true,
+                limit: limit,
+                begin: $('input[name="mulai_tanggal"]').val(),
+                end: $('input[name="hingga_tanggal"]').val(),
+                shift_id: $('select[name="shift_id"]').val(),
+                fuel_truck: $('select[name="fuel_truck"]').val(),
+                equip_id: $('select[name="equip_id"]').val()
+            }
+            $.ajax({
+                async: true,
+                url: '/operation/daily-refuel-unit/list',
+                method: 'GET',
+                data: data,
+                dataType: 'html',
+                beforeSend: function(){
+
+                },
+                success: function(result){
+                    console.log('result');
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err)
+                },
+                complete: function(){
+
+                }
+            })
+
+        }else{
+            alert('Tanggal filter blum ditentukan...')
+        }
+    })
+
+    $('body').on('change', 'input[name="refuel_xls"]', function(){
+        var data = new FormData()
+        data.append('refuel_xls', $(this)[0].files[0])
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-refuel-unit/upload-file',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            beforeSend: function(){
+                swal("Please wait!", "Data sedang di proses...")
+            },
+            success: function(result){
+                $('body').find('select[name="sheet"]').html(result.title.map(s => '<option value="'+s+'"> Sheet [ '+s+' ]</option>'))
+                $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
+                $('body').find('textarea[name="dataJson"]').val(JSON.stringify(result.data, null, 2))
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
     
 
     $('body').on('submit', 'form#fm-refuel-unit', function(e){
@@ -66,20 +157,19 @@ $(function(){
             },
             error: function(err){
                 console.log(err)
-                const { message } = err.responseJSON
-                swal("Opps,,,!", message, "warning")
+                swal("Opps,,,!", err.responseJSON.error.message, "error")
             }
         })
     })
 
-    $('body').on('submit', 'form#fm-fuel-distribution_upd', function(e){
+    $('body').on('submit', 'form#fm-refuel-unit-upd', function(e){
         e.preventDefault()
         var id = $(this).data('id')
         var data = new FormData(this)
         $.ajax({
             async: true,
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
-            url: '/operation/fuel-dist/'+id+'/update',
+            url: '/operation/daily-refuel-unit/'+id+'/update',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -109,7 +199,7 @@ $(function(){
         var id = $(this).data('id')
         $.ajax({
             async: true,
-            url: '/operation/fuel-dist/'+id+'/show',
+            url: '/operation/daily-refuel-unit/'+id+'/show',
             method: 'GET',
             success: function(result){
                 $('div#form-show').html(result)
@@ -174,7 +264,7 @@ $(function(){
         })
     })
 
-    function initDeafult(){
+    function initDeafult(limit){
         $('div.content-module').css('display', 'none')
         $.ajax({
             async: true,
