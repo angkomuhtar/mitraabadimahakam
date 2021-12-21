@@ -103,15 +103,28 @@ class DailyFleetController {
     const trx = await Database.beginTransaction()
     try {
       await dailyFleet.save(trx)
-      for (const item of reqEquip) {
-        const dailyFleetEquip = new DailyFleetEquip()
-        dailyFleetEquip.fill({ 
-          dailyfleet_id: dailyFleet.id,
-          equip_id: item.equip_id,
-          datetime: datetime.datetime
-        })
-        await dailyFleetEquip.save(trx)
+
+
+      // prevent from creating a daily fleet without equipments selected
+      if(reqEquip.length > 0) {
+        for (const item of reqEquip) {
+          const dailyFleetEquip = new DailyFleetEquip()
+          dailyFleetEquip.fill({ 
+            dailyfleet_id: dailyFleet.id,
+            equip_id: item.equip_id,
+            datetime: datetime.datetime
+          })
+          await dailyFleetEquip.save(trx)
+        }
+      } else {
+        return {
+            success: false,
+            message: "Unit Tidak boleh kosong!.",
+        }
       }
+
+
+     
       await trx.commit()
       new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
       return {
