@@ -469,6 +469,19 @@ Route.group(() => {
 
     Route.post('/daily-refuel-unit/:id/update', 'DailyRefuelEquipmentController.update').as('opr.daily-refuel-unit.update').middleware('U')
 
+    // Daily Issue
+    Route.get('/daily-issue', 'DailyIssueController.index').as('opr.daily-issue.index').middleware('R')
+
+    Route.post('/daily-issue', 'DailyIssueController.store').as('opr.daily-issue.store').middleware('C')
+
+    Route.get('/daily-issue/list', 'DailyIssueController.list').as('opr.daily-issue.list').middleware('R')
+    
+    Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('C')
+
+    Route.get('/daily-issue/:id/show', 'DailyIssueController.show').as('opr.daily-issue.show').middleware('U')
+
+    Route.post('/daily-issue/:id/update', 'DailyIssueController.update').as('opr.daily-issue.update').middleware('U')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX

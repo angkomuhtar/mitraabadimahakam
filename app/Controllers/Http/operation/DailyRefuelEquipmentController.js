@@ -203,9 +203,9 @@ class DailyRefuelEquipmentController {
                 w.where('kode', obj.fuel_truck)
             }).last()
 
-            if(!unit){
-                throw new Error(obj.kode + ' tidak ditemukan dalam database system...')
-            }
+            // if(!unit){
+            //     throw new Error(obj.kode + ' tidak ditemukan dalam database system...')
+            // }
 
             if(!fuel_truck){
                 throw new Error(obj.fuel_truck + ' tidak ditemukan dalam database system...')
