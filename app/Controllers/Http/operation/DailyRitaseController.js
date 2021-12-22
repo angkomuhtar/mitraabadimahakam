@@ -61,7 +61,7 @@ class DailyRitaseController {
 
   async store({ request, auth }) {
     const req = request.all();
-    let xuser
+    let xuser;
     try {
       xuser = await auth.getUser();
     } catch (error) {
@@ -99,7 +99,7 @@ class DailyRitaseController {
         header: {
           rows: 1,
         },
-        sheets: ["FORM"]
+        sheets: ["FORM"],
       });
 
       const data = convertJSON.FORM.filter((cell) => cell.A != "#N/A");
@@ -126,7 +126,7 @@ class DailyRitaseController {
             spv_id: req.spv_id,
             hauler_id: item.A,
             opr_id: item.D != "#N/A" ? item.D : null,
-            check_in: date + " " + clock
+            check_in: date + " " + clock,
           });
           await ritaseDetail.save();
         }
@@ -146,8 +146,17 @@ class DailyRitaseController {
             .fetch()
         ).toJSON();
 
+        const checkerName =
+          result && result.length > 0
+            ? `${result[0].checker.profile.nm_depan} ${result[0].checker.profile.nm_belakang}`
+            : 'No Name';
         /** after being uploaded, then throw a notif to the company's owner */
-        await NotificationsHelpers.sendNotifications(req, date);
+        await NotificationsHelpers.sendNotifications(
+          req,
+          date,
+          result,
+          checkerName
+        );
 
         return {
           success: true,
@@ -161,10 +170,23 @@ class DailyRitaseController {
           message: error,
         };
       }
-    }else{
-      const reqx = request.only(['date', 'dailyfleet_id', 'exca_id', 'material', 'distance', 'checker_id', 'spv_id'])
-      const reqCollect = request.collect(['hauler_id', 'opr_id', 'check_in', 'qty'])
-      
+    } else {
+      const reqx = request.only([
+        "date",
+        "dailyfleet_id",
+        "exca_id",
+        "material",
+        "distance",
+        "checker_id",
+        "spv_id",
+      ]);
+      const reqCollect = request.collect([
+        "hauler_id",
+        "opr_id",
+        "check_in",
+        "qty",
+      ]);
+
       try {
         const xDailyRitase = new DailyRitase();
         xDailyRitase.fill({
@@ -177,22 +199,23 @@ class DailyRitaseController {
 
         await xDailyRitase.save();
 
-        let prepData = reqCollect.map(el => {
+        let prepData = reqCollect.map((el) => {
           return {
             ...el,
             checker_id: xuser.id,
-            spv_id: reqx.spv_id
-          }
-        })
+            spv_id: reqx.spv_id,
+          };
+        });
 
         for (const obj of prepData) {
-          if(parseInt(obj.qty) > 0){
+          if (parseInt(obj.qty) > 0) {
             for (let i = 0; i < parseInt(obj.qty); i++) {
               const xRitaseDetail = new DailyRitaseDetail();
               xRitaseDetail.fill({
                 hauler_id: obj.hauler_id,
                 opr_id: obj.opr_id,
-                check_in: moment(reqx.date).format('YYYY-MM-DD') + ' ' + obj.check_in,
+                check_in:
+                  moment(reqx.date).format("YYYY-MM-DD") + " " + obj.check_in,
                 checker_id: obj.checker_id,
                 spv_id: obj.spv_id,
                 dailyritase_id: xDailyRitase.id,
@@ -216,10 +239,12 @@ class DailyRitaseController {
             .where("dailyritase_id", xDailyRitase.id)
             .fetch()
         ).toJSON();
-        
+
         /** after being uploaded, then throw a notif to the company's owner */
         const userRec = (
-          await User.query().whereIn("user_tipe", ["owner", "administrator", "checker"]).fetch()
+          await User.query()
+            .whereIn("user_tipe", ["owner", "administrator", "checker"])
+            .fetch()
         ).toJSON();
 
         for (const obj of userRec) {
@@ -227,14 +252,13 @@ class DailyRitaseController {
             await UserDevice.query().where("user_id", obj.id).fetch()
           ).toJSON();
 
-          
           if (userDevices) {
-            const xhours = reqCollect[0].check_in
+            const xhours = reqCollect[0].check_in;
 
             const xexcaName = (
               await MasEquipment.query().where("id", reqx.exca_id).first()
             ).toJSON().kode;
-  
+
             const xpitName = (
               await DailyFleet.query()
                 .with("pit")
@@ -244,24 +268,34 @@ class DailyRitaseController {
 
             const xmaterialName = (
               await MasMaterial.query().where("id", reqx.material).first()
-              ).toJSON().name;
-              
+            ).toJSON().name;
+
             const xstart = moment(`${reqx.date} ${xhours}`)
-            .startOf("hour")
-            .format("HH:mm");
-            const xend = moment(`${reqx.date} ${xhours}`).endOf("hour").format("HH:mm");
+              .startOf("hour")
+              .format("HH:mm");
+            const xend = moment(`${reqx.date} ${xhours}`)
+              .endOf("hour")
+              .format("HH:mm");
+
+            const checkerName =
+              xresult && xresult.length > 0
+                ? `${result[0].checker.profile.nm_depan} ${xresult[0].checker.profile.nm_belakang}`
+                : 'No Name';
             const totalBCM =
               xresult.reduce(
                 (a, b) => a + b.daily_ritase.material_details.vol,
                 0
               ) || 0;
-            let msg = `Hourly Report OB ${xstart} - ${xend} | ${moment(reqx.date).format('DD MMM')}
+            let msg = `Hourly Report OB ${xstart} - ${xend} | ${moment(
+              reqx.date
+            ).format("DD MMM")}
           ${xpitName} - ${xexcaName} - ${xmaterialName}
            BCM : ${await numberFormatter(String(totalBCM))}
+           Author : ${checkerName}
           `;
-  
+
             const _dat = {};
-  
+
             for (const x of userDevices) {
               await sendMessage(x.playerId, msg, _dat, x.platform);
             }
@@ -273,7 +307,6 @@ class DailyRitaseController {
           data: xresult,
           message: "data berhasil di simpan " + xresult.length + " items...",
         };
-
       } catch (error) {
         console.log(error);
         return {

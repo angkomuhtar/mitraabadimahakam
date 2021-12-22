@@ -6,7 +6,7 @@ const DailyFleet = use("App/Models/DailyFleet");
 const { sendMessage } = use("App/Controllers/Http/customClass/utils");
 
 class Notifications {
-  async sendNotifications(req, date) {
+  async sendNotifications(req, date, result, checkerName) {
     const owner = (
       await User.query().where("user_tipe", "owner").last()
     ).toJSON();
@@ -42,6 +42,7 @@ class Notifications {
       )}
           ${pitName} - ${excaName} - ${materialName}
            BCM : ${await numberFormatter(String(totalBCM))}
+           Author : ${checkerName}
           `;
 
       const data = {};
