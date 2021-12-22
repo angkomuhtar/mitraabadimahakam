@@ -768,19 +768,12 @@ class MonthlyPlanApiController {
       });
     }
     const trx = await db.beginTransaction();
-
-    const SoM = moment(date).startOf("month").format("YYYY-MM-DD HH:mm:ss");
-
     const currentWeekDate = Array.from({ length: 7 }, (x, i) =>
       moment(date).startOf("week").add(i, "days").format("YYYY-MM-DD")
     );
-
-    const SoW = moment(date).startOf("week").format("YYYY-MM-DD HH:mm:ss");
-
     let _OB_ARR = [];
     const daysArr = [];
     const shiftData = [];
-    const obj = {};
     try {
       const shifts = (await MasShift.query().fetch()).toJSON();
       const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");

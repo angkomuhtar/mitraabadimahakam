@@ -417,7 +417,7 @@ class DailyFleetApiController {
           activity_id,
           shift_id,
           date: moment(date).format("YYYY-MM-DD"),
-          tipe,
+          tipe
         })
         .first();
 
@@ -448,15 +448,28 @@ class DailyFleetApiController {
         });
         await dailyFleet.save(trx);
 
-        for (const item of details) {
-          const dailyFleetEquip = new DailyFleetEquip();
-          dailyFleetEquip.fill({
-            dailyfleet_id: dailyFleet.id,
-            equip_id: item.equip_id,
-            datetime: new Date(date),
+        console.log('details >> ', details)
+        if(details || details.length > 0) {
+          for (const item of details) {
+            const dailyFleetEquip = new DailyFleetEquip();
+            dailyFleetEquip.fill({
+              dailyfleet_id: dailyFleet.id,
+              equip_id: item.equip_id,
+              datetime: new Date(date),
+            });
+            await dailyFleetEquip.save(trx);
+          }
+        } else {
+          return response.status(403).json({
+            diagnostic: {
+              times: durasi,
+              error: true,
+              message: "Unit Tidak boleh kosong!.",
+            },
+            data: [],
           });
-          await dailyFleetEquip.save(trx);
         }
+        
         await trx.commit();
         durasi = await diagnoticTime.durasi(t0);
         return response.status(200).json({
