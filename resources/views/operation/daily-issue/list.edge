@@ -1,0 +1,53 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add Issue</span>
+                        </button>
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="limit" type="number" class="form-control text-right" name="limit" placeholder="100" value="{{limit}}">
+                            <span class="input-group-addon" id="bt-search-keyword">Limit</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12">
+                        <button class="btn btn-info" type="button" id="open-filter" data-toggle="modal" data-target="#filtermodal">
+                            <i class="fa fa-filter"></i>
+                            Filter Data
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="50">Refuel At</th>
+                                <th class="sl" width="150">SMU</th>
+                                <th class="sl" width="150">Top Up</th>
+                                <th class="sl" width="150">Equipment Unit</th>
+                                <th class="sl" width="150">Operator Unit</th>
+                                <th class="sl" width="150">Fuelman</th>
+                                <th class="sl" width="150">Fuel Truck</th>
+                                <th class="sl" width="*">Narasi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>

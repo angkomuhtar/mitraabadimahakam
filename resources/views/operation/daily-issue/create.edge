@@ -1,0 +1,106 @@
+{{ script('ajax/index') }}
+{{ script('script/opt-equipment') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> 
+            <i class="ti-arrow-left"></i> 
+            <span>Back</span>
+        </button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-refuel-unit">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Daily Issue</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Tanggal</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
+                                                    <input class="form-control" type="date" name="tgl" id="tgl" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="form-group">
+                                                <label for="">Equipment Unit</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control xselect2equipment" data-check="" name="equip_id" multiple="multiple"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="well">
+                                                <small>Tentukan Flowmeter setiap Fuel Truck</small>
+                                                <hr>
+                                                <table class="table table-hover">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center" width="50">No</th>
+                                                            <th width="*">Nama Fuel Truck</th>
+                                                            <th width="200">Flow Awal</th>
+                                                            <th width="200">Flow Akhir</th>
+                                                            <th width="200">Subtotal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @each(item in fuelTruck)
+                                                        <tr class="item-list">
+                                                            <td align="center">{{$loop.index + 1}}</td>
+                                                            <td>
+                                                                <h3 class="m-b-0">
+                                                                    {{item.kode}}
+                                                                    @if(item.shift_id === 1)
+                                                                        <small class="text-success"><span>DAY SHIFT</span></small>
+                                                                    @else
+                                                                        <small class="text-warning"><span>NIGHT SHIFT</span></small>
+                                                                    @endif
+                                                                    <span class="pull-right text-muted">{{item.brand}}</span>
+                                                                </h3>
+                                                                <small>{{item.unit_sn}}</small>
+                                                                <input class="form-control text-right input-sm" type="hidden" name="ft_name" id="ft_name" value="{{item.kode}}" required>
+                                                                <input class="form-control text-right input-sm" type="hidden" name="shift_id" id="shift_id" value="{{item.shift_id}}" required>
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control text-right input-sm" type="text" name="fm_awal" id="fm_awal" value="0" required>
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control text-right input-sm" type="text" name="fm_akhir" id="fm_akhir" value="0" required>
+                                                            </td>
+                                                            <td>
+                                                                <input class="form-control text-right input-sm" type="text" name="subtotal" id="subtotal" value="0" disabled>
+                                                            </td>
+                                                        </tr>
+                                                        @endeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    
+</script>
