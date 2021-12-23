@@ -279,7 +279,7 @@ class DailyRitaseController {
 
             const checkerName =
               xresult && xresult.length > 0
-                ? `${result[0].checker.profile.nm_depan} ${xresult[0].checker.profile.nm_belakang}`
+                ? `${xresult[0].checker.profile.nm_depan} ${xresult[0].checker.profile.nm_belakang}`
                 : 'No Name';
             const totalBCM =
               xresult.reduce(
