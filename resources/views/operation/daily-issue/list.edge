@@ -28,21 +28,36 @@
                             <tr>
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="20">ACT</th>
-                                <th class="sl" width="50">Refuel At</th>
-                                <th class="sl" width="150">SMU</th>
-                                <th class="sl" width="150">Top Up</th>
-                                <th class="sl" width="150">Equipment Unit</th>
-                                <th class="sl" width="150">Operator Unit</th>
-                                <th class="sl" width="150">Fuelman</th>
-                                <th class="sl" width="150">Fuel Truck</th>
-                                <th class="sl" width="*">Narasi</th>
+                                <th class="sl text-right" width="150">Waktu</th>
+                                <th class="sl" width="300">Unit Equipmentt</th>
+                                <th class="sl" width="*">Description</th>
+                                <th class="sl" width="250">Event</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if(list.data.length < 1)
                               <tr><td colspan="5">Data not found or data is not exsist</td></tr>
                             @endif
-                            
+                            @each(item in list.data)
+                              <tr>
+                                  <td>{{$loop.index + 1}}</td>
+                                  <td>
+                                    <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="733">edit</button>
+                                  </td>
+                                  <td class="myDateTimeFormat text-right" data-date="{{item.report_at}}" data-elm="small">
+                                    <i class="fa fa-clock-o"></i><small class="text-white m-l-10"></small><br>
+                                    <span style="font-size:1rem">{{item.user.nm_lengkap}}</span>
+                                  </td>
+                                  <td>
+                                      <strong>
+                                        {{item.unit_id ? item.unit.kode : ''}}
+                                      </strong><br>
+                                      <small>{{item.unit_id ? item.unit.unit_sn : ''}}</small>
+                                  </td>
+                                  <td>{{item.issue}}</td>
+                                  <td>{{item.event_id ? item.event.narasi : '-'}}</td>
+                              </tr>
+                            @endeach
                         </tbody>
                     </table>
                 </div>

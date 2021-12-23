@@ -6,7 +6,7 @@ const Model = use('Model')
 class MamIssue extends Model {
 
     user () {
-        return this.belongsTo("App/Models/User", "report_by", "id")
+        return this.belongsTo("App/Models/VUser", "report_by", "id")
     }
 
     unit () {
