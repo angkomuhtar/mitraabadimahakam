@@ -448,7 +448,6 @@ class DailyFleetApiController {
         });
         await dailyFleet.save(trx);
 
-        console.log('details >> ', details)
         if(details || details.length > 0) {
           for (const item of details) {
             const dailyFleetEquip = new DailyFleetEquip();

@@ -677,7 +677,7 @@ class MonthlyPlanApiController {
               ) || 0,
             shiftStart: _start,
             endShift: _end,
-            shiftDuration: m.duration,
+            shiftDuration: m.duration
           });
 
           const daysObj = {
@@ -1997,7 +1997,7 @@ class MonthlyPlanApiController {
         coal_expose: COAL_EXPOSE,
         mtd_coal_expose: MTD_COAL_EXPOSE,
         mtd_coal_expose_sr: MTD_COAL_EXPOSE_SR,
-        event: _EVENTS,
+        event: _EVENTS
       };
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
@@ -2005,11 +2005,11 @@ class MonthlyPlanApiController {
           times: durasi,
           error: false,
           request_time: date,
-          server_time: moment(date).format("YYYY-MM-DD"),
+          server_time: moment(date).format("YYYY-MM-DD")
         },
         data: data,
         pit_name: monthlyPlansCoal.toJSON()?.pit?.name,
-        checker: {},
+        checker: {}
       });
     } catch (error) {
       console.log(error);
@@ -2059,6 +2059,8 @@ class MonthlyPlanApiController {
       });
     }
 
+    console.log('date >>> ', __date)
+
     const shifts = (await MasShift.query().fetch()).toJSON();
     const date = moment(__date).format("YYYY-MM-DD");
 
@@ -2107,8 +2109,8 @@ class MonthlyPlanApiController {
               "fleet_id",
               masFleetOB.map((x) => x.id)
             )
-            .andWhere("created_at", ">=", _start)
-            .andWhere("created_at", "<=", _end)
+            .andWhere("date", date)
+            .andWhere("shift_id", x.id)
             .fetch()
         ).toJSON();
 
@@ -2126,8 +2128,8 @@ class MonthlyPlanApiController {
                 "fleet_id",
                 masFleetOB.map((x) => x.id)
               )
-              .andWhere("created_at", ">=", prevShiftStart)
-              .andWhere("created_at", "<=", prevShiftEnd)
+              .andWhere("date", date)
+              .andWhere("shift_id", x.id)
               .fetch()
           ).toJSON();
           hours = Array.from({ length: x.duration + 1 }, (a, y) => {
@@ -2143,8 +2145,8 @@ class MonthlyPlanApiController {
                 "fleet_id",
                 masFleetOB.map((x) => x.id)
               )
-              .andWhere("created_at", ">=", _start)
-              .andWhere("created_at", "<=", _end)
+              .andWhere("date", date)
+              .andWhere("shift_id", x.id)
               .fetch()
           ).toJSON();
           hours = Array.from({ length: x.duration + 1 }, (a, y) => {
@@ -2283,7 +2285,7 @@ class MonthlyPlanApiController {
               ).format("HH:mm")}`,
               exca: excaName,
               value: (await getOBProductionByFleet(m.id, y)).val,
-              onPit: m.pit.name,
+              onPit: m.pit.kode,
               unit: "BCM",
               hourlyTarget: await getHourlyTargetBCM(m.pit.id),
               achieved:
@@ -2413,8 +2415,8 @@ class MonthlyPlanApiController {
               "fleet_id",
               masFleetCoal.map((x) => x.id)
             )
-            .andWhere("created_at", ">=", _start)
-            .andWhere("created_at", "<=", _end)
+            .andWhere("date", date)
+            .andWhere("shift_id", x.id)
             .fetch()
         ).toJSON();
 
@@ -2433,8 +2435,8 @@ class MonthlyPlanApiController {
                 "fleet_id",
                 masFleetCoal.map((x) => x.id)
               )
-              .andWhere("created_at", ">=", prevShiftStart)
-              .andWhere("created_at", "<=", prevShiftEnd)
+              .andWhere("date", date)
+              .andWhere("shift_id", x.id)
               .fetch()
           ).toJSON();
 
@@ -2451,8 +2453,8 @@ class MonthlyPlanApiController {
                 "fleet_id",
                 masFleetCoal.map((x) => x.id)
               )
-              .andWhere("created_at", ">=", _start)
-              .andWhere("created_at", "<=", _end)
+              .andWhere("date", date)
+              .andWhere("shift_id", x.id)
               .fetch()
           ).toJSON();
 
@@ -2574,7 +2576,7 @@ class MonthlyPlanApiController {
               ).format("HH:mm")}`,
               exca: excaName,
               value: (await getCoalProductionPerShift(m.id, y)).val,
-              onPit: m.pit.name,
+              onPit: m.pit.kode,
               unit: "MT",
               hourlyTarget: await getHourlyTargetMT(m.pit.id),
               achieved:
