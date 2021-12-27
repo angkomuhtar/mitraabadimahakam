@@ -1,5 +1,6 @@
 {{ script('ajax/index') }}
 {{ script('script/opt-equipment') }}
+{{ script('script/opt-event') }}
 <div class="row">
     <div class="col-md-12">
         <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> 
@@ -9,23 +10,47 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="" id="fm-refuel-unit">
+                    <form action="" id="fm-event">
                         <div class="panel panel-default">
                             <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Daily Issue</div>
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
                                     <div class="row">
-                                        <div class="col-md-3">
+                                        <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="">Tanggal</label>
+                                                <label for="">Event</label>
                                                 <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-                                                    <input class="form-control" type="date" name="tgl" id="tgl" required>
+                                                    <div class="input-group-addon"><i class="fa fa-cloud"></i></div>
+                                                    <select class="form-control xselect2event" data-check="" name="event_id"></select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-9">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Waktu Mulai</label>
+                                                <input class="form-control" type="datetime-local" name="start_at" id="start_at" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Waktu Selesai</label>
+                                                <input class="form-control" type="datetime-local" name="end_at" id="end_at">
+                                            </div>
+                                        </div>
+                                        <!--
+                                        <div class="col-md-2">
+                                            <label for="tgl">Metode By Equipment</label>
+                                            <div class="form-group" style="margin-top: 10px">
+                                                <div class="material-switch">
+                                                    <input id="metodeInput" name="metodeInput" type="checkbox"/>
+                                                    <label for="metodeInput" class="label-default"></label>
+                                                </div>
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="">Equipment Unit</label>
                                                 <div class="input-group">
@@ -34,53 +59,10 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
                                         <div class="col-md-12">
-                                            <div class="well">
-                                                <small>Tentukan Flowmeter setiap Fuel Truck</small>
-                                                <hr>
-                                                <table class="table table-hover">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="text-center" width="50">No</th>
-                                                            <th width="*">Nama Fuel Truck</th>
-                                                            <th width="200">Flow Awal</th>
-                                                            <th width="200">Flow Akhir</th>
-                                                            <th width="200">Subtotal</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @each(item in fuelTruck)
-                                                        <tr class="item-list">
-                                                            <td align="center">{{$loop.index + 1}}</td>
-                                                            <td>
-                                                                <h3 class="m-b-0">
-                                                                    {{item.kode}}
-                                                                    @if(item.shift_id === 1)
-                                                                        <small class="text-success"><span>DAY SHIFT</span></small>
-                                                                    @else
-                                                                        <small class="text-warning"><span>NIGHT SHIFT</span></small>
-                                                                    @endif
-                                                                    <span class="pull-right text-muted">{{item.brand}}</span>
-                                                                </h3>
-                                                                <small>{{item.unit_sn}}</small>
-                                                                <input class="form-control text-right input-sm" type="hidden" name="ft_name" id="ft_name" value="{{item.kode}}" required>
-                                                                <input class="form-control text-right input-sm" type="hidden" name="shift_id" id="shift_id" value="{{item.shift_id}}" required>
-                                                            </td>
-                                                            <td>
-                                                                <input class="form-control text-right input-sm" type="text" name="fm_awal" id="fm_awal" value="0" required>
-                                                            </td>
-                                                            <td>
-                                                                <input class="form-control text-right input-sm" type="text" name="fm_akhir" id="fm_akhir" value="0" required>
-                                                            </td>
-                                                            <td>
-                                                                <input class="form-control text-right input-sm" type="text" name="subtotal" id="subtotal" value="0" disabled>
-                                                            </td>
-                                                        </tr>
-                                                        @endeach
-                                                    </tbody>
-                                                </table>
+                                            <div class="form-group">
+                                                <label for="">Keterangan</label>
+                                                <textarea class="form-control" name="description" id="description" rows="5"></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -101,6 +83,49 @@
         </div>
     </div>
 </div>
-<script>
-    
-</script>
+<style>
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(83 230 157);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+</style>

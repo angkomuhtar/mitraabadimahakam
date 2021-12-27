@@ -31,16 +31,45 @@ $(function(){
         ajaxSearch(value)
     })
 
-    $('body').on('click', 'button#bt-open-equipment-list', function(e){
-        e.preventDefault()
-        $('div#tbl-equipment-list').show()
-        $('div#tbl-equipment-select').hide()
-    })
+    // $('body').on('click', 'input[name="metodeInput"]', function(){
+    //     var isCheck = $(this).is(':checked')
+    // })
 
-    $('body').on('click', 'button#bt-close-equipment-list', function(e){
+    $('body').on('submit', 'form#fm-event', function(e){
         e.preventDefault()
-        $('div#tbl-equipment-list').hide()
-        $('div#tbl-equipment-select').show()
+        $('body').find('button[type="submit"]').attr('disabled', 'disabled')
+        const data = new FormData(this)
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-issue',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                if(result.success){
+                    $("body").find('tr.advance-table-row').each(function(){
+                        $(this).find('select').val(null).trigger('change')
+                        $(this).find('input[name="qty"]').val('')
+                    })
+                    swal("Okey!", result.message, "success");
+                    $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
+                    initCreate()
+                }else{
+                    alert(result.message)
+                }
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+                $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
+            }
+        })
     })
 
 
