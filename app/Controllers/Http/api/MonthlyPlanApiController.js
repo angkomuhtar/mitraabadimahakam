@@ -2113,8 +2113,6 @@ class MonthlyPlanApiController {
       });
     }
 
-    console.log("date >>> ", __date);
-
     const shifts = (await MasShift.query().fetch()).toJSON();
     const date = moment(__date).format("YYYY-MM-DD");
 
@@ -2232,7 +2230,6 @@ class MonthlyPlanApiController {
           } else {
             materialName = null;
           }
-
           return materialName;
         };
 
@@ -2242,8 +2239,11 @@ class MonthlyPlanApiController {
             data: {
               start: moment(hours[i])
                 .subtract(1, "hour")
+                .subtract(1, "minutes")
                 .format("YYYY-MM-DD HH:mm:ss"),
-              end: hours[i],
+              end: moment(hours[i])
+                .subtract(2, "minutes")
+                .format("YYYY-MM-DD HH:mm:ss"),
             },
           };
           arr.push(obj);
@@ -2534,8 +2534,11 @@ class MonthlyPlanApiController {
             data: {
               start: moment(hours[i])
                 .subtract(1, "hour")
+                .subtract(1, "minutes")
                 .format("YYYY-MM-DD HH:mm:ss"),
-              end: hours[i],
+              end: moment(hours[i])
+                .subtract(2, "minutes")
+                .format("YYYY-MM-DD HH:mm:ss"),
             },
           };
           arr.push(obj);
