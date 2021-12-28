@@ -383,13 +383,25 @@ class MonthlyPlanApiController {
     const daysArr = [];
 
     const obj = {};
+
     try {
       const shifts = (await MasShift.query().fetch()).toJSON();
       const prevDay = moment(date).subtract(1, "days").format("YYYY-MM-DD");
-
       const masFleetOB = (
         await MasFleet.query(trx).where("tipe", "OB").fetch()
       ).toJSON();
+
+      const today = moment(date).format("YYYY-MM-DD HH:mm:ss");
+      const monthlyPlansId = await MonthlyPlans.query()
+        .where("month", SoM)
+        .andWhere("pit_id", _pit_id)
+        .andWhere("tipe", "OB")
+        .first();
+      const dailyPlansSpecificPit = await DailyPlans.query()
+        .where("monthlyplans_id", monthlyPlansId?.id)
+        .andWhere("current_date", today)
+        .andWhere("tipe", "OB")
+        .first();
 
       let counter = 0;
 
@@ -420,6 +432,11 @@ class MonthlyPlanApiController {
               .subtract(m.duration, "hour")
               .subtract(1, "minutes")
               .format("YYYY-MM-DD HH:mm:ss");
+          }
+
+          let dailyPlansTarget = null;
+          if (dailyPlansSpecificPit) {
+            dailyPlansTarget = dailyPlansSpecificPit.toJSON().estimate;
           }
 
           const dailyFleetsOBSpecificPit = (
@@ -480,6 +497,9 @@ class MonthlyPlanApiController {
             shiftDuration: m.duration,
           });
 
+          const total = shiftData.filter(
+            (x) => x.dayName === ritaseDay.toLowerCase()
+          );
           const daysObj = {
             day: ritaseDay.toLowerCase(),
             date: `${moment(ritaseDate).format("ddd")}, ${moment(
@@ -493,9 +513,16 @@ class MonthlyPlanApiController {
                 ? "rd"
                 : "th"
             }`,
-            data: shiftData.filter(
-              (x) => x.dayName === ritaseDay.toLowerCase()
-            ),
+            data: total,
+            targetProd: dailyPlansTarget,
+            totalProd: total.reduce((a, b) => a + b.value, 0),
+            achieved:
+              parseFloat(
+                (
+                  (total.reduce((a, b) => a + b.value, 0) / dailyPlansTarget) *
+                  100
+                ).toFixed(2)
+              ) || 0,
           };
 
           daysArr.push(daysObj);
@@ -600,6 +627,19 @@ class MonthlyPlanApiController {
         await MasFleet.query(trx).where("tipe", "CO").fetch()
       ).toJSON();
 
+      const today = moment(date).format("YYYY-MM-DD HH:mm:ss");
+      const monthlyPlansId = await MonthlyPlans.query()
+        .where("month", SoM)
+        .andWhere("pit_id", _pit_id)
+        .andWhere("tipe", "BB")
+        .first();
+
+      const dailyPlansSpecificPit = await DailyPlans.query()
+        .where("monthlyplans_id", monthlyPlansId?.id)
+        .andWhere("current_date", today)
+        .andWhere("tipe", "COAL")
+        .first();
+
       let counter = 0;
 
       for (let y of currentWeekDate) {
@@ -629,6 +669,11 @@ class MonthlyPlanApiController {
               .subtract(m.duration, "hour")
               .subtract(1, "minutes")
               .format("YYYY-MM-DD HH:mm:ss");
+          }
+
+          let dailyPlansTarget = null;
+          if (dailyPlansSpecificPit) {
+            dailyPlansTarget = dailyPlansSpecificPit.toJSON().estimate;
           }
 
           const dailyFleetsCoalSpecificPit = (
@@ -667,7 +712,6 @@ class MonthlyPlanApiController {
           const ritaseDate = moment(y).format("YYYY-MM-DD");
 
           let _obj = null;
-
           shiftData.push({
             dayName: ritaseDay.toLowerCase(),
             shiftName: m.kode.toUpperCase(),
@@ -677,9 +721,12 @@ class MonthlyPlanApiController {
               ) || 0,
             shiftStart: _start,
             endShift: _end,
-            shiftDuration: m.duration
+            shiftDuration: m.duration,
           });
 
+          const total = shiftData.filter(
+            (x) => x.dayName === ritaseDay.toLowerCase()
+          );
           const daysObj = {
             day: ritaseDay.toLowerCase(),
             date: `${moment(ritaseDate).format("ddd")}, ${moment(
@@ -693,9 +740,16 @@ class MonthlyPlanApiController {
                 ? "rd"
                 : "th"
             }`,
-            data: shiftData.filter(
-              (x) => x.dayName === ritaseDay.toLowerCase()
-            ),
+            data: total,
+            targetProd: dailyPlansTarget,
+            totalProd: total.reduce((a, b) => a + b.value, 0),
+            achieved:
+              parseFloat(
+                (
+                  (total.reduce((a, b) => a + b.value, 0) / dailyPlansTarget) *
+                  100
+                ).toFixed(2)
+              ) || 0,
           };
 
           daysArr.push(daysObj);
@@ -1997,7 +2051,7 @@ class MonthlyPlanApiController {
         coal_expose: COAL_EXPOSE,
         mtd_coal_expose: MTD_COAL_EXPOSE,
         mtd_coal_expose_sr: MTD_COAL_EXPOSE_SR,
-        event: _EVENTS
+        event: _EVENTS,
       };
       durasi = await diagnoticTime.durasi(t0);
       return response.status(200).json({
@@ -2005,11 +2059,11 @@ class MonthlyPlanApiController {
           times: durasi,
           error: false,
           request_time: date,
-          server_time: moment(date).format("YYYY-MM-DD")
+          server_time: moment(date).format("YYYY-MM-DD"),
         },
         data: data,
         pit_name: monthlyPlansCoal.toJSON()?.pit?.name,
-        checker: {}
+        checker: {},
       });
     } catch (error) {
       console.log(error);
@@ -2059,7 +2113,7 @@ class MonthlyPlanApiController {
       });
     }
 
-    console.log('date >>> ', __date)
+    console.log("date >>> ", __date);
 
     const shifts = (await MasShift.query().fetch()).toJSON();
     const date = moment(__date).format("YYYY-MM-DD");
@@ -2684,7 +2738,7 @@ class MonthlyPlanApiController {
       if (dailyFleetEquips) {
         const singleUnit = dailyFleetEquips?.toJSON();
         const equipName = singleUnit?.equipment?.kode;
-        const pitName = singleUnit?.dailyFleet?.pit?.name;
+        const pitName = singleUnit?.dailyFleet?.pit?.kode;
         return {
           pitName,
           equipName,
