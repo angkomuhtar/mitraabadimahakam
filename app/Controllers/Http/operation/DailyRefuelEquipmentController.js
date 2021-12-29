@@ -208,7 +208,11 @@ class DailyRefuelEquipmentController {
             // }
 
             if(!fuel_truck){
-                throw new Error(obj.fuel_truck + ' tidak ditemukan dalam database system...')
+                // throw new Error(obj.fuel_truck + ' tidak ditemukan dalam database system...')
+                return {
+                    success: false, 
+                    message: obj.fuel_truck + ' tidak ditemukan dalam database system...'
+                }
             }
 
             const addData = {
