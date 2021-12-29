@@ -156,7 +156,7 @@ $(function(){
                 }
             },
             error: function(err){
-                console.log(err)
+                console.log('XXXX', err.response)
                 swal("Opps,,,!", err.responseJSON.error.message, "error")
             }
         })

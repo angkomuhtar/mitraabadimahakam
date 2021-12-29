@@ -129,11 +129,19 @@ class DailyRefuelEquipmentController {
 
         for (let i = 0; i < limitData; i++) {
             if(initData[i].F && initData[i].G === undefined){
-                throw new Error('Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...')
+                return {
+                    success: false,
+                    message: 'Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...'
+                }
+                // throw new Error('Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...')
             }
 
             if(initData[i].J && initData[i].K === undefined){
-                throw new Error('Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...')
+                return {
+                    success: false,
+                    message: 'Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...'
+                }
+                // throw new Error('Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...')
             }
         }
 
@@ -199,21 +207,17 @@ class DailyRefuelEquipmentController {
         /** ADD OBJECT DAILY FUELING **/
         for (const obj of datax) {
             const unit = await MasEquipment.query().where('kode', obj.kode).last()
+
+
             const fuel_truck = await MasEquipment.query().where( w => {
                 w.where('kode', obj.fuel_truck)
             }).last()
 
-            // if(!unit){
-            //     throw new Error(obj.kode + ' tidak ditemukan dalam database system...')
-            // }
-
             if(!fuel_truck){
-                // throw new Error(obj.fuel_truck + ' tidak ditemukan dalam database system...')
-                return {
-                    success: false, 
-                    message: obj.fuel_truck + ' tidak ditemukan dalam database system...'
-                }
+                throw new Error(obj.fuel_truck + ' tidak ditemukan dalam database system...')
             }
+
+
 
             const addData = {
                 description: obj.description,
