@@ -23,11 +23,13 @@ class dailyIssue {
                     w.whereIn('unit_id', req.unit_id)
                 }
             })
+            .orderBy('report_at', 'desc')
             .paginate(halaman, limit)
             
         } else {
-            data = await Issue.query().with('user').with('event').with('unit').paginate(halaman, limit)
+            data = await Issue.query().with('user').with('event').with('unit').orderBy('report_at', 'desc').paginate(halaman, limit)
         }
+        
         return data
     }
     
@@ -49,15 +51,29 @@ class dailyIssue {
         }
     }
 
-    async DELETE(params){
-        const eventTimeSheet = await EventTimeSheet.find(params.dailyEventID)
-        if(eventTimeSheet){
-            await eventTimeSheet.delete()
-            return eventTimeSheet
-        }else{
-            throw new Error('Data daily event ID ::'+params.dailyEventID+' not found...')
-        }
+    async SHOW (params) {
+        const data =( 
+            await Issue.query()
+            .with('user')
+            .with('event')
+            .with('unit')
+            .where('id', params.id)
+            .last()
+        ).toJSON()
+        // data.arrUnit = data.unit.map(el => el.id)
+        console.log(data);
+        return data
     }
+
+    // async DELETE(params){
+    //     const eventTimeSheet = await EventTimeSheet.find(params.dailyEventID)
+    //     if(eventTimeSheet){
+    //         await eventTimeSheet.delete()
+    //         return eventTimeSheet
+    //     }else{
+    //         throw new Error('Data daily event ID ::'+params.dailyEventID+' not found...')
+    //     }
+    // }
 }
 
 module.exports = new dailyIssue()

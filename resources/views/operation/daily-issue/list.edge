@@ -28,7 +28,7 @@
                             <tr>
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="20">ACT</th>
-                                <th class="sl text-right" width="150">Waktu</th>
+                                <th class="sl text-right" width="150">Report At</th>
                                 <th class="sl" width="300">Unit Equipmentt</th>
                                 <th class="sl" width="*">Description</th>
                                 <th class="sl" width="250">Event</th>
@@ -42,22 +42,30 @@
                               <tr>
                                   <td>{{$loop.index + 1}}</td>
                                   <td>
-                                    <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="733">edit</button>
+                                    <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                   </td>
                                   <td class="myDateTimeFormat text-right" data-date="{{item.report_at}}" data-elm="small">
-                                    <i class="fa fa-clock-o"></i><small class="text-white m-l-10"></small><br>
-                                    <span style="font-size:1rem">{{item.user.nm_lengkap}}</span>
-                                  </td>
-                                  <td>
-                                      <strong>
+                                    <small class="{{item.event_id ? 'text-danger':'text-info'}} m-l-10"></small>
+                                    <i class="fa fa-clock-o {{item.event_id ? 'text-danger':'text-info'}}"></i>
+                                    <br>
+                                    @if(item.end_at)
+                                    <small class="myDateTimeFormat text-success" data-date="{{item.end_at}}">zzz</small> 
+                                    <i class="fa fa-clock-o text-success"></i>
+                                    @endif
+                                </td>
+                                <td>
+                                    <strong>
                                         {{item.unit_id ? item.unit.kode : ''}}
-                                      </strong><br>
-                                      <small>{{item.unit_id ? item.unit.unit_sn : ''}}</small>
-                                  </td>
+                                    </strong><br>
+                                    <small>{{item.unit_id ? item.unit.unit_sn : ''}}</small>
+                                </td>
+                                <td>
+                                    <span style="font-size:1rem">{{item.user.nm_lengkap}}</span><br>
+                                    {{item.issue}}
+                                </td>
                                   <td>
-                                      {{item.issue}}
-                                    </td>
-                                  <td>{{item.event_id ? item.event.narasi : '-'}}</td>
+                                      <strong class="text-warning">{{item.event_id ? item.event.narasi : '-'}}</strong> 
+                                  </td>
                               </tr>
                             @endeach
                         </tbody>

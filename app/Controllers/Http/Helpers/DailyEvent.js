@@ -89,15 +89,19 @@ class DailyEventTimeSheet {
             const validDatetime = await EventTimeSheet.query()
                 .where(w => {
                     w.where('start_at', '<=', req.start_at)
-                    .andWhere('end_at', '>=', req.start_at)
-                    .andWhere('equip_id', req.equip_id)
-                    .andWhere('timesheet_id', params.id)
+                    w.where('end_at', '>=', req.start_at)
+                    w.where('equip_id', req.equip_id)
+                    if(params){
+                        w.where('timesheet_id', params.id)
+                    }
                 })
                 .orWhere(o => {
                     o.where('start_at', '<=', req.end_at)
-                    .andWhere('end_at', '>=', req.end_at)
-                    .andWhere('equip_id', req.equip_id)
-                    .andWhere('timesheet_id', params.id)
+                    o.where('end_at', '>=', req.end_at)
+                    o.where('equip_id', req.equip_id)
+                    if(params){
+                        o.where('timesheet_id', params.id)
+                    }
                 })
                 .getCount()
             if(validDatetime > 0){
@@ -109,15 +113,19 @@ class DailyEventTimeSheet {
             const validDatetime = await EventTimeSheet.query()
                 .where(w => {
                     w.where('start_at', '<=', req.start_at)
-                    .andWhere('end_at', '>=', req.start_at)
-                    .andWhere('equip_id', req.equip_id)
-                    .andWhere('timesheet_id', params.id)
+                    w.where('end_at', '>=', req.start_at)
+                    w.where('equip_id', req.equip_id)
+                    if(params){
+                        w.where('timesheet_id', params.id)
+                    }
                 })
                 .orWhere(o => {
                     o.where('start_at', '<=', req.end_at)
-                    .andWhere('end_at', '>=', req.end_at)
-                    .andWhere('equip_id', req.equip_id)
-                    .andWhere('timesheet_id', params.id)
+                    o.where('end_at', '>=', req.end_at)
+                    o.where('equip_id', req.equip_id)
+                    if(params){
+                        o.where('timesheet_id', params.id)
+                    }
                 })
                 .getCount()
             if(validDatetime > 0){
@@ -127,7 +135,7 @@ class DailyEventTimeSheet {
 
         const eventTimeSheet = new EventTimeSheet()
         eventTimeSheet.fill({
-            timesheet_id: params.id,
+            timesheet_id: params?.id || null,
             event_id: req.event_id,
             user_id: req.user_id,
             equip_id: req.equip_id,
