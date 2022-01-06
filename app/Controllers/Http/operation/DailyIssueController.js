@@ -32,6 +32,7 @@ class DailyIssueController {
         const req = request.except(['csrf_token', '_csrf', 'submit'])
 
         req.equip_id = _.isArray(req.equip_id) ? req.equip_id : [req.equip_id]
+        console.log(req);
         console.log(req.equip_id);
 
         for (const unit of req.equip_id) {
@@ -42,6 +43,9 @@ class DailyIssueController {
             }).last()
             let timesheet_id = timeSheet?.id || null
 
+            const dailyEvent = new DailyEvent()
+            const mamIssue = new MamIssue()
+            let dataIssue = {}
             let dataEvent = {
                 timesheet_id: timesheet_id,
                 event_id: req.event_id,
@@ -51,29 +55,22 @@ class DailyIssueController {
                 start_at: req.start_at,
                 end_at: req.end_at || null
             }
-
-            let dataIssue = {
-                unit_id: unit,
-                event_id: req.event_id,
-                report_by: user.id,
-                report_at: req.start_at,
-                end_at: req.end_at || null,
-                issue: req.description
-            }
-            console.log(dataEvent);
-            console.log(dataIssue);
-            const dailyEvent = new DailyEvent()
-            const mamIssue = new MamIssue()
+            
             if(req.event_id){
                 try {
                     dailyEvent.fill(dataEvent)
                     await dailyEvent.save()
+                    dataIssue = {
+                        unit_id: unit,
+                        dailyevent_id: dailyEvent.id,
+                        report_by: user.id,
+                        report_at: req.start_at,
+                        end_at: req.end_at || null,
+                        issue: req.description
+                    }
+                    console.log('dataIssue ::', dataIssue);
                     mamIssue.fill(dataIssue)
                     await mamIssue.save()
-                    return {
-                        success: true,
-                        message: 'Success save data...'
-                    }
                 } catch (error) {
                     console.log(error);
                     return {
@@ -82,13 +79,17 @@ class DailyIssueController {
                     }
                 }
             }else{
+                
+                dataIssue = {
+                    unit_id: unit,
+                    report_by: user.id,
+                    report_at: req.start_at,
+                    end_at: req.end_at || null,
+                    issue: req.description
+                }
                 try {
                     mamIssue.fill(dataIssue)
                     await mamIssue.save()
-                    return {
-                        success: true,
-                        message: 'Success save data...'
-                    }
                 } catch (error) {
                     console.log(error);
                     return {
@@ -97,6 +98,11 @@ class DailyIssueController {
                     }
                 }
             }
+        }
+
+        return {
+            success: true,
+            message: 'Success save data...'
         }
     }
 
@@ -109,11 +115,91 @@ class DailyIssueController {
     }
 
     async update ( { auth, params, request, view } ) {
+        let user = await auth.getUser()
         const req = request.all()
         console.log(params);
         console.log(req);
+        const timeSheet = await TimeSheet.query().where( w => {
+            w.where('unit_id', req.equip_id)
+            w.where('approved_at', req.start_at)
+        }).last()
+
+        let timesheet_id = timeSheet?.id || null
+        const mamIssue = await MamIssue.query().where('id', params.id).last()
         if(req.event_id){
-            // const 
+            const dailyEvent = await DailyEvent.query().where('id', req.dailyevent_id).last()
+            try {
+                dailyEvent.merge({
+                    timesheet_id: timesheet_id,
+                    event_id: req.event_id,
+                    user_id: user.id,
+                    equip_id: req.equip_id,
+                    description: req.description,
+                    start_at: req.start_at,
+                    end_at: req.end_at || null
+                })
+                await dailyEvent.save()
+
+                mamIssue.merge({
+                    unit_id: req.equip_id,
+                    dailyevent_id: dailyEvent.id,
+                    report_by: user.id,
+                    report_at: req.start_at,
+                    end_at: req.end_at || null,
+                    issue: req.description
+                })
+                await mamIssue.save()
+            } catch (error) {
+                console.log(error);
+                return {
+                    success: false,
+                    message: 'Failed save data issue...'+JSON.stringify(error)
+                }
+            }
+        }else{
+            try {
+                mamIssue.merge({
+                unit_id: req.equip_id,
+                report_by: user.id,
+                report_at: req.start_at,
+                end_at: req.end_at || null,
+                issue: req.description
+            })
+                await mamIssue.save()
+            } catch (error) {
+                console.log(error);
+                return {
+                    success: false,
+                    message: 'Failed save data issue...'+JSON.stringify(error)
+                }
+            }
+        }
+        return {
+            success: true,
+            message: 'Success save data...'
+        }
+    }
+
+    async destroy ( { auth, params } ) {
+        console.log(params);
+        await auth.getUser()
+        try {
+            const issue = await MamIssue.query().where('id', params.id).last()
+            console.log('issue.dailyevent_id ----------::::::', issue.dailyevent_id);
+            if(issue.dailyevent_id){
+                await DailyEvent.query().where('id', issue.dailyevent_id).delete()
+            }
+            await MamIssue.query().where('id', params.id).delete()
+            return {
+                success: true,
+                message: 'Success save data...'
+            }
+        } catch (error) {
+            console.log(error);
+            return {
+                success: false,
+                message: 'Failed save data issue...'+JSON.stringify(error)
+            }
         }
     }
 }

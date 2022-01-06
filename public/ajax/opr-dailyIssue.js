@@ -35,7 +35,7 @@ $(function(){
     //     var isCheck = $(this).is(':checked')
     // })
 
-    $('body').on('submit', 'form#fm-event', function(e){
+    $('body').on('submit', 'form#fm-issue', function(e){
         e.preventDefault()
         $('body').find('button[type="submit"]').attr('disabled', 'disabled')
         const data = new FormData(this)
@@ -68,11 +68,14 @@ $(function(){
                 const { message } = err.responseJSON
                 swal("Opps,,,!", message, "warning")
                 $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
+            },
+            complete: function() {
+                window.location.reload()
             }
         })
     })
 
-    $('body').on('submit', 'form#fm-event-upd', function(e){
+    $('body').on('submit', 'form#fm-issue-upd', function(e){
         e.preventDefault()
         $('body').find('button[type="submit"]').attr('disabled', 'disabled')
         var id = $(this).data('id')
@@ -96,7 +99,7 @@ $(function(){
                     })
                     swal("Okey!", result.message, "success");
                     $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
-                    initCreate()
+                    initDeafult()
                 }else{
                     alert(result.message)
                 }
@@ -106,6 +109,9 @@ $(function(){
                 const { message } = err.responseJSON
                 swal("Opps,,,!", message, "warning")
                 $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
+            },
+            complete: function() {
+                window.location.reload()
             }
         })
     })
@@ -144,8 +150,8 @@ $(function(){
               $.ajax({
                   async: true,
                   headers: {'x-csrf-token': $('[name=_csrf]').val()},
-                  url: '/operation/daily-issue/'+id+'/delete',
-                  method: 'POST',
+                  url: '/operation/daily-issue/'+id+'/destroy',
+                  method: 'DELETE',
                   dataType: 'json',
                   processData: false,
                   mimeType: "multipart/form-data",
@@ -164,7 +170,10 @@ $(function(){
                       console.log(err)
                       const { message } = err.responseJSON
                       swal("Opps,,,!", message, "warning")
-                  }
+                  },
+                //   complete: function() {
+                //       window.location.reload()
+                //   }
               })
           });
     })

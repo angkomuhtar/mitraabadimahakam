@@ -482,6 +482,8 @@ Route.group(() => {
 
     Route.post('/daily-issue/:id/update', 'DailyIssueController.update').as('opr.daily-issue.update').middleware('U')
 
+    Route.delete('/daily-issue/:id/destroy', 'DailyIssueController.destroy').as('opr.daily-issue.destroy').middleware('D')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // AJAX

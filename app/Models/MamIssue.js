@@ -18,8 +18,8 @@ class MamIssue extends Model {
     // }
 
 
-    event () {
-        return this.belongsTo("App/Models/MasEvent", "event_id", "id")
+    dailyevent () {
+        return this.belongsTo("App/Models/DailyEvent", "dailyevent_id", "id")
     }
 }
 

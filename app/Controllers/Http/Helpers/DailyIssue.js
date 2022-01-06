@@ -10,7 +10,7 @@ class dailyIssue {
         if (req.keyword) {
             data = await Issue.query()
             .with('user')
-            .with('event')
+            .with('dailyevent', w => w.with('event'))
             .with('unit')
             .where( w => {
                 if(req.event_id){
@@ -27,9 +27,9 @@ class dailyIssue {
             .paginate(halaman, limit)
             
         } else {
-            data = await Issue.query().with('user').with('event').with('unit').orderBy('report_at', 'desc').paginate(halaman, limit)
+            data = await Issue.query().with('user').with('dailyevent', w => w.with('event')).with('unit').orderBy('report_at', 'desc').paginate(halaman, limit)
         }
-        
+        console.log(data.toJSON());
         return data
     }
     
@@ -55,7 +55,7 @@ class dailyIssue {
         const data =( 
             await Issue.query()
             .with('user')
-            .with('event')
+            .with('dailyevent', w => w.with('event'))
             .with('unit')
             .where('id', params.id)
             .last()
