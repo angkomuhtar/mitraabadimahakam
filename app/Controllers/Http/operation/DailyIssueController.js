@@ -185,7 +185,6 @@ class DailyIssueController {
         await auth.getUser()
         try {
             const issue = await MamIssue.query().where('id', params.id).last()
-            console.log('issue.dailyevent_id ----------::::::', issue.dailyevent_id);
             if(issue.dailyevent_id){
                 await DailyEvent.query().where('id', issue.dailyevent_id).delete()
             }

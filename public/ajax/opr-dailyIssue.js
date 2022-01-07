@@ -181,8 +181,9 @@ $(function(){
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        $.get('/operation/daily-issue/list?page='+page+'&keyword=', function(data){
-            console.log(data);
+        var limit = $('body').find('input#limit').val() || 100
+        // console.log(limit);
+        $.get('/operation/daily-issue/list?page='+page+'&limit='+limit+'&keyword=', function(data){
             $('div#list-content').children().remove()
             $('div#list-content').html(data)
         })
@@ -190,10 +191,11 @@ $(function(){
 
     function initDeafult(){
         $('div.content-module').css('display', 'none')
-        console.log('ZZZZZ');
+        var limit = $('body').find('input#limit').val() || 100
+        // console.log($('body').find('input#limit').val());
         $.ajax({
             async: true,
-            url: '/operation/daily-issue/list?keyword=',
+            url: '/operation/daily-issue/list?limit='+limit+'&keyword=',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()

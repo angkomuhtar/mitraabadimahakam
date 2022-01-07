@@ -4,8 +4,9 @@ const Issue = use("App/Models/MamIssue")
 
 class dailyIssue {
     async ALL (req) {
-        const limit = parseInt(req.limit) || 25
+        const limit = parseInt(req.limit) || 100
         const halaman = req.page === undefined ? 1:parseInt(req.page)
+        console.log(limit);
         let data
         if (req.keyword) {
             data = await Issue.query()
@@ -29,7 +30,7 @@ class dailyIssue {
         } else {
             data = await Issue.query().with('user').with('dailyevent', w => w.with('event')).with('unit').orderBy('report_at', 'desc').paginate(halaman, limit)
         }
-        console.log(data.toJSON());
+        
         return data
     }
     

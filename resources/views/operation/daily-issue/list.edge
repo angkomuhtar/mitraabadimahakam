@@ -39,7 +39,7 @@
                               <tr><td colspan="5">Data not found or data is not exsist</td></tr>
                             @endif
                             @each(item in list.data)
-                              <tr>
+                              <tr class="{{item.end_at ? 'bg-light' : ''}}">
                                   <td>{{$loop.index + 1}}</td>
                                   <td>
                                     <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
