@@ -904,6 +904,20 @@ Route.group(() => {
 
 Route.group(() => {
 
+    Route.get('/', 'DailyIssueController.index')
+
+    // Route.post('/', 'DailyIssueController.store')
+
+    Route.get('/:id/show', 'DailyIssueController.show')
+
+    // Route.post('/:id/daily-issue', 'DailyIssueController.store')
+
+    // Route.delete('/:id/daily-issue', 'DailyIssueController.destroy')
+
+}).prefix('api/daily-issue').namespace('api')
+
+Route.group(() => {
+
     Route.get('/', 'MonthlyPlanApiController.index')
 
     Route.post('/', 'MonthlyPlanApiController.create')

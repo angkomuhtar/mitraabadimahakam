@@ -12,7 +12,6 @@ const IssueHelpers = use("App/Controllers/Http/Helpers/DailyIssue")
 
 class DailyIssueController {
     async index ( { auth, view } ) {
-        console.log('XXXX');
         return view.render('operation.daily-issue.index')
     }
 
