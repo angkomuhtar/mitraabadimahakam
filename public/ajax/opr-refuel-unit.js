@@ -119,6 +119,7 @@ $(function(){
                 $('body').find('select[name="sheet"]').html(result.title.map(s => '<option value="'+s+'"> Sheet [ '+s+' ]</option>'))
                 $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
                 $('body').find('textarea[name="dataJson"]').val(JSON.stringify(result.data, null, 2))
+                swal("Okey!", "Data berhasil di parsing....", "success")
             },
             error: function(err){
                 console.log(err)

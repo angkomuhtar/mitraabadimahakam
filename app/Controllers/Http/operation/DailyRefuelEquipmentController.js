@@ -4,6 +4,7 @@ const DB = use('Database')
 const _ = require('underscore')
 const RefuelUnitHelpers = use("App/Controllers/Http/Helpers/Fuel")
 const MasEquipment = use("App/Models/MasEquipment")
+const MasPit = use("App/Models/MasPit")
 const DailyRefueling = use("App/Models/DailyRefueling")
 const Helpers = use('Helpers')
 const moment = require('moment')
@@ -128,7 +129,7 @@ class DailyRefuelEquipmentController {
         }
 
         for (let i = 0; i < limitData; i++) {
-            if(initData[i].F && initData[i].G === undefined){
+            if(initData[i].G && initData[i].H === undefined){
                 return {
                     success: false,
                     message: 'Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...'
@@ -136,7 +137,7 @@ class DailyRefuelEquipmentController {
                 // throw new Error('Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...')
             }
 
-            if(initData[i].J && initData[i].K === undefined){
+            if(initData[i].L && initData[i].M === undefined){
                 return {
                     success: false,
                     message: 'Ditemukan pengisian fuel unit ' + initData[i].C + ' yang tdk ditentukan fuel truck nya...'
@@ -146,48 +147,63 @@ class DailyRefuelEquipmentController {
         }
 
         for (let i = 0; i < limitData; i++) {
+            let dayShift
+            let nightShift
             if(initData[i].F && initData[i].G){
-                
-                let dayShift = { 
-                    fuel_at: initData[i].D ? moment(initData[i].D).format('HH:mm') : null, 
+                dayShift = { 
+                    pit_name: initData[i].D || null,
+                    fueling_at: initData[i].E ? moment(initData[i].E).format('HH:mm') : null, 
                     shift_id: 1,
-                    hm: initData[i].E ? initData[i].E : null,
-                    topup: initData[i].F ? initData[i].F : 0,
-                    fuel_truck: initData[i].G ? initData[i].G : null
+                    hm: initData[i].F ? initData[i].F : null,
+                    topup: initData[i].G ? initData[i].G : 0,
+                    fuel_truck: initData[i].H ? initData[i].H : null
                 }
-                let nightShift = { 
-                    fuel_at: initData[i].H ? moment(initData[i].H).format('HH:mm') : null, 
-                    shift_id: 2,
-                    hm: initData[i].I ? initData[i].I : null,
-                    topup: initData[i].J ? initData[i].J : 0,
-                    fuel_truck: initData[i].K ? initData[i].K : null
-                }
+            }else{
+                dayShift = null
+            }
 
-                parsingData.push({
-                    kode: initData[i].C,
-                    description: initData[i].M || null,
-                    details: [
-                        dayShift,
-                        nightShift
-                    ]
-                })
+            if(initData[i].K && initData[i].L){
+                nightShift = { 
+                    pit_name: initData[i].I || null,
+                    fueling_at: initData[i].J ? moment(initData[i].J).format('HH:mm') : null, 
+                    shift_id: 2,
+                    hm: initData[i].K ? initData[i].K : null,
+                    topup: initData[i].L ? initData[i].L : 0,
+                    fuel_truck: initData[i].M ? initData[i].M : null
+                }
+            }else{
+                nightShift = null
             }
             
+            
+            parsingData.push({
+                kode: initData[i].C,
+                description: initData[i].O || null,
+                details: [
+                    dayShift,
+                    nightShift
+                ]
+            })
+            
         }
+        
 
         let datax = []
         
         for (const obj of parsingData) {
             for (const val of obj.details) {
-                datax.push({
-                    description: obj.description,
-                    kode: obj.kode,
-                    fuel_at: val.fuel_at,
-                    fuel_truck: val.fuel_truck,
-                    hm: val.hm,
-                    shift_id: val.shift_id,
-                    topup: val.topup,
-                })
+                if(val){
+                    datax.push({
+                        description: obj.description,
+                        kode: obj.kode,
+                        fueling_at: val.fueling_at || new Date(),
+                        fuel_truck: val.fuel_truck,
+                        hm: val.hm,
+                        shift_id: val.shift_id,
+                        topup: val.topup,
+                        pit_name: val.pit_name
+                    })
+                }
             }
         }
         
@@ -195,7 +211,7 @@ class DailyRefuelEquipmentController {
             const [tmp] = _.where(reqArr, {ft_name: c.fuel_truck, shift_id: `${c.shift_id}`})
             return{
                 ...c,
-                fueling_at: c.fuel_at ? req.tgl +' '+ c.fuel_at : moment(req.tgl).format('YYYY-MM-DD HH:mm'),
+                // fueling_at: c.fueling_at ? req.tgl +' '+ c.fueling_at : moment(req.tgl).format('YYYY-MM-DD HH:mm'),
                 ft_awal: tmp ? tmp.fm_awal : 0,
                 ft_akhir: tmp ? tmp.fm_akhir : 0,
             }
@@ -217,17 +233,29 @@ class DailyRefuelEquipmentController {
                 throw new Error(obj.fuel_truck + ' tidak ditemukan dalam database system...')
             }
 
+            const pit = await MasPit.query().where(
+                w => {
+                    w.where('sts', 'Y')
+                    w.where('name', 'like', `${obj.pit_name}%`)
+                }
+            ).last()
 
+            if(obj.fueling_at === 'Invalid date'){
+                return {
+                    success: false,
+                    message: 'Format waktu tidak valid utk unit '+obj.kode+' Silahkan periksa kembali excel anda...'
+                }
+            }
 
             const addData = {
                 description: obj.description,
                 site_id: req.site_id,
+                pit_id: pit?.id || null,
                 shift_id: obj.shift_id,
-                site_id: req.site_id,
                 equip_id: unit ? unit.id : null,
                 fuel_truck: fuel_truck.id,
-                fueling_at: obj.fueling_at,
-                smu: obj.hm || 0,
+                fueling_at: `${req.tgl} ${obj.fueling_at || '00:00'}`,
+                smu: parseFloat(obj.hm) || 0,
                 topup: obj.topup,
                 fm_awal: obj.ft_awal,
                 fm_akhir: obj.ft_akhir,
