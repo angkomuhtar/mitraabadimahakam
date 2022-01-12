@@ -2685,9 +2685,6 @@ class MonthlyPlanApiController {
                               )
                               .fetch()
                     ).toJSON()
-
-                    console.log('daily ritase >> ', dailyRitase.length);
-
                     let arr = []
                     for (let i = 1; i < hours.length; i++) {
                          const obj = {
@@ -2702,42 +2699,14 @@ class MonthlyPlanApiController {
                                         .subtract(2, 'minutes')
                                         .format(
                                              'YYYY-MM-DD HH:mm:ss'
-                                        ),
-                              },
+                                        )
+                              }
                          }
                          arr.push(obj)
                     }
 
-                    // console.log(
-                    //      (
-                    //           await uniqueArr(
-                    //                dailyRitase,
-                    //                'dailyfleet_id',
-                    //                'exca_id',
-                    //                'material',
-                    //                'distance'
-                    //           )
-                    //      ).map(v => {
-                    //           return {
-                    //                id: v.id,
-                    //                material: v.material,
-                    //                exca: v.exca_id,
-                    //                dfid: v.dailyfleet_id,
-                    //                distance: v.distance,
-                    //           }
-                    //      })
-                    // )
-
                     for (let y of arr) {
                          for (const m of dailyRitase) {
-                              // console.log('shift >> ', y.data.start)
-                              // console.log('end shift >> ', y.data.end)
-                              // console.log('id >> ', m.id)
-                              // console.log('distance ', m.distance)
-                              // console.log('material >> ', m.material)
-                              // console.log(
-                              //      '------------------------||-----------------------------'
-                              // )
                               const obj = {
                                    id: m.id,
                                    fleetId: m.dailyfleet_id,
@@ -2791,7 +2760,7 @@ class MonthlyPlanApiController {
                                    materialName:
                                         await MaterialHelpers.GET_MATERIAL_NAME_BY_MATERIAL_ID(
                                              m.material
-                                        )
+                                        ),
                               }
                               data.push(obj)
                               accumulateBcmArr.push({
@@ -2800,7 +2769,7 @@ class MonthlyPlanApiController {
                                    end: y.data.end,
                                    id: m.id,
                                    distance: m.distance,
-                                   material: m.material,
+                                   material: m.material
                               })
                          }
                          // console.log("equipment names arr >> ", equipmentNamesArr.map((x) => x));

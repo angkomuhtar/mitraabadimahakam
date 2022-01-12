@@ -910,6 +910,8 @@ Route.group(() => {
 
     Route.get('/:id/show', 'DailyIssueController.show')
 
+    Route.get('/show/by/date', 'DailyIssueController.filterDate')
+
     // Route.post('/:id/daily-issue', 'DailyIssueController.store')
 
     // Route.delete('/:id/daily-issue', 'DailyIssueController.destroy')

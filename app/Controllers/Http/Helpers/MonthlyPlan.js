@@ -27,6 +27,7 @@ class MonthlyPlan {
             .paginate(halaman, limit)
         ).toJSON()
 
+        
         let result = []
 
         for (const item of data.data) {

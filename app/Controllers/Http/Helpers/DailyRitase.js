@@ -253,25 +253,17 @@ class Ritase {
                .andWhere('check_in', '>=', time.data.start)
                .andWhere('check_in', '<=', time.data.end)
                .fetch()
-          if (dailyRitaseDetails || dailyRitaseDetails.toJSON()) {
-               const totalValueOB = dailyRitaseDetails
-                    .toJSON()
-                    .reduce(
-                         (a, b) =>
-                              a + b.daily_ritase.material_details.vol,
 
-                         0
-                    )
-               acc = {
-                    val: totalValueOB,
-                    totalRitase: dailyRitaseDetails.toJSON().length,
-               }
-          }
+          const totalValueOB = dailyRitaseDetails.toJSON().reduce(
+               (a, b) => a + b.daily_ritase.material_details.vol,
 
+               0
+          )
           acc = {
-               val: 0,
-               totalRitase: 0,
+               val: totalValueOB,
+               totalRitase: dailyRitaseDetails.toJSON().length,
           }
+
           return acc
      }
 
