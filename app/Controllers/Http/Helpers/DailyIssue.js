@@ -80,19 +80,18 @@ class dailyIssue {
      }
 
      async SHOW_BY_DATE(params) {
-
           const shifts = (await MasShift.query().fetch()).toJSON()
           const date = moment(params.date).format('YYYY-MM-DD')
 
           const limit = parseInt(params.limit) || 100
           const halaman =
-          params.page === undefined ? 1 : parseInt(params.page)
+               params.page === undefined ? 1 : parseInt(params.page)
 
           for (const x of shifts) {
-               const currentShiftStart = moment(
+               let currentShiftStart = moment(
                     `${date} ${x.start_shift}`
                ).format('YYYY-MM-DD HH:mm:ss')
-               const currentShiftEnd = moment(
+               let currentShiftEnd = moment(
                     `${date} ${x.start_shift}`
                )
                     .add(x.duration, 'hour')
@@ -102,11 +101,69 @@ class dailyIssue {
                     'YYYY-MM-DD HH:mm:ss'
                )
 
+               const hour_check_1 = moment(params.date).format(
+                    'HH:mm'
+               )
+               const hour_check_2 =
+                    moment(currentShiftEnd).format('HH:mm')
+
+               const day_check_1 = moment(params.date).format('DD')
+               const day_check_2 =
+                    moment(currentShiftEnd).format('DD')
+
+               if (
+                    day_check_1 !== day_check_2 &&
+                    hour_check_1 === hour_check_2
+               ) {
+                    currentShiftStart = moment(`${currentShiftStart}`)
+                         .subtract(x.duration * shifts.length, 'hour')
+                         .format('YYYY-MM-DD HH:mm:ss')
+
+                    currentShiftEnd = moment(
+                         `${date} ${x.start_shift}`
+                    )
+                         .subtract(x.duration, 'hour')
+                         .subtract(1, 'minutes')
+                         .format('YYYY-MM-DD HH:mm:ss')
+               }
+
                if (
                     new Date(currentDate) >=
                          new Date(currentShiftStart) &&
                     new Date(currentDate) <= new Date(currentShiftEnd)
                ) {
+                    let hours = Array.from(
+                         { length: x.duration + 1 },
+                         (a, y) => {
+                              return moment(
+                                   `${date} ${x.start_shift}`
+                              )
+                                   .add(60 * y, 'minutes')
+                                   .format('YYYY-MM-DD HH:mm:ss')
+                         }
+                    )
+
+                    let hoursArr = []
+                    for (let i = 1; i < hours.length; i++) {
+                         const obj = {
+                              data: {
+                                   start: moment(hours[i])
+                                        .subtract(1, 'hour')
+                                        .subtract(1, 'minutes')
+                                        .format(
+                                             'YYYY-MM-DD HH:mm:ss'
+                                        ),
+                                   end: moment(hours[i])
+                                        .subtract(2, 'minutes')
+                                        .format(
+                                             'YYYY-MM-DD HH:mm:ss'
+                                        ),
+                              },
+                         }
+                         hoursArr.push(obj)
+                    }
+
+                    let result = []
                     let data = (
                          await Issue.query()
                               .with('user')
@@ -125,10 +182,27 @@ class dailyIssue {
                                    currentShiftEnd
                               )
                               .orderBy('report_at', 'desc')
-                              .paginate(halaman, limit)
+                              .fetch()
                     ).toJSON()
 
-                    return data
+                    for (const y of hoursArr) {
+                         const objData = {
+                              hourStart: y.data.start,
+                              hourEnd: y.data.end,
+                              data: data.filter(
+                                   v =>
+                                        new Date(v.report_at) >=
+                                             new Date(y.data.start) &&
+                                        new Date(v.report_at) <=
+                                             new Date(y.data.end)
+                              ),
+                         }
+                         result.push(objData)
+                    }
+
+                    console.log('result >> ', result)
+
+                    return result
 
                     // data.arrUnit = data.unit.map(el => el.id)
                }
