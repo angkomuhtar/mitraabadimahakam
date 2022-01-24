@@ -155,7 +155,7 @@ class DailyIssueController {
           }
      }
 
-     async filterDate({ auth, params, response, request }) {
+     async filterDate({ auth, response, request }) {
           let durasi
           var t0 = performance.now()
           try {
@@ -204,11 +204,7 @@ class DailyIssueController {
                          times: durasi,
                          error: false,
                     },
-                    data: {
-                         ...result,
-                         durasi: diff,
-                         timing: timing,
-                    },
+                    data: result,
                })
           } catch (error) {
                console.log(error)

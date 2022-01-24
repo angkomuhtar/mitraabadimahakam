@@ -990,7 +990,6 @@ class MonthlyPlanApiController {
                     data: {},
                })
           }
-          const trx = await db.beginTransaction()
           const currentWeekDate = Array.from({ length: 7 }, (x, i) =>
                moment(date)
                     .startOf('week')
@@ -1049,35 +1048,12 @@ class MonthlyPlanApiController {
                                    .format('YYYY-MM-DD HH:mm:ss')
                          }
 
-                         const dailyFleetsCoalSpecificPit = (
-                              await DailyFleet.query(trx)
-                                   .where('pit_id', _pit_id)
-                                   .andWhere('shift_id', m.id)
-                                   .andWhere('date', y)
-                                   .fetch()
-                         ).toJSON()
-
-                         const dailyFleetEquipmentSpecificFleet = (
-                              await DailyFleetEquip.query(trx)
-                                   .whereIn(
-                                        'dailyfleet_id',
-                                        dailyFleetsCoalSpecificPit.map(
-                                             x => x.id
-                                        )
-                                   )
-                                   .fetch()
-                         ).toJSON()
-
                          const REFUELING = (
-                              await DailyRefueling.query(trx)
-                                   .whereIn(
-                                        'equip_id',
-                                        dailyFleetEquipmentSpecificFleet.map(
-                                             x => x.equip_id
-                                        )
-                                   )
+                              await DailyRefueling.query()
+                                   .with('equipment')
                                    .where('fueling_at', '>=', _start)
                                    .andWhere('fueling_at', '<=', _end)
+                                   .andWhere('pit_id', _pit_id)
                                    .fetch()
                          ).toJSON()
 
@@ -1091,7 +1067,7 @@ class MonthlyPlanApiController {
                               shiftName: m.kode.toUpperCase(),
                               value:
                                    REFUELING.reduce(
-                                        (a, b) => a + b.top_up,
+                                        (a, b) => a + b.topup,
                                         0
                                    ) || 0,
                               startShift: _start,
@@ -1132,7 +1108,7 @@ class MonthlyPlanApiController {
                               _obj = {
                                    value:
                                         REFUELING.reduce(
-                                             (a, b) => a + b.top_up,
+                                             (a, b) => a + b.topup,
                                              0
                                         ) || 0,
                                    frontColor: '#ED6665',
@@ -1141,7 +1117,7 @@ class MonthlyPlanApiController {
                               _obj = {
                                    value:
                                         REFUELING.reduce(
-                                             (a, b) => a + b.top_up,
+                                             (a, b) => a + b.topup,
                                              0
                                         ) || 0,
                                    label: ritaseDay.toLowerCase(),
@@ -2699,8 +2675,8 @@ class MonthlyPlanApiController {
                                         .subtract(2, 'minutes')
                                         .format(
                                              'YYYY-MM-DD HH:mm:ss'
-                                        )
-                              }
+                                        ),
+                              },
                          }
                          arr.push(obj)
                     }
@@ -2769,7 +2745,7 @@ class MonthlyPlanApiController {
                                    end: y.data.end,
                                    id: m.id,
                                    distance: m.distance,
-                                   material: m.material
+                                   material: m.material,
                               })
                          }
                          // console.log("equipment names arr >> ", equipmentNamesArr.map((x) => x));
@@ -3384,35 +3360,10 @@ class MonthlyPlanApiController {
 
           const dats = []
           for (const x of _months[0].data) {
-               const dailyFleetSpecificPit = (
-                    await DailyFleet.query()
-                         .where('created_at', '>=', x.startOfMonth)
-                         .andWhere('created_at', '<=', x.endOfMonth)
-                         .andWhere('pit_id', _pit_id)
-                         .fetch()
-               ).toJSON()
-
-               const dailyTimeSheetSpecificFleet = (
-                    await DailyChecklist.query()
-                         .whereIn(
-                              'dailyfleet_id',
-                              dailyFleetSpecificPit.map(v => v.id)
-                         )
-                         .whereNotNull('used_smu')
-                         .andWhere('used_smu', '!=', '0.00')
-                         .fetch()
-               ).toJSON()
-
                const dailyRefuelings = (
                     await DailyRefueling.query()
                          .with('timesheet')
-                         .whereIn(
-                              'timesheet_id',
-                              dailyTimeSheetSpecificFleet.map(
-                                   v => v.id
-                              )
-                         )
-                         .whereNotNull('timesheet_id')
+                         .where('pit_id', _pit_id)
                          .andWhere('topup', '!=', '0.00')
                          .andWhere('fueling_at', '>=', x.startOfMonth)
                          .andWhere('fueling_at', '<=', x.endOfMonth)
@@ -3422,15 +3373,19 @@ class MonthlyPlanApiController {
                monthsArr.push({
                     monthName: x.monthName,
                     data: {
-                         hm: parseInt(
-                              parseFloat(
-                                   dailyRefuelings.reduce(
-                                        (a, b) =>
-                                             a + b.timesheet.used_smu,
-                                        0
-                                   )
-                              ).toFixed(2)
-                         ),
+                         hm:
+                              parseInt(
+                                   parseFloat(
+                                        dailyRefuelings.reduce(
+                                             (a, b) =>
+                                                  a +
+                                                  (b.timesheet
+                                                       ?.used_smu ||
+                                                       0),
+                                             0
+                                        )
+                                   ).toFixed(2)
+                              ) || 0,
                          fuel: dailyRefuelings.reduce(
                               (a, b) => a + b.topup,
                               0
@@ -3439,14 +3394,18 @@ class MonthlyPlanApiController {
                })
 
                dats.push({
-                    value: parseInt(
-                         parseFloat(
-                              dailyRefuelings.reduce(
-                                   (a, b) => a + b.timesheet.used_smu,
-                                   0
-                              )
-                         ).toFixed(2)
-                    ),
+                    value:
+                         parseInt(
+                              parseFloat(
+                                   dailyRefuelings.reduce(
+                                        (a, b) =>
+                                             a +
+                                             (b.timesheet?.used_smu ||
+                                                  0),
+                                        0
+                                   )
+                              ).toFixed(2)
+                         ) || 0,
                     frontColor: '#ED6665',
                     label: x.monthName,
                     spacing: 2,
