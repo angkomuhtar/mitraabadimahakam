@@ -11,9 +11,14 @@
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
                         <div class="input-group">
-                            <input id="inpKeywordSite" class="form-control" placeholder="Search for...">
                             <span class="input-group-btn"> 
-                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" class="form-control" value="{{limit}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
                             </span>
                         </div>
                     </div>

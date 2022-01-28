@@ -311,7 +311,7 @@ class MonthlyPlan {
 
             let data = _.groupBy(sumData[elm], 'tgl')
 
-            console.log(data);
+            // console.log(data);
 
             let grpByDate = Object.keys(data).map(val => {
                 return {
@@ -359,7 +359,7 @@ class MonthlyPlan {
 
         // let xxx = result.reduce((a, b) => {return a + b.})
 
-        console.log(totalActual.reduce((a, b) => {return a + b}, 0));
+        // console.log(totalActual.reduce((a, b) => {return a + b}, 0));
 
         const estimasi = monthlyAvg.reduce((a, b) => {return a + b.estimate}, 0)
         const aktual = totalActual.reduce((a, b) => {return a + b}, 0) / 1000

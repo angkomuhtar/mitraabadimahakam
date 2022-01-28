@@ -1,0 +1,53 @@
+<div class="modal fade" id="openFilter" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row box-filter">
+                    <div class="col-md-6">
+                        <label for="">Mulai Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control inp-filter" name="begin_date" id="begin_date">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Hingga Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control inp-filter" name="end_date" id="end_date">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Select PIT</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter select2pit" data-check="" name="pit_id" id="pit_id"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Select Fleet</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter select2fleet" data-check="" name="fleet_id" id="fleet_id"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Select Activity</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter select2activities" data-check="" name="activity_id" id="activity_id"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="">Select Shift</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter select2shift" data-check="" name="shift_id" id="shift_id"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-inverse" id="close-modal">Reset</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
