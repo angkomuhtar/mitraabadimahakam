@@ -9,7 +9,7 @@ class MamFuelDist extends Model {
     }
 
     agen () {
-        return this.belongsTo("App/Models/MasFuelAgen", "agen_id", "id")
+        return this.belongsTo("App/Models/MasSupplier", "agen_id", "id")
     }
 
     fuel () {

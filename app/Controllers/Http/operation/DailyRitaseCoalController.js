@@ -160,8 +160,17 @@ class DailyRitaseCoalController {
             }
         }
         
-
+        
         for (const obj of genData) {
+            console.log('====================================');
+            console.log({
+                pit_id: req.pit_id, 
+                fleet_id: req.fleet_id, 
+                shift_id: obj.shift_id, 
+                date: req.date,
+                activity_id: 8
+            });
+            console.log('====================================');
             dailyFleet = await DailyFleet.query().where({
                 pit_id: req.pit_id, 
                 fleet_id: req.fleet_id, 
@@ -196,7 +205,6 @@ class DailyRitaseCoalController {
                     message: 'Unit DT ' + obj.subcondt_id + ' tidak di temukan...'
                 }
             }
-
         }
 
         /* Grouping Object By Shift */

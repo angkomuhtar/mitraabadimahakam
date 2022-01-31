@@ -19,16 +19,30 @@ $(function(){
         initDeafult()
     })
 
-    $('body').on('keyup', 'input#inpKeywordSite', function(e){
-        var value = $(this).val()
-        if(e.keyCode === 13){
-            ajaxSearch(value)
-        }
+    $('#openFilter').on('hidden.bs.modal', function (e) {
+        var elm = $(this)
+        var limit = $('body').find('input#limit-data').val()
+        var begin_date = elm.find('input#begin_date').val()
+        var begin_date = elm.find('input#begin_date').val()
+        var end_date = elm.find('input#end_date').val()
+        var pit_id = elm.find('select#pit_id').val()
+        var fleet_id = elm.find('select#fleet_id').val()
+        var activity_id = elm.find('select#activity_id').val()
+        var shift_id = elm.find('select#shift_id').val()
+        var uri = `&limit=${limit || 25}&begin_date=${begin_date || ''}&end_date=${end_date || ''}&pit_id=${pit_id || ''}&fleet_id=${fleet_id || ''}&activity_id=${activity_id || ''}&shift_id=${shift_id || ''}`
+        ajaxSearch('/operation/daily-fleet/list?filter=true'+uri)
     })
 
-    $('body').on('click', 'button#bt-search-keyword', function(){
-        var value = $('input#inpKeywordSite').val()
-        ajaxSearch(value)
+    $('body').on('click', 'button#close-modal', function(e){
+        $('input#begin_date').val()
+        $('input#begin_date').val()
+        $('input#end_date').val()
+        $('select#pit_id').val()
+        $('select#fleet_id').val()
+        $('select#activity_id').val()
+        $('select#shift_id').val()
+        $('#openFilter').modal('hide')
+        ajaxSearch()
     })
 
     $('body').on('click', 'button#bt-open-equipment-list', function(e){
@@ -115,18 +129,7 @@ $(function(){
 
     function initDeafult(){
         $('div.content-module').css('display', 'none')
-        $.ajax({
-            async: true,
-            url: '/operation/daily-fleet/list?keyword=',
-            method: 'GET',
-            success: function(result){
-                $('div#list-content').children().remove()
-                $('div#list-content').html(result).show()
-            },
-            error: function(err){
-                console.log(err);
-            }
-        })
+        ajaxSearch()
     }
 
     function initCreate(){
@@ -149,10 +152,11 @@ $(function(){
         $('div#form-show').show()
     }
 
-    function ajaxSearch(value){
+    function ajaxSearch(url){
+        var uri = url || '/operation/daily-fleet/list'
         $.ajax({
             async: true,
-            url: '/operation/daily-fleet/list?keyword='+value,
+            url: uri,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()

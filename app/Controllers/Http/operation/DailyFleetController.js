@@ -16,17 +16,35 @@ class DailyFleetController {
   }
 
   async list ({ request, view }) {
-    const req = request.only(['keyword', 'page'])
-    const limit = 25
+    const req = request.all()
+    const limit = req.limit || 100
     const halaman = req.page === undefined ? 1:parseInt(req.page)
-
     let data
-    if(req.keyword != ''){
+    if(req.filter){
       data = await DailyFleet.query()
+        .with('pit', site => site.with('site'))
         .with('fleet')
-        .where(whe => {
-          whe.where('kode', 'like', `%${req.keyword}%`)
-          whe.orWhere('name', 'like', `%${req.keyword}%`)
+        .with('activities')
+        .with('shift')
+        .with('user')
+        .with('details', eq => eq.with('equipment'))
+        .where( w => {
+          if(req.begin_date && req.end_date){
+            w.where('date', '>=', req.begin_date)
+            w.where('date', '<=', req.end_date)
+          }
+          if(req.pit_id){
+            w.where('pit_id', req.pit_id)
+          }
+          if(req.fleet_id){
+            w.where('fleet_id', req.fleet_id)
+          }
+          if(req.activity_id){
+            w.where('activity_id', req.activity_id)
+          }
+          if(req.shift_id){
+            w.where('shift_id', req.shift_id)
+          }
         })
         .andWhere('status', 'Y')
         .orderBy('date', 'desc')
@@ -45,7 +63,7 @@ class DailyFleetController {
     }
 
     
-    return view.render('operation.daily-fleet.list', {list: data.toJSON()})
+    return view.render('operation.daily-fleet.list', {list: data.toJSON(), limit: req.limit || 100})
   }
 
   async create ({ auth, view }) {

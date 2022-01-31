@@ -51,7 +51,7 @@
                                         <small>{{item.fuel.name}}</small>
                                     </td>
                                     <td>
-                                        {{item.no_do}} - {{item.no_so}}<br>
+                                        {{item.no_do ? item.no_do : ''}} - {{item.no_so ? item.no_so : ''}}<br>
                                         <small class="myDateFormat" data-date="{{item.tgl_do}}"></small>
                                     </td>
                                     <td>
