@@ -1070,7 +1070,7 @@ class MonthlyPlanApiController {
                                         (a, b) => a + b.topup,
                                         0
                                    ) || 0,
-                              total : REFUELING.length,
+                              total: REFUELING.length,
                               startShift: _start,
                               endShift: _end,
                               shiftDuration: m.duration,
@@ -3289,13 +3289,14 @@ class MonthlyPlanApiController {
      }
 
      async recentUnitRefuelingDetails({ auth, request, response }) {
-          const { date, page, limit } = request.only([
+          const { date, page, limit, pit_id } = request.only([
                'date',
                'page',
                'limit',
+               'pit_id',
           ])
 
-          console.log('date >> ', date)
+          const _pit_id = pit_id ? pit_id : 1
 
           // top level variables
           let durasi
@@ -3341,7 +3342,6 @@ class MonthlyPlanApiController {
                     new Date(date) >= new Date(start) &&
                     new Date(date) <= new Date(end)
                ) {
-                    console.log('what shift >> ', x)
                     // queries
                     const equipsRefueling = (
                          await DailyRefueling.query()
@@ -3349,15 +3349,24 @@ class MonthlyPlanApiController {
                               .where('fueling_at', '>=', start)
                               .andWhere('fueling_at', '<=', end)
                               .andWhere('topup', '!=', '0.00')
+                              .andWhere('pit_id', _pit_id)
                               .orderBy('fueling_at', 'asc')
                               .fetch()
                     ).toJSON()
 
-                    console.log('any data >> ', equipsRefueling)
 
                     const GET_REFUELING_UNIT_BY_UNIT_ID =
                          async unitId => {
                               let result = null
+
+                              const dailyFleetSpecificPit = (
+                                   await DailyFleet.query()
+                                        .where('pit_id', _pit_id)
+                                        .andWhere('date', __date)
+                                        .andWhere('shift_id', x.id)
+                                        .fetch()
+                              ).toJSON()
+
 
                               const dailyFleetEquips =
                                    await DailyFleetEquip.query()
@@ -3365,7 +3374,13 @@ class MonthlyPlanApiController {
                                              wh.with('pit')
                                         })
                                         .with('equipment')
-                                        .where(
+                                        .whereIn(
+                                             'dailyfleet_id',
+                                             dailyFleetSpecificPit.map(
+                                                  v => v.id
+                                             )
+                                        )
+                                        .andWhere(
                                              'datetime',
                                              '>=',
                                              start
