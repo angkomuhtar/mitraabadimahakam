@@ -4,7 +4,12 @@ const UserDevice = use('App/Models/UserDevice')
 const User = use('App/Models/User')
 const DailyFleet = use('App/Models/DailyFleet')
 const { sendMessage } = use('App/Controllers/Http/customClass/utils')
+const MasEquipment = use('App/Models/MasEquipment')
+const MasEvent = use('App/Models/MasEvent')
+const MasShift = use('App/Models/MasShift')
+const MasSite = use('App/Models/MasSite')
 
+const moment = require('moment')
 class Notifications {
      async sendNotifications(req, date, result, checkerName) {
           const owner = (
@@ -78,4 +83,163 @@ class Notifications {
                }
           }
      }
+
+     async sendNotificationsIssue(
+          unitId,
+          eventId,
+          desc,
+          startAt,
+          endAt,
+          checkerId
+     ) {
+          console.log(
+               unitId,
+               eventId,
+               desc,
+               startAt,
+               endAt,
+               checkerId
+          )
+          const owner = (
+               await User.query()
+                    .whereIn('user_tipe', ['owner', 'manager'])
+                    .fetch()
+          ).toJSON()
+
+          const unitName = await MasEquipment.query()
+               .where('id', unitId)
+               .first()
+
+          let eventName = null
+
+          if (eventId) {
+               eventName = (
+                    await MasEvent.query()
+                         .where('id', eventId)
+                         .first()
+               ).narasi
+          }
+
+          const checkerName = (
+               await User.query()
+                    .with('profile')
+                    .where('id', checkerId)
+                    .first()
+          ).toJSON()?.profile?.nm_depan
+
+          console.log('checker name >> ', checkerName)
+
+          for (const x of owner) {
+               const ownerDevices = (
+                    await UserDevice.query()
+                         .where('user_id', x?.id)
+                         .fetch()
+               ).toJSON()
+
+               if (ownerDevices) {
+                    let msg = `
+                    Daily Issue Report
+                    Unit Name : ${unitName.kode} - ${
+                         unitName.unit_model
+                    }
+                    Type of Issue : ${eventName || 'Tidak Ada'}
+                    Description : ${desc || 'Tidak Ada'} 
+                    Start Issue : ${moment(startAt).format(
+                         'DD, MMM YYYY HH:mm'
+                    )}
+                    End Issue : ${
+                         endAt
+                              ? moment(endAt).format(
+                                     'DD, MMM YYYY HH:mm'
+                                )
+                              : 'Belum diketahui'
+                    }
+
+                    Author : ${checkerName}
+            `
+
+                    const data = {}
+
+                    for (const x of ownerDevices) {
+                         await sendMessage(
+                              x.playerId,
+                              msg,
+                              data,
+                              x.platform
+                         )
+                    }
+               }
+          }
+     }
+
+     async sendNotificationsRefueling(
+          pitName,
+          shiftId,
+          siteId,
+          checkerId,
+          totalTopup,
+          tgl
+     ) {
+          console.log(
+               pitName,
+               shiftId,
+               siteId,
+               checkerId,
+               totalTopup,
+               tgl
+          )
+
+          const owner = (
+               await User.query().where('email', 'rein@gmail.com').fetch()
+          ).toJSON()
+          
+
+          const shiftName = (
+               await MasShift.query().where('id', shiftId).first()
+          ).toJSON()
+          const siteName = (
+               await MasSite.query().where('id', siteId).first()
+          ).toJSON()
+          const checkerName = (
+               await User.query()
+                    .with('profile')
+                    .where('id', checkerId)
+                    .first()
+          ).toJSON()?.profile?.nm_depan
+
+          for (const x of owner) {
+               const ownerDevices = (
+                    await UserDevice.query()
+                         .where('user_id', x?.id)
+                         .fetch()
+               ).toJSON()
+
+               if (ownerDevices) {
+                    let msg = `
+                    Daily Refueling Report
+                    PIT Name : ${pitName}
+                    Site Name : ${siteName.name}
+                    Shift : ${shiftName.name} 
+                    Total Topup : ${totalTopup} L
+
+                    Fueling At : ${tgl}
+
+                    Author : ${checkerName}
+            `
+
+                    const data = {}
+
+                    for (const x of ownerDevices) {
+                         await sendMessage(
+                              x.playerId,
+                              msg,
+                              data,
+                              x.platform
+                         )
+                    }
+               }
+          }
+     }
 }
+
+module.exports = new Notifications()
