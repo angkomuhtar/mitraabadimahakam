@@ -10,6 +10,7 @@ const MasShift = use('App/Models/MasShift')
 const MasSite = use('App/Models/MasSite')
 
 const moment = require('moment')
+const { numberFormatter } = require('../customClass/utils')
 class Notifications {
      async sendNotifications(req, date, result, checkerName) {
           const owner = (
@@ -174,29 +175,18 @@ class Notifications {
 
      async sendNotificationsRefueling(
           pitName,
-          shiftId,
           siteId,
           checkerId,
           totalTopup,
-          tgl
+          tgl,
+          totalUnit
      ) {
-          console.log(
-               pitName,
-               shiftId,
-               siteId,
-               checkerId,
-               totalTopup,
-               tgl
-          )
-
           const owner = (
-               await User.query().where('email', 'rein@gmail.com').fetch()
+               await User.query()
+                    .whereIn('user_tipe', ['owner', 'manager'])
+                    .fetch()
           ).toJSON()
-          
 
-          const shiftName = (
-               await MasShift.query().where('id', shiftId).first()
-          ).toJSON()
           const siteName = (
                await MasSite.query().where('id', siteId).first()
           ).toJSON()
@@ -205,7 +195,7 @@ class Notifications {
                     .with('profile')
                     .where('id', checkerId)
                     .first()
-          ).toJSON()?.profile?.nm_depan
+          ).toJSON()?.profile
 
           for (const x of owner) {
                const ownerDevices = (
@@ -217,14 +207,18 @@ class Notifications {
                if (ownerDevices) {
                     let msg = `
                     Daily Refueling Report
+
                     PIT Name : ${pitName}
                     Site Name : ${siteName.name}
-                    Shift : ${shiftName.name} 
-                    Total Topup : ${totalTopup} L
+                    Total Topup : ${await numberFormatter(
+                         String(totalTopup)
+                    )} L
+                    Total Unit : ${totalUnit} UNIT
 
-                    Fueling At : ${tgl}
-
-                    Author : ${checkerName}
+                    Fueling At : ${moment(tgl).format('DD MMM YYYY')}
+                    Author : ${checkerName.nm_depan} ${
+                         checkerName?.nm_belakang || null
+                    }
             `
 
                     const data = {}

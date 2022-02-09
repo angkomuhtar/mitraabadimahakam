@@ -328,25 +328,30 @@ class DailyRefuelEquipmentController {
 
           const masPit = (await MasPit.query().fetch()).toJSON()
 
-          for (const x of masPit) {
-               for (const y of datax) {
-                    if (y.pit_name === x.name) {
-                         const acc = datax
-                              .filter(v => v.pit_name === x.name)
-                              .reduce((a, b) => a + b.topup, 0)
-
-                         await NotificationsHelpers.sendNotificationsRefueling(
-                              y.pit_name,
-                              y.shift_id,
-                              req.site_id,
-                              usr.id,
-                              acc,
-                              req.tgl
-                         )
-                    } else {
-                         console.log('not found same pit')
+          datax = datax.map(v => {
+               if (v.pit_name === 'DERAWAN') {
+                    return {
+                         ...v,
+                         pit_name: 'DERAWAN BARU',
                     }
+               } else {
+                    return v
                }
+          })
+          for (const x of masPit) {
+               const acc = datax
+                    .filter(v => v.pit_name === x.name)
+                    .reduce((a, b) => a + b.topup, 0)
+               const length = datax.filter(v => v.pit_name === x.name).length
+
+               await NotificationsHelpers.sendNotificationsRefueling(
+                    x.name,
+                    req.site_id,
+                    usr.id,
+                    acc,
+                    req.tgl,
+                    length
+               )
           }
 
           return {
