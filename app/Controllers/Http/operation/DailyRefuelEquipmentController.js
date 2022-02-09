@@ -326,7 +326,7 @@ class DailyRefuelEquipmentController {
                }
           }
 
-          const masPit = (await MasPit.query().fetch()).toJSON()
+          const masPit = (await MasPit.query().where('sts', 'Y').fetch()).toJSON()
 
           datax = datax.map(v => {
                if (v.pit_name === 'DERAWAN') {
