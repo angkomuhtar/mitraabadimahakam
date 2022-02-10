@@ -33,6 +33,7 @@ const DailyChecklist = use('App/Models/DailyChecklist')
 const DailyCoalExposed = use('App/Models/DailyCoalExposed')
 const DailyFleetEquip = use('App/Models/DailyFleetEquip')
 const MasPit = use('App/Models/MasPit')
+const MasEquipment = use('App/Models/MasEquipment')
 
 class MonthlyPlanApiController {
      async index({ request, response, view }) {}
@@ -1052,11 +1053,13 @@ class MonthlyPlanApiController {
                               await DailyRefueling.query()
                                    .with('equipment')
                                    .where('fueling_at', '>=', _start)
+                                   .whereNotNull('equip_id')
                                    .andWhere('fueling_at', '<=', _end)
                                    .andWhere('pit_id', _pit_id)
+                                   .andWhere('topup', '!=', '0.00')
                                    .fetch()
                          ).toJSON()
-
+                         
                          const ritaseDay = moment(y).format('ddd')
                          const ritaseDate =
                               moment(y).format('YYYY-MM-DD')
@@ -3347,6 +3350,7 @@ class MonthlyPlanApiController {
                          await DailyRefueling.query()
                               .with('truck_fuel')
                               .where('fueling_at', '>=', start)
+                              .whereNotNull('equip_id')
                               .andWhere('fueling_at', '<=', end)
                               .andWhere('topup', '!=', '0.00')
                               .andWhere('pit_id', _pit_id)
@@ -3354,66 +3358,36 @@ class MonthlyPlanApiController {
                               .fetch()
                     ).toJSON()
 
-
                     const GET_REFUELING_UNIT_BY_UNIT_ID =
                          async unitId => {
                               let result = null
 
-                              const dailyFleetSpecificPit = (
-                                   await DailyFleet.query()
-                                        .where('pit_id', _pit_id)
-                                        .andWhere('date', __date)
-                                        .andWhere('shift_id', x.id)
-                                        .fetch()
-                              ).toJSON()
-
-
                               const dailyFleetEquips =
-                                   await DailyFleetEquip.query()
-                                        .with('dailyFleet', wh => {
-                                             wh.with('pit')
-                                        })
-                                        .with('equipment')
-                                        .whereIn(
-                                             'dailyfleet_id',
-                                             dailyFleetSpecificPit.map(
-                                                  v => v.id
-                                             )
-                                        )
-                                        .andWhere(
-                                             'datetime',
-                                             '>=',
-                                             start
-                                        )
-                                        .andWhere('equip_id', unitId)
-                                        .andWhere(
-                                             'datetime',
-                                             '<=',
-                                             end
-                                        )
+                                   await MasEquipment.query()
+                                        .where('id', unitId)
                                         .first()
+                              const masPit = (
+                                   await MasPit.query()
+                                        .where('id', _pit_id)
+                                        .first()
+                              ).toJSON()
 
                               if (dailyFleetEquips) {
                                    const singleUnit =
                                         dailyFleetEquips?.toJSON()
-                                   const equipName =
-                                        singleUnit?.equipment?.kode
-                                   const pitName =
-                                        singleUnit?.dailyFleet?.pit
-                                             ?.kode
+                                   const equipName = singleUnit.kode
+                                   const pitName = masPit.kode
+
                                    return {
                                         pitName,
                                         equipName,
-                                        equipmentImg: singleUnit
-                                             ?.equipment.img_uri
-                                             ? singleUnit?.equipment
-                                                    .img_uri
-                                             : `${process.env.APP_URL}/images/img_not_found.png`,
-                                        brand: singleUnit?.equipment
-                                             .brand,
+                                        equipmentImg:
+                                             singleUnit?.img_uri
+                                                  ? singleUnit?.img_uri
+                                                  : `${process.env.APP_URL}/images/img_not_found.png`,
+                                        brand: singleUnit?.brand,
                                         type: await equipmentTypeCheck(
-                                             singleUnit?.equipment
-                                                  .tipe
+                                             singleUnit?.tipe
                                         ),
                                    }
                               } else {
