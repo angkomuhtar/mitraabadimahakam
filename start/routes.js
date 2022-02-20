@@ -609,13 +609,14 @@ Route.group(() => {
 
 }).prefix('api').namespace('api')
 
-Route.group(() => {
+// api weather disabled
+// Route.group(() => {
     
-    Route.get('/', 'ApiWeatherController.getWeather')
+//     Route.get('/', 'ApiWeatherController.getWeather')
 
-    Route.get('/city', 'ApiWeatherController.getWeatherCity')
+//     Route.get('/city', 'ApiWeatherController.getWeatherCity')
 
-}).prefix('api/weather').namespace('api')
+// }).prefix('api/weather').namespace('api')
 
 Route.group(() => {
 
@@ -965,6 +966,8 @@ Route.group(() => {
     Route.get('/exca/productivity/coal', 'MonthlyPlanApiController.getExcaProductivity_COAL')
     
     Route.get('/unit/refueling/recent', 'MonthlyPlanApiController.recentUnitRefueling')
+
+    Route.get('/unit/refueling/shift/detail', 'MonthlyPlanApiController.recentUnitRefuelingDetails')
 
     Route.get('/ranges/fuel/ratio', 'MonthlyPlanApiController.getRangeMonthFuelBurn')
 

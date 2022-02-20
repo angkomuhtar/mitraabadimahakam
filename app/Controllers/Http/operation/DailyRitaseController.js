@@ -335,7 +335,7 @@ class DailyRitaseController {
                               .whereIn('user_tipe', [
                                    'owner',
                                    'administrator',
-                                   'checker',
+                                   'manager'
                               ])
                               .fetch()
                     ).toJSON()

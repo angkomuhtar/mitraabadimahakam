@@ -33,6 +33,7 @@ const DailyChecklist = use('App/Models/DailyChecklist')
 const DailyCoalExposed = use('App/Models/DailyCoalExposed')
 const DailyFleetEquip = use('App/Models/DailyFleetEquip')
 const MasPit = use('App/Models/MasPit')
+const MasEquipment = use('App/Models/MasEquipment')
 
 class MonthlyPlanApiController {
      async index({ request, response, view }) {}
@@ -1052,11 +1053,13 @@ class MonthlyPlanApiController {
                               await DailyRefueling.query()
                                    .with('equipment')
                                    .where('fueling_at', '>=', _start)
+                                   .whereNotNull('equip_id')
                                    .andWhere('fueling_at', '<=', _end)
                                    .andWhere('pit_id', _pit_id)
+                                   .andWhere('topup', '!=', '0.00')
                                    .fetch()
                          ).toJSON()
-
+                         
                          const ritaseDay = moment(y).format('ddd')
                          const ritaseDate =
                               moment(y).format('YYYY-MM-DD')
@@ -1070,6 +1073,7 @@ class MonthlyPlanApiController {
                                         (a, b) => a + b.topup,
                                         0
                                    ) || 0,
+                              total: REFUELING.length,
                               startShift: _start,
                               endShift: _end,
                               shiftDuration: m.duration,
@@ -3256,6 +3260,167 @@ class MonthlyPlanApiController {
                          equipBrand: unitData.brand,
                     }
                     data.push(_data)
+               }
+          }
+
+          // pagination
+          if (endIndex < data.length) {
+               paginate.next = {
+                    page: _page + 1,
+                    limit: _limit,
+               }
+          }
+          if (startIndex > 0) {
+               paginate.previous = {
+                    page: _page - 1,
+                    limit: _limit,
+               }
+          }
+
+          // response to client
+          return response.status(200).json({
+               ...paginate,
+               diagnostic: {
+                    times: durasi,
+                    error: false,
+                    request_time: date,
+                    server_time: moment(date).format('YYYY-MM-DD'),
+               },
+               data: data.slice(0, endIndex),
+               arrLength: data.length,
+          })
+     }
+
+     async recentUnitRefuelingDetails({ auth, request, response }) {
+          const { date, page, limit, pit_id } = request.only([
+               'date',
+               'page',
+               'limit',
+               'pit_id',
+          ])
+
+          const _pit_id = pit_id ? pit_id : 1
+
+          // top level variables
+          let durasi
+          var t0 = performance.now()
+          const _page = parseInt(page) || 1
+          const _limit = parseInt(limit) || 2
+          const startIndex = _page - 1
+          const endIndex = _page * _limit
+          const paginate = {}
+          let data = []
+          let ids = []
+
+          // auth check
+          try {
+               await auth.authenticator('jwt').getUser()
+          } catch (error) {
+               console.log(error)
+               durasi = await diagnoticTime.durasi(t0)
+               return response.status(403).json({
+                    diagnostic: {
+                         times: durasi,
+                         error: true,
+                         message: error.message,
+                    },
+                    data: {},
+               })
+          }
+
+          // master data
+          const shifts = (await MasShift.query().fetch()).toJSON()
+          const __date = moment(date).format('YYYY-MM-DD')
+
+          for (let x of shifts) {
+               let start = moment(
+                    `${__date} ${x.start_shift}`
+               ).format('YYYY-MM-DD HH:mm:ss')
+               let end = moment(`${__date} ${x.start_shift}`)
+                    .add(x.duration, 'hour')
+                    .subtract(1, 'minutes')
+                    .format('YYYY-MM-DD HH:mm:ss')
+
+               if (
+                    new Date(date) >= new Date(start) &&
+                    new Date(date) <= new Date(end)
+               ) {
+                    // queries
+                    const equipsRefueling = (
+                         await DailyRefueling.query()
+                              .with('truck_fuel')
+                              .where('fueling_at', '>=', start)
+                              .whereNotNull('equip_id')
+                              .andWhere('fueling_at', '<=', end)
+                              .andWhere('topup', '!=', '0.00')
+                              .andWhere('pit_id', _pit_id)
+                              .orderBy('fueling_at', 'asc')
+                              .fetch()
+                    ).toJSON()
+
+                    const GET_REFUELING_UNIT_BY_UNIT_ID =
+                         async unitId => {
+                              let result = null
+
+                              const dailyFleetEquips =
+                                   await MasEquipment.query()
+                                        .where('id', unitId)
+                                        .first()
+                              const masPit = (
+                                   await MasPit.query()
+                                        .where('id', _pit_id)
+                                        .first()
+                              ).toJSON()
+
+                              if (dailyFleetEquips) {
+                                   const singleUnit =
+                                        dailyFleetEquips?.toJSON()
+                                   const equipName = singleUnit.kode
+                                   const pitName = masPit.kode
+
+                                   return {
+                                        pitName,
+                                        equipName,
+                                        equipmentImg:
+                                             singleUnit?.img_uri
+                                                  ? singleUnit?.img_uri
+                                                  : `${process.env.APP_URL}/images/img_not_found.png`,
+                                        brand: singleUnit?.brand,
+                                        type: await equipmentTypeCheck(
+                                             singleUnit?.tipe
+                                        ),
+                                   }
+                              } else {
+                                   result = null
+                              }
+                              return result
+                         }
+
+                    for (const y of equipsRefueling) {
+                         const unitData =
+                              await GET_REFUELING_UNIT_BY_UNIT_ID(
+                                   y.equip_id
+                              )
+                         if (unitData) {
+                              const _data = {
+                                   pitName: unitData.pitName,
+                                   equipName: unitData.equipName,
+                                   equipmentImg:
+                                        unitData.equipmentImg,
+                                   topup: y.topup,
+                                   smu: y.smu,
+                                   topupAt: moment(
+                                        y.fueling_at
+                                   ).format('DD MMM HH:mm'),
+                                   unit: 'L',
+                                   equipType: unitData.type,
+                                   equipBrand: unitData.brand,
+                                   fuel_truck:
+                                        y?.truck_fuel?.kode || 'None',
+                              }
+                              data.push(_data)
+                         }
+                    }
                }
           }
 
