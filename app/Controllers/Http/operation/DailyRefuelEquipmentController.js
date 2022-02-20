@@ -84,6 +84,8 @@ class DailyRefuelEquipmentController {
                 }
             });
 
+            console.log(convertJSON);
+
             var arr = Object.keys(convertJSON).map(function (key) {    
                 return key
             })

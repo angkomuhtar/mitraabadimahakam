@@ -27,6 +27,26 @@ $(function(){
         $(this).val(dateString)
     })
 
+    $('input[type="month"].month_begin').each(function(){
+        var dateString = moment().startOf('year').format("YYYY-MM")
+        $(this).val(dateString)
+    })
+
+    $('input[type="month"].month_end').each(function(){
+        var dateString = moment().endOf('year').format("YYYY-MM")
+        $(this).val(dateString)
+    })
+    
+    $('input[type="week"].week_begin').each(function(){
+        var dateString = moment().startOf('week').format("YYYY-MM")
+        $(this).val(dateString)
+    })
+
+    $('input[type="week"].week_end').each(function(){
+        var dateString = moment().endOf('week').format("YYYY-MM")
+        $(this).val(dateString)
+    })
+
     $('input[type="date"]').each(function(){
         var isNow = $(this).data('date')
         if(isNow){
@@ -272,7 +292,12 @@ $(function(){
             if(data.length > 0){
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                 elm.append(list)
-                elm.prepend('<option value="">Pilih</option>')
+                console.log(list.filter(el => el.selected === 'selected').length);
+                if(list.filter(el => el.selected === 'selected').length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }else{
+                    elm.prepend('<option value="">Pilih</option>')
+                }
             }else{
                 elm.prepend('<option value="">Belum ada data pilihan...</option>')
             }
@@ -285,9 +310,13 @@ $(function(){
         elm.children().remove()
         $.get('/ajax/pit?selected='+selected, function(data){
             if(data.length > 0){
-                elm.prepend('<option value="">Pilih</option>')
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
-                elm.append(list)
+                elm.html(list)
+                if(list.filter(el => el.selected === 'selected').length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }else{
+                    elm.prepend('<option value="">Pilih</option>')
+                }
             }else{
                 elm.prepend('<option value="">Belum ada data pilihan...</option>')
             }

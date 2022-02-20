@@ -4,6 +4,7 @@ const db = use('Database')
 const moment = use('moment')
 const Helpers = use('Helpers')
 const _ = require('underscore')
+const MasPit = use('App/Models/MasPit')
 const DailyRitase = use('App/Models/DailyRitase')
 const TimeSheet = use('App/Models/DailyChecklist')
 const excelToJson = require('convert-excel-to-json')
@@ -44,6 +45,15 @@ class DailyRitaseController {
                     success: false,
                     message: error.message,
                }
+          }
+     }
+
+     async graph({ view, auth }) {
+          try {
+               await auth.getUser()
+               return view.render('operation.daily-ritase-ob.graph')
+          } catch (error) {
+               console.log(error)
           }
      }
 
@@ -204,6 +214,9 @@ class DailyRitaseController {
                     'qty',
                ])
 
+               const dfleet = await DailyFleet.query().where('id', reqx.dailyfleet_id).last()
+               const pit = await MasPit.query().where('id', dfleet.pit_id).last()
+
                try {
                     let xDailyRitase = null
 
@@ -235,6 +248,9 @@ class DailyRitaseController {
 
                          xDailyRitase.fill({
                               dailyfleet_id: reqx.dailyfleet_id,
+                              site_id: pit?.site_id || null,
+                              pit_id: dfleet.pit_id,
+                              shift_id: dfleet.shift_id,
                               exca_id: reqx.exca_id,
                               material: reqx.material,
                               distance: reqx.distance,

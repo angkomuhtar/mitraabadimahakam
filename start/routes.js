@@ -329,6 +329,8 @@ Route.group(() => {
 
     Route.get('/daily-ritase-ob/list', 'DailyRitaseController.list').as('opr.daily-ritase-ob.list').middleware('R')
 
+    // Route.get('/daily-ritase-ob/graph', 'DailyRitaseController.graph').as('opr.daily-ritase-ob.graph').middleware('R')
+
     Route.get('/daily-ritase-ob/create', 'DailyRitaseController.create').as('opr.daily-ritase-ob.create').middleware('R')
 
     Route.get('/daily-ritase-ob/create/addItems', 'DailyRitaseController.addItems').as('opr.daily-ritase-ob.addItems').middleware('R')
@@ -486,6 +488,19 @@ Route.group(() => {
 
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
+// REPORT
+Route.group(() => {
+
+    Route.get('/over-borden', 'ProductionReportController.index').as('rep.over-borden.index').middleware('R')
+
+    Route.get('/over-borden/data-graph-ob', 'ProductionReportController.dataGraphOB').middleware('R')
+
+    Route.get('/over-borden/view-graph-ob', 'ProductionReportController.viewGraphOB').middleware('R')
+
+    Route.get('/over-borden/view-table-ob', 'ProductionReportController.viewTableOB').middleware('R')
+
+}).prefix('report').namespace('report').middleware(['MM'])
+
 // AJAX
 Route.group(() => {
 
@@ -561,6 +576,9 @@ Route.group(() => {
     Route.get('/grafik5', 'AjaxChartController.grafik_EVENT_MTD')
 
     Route.get('/grafik6', 'AjaxChartController.grafik_COST_VS_PROD')
+
+    // CUSTOM GRAFIK
+    Route.get('/ritase-ob', 'AjaxTruckCountObController.index')
 
     Route.get('/doc/platform', 'AjaxDocumentationController.getPlatform')
 
