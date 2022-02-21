@@ -144,8 +144,8 @@ html[dir="rtl"] .select2-container .select2-choice > .select2-chosen {
     z-index: 9999;
     top: 100%;
 
-    background: #fff;
-    color: #000;
+    background: #2f323e;
+    /* color: #000; */
     border: 1px solid #aaa;
     border-top: 0;
 
@@ -492,7 +492,7 @@ disabled look for disabled choices in the results dropdown
     padding: 0 5px 0 0;
     position: relative;
 
-    border: 1px solid #aaa;
+    border: 1px solid #ddd;
     cursor: text;
     overflow: hidden;
 

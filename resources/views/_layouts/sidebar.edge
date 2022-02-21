@@ -1,7 +1,27 @@
 <div class="navbar-default sidebar" role="navigation">
     <div class="sidebar-nav slimscrollsidebar">
         <div class="sidebar-head">
-            <h3><span class="fa-fw open-close"><i class="ti-menu hidden-xs"></i><i class="ti-close visible-xs"></i></span> <span class="hide-menu">Navigation</span></h3> </div>
+            <h3>
+                <span class="fa-fw open-close">
+                    <i class="ti-close ti-menu"></i>
+                </span> 
+                <span class="hide-menu">Navigation</span>
+            </h3> 
+        </div>
+        <div class="user-profile">
+            <div class="dropdown user-pro-body">
+                <div>
+                    @if(auth.user.avatar === null)
+                        <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="30" class="img-circle">
+                    @else
+                        <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="30" class="img-circle">
+                    @endif
+                </div>
+                <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {{auth.user.user_tipe}}
+                </a>
+            </div>
+        </div>
         <ul class="nav" id="side-menu">
             
             <li> 

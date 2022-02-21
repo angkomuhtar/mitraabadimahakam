@@ -1,0 +1,44 @@
+<div class="modal fade" id="filtermodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Filter Data</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="mulai_tanggal">Mulai Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control inp-filter input-sm range_begin" name="start_date" id="start_date">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="hingga_tanggal">Hingga Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control inp-filter input-sm range_end" name="end_date" id="end_date">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="mulai_tanggal">Pilih Shift</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter input-sm select2shift" name="shift_id" id="shift_id"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="mulai_tanggal">Pilih PIT</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter input-sm select2pit" name="pit_id" id="pit_id"></select>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="reset-filter" class="btn btn-default" data-dismiss="modal">Reset Filter</button>
+                <button type="button" id="apply-filter" class="btn btn-info" data-dismiss="modal">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+</div>

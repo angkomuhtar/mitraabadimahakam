@@ -4,6 +4,7 @@ const db = use('Database')
 const moment = use('moment')
 const Helpers = use('Helpers')
 const _ = require('underscore')
+const MasPit = use('App/Models/MasPit')
 const DailyRitase = use('App/Models/DailyRitase')
 const TimeSheet = use('App/Models/DailyChecklist')
 const excelToJson = require('convert-excel-to-json')
@@ -44,6 +45,15 @@ class DailyRitaseController {
                     success: false,
                     message: error.message,
                }
+          }
+     }
+
+     async graph({ view, auth }) {
+          try {
+               await auth.getUser()
+               return view.render('operation.daily-ritase-ob.graph')
+          } catch (error) {
+               console.log(error)
           }
      }
 

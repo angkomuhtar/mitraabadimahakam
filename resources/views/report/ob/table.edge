@@ -1,0 +1,55 @@
+<div class="row m-t-10">
+    <div class="col-md-12 col-lg-12 col-sm-12 b-all">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="" style="border-bottom: 2px solid;">
+                                <tr>
+                                    <th class="sl" width="200">Date</th>
+                                    <th class="sl text-right" width="*">AVG.Distance</th>
+                                    <th class="sl text-right" width="*">Target BCM</th>
+                                    <th class="sl text-right" width="*">Tot.Ritase</th>
+                                    <th class="sl text-right" width="*">Tot.Volume</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @each(item in list)
+                                <tr>
+                                    <td>{{item.date}}</td>
+                                    <td class="text-right">{{item.avg_distance}} Meter</td>
+                                    <td class="text-right target-bcm" data-number="{{item.avg_target}}">{{item.avg_target}} BCM</td>
+                                    <td class="text-right">{{item.sum_rit}} RIT</td>
+                                    <td class="text-right actual-bcm"  data-potential="{{item.avg_target}}" data-actual="{{item.sum_volume}}">{{item.sum_volume}} BCM</td>
+                                </tr>
+                                @endeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        $('td.target-bcm').each(function(){
+            var elm = $(this)
+            var values = $(this).data('number')
+            elm.html(values.toFixed(2))
+        })
+
+        $('td.actual-bcm').each(function(){
+            var elm = $(this)
+            var potential = $(this).data('potential')
+            var actual = $(this).data('actual')
+            if(potential >= actual){
+                elm.html('<strong class="text-danger">'+actual+' BCM</strong>')
+            }else{
+                elm.html('<strong class="text-success">'+actual+' BCM</strong>')
+            }
+        })
+    })
+</script>

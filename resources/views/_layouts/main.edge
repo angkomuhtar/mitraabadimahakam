@@ -22,7 +22,7 @@
     <!-- Custom CSS -->
     {{ style('css/style') }}
     <!-- color CSS -->
-    {{ style('css/colors/blue-dark') }}
+    {{ style('css/colors/default') }}
 
     {{--  <link href="../plugins/bower_components/summernote/dist/summernote.css" rel="stylesheet" />  --}}
     {{ style('plugins/bower_components/summernote/dist/summernote.css') }}
@@ -104,11 +104,11 @@
         </svg>
     </div>
 
-    <div id="wrapper" style="padding-right: 5px;">
+    <div id="wrapper">
         @include('_layouts.navbar')
         @include('_layouts.sidebar')
         <div id="page-wrapper">
-            <div class="container-fluid">
+            <div class="">
                 @!section('content')
                 @include('_layouts.sidebar_setting')
             </div>
