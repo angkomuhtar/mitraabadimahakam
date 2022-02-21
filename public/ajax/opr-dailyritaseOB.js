@@ -161,18 +161,12 @@ $(function(){
         const spv = $('body').find('select#spv_id').val();
         const sheet = $('body').find('select#sheet').val();
 
-        data.append('date', date);
-        data.append('current_file_name', currentFileName);
-        data.append('dailyfleet_id', dailyfleet);
-        data.append('exca_id', exca);
-        data.append('material', material);
-        data.append('distance', distance);
-        data.append('checker_id', checker);
-        data.append('spv_id', spv);
-        data.append('sheet', sheet);
+       
 
         var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
         if(isUploadFile){
+
+            data = new FormData(this)
             console.log('input manual....');
             $.ajax({
                 async: true,
@@ -205,6 +199,19 @@ $(function(){
                 }
             })
         }else{
+
+            data = new FormData()
+
+            data.append('date', date);
+            data.append('current_file_name', currentFileName);
+            data.append('dailyfleet_id', dailyfleet);
+            data.append('exca_id', exca);
+            data.append('material', material);
+            data.append('distance', distance);
+            data.append('checker_id', checker);
+            data.append('spv_id', spv);
+            data.append('sheet', sheet);
+
             swal({
                 title: "Apakah anda yakin?",
                 text: "Pastikan format data excel anda sudah sesuai!",
