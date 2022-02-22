@@ -13,7 +13,7 @@ const MasShift = use('App/Models/MasShift')
 const MasPit = use('App/Models/MasPit')
 const MasFleet = use('App/Models/MasFleet')
 const MasEquipment = use('App/Models/MasEquipment')
-const DailyFleetEquipment = use('App/Models/DailyfleetEquip')
+const DailyFleetEquipment = use('App/Models/DailyFleetEquip')
 const MasMaterial = use('App/Models/MasMaterial')
 
 class Ritase {
