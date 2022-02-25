@@ -493,7 +493,7 @@ Route.group(() => {
 
     Route.get('/over-borden', 'ProductionReportController.index').as('rep.over-borden.index').middleware('R')
 
-    Route.get('/over-borden/data-graph-ob', 'ProductionReportController.dataGraphOB').middleware('R')
+    Route.post('/over-borden/data-graph-ob', 'ProductionReportController.dataGraphOB').middleware('R')
 
     Route.get('/over-borden/view-graph-ob', 'ProductionReportController.viewGraphOB').middleware('R')
 
@@ -519,6 +519,8 @@ Route.group(() => {
     Route.get('/site', 'AjaxSiteController.getSites').as('site.getSites')
 
     Route.get('/pit', 'AjaxPitController.getPits').as('pit.getPits')
+
+    Route.get('/pit-by-site', 'AjaxPitController.getPitsBySite').as('pit.getPitsBySite')
 
     Route.get('/fleet', 'AjaxFleetController.getFleets').as('fleet.getFleets')
 

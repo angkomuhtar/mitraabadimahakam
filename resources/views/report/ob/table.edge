@@ -21,7 +21,7 @@
                                     <td class="text-right">{{item.avg_distance}} Meter</td>
                                     <td class="text-right target-bcm" data-number="{{item.avg_target}}">{{item.avg_target}} BCM</td>
                                     <td class="text-right">{{item.sum_rit}} RIT</td>
-                                    <td class="text-right actual-bcm"  data-potential="{{item.avg_target}}" data-actual="{{item.sum_volume}}">{{item.sum_volume}} BCM</td>
+                                    <td class="text-right actual-bcm {{item.sum_volume >= item.avg_target ? 'text-success' : 'text-danger'}}"  data-potential="{{item.avg_target}}" data-actual="{{item.sum_volume}}">{{item.sum_volume}} BCM</td>
                                 </tr>
                                 @endeach
                             </tbody>

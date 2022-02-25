@@ -24,112 +24,122 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Filter Data</div>
                             <div class="panel-wrapper collapse in">
-                                <div class="panel-body">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label for="mulai_tanggal">Graph Type</label>
-                                            <div class="form-group">
-                                                <select class="form-control inp-filter" name="graph-type" id="graph-type">
-                                                    <option value="BAR">BAR GRAPH</option>
-                                                    <option value="LINE">LINE GRAPH</option>
-                                                    <option value="LINEAREA">LINE WITH AREA GRAPH</option>
-                                                    <option value="DRILLDOWN">DRILLDOWN GRAPH</option>
-                                                    <option value="SIDE">SIDE BY SIDE GRAPH</option>
-                                                </select>
+                                <form action="" id="filter-data">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="container-type" id="box-site" style="display:inline">
+                                                <div class="col-md-3">
+                                                    <label for="">Pilih Site/Project</label>
+                                                    <div class="form-group">
+                                                        <select class="form-control inp-filter select2site" name="site_id" id="site_id"></select>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label for="mulai_tanggal">Filter Type</label>
-                                            <div class="form-group">
-                                                <select class="form-control inp-filter" name="filter-type" id="filter-type">
-                                                    <option value="DATE">By Date</option>
-                                                    <option value="MONTHLY">By Monthly</option>
-                                                    <option value="WEEKLY">By Weekly</option>
-                                                    <option value="DAILY">By Daily</option>
-                                                    <option value="SHIFT">By Shift Schedules</option>
-                                                    <option value="HOURLY">By Hourly</option>
-                                                </select>
+                                            <div class="container-type" id="box-pit" style="display:inline">
+                                                <div class="col-md-3">
+                                                    <label for="">Pilih PIT</label>
+                                                    <div class="form-group">
+                                                        <select class="form-control inp-filter select2pit" data-check="" name="pit_id" id="pit_id"></select>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="container-type" id="box-daily" style="display:none">
                                             <div class="col-md-3">
-                                                <label for="mulai_tanggal">Select Date</label>
+                                                <label for="mulai_tanggal">Filter Type</label>
                                                 <div class="form-group">
-                                                    <input type="date" class="form-control inp-filter initDate" name="date" id="date">
+                                                    <select class="form-control inp-filter" name="filterType" id="filterType">
+                                                        <option value="DATE">By Date</option>
+                                                        <option value="MONTHLY">By Monthly</option>
+                                                        <option value="WEEKLY">By Weekly</option>
+                                                        <option value="SHIFT">By Shift Schedules</option>
+                                                        <option value="HOURLY">By Hourly</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-3">
+                                                <label for="mulai_tanggal">Graph Type</label>
+                                                <div class="form-group">
+                                                    <select class="form-control inp-filter" name="graphType" id="graphType">
+                                                        <option value="BAR">BAR GRAPH</option>
+                                                        <option value="LINE">LINE GRAPH</option>
+                                                        <option value="LINEAREA">LINE WITH AREA GRAPH</option>
+                                                        <option value="DRILLDOWN">DRILLDOWN GRAPH</option>
+                                                        <option value="SIDE">SIDE BY SIDE GRAPH</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="container-type" id="box-date" style="display:inline">
-                                            <div class="col-md-3">
-                                                <label for="mulai_tanggal">Start Of Date</label>
-                                                <div class="form-group">
-                                                    <input type="date" class="form-control inp-filter range_begin" name="start_date" id="start_date">
+                                        <div class="row">
+                                            <div class="container-type" id="box-date" style="display:inline">
+                                                <div class="col-md-3">
+                                                    <label for="mulai_tanggal">Start Of Date</label>
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control inp-filter range_begin" name="start_date" id="start_date">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="hingga_tanggal">End Of Date</label>
-                                                <div class="form-group">
-                                                    <input type="date" class="form-control inp-filter range_end" name="end_date" id="end_date">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="container-type" id="box-monthly" style="display:none">
-                                            <div class="col-md-3">
-                                                <label for="hingga_tanggal">Start Of Month</label>
-                                                <div class="form-group">
-                                                    <input type="month" class="form-control inp-filter" name="month_begin" id="month_begin">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="hingga_tanggal">End Of Month</label>
-                                                <div class="form-group">
-                                                    <input type="month" class="form-control inp-filter" name="month_end" id="month_end">
+                                                <div class="col-md-3">
+                                                    <label for="hingga_tanggal">End Of Date</label>
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control inp-filter range_end" name="end_date" id="end_date">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="container-type" id="box-weekly" style="display:none">
-                                            <div class="col-md-3">
-                                                <label for="hingga_tanggal">Start Of Week</label>
-                                                <div class="form-group">
-                                                    <input type="week" class="form-control inp-filter" name="week_begin" id="week_begin">
+                                        <div class="row">
+                                            <div class="container-type" id="box-monthly" style="display:none">
+                                                <div class="col-md-3">
+                                                    <label for="hingga_tanggal">Start Of Month</label>
+                                                    <div class="form-group">
+                                                        <input type="month" class="form-control inp-filter" name="month_begin" id="month_begin">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label for="hingga_tanggal">End Of Week</label>
-                                                <div class="form-group">
-                                                    <input type="week" class="form-control inp-filter" name="week_end" id="week_end">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="container-type" id="box-site" style="display:inline">
-                                            <div class="col-md-3">
-                                                <label for="">Pilih Site/Project</label>
-                                                <div class="form-group">
-                                                    <select class="form-control inp-filter select2site" name="site_id" id="site_id"></select>
+                                                <div class="col-md-3">
+                                                    <label for="hingga_tanggal">End Of Month</label>
+                                                    <div class="form-group">
+                                                        <input type="month" class="form-control inp-filter" name="month_end" id="month_end">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="container-type" id="box-pit" style="display:inline">
-                                            <div class="col-md-3">
-                                                <label for="">Pilih PIT</label>
-                                                <div class="form-group">
-                                                    <select class="form-control inp-filter select2pit" data-check="" name="pit_id" id="pit_id"></select>
+                                        <div class="row">
+                                            <div class="container-type" id="box-weekly" style="display:none">
+                                                <div class="col-md-3">
+                                                    <label for="hingga_tanggal">Start Of Week</label>
+                                                    <div class="form-group">
+                                                        <input type="week" class="form-control inp-filter" name="week_begin" id="week_begin">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="hingga_tanggal">End Of Week</label>
+                                                    <div class="form-group">
+                                                        <input type="week" class="form-control inp-filter" name="week_end" id="week_end">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="container-type" id="box-shift" style="display:none">
-                                            <div class="col-md-3">
-                                                <label for="">Pilih Shift</label>
-                                                <div class="form-group">
-                                                    <select class="form-control inp-filter select2shift" name="shift_id" id="shift_id"></select>
+                                        <div class="row">
+                                            <div class="container-type" id="box-daily" style="display:none">
+                                                <div class="col-md-3">
+                                                    <label for="mulai_tanggal">Select Date</label>
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control inp-filter initDate" name="date" id="date">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-shift" style="display:none">
+                                                <div class="col-md-3">
+                                                    <label for="">Pilih Shift</label>
+                                                    <div class="form-group">
+                                                        <select class="form-control inp-filter select2shift" name="shift_id" id="shift_id"></select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="panel-footer text-right">
-                                    <button type="button" id="apply-filter" class="btn btn-info">Apply Filter</button>
-                                </div>
+                                    <div class="panel-footer text-right">
+                                        <button type="submit" id="apply-filter" class="btn btn-info">Apply Filter</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -154,7 +164,9 @@
                                         </div>
                                     </div>
                                     <hr>
-                                    <div id="container"></div>
+                                    <div id="container" class="text-center">
+                                        <img src="{{ assetsUrl('images/animation_500_kzw42wnp.gif')}}" width="200" height="200" alt="loading data..." />
+                                    </div>
                                 </div>
                             </div>
                         </div>

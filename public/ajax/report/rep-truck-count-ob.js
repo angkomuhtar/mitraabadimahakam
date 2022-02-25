@@ -4,10 +4,33 @@ $(function(){
 
     initDefault()
 
-    showBarChart()
-    showTable()
+    // showBarChart()
+    // showTable()
 
-    $('body').on('change', 'select[name="filter-type"]', function(){
+    $('body').on('change', 'select[name="site_id"]', function(){
+        var values = $(this).val() || ''
+        var elm = body.find('select[name="pit_id"]')
+        if(values){
+            body.find('div#box-pit').css('display', 'inline')
+            $.ajax({
+                async: true,
+                url: '/ajax/pit-by-site?site_id='+values,
+                method: 'GET',
+                dataType: 'html',
+                success: function(data){
+                    console.log(data);
+                    elm.html(data)
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        }else{
+            body.find('div#box-pit').css('display', 'none')
+        }
+    })
+
+    $('body').on('change', 'select[name="filterType"]', function(){
         var values = $(this).val()
         body.find('div.container-type').css('display', 'none')
         // body.find('div.container-type').children('select, input').val()
@@ -15,116 +38,96 @@ $(function(){
             case 'MONTHLY':
                 body.find('div#box-monthly').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
+                body.find('div#box-pit').css('display', 'inline')
                 break;
             case 'WEEKLY':
                 body.find('div#box-weekly').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
-                break;
-            case 'DAILY':
-                body.find('div#box-daily').css('display', 'inline')
-                body.find('div#box-site').css('display', 'inline')
+                body.find('div#box-pit').css('display', 'inline')
                 break;
             case 'SHIFT':
-                body.find('div#box-daily').css('display', 'inline')
+                body.find('div#box-date').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
+                body.find('div#box-pit').css('display', 'inline')
                 body.find('div#box-shift').css('display', 'inline')
                 break;
             case 'HOURLY':
-                body.find('div#box-daily').css('display', 'inline')
+                body.find('div#box-date').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
+                body.find('div#box-pit').css('display', 'inline')
                 body.find('div#box-shift').css('display', 'inline')
                 break;
             default:
                 body.find('div#box-date').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
+                body.find('div#box-pit').css('display', 'inline')
                 body.find('div#box-date').css('display', 'inline')
                 break;
         }
     })
 
-    $('body').on('change', 'select[name="graph-type"]', function(){
-        var values = $(this).val()
-        console.log(values);
-        showBarChart()
-        // switch (values) {
-        //     case 'BAR':
-        //         showBarChart()
-        //         break;
-        //     case 'LINEAREA':
-        //         showBarChart()
-        //         break;
-        
-        //     default:
-        //         break;
-        // }
-    })
-
-    
-
-    $('body').on('click', 'button#apply-filter', function(){
-        var elm = $('body')
-        var graphtype = elm.find('select[name="graph-type"]').val() && '&graphtype=' + elm.find('select[name="graph-type"]').val()
-        var filtertype = elm.find('select[name="filter-type"]').val() && '&filtertype=' + elm.find('select[name="filter-type"]').val()
-        var bydate = elm.find('input[name="date"]').val() && '&date=' + elm.find('input[name="date"]').val()
-        var month_begin = elm.find('input[name="month_begin"]').val() && '&month_begin=' + elm.find('input[name="month_begin"]').val()
-        var month_end = elm.find('input[name="month_end"]').val() && '&month_end=' + elm.find('input[name="month_end"]').val()
-        var week_begin = elm.find('input[name="week_begin"]').val() && '&week_begin=' + elm.find('input[name="week_begin"]').val()
-        var week_end = elm.find('input[name="week_end"]').val() && '&week_end=' + elm.find('input[name="week_end"]').val()
-        var start_date = elm.find('input[name="start_date"]').val() && '&start_date=' + elm.find('input[name="start_date"]').val()
-        var end_date = elm.find('input[name="end_date"]').val() && '&end_date=' + elm.find('input[name="end_date"]').val()
-        var shift_id = elm.find('select[name="shift_id"]').val() && '&shift_id=' + elm.find('select[name="shift_id"]').val()
-        var site_id = elm.find('select[name="site_id"]').val() && '&site_id=' + elm.find('select[name="site_id"]').val()
-        var pit_id = elm.find('select[name="pit_id"]').val() && '&pit_id=' + elm.find('select[name="pit_id"]').val()
-
-        
-        var uri = '/report/over-borden/data-graph-ob?filter=true'+ graphtype + filtertype + bydate + month_begin + month_end + week_begin + week_end + site_id + start_date + end_date + shift_id + pit_id
-        var uriTable = '/report/over-borden/view-table-ob?filter=true'+ graphtype + filtertype + bydate + month_begin + month_end + week_begin + week_end + site_id + start_date + end_date + shift_id + pit_id
-        console.log(uri);
-        showBarChart(uri)
-        showTable(uriTable)
-    })
-
-    $('body').on('click', 'button#reset-filter', function(){
-        showBarChart()
-        showTable()
-    })
-
-    function showTable(uri){
+    $('body').on('submit', 'form#filter-data', function(e){
+        e.preventDefault()
+        var data = new FormData(this)
+        data.append('filter', 'true')
         $.ajax({
             async: true,
-            url: uri || '/report/over-borden/view-table-ob',
-            method: 'GET',
-            dataType: 'html',
-            success: function(result){
-                $('body').find('div#data-table').html(result)
-            },
-            error: function(err){
-                console.log(err);
-            }
-        })
-    }
-
-    // Create the chart
-    function showBarChart(uri){
-        $.ajax({
-            async: true,
-            url: uri || '/report/over-borden/data-graph-ob',
-            method: 'GET',
+            url: '/report/over-borden/data-graph-ob',
+            method: 'POST',
+            data: data,
             dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
             success: function(result){
+                console.log(result)
                 let arrDate = result.data.map(elm => moment(elm.date).format('DD MMM YYYY'))
-                let arrTarget = result.data.map(elm => parseFloat((elm.avg_target).toFixed(2)))
+                if(result.filterType === "MONTHLY"){
+                    arrDate = result.data.map(elm => moment(elm.date).format('MMM YYYY'))
+                }
+                if(result.filterType === "WEEKLY"){
+                    arrDate = result.data.map(elm => elm.date)
+                }
+                let arrTarget = result.data.map(elm => parseFloat(elm.avg_target))
                 let arrVolume = result.data.map(elm => elm.sum_volume)
                 let arrRit = result.data.map(elm => (elm.sum_rit))
                 $('b#pit-area').html(result.pit)
                 $('b#begin-date').html(result.periode.start)
                 $('b#end-date').html(result.periode.end)
                 $('b#shift-schedule').html(result.shift)
-                // console.log(arrTarget);
-                var chartType = $('select[name="graph-type"]').val()
-                switch (chartType) {
+                switch (result.chartType) {
                     case "BAR":
-                        BAR_CHART(arrDate, arrVolume, arrTarget, arrRit)
+                        if(result.filterType === 'SHIFT'){
+                            let seriesData = [
+                                {
+                                    name: 'NIGHT SHIFT',
+                                    color: '#1A1FA7',
+                                    data: result.data[0].ns,
+                                },
+                                {
+                                    name: 'DAY SHIFT',
+                                    color: '#FFD41B',
+                                    data: result.data[0].ds,
+                                },
+                                {
+                                    name: 'DS Trends',
+                                    type: 'spline',
+                                    color: '#E5C17A',
+                                    lineWidth: 1,
+                                    data: result.data[0].ds,
+                                },
+                                {
+                                    name: 'TOT.Trends',
+                                    type: 'spline',
+                                    color: '#82C1FF',
+                                    lineWidth: 1,
+                                    data: result.data[0].tot,
+                                }
+                            ]
+                            BAR_CHART_SHIFT(arrDate, seriesData)
+                        }else{
+                            BAR_CHART(arrDate, arrVolume, arrTarget, arrRit)
+                        }
                         break;
                     case "LINEAREA":
                         LINEAREA_CHART(arrDate, arrVolume, arrTarget, arrRit)
@@ -136,13 +139,22 @@ $(function(){
                     default:
                         break;
                 }
-                
+                // if(result.data > 0){
+                // }else{
+                //     swal("Opps,,,!", 'error data parsing...', "warning")
+                // }
             },
             error: function(err){
-                console.log(err);
+                console.log(err)
             }
         })
-    }
+        console.log('...');
+    })
+
+    $('body').on('click', 'button#reset-filter', function(){
+        showBarChart()
+        showTable()
+    })
 
     function initDefault(){
         $.ajax({
@@ -150,7 +162,6 @@ $(function(){
             url: '/report/over-borden/view-graph-ob',
             method: 'GET',
             success: function(result){
-                // console.log(result);
                 body.find('div#list-content').html(result)
                 
             },
@@ -163,13 +174,76 @@ $(function(){
         })
     }
 
+    // function showTable(uri){
+    //     $.ajax({
+    //         async: true,
+    //         url: uri || '/report/over-borden/view-table-ob',
+    //         method: 'GET',
+    //         dataType: 'html',
+    //         beforeSend: function(){
+    //             $('body').find('div#container').html('<img src="../images/animation_500_kzw42wnp.gif" width="200" height="200" alt="user">')
+    //         },
+    //         success: function(result){
+    //             $('body').find('div#data-table').html(result)
+    //         },
+    //         error: function(err){
+    //             console.log(err);
+    //         }
+    //     })
+    // }
+
+    // Create the chart
+    // function showBarChart(uri){
+    //     $.ajax({
+    //         async: true,
+    //         url: uri || '/report/over-borden/data-graph-ob',
+    //         method: 'GET',
+    //         dataType: 'json',
+    //         beforeSend: function(){
+    //             $('body').find('div#container').html('<img src="../images/animation_500_kzw42wnp.gif" width="200" height="200" alt="user">')
+    //         },
+    //         success: function(result){
+    //             let arrDate = result.data.map(elm => moment(elm.date).format('DD MMM YYYY'))
+    //             let arrTarget = result.data.map(elm => parseFloat(elm.avg_target))
+    //             let arrVolume = result.data.map(elm => elm.sum_volume)
+    //             let arrRit = result.data.map(elm => (elm.sum_rit))
+    //             $('b#pit-area').html(result.pit)
+    //             $('b#begin-date').html(result.periode.start)
+    //             $('b#end-date').html(result.periode.end)
+    //             $('b#shift-schedule').html(result.shift)
+    //             // console.log(arrTarget);
+    //             var chartType = $('select[name="graph-type"]').val()
+    //             switch (chartType) {
+    //                 case "BAR":
+    //                     BAR_CHART(arrDate, arrVolume, arrTarget, arrRit)
+    //                     break;
+    //                 case "LINEAREA":
+    //                     LINEAREA_CHART(arrDate, arrVolume, arrTarget, arrRit)
+    //                     break;
+    //                 case "LINE":
+    //                     LINE_CHART(arrDate, arrVolume, arrTarget, arrRit)
+    //                     break;
+                
+    //                 default:
+    //                     break;
+    //             }
+                
+    //         },
+    //         error: function(err){
+    //             console.log(err);
+    //         }
+    //     })
+    // }
+
+    
+
     function BAR_CHART (arrDate, arrVolume, arrTarget, arrRit) {
         Highcharts.chart('container', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: 'Over Borden Production By Truck Count'
+                text: 'Over Burden Production By Truck Count'
             },
             subtitle: {
                 text: 'Project BBE'
@@ -226,6 +300,7 @@ $(function(){
                 {
                     name: 'Volume',
                     type: 'column',
+                    color: '#FF5A79',
                     yAxis: 0,
                     data: arrVolume,
                     tooltip: {
@@ -236,22 +311,61 @@ $(function(){
                 {
                     name: 'Target',
                     type: 'column',
-                    color: '#2f323e',
+                    color: '#A8A6A6',
                     data: arrTarget,
                     tooltip: {
                         valueSuffix: ' bcm'
                     }
                 },
                 {
-                    name: 'Ritase',
+                    name: 'Trends',
                     type: 'spline',
-                    color: '#FF0000',
-                    data: arrRit,
-                    tooltip: {
-                        valueSuffix: ' rit'
-                    }
+                    color: '#41b3f9',
+                    lineWidth: 1,
+                    data: arrVolume,
                 }
             ]
+        });
+    }
+
+    function BAR_CHART_SHIFT(arrDate, seriesData){
+        Highcharts.chart('container', {
+
+            chart: {
+                type: 'column'
+            },
+        
+            title: {
+                text: 'Over Burden Production By Truck Count'
+            },
+        
+            xAxis: {
+                categories: arrDate
+            },
+        
+            yAxis: {
+                allowDecimals: false,
+                min: 0,
+                title: {
+                    text: 'Number of fruits'
+                }
+            },
+        
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.x + '</b><br/>' +
+                        this.series.name + ': ' + this.y + '<br/>' +
+                        'Total: ' + this.point.stackTotal;
+                }
+            },
+        
+            plotOptions: {
+                column: {
+                    stacking: 'normal'
+                }
+            },
+        
+            series: seriesData
         });
     }
 
@@ -261,7 +375,7 @@ $(function(){
                 zoomType: 'xy'
             },
             title: {
-                text: 'Over Borden Production By Truck Count'
+                text: 'Over Burden Production By Truck Count'
             },
             subtitle: {
                 text: 'Project BBE'
@@ -316,6 +430,15 @@ $(function(){
             },
             series: [
                 {
+                    name: 'Target',
+                    type: 'area',
+                    color: 'rgba(168, 166, 166, .1)',
+                    data: arrTarget,
+                    tooltip: {
+                        valueSuffix: ' bcm'
+                    }
+                },
+                {
                     name: 'Volume',
                     type: 'area',
                     yAxis: 0,
@@ -324,15 +447,6 @@ $(function(){
                         valueSuffix: ' bcm'
                     }
     
-                },
-                {
-                    name: 'Target',
-                    type: 'area',
-                    color: '#2f323e',
-                    data: arrTarget,
-                    tooltip: {
-                        valueSuffix: ' bcm'
-                    }
                 },
                 {
                     name: 'Ritase',
@@ -353,7 +467,7 @@ $(function(){
                 zoomType: 'xy'
             },
             title: {
-                text: 'Over Borden Production By Truck Count'
+                text: 'Over Burden Production By Truck Count'
             },
             subtitle: {
                 text: 'Project BBE'
@@ -411,6 +525,7 @@ $(function(){
                     name: 'Volume',
                     type: 'spline',
                     yAxis: 0,
+                    lineWidth: 1,
                     data: arrVolume,
                     tooltip: {
                         valueSuffix: ' bcm'
@@ -421,20 +536,22 @@ $(function(){
                     name: 'Target',
                     type: 'spline',
                     color: '#2f323e',
+                    lineWidth: 1,
                     data: arrTarget,
                     tooltip: {
                         valueSuffix: ' bcm'
                     }
                 },
-                {
-                    name: 'Ritase',
-                    type: 'spline',
-                    color: '#FF0000',
-                    data: arrRit,
-                    tooltip: {
-                        valueSuffix: ' rit'
-                    }
-                }
+                // {
+                //     name: 'Ritase',
+                //     type: 'spline',
+                //     color: '#FF0000',
+                //     lineWidth: 1,
+                //     data: arrRit,
+                //     tooltip: {
+                //         valueSuffix: ' rit'
+                //     }
+                // }
             ]
         });
     }
