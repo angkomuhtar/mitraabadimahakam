@@ -8,6 +8,7 @@ const MasEquipment = use('App/Models/MasEquipment')
 const MasEvent = use('App/Models/MasEvent')
 const MasShift = use('App/Models/MasShift')
 const MasSite = use('App/Models/MasSite')
+const MasMaterial = use('App/Models/MasMaterial')
 
 const moment = require('moment')
 const { numberFormatter } = require('../customClass/utils')
@@ -18,7 +19,6 @@ class Notifications {
                     .whereIn('user_tipe', ['owner', 'manager'])
                     .fetch()
           ).toJSON()
-
           for (const x of owner) {
                const ownerDevices = (
                     await UserDevice.query()
@@ -27,8 +27,7 @@ class Notifications {
                ).toJSON()
 
                if (ownerDevices) {
-                    const hours = moment(data[0].E)
-                         .add(3, 'minutes')
+                    const hours = moment(result[0].check_in)
                          .format('HH:mm')
                     const excaName = (
                          await MasEquipment.query()

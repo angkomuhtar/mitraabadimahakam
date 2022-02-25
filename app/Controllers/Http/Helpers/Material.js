@@ -7,7 +7,7 @@ class Material {
   async ALL(req) {
     let masMaterial;
     const halaman = req.page === undefined ? 1 : parseInt(req.page);
-    const limit = 10;
+    const limit = 25;
     if (req.keyword) {
       masMaterial = await MasMaterial.query()
         .where((w) => {

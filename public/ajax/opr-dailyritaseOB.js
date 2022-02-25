@@ -73,13 +73,13 @@ $(function(){
     $('body').on('click', 'input[name="metodeInput"]', function(e){
         var value = $(this).is(':checked')
         if(value){
-            console.log('show input list');
             $('div#manual-input').show()
+            $('#sheet-section').addClass('hidden')
             $('div#upload-file').hide()
             $('input[type="file"]').removeAttr('required').val(null)
             addHauler()
         }else{
-            console.log('show upload file');
+            $('#sheet-section').removeClass('hidden')
             $('body').find('tbody#item-details').children().remove()
             $('div#manual-input').hide()
             $('div#upload-file').show()
@@ -150,9 +150,23 @@ $(function(){
     $('body').on('submit', 'form#fm-upload-ritase-ob', function(e){
         e.preventDefault()
         $('body').find('button[type="submit"]').attr('disabled', 'disabled')
-        var data = new FormData(this)
+        var data = new FormData()
+        const currentFileName = $('body').find('input[name="current-file-name"]').val()
+        const date = $('body').find('input#date_2').attr('data-date')
+        const material = $('body').find('select#material_2').attr('data-check')
+        const dailyfleet = $('body').find('select#dailyfleet_id_2').val();
+        const exca = $('body').find('select#exca_id_2').val();
+        const distance = $('body').find('input#distance_2').val()
+        const checker = $('body').find('select#checker_id').val();
+        const spv = $('body').find('select#spv_id').val();
+        const sheet = $('body').find('select#sheet').val();
+
+       
+
         var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
         if(isUploadFile){
+
+            data = new FormData(this)
             console.log('input manual....');
             $.ajax({
                 async: true,
@@ -185,6 +199,19 @@ $(function(){
                 }
             })
         }else{
+
+            data = new FormData()
+
+            data.append('date', date);
+            data.append('current_file_name', currentFileName);
+            data.append('dailyfleet_id', dailyfleet);
+            data.append('exca_id', exca);
+            data.append('material', material);
+            data.append('distance', distance);
+            data.append('checker_id', checker);
+            data.append('spv_id', spv);
+            data.append('sheet', sheet);
+
             swal({
                 title: "Apakah anda yakin?",
                 text: "Pastikan format data excel anda sudah sesuai!",
@@ -228,6 +255,39 @@ $(function(){
                   }
             });
         }
+    })
+
+    $('body').on('change', 'input[name="detail-ritase-ob"]', function(){
+        var data = new FormData()
+        
+        data.append('detail-ritase-ob', $(this)[0].files[0])
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-ritase-ob/upload-file',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            beforeSend: function(){
+                swal("Please wait!", "Data sedang di proses...")
+            },
+            success: function(result){
+                $('body').find('select[name="sheet"]').html(result.title.map(s => '<option value="'+s+'"> Sheet [ '+s+' ]</option>'))
+                $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
+                $('body').find('textarea[name="dataJson"]').val(JSON.stringify(result.data, null, 2))
+                $('body').find('input[name="current-file-name"]').val(JSON.stringify(result.fileName, null, 2))
+                
+                swal("Okey!", "Data berhasil di parsing....", "success")
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
     })
 
     $('body').on('click', 'button.bt-delete-data', function(e){
