@@ -23,12 +23,23 @@ const MasMaterial = use('App/Models/MasMaterial')
 const NotificationsHelpers = use(
      'App/Controllers/Http/Helpers/Notifications'
 )
+const EmployeeHelpers = use('App/Controllers/Http/Helpers/Employee')
+
+const DailyFleetEquip = use('App/Models/DailyFleetEquip')
 
 class DailyRitaseController {
      async index({ view }) {
           return view.render('operation.daily-ritase-ob.index')
      }
 
+     async showBackDateUpload({ view, auth }) {
+          try {
+               await auth.getUser()
+               return view.render('operation.daily-ritase-ob.backDateUpload')
+          } catch (error) {
+               console.log(error)
+          }
+     }
      async list({ request, view }) {
           const req = request.all()
           try {
@@ -72,6 +83,151 @@ class DailyRitaseController {
                return view.render(
                     '_component.trTable-ritase-ob-details'
                )
+          } catch (error) {
+               console.log(error)
+          }
+     }
+
+     async getDefaultHaulerByDailyFleet({ request, params, auth }) {
+          try {
+               const { dailyfleet_id } = params
+
+               const dailyFleet = await DailyFleet.query()
+                    .where('id', dailyfleet_id)
+                    .first()
+
+               if (dailyFleet) {
+                    const haulers = (
+                         await DailyFleetEquip.query()
+                              .where(
+                                   'dailyfleet_id',
+                                   dailyFleet.toJSON()?.id
+                              )
+                              .with('equipment')
+                              .fetch()
+                    )
+                         .toJSON()
+                         .filter(
+                              v => v.equipment.tipe === 'hauler truck'
+                         )
+                    let haulerArr = []
+
+                    const allHaulers = (
+                         await MasEquipment.query()
+                              .where('tipe', 'hauler truck')
+                              .fetch()
+                    ).toJSON()
+                    const allOperators = (
+                         await EmployeeHelpers.OPERATOR(request)
+                    ).toJSON()
+
+                    for (const hauler of haulers) {
+                         const txt = `<tr class="advance-table-row">
+                         <td class="urut text-center" width="50" style="font-size:large">1</td>
+                         <td width="*">
+                             <div class="row">
+                                 <div class="col-md-4">
+                                     <label for="tgl">Hauler Unit</label>
+                                     <div class="form-group">
+                                         <select class="form-control select2Hauler" name="hauler_id" id="hauler_id" data-check="${
+                                              hauler.equipment.id
+                                         }" required>
+                                         <option value="${
+                                              hauler.equipment.id
+                                         }" selected>${
+                              hauler.equipment.kode
+                         } --|-- ${
+                              hauler.equipment.unit_model
+                         }</option>
+                                         ${allHaulers.map(v => {
+                                              return `
+                                                  <option value="${v.id}">${v.kode} --|-- ${v.unit_model}</option>
+                                              `
+                                         })}
+                                         </select>
+                                     </div>
+                                 </div>
+                                 <div class="col-md-4">
+                                     <label for="tgl">Operator Hauler</label>
+                                     <div class="form-group">
+                                         <select class="form-control select2operator" name="opr_id" id="opr_id" data-check="${allOperators[0].id}" required>
+                                         ${allOperators.map(v => {
+                                              return `
+                                              <option value="${v.id}">${v.fullname}</option>`
+                                         })}
+                                         </select>
+                                     </div>
+                                 </div>
+                                 <div class="col-md-2">
+                                     <label for="tgl">Waktu/Jam</label>
+                                     <div class="form-group">
+                                         <select class="form-control" name="check_in" id="check_in" required>
+                                             <option value="">Pilih Jam</option>
+                                             <optgroup label="Shift Pagi">
+                                                 <option value="07:59">Pukul 07 pagi</option>
+                                                 <option value="08:59">Pukul 08 pagi</option>
+                                                 <option value="09:59">Pukul 09 pagi</option>
+                                                 <option value="10:59">Pukul 10 pagi</option>
+                                                 <option value="11:59">Pukul 11 pagi</option>
+                                                 <option value="12:59">Pukul 12 siang</option>
+                                                 <option value="13:59">Pukul 13 siang</option>
+                                                 <option value="14:59">Pukul 14 siang</option>
+                                                 <option value="15:59">Pukul 15 siang</option>
+                                                 <option value="16:59">Pukul 16 sore</option>
+                                                 <option value="17:59">Pukul 17 sore</option>
+                                                 <option value="18:59">Pukul 18 sore</option>
+                                             </optgroup>
+                                             <optgroup label="Shift Malam">
+                                                 <option value="19:59">Pukul 19 malam</option>
+                                                 <option value="20:59">Pukul 20 malam</option>
+                                                 <option value="21:59">Pukul 21 malam</option>
+                                                 <option value="22:59">Pukul 22 malam</option>
+                                                 <option value="23:59">Pukul 23 malam</option>
+                                                 <option value="00:59">Pukul 00 tengah malam</option>
+                                                 <option value="01:59">Pukul 01 dini hari</option>
+                                                 <option value="02:59">Pukul 02 dini hari</option>
+                                                 <option value="03:59">Pukul 03 dini hari</option>
+                                                 <option value="04:59">Pukul 04 dini hari</option>
+                                                 <option value="05:59">Pukul 05 dini hari</option>
+                                                 <option value="06:59">Pukul 06 pagi</option>
+                                             </optgroup>
+                                         </select>
+                                     </div>
+                                 </div>
+                                 <div class="col-md-2">
+                                     <label for="tgl">Jumlah</label>
+                                     <div class="form-group">
+                                         <div class="input-group">
+                                             <input type="text" class="form-control" name="qty">
+                                             <span class="input-group-addon">Ritase</span>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </td>
+                         <td width="10">
+                             <div class="form-group" style="margin-bottom: 0px;">
+                                 <button type="button" class="btn btn-success btn-circle bt-add-items"><i class="fa fa-plus"></i> </button>
+                                 <button type="button" class="btn btn-danger btn-circle bt-delete-items"><i class="fa fa-trash"></i> </button>
+                             </div>
+                     
+                         </td>
+                     </tr>`
+
+                         haulerArr.push(txt)
+                    }
+
+                    console.log('haulers >> ', haulerArr)
+                    return {
+                         success: true,
+                         data: haulerArr,
+                    }
+               } else {
+                    return {
+                         success: false,
+                         message: 'daily fleet id not founds',
+                    }
+               }
           } catch (error) {
                console.log(error)
           }
@@ -491,10 +647,6 @@ class DailyRitaseController {
           } catch (error) {
                console.log(error)
           }
-          // const validateFile = {
-          //      types: ['xls', 'xlsx'],
-          //      types: 'application'
-          // }
 
           const uploadData = req.current_file_name
                ? JSON.parse(req.current_file_name)
@@ -572,202 +724,312 @@ class DailyRitaseController {
                          }
                     })
 
-                    const checkIfExist = await DailyRitase.query()
-                         .where(wh => {
-                              wh.where('date', reqx.date)
-                              wh.andWhere('exca_id', reqx.exca_id)
-                              wh.andWhere('distance', reqx.distance)
-                              wh.andWhere('material', reqx.material)
-                              wh.andWhere(
+                    const dailyFleet = await DailyFleet.query()
+                         .with('pit', site => site.with('site'))
+                         .with('fleet')
+                         .with('shift')
+                         .with('activities')
+                         .where('id', reqx.dailyfleet_id)
+                         .first()
+
+                    const dailyFleetEquip = (
+                         await DailyFleetEquip.query()
+                              .with('equipment')
+                              .where(
                                    'dailyfleet_id',
                                    reqx.dailyfleet_id
                               )
-                         })
-                         .last()
-
-                    if (checkIfExist) {
-                         xDailyRitase = checkIfExist
-                         console.log('this runs')
-                    } else {
-                         console.log('this runs two')
-                         xDailyRitase = new DailyRitase()
-
-                         xDailyRitase.fill({
-                              dailyfleet_id: reqx.dailyfleet_id,
-                              exca_id: reqx.exca_id,
-                              material: reqx.material,
-                              distance: reqx.distance,
-                              date: reqx.date,
-                         })
-
-                         await xDailyRitase.save()
-                    }
-
-                    for (const obj of prepData) {
-                         if (parseInt(obj.qty) > 0) {
-                              for (
-                                   let i = 0;
-                                   i < parseInt(obj.qty);
-                                   i++
-                              ) {
-                                   const xRitaseDetail =
-                                        new DailyRitaseDetail()
-                                   xRitaseDetail.fill({
-                                        hauler_id: obj.hauler_id,
-                                        opr_id: obj.opr_id,
-                                        check_in:
-                                             moment(reqx.date).format(
-                                                  'YYYY-MM-DD'
-                                             ) +
-                                             ' ' +
-                                             obj.check_in,
-                                        checker_id: obj.checker_id,
-                                        spv_id: obj.spv_id,
-                                        dailyritase_id:
-                                             xDailyRitase.id,
-                                   })
-                                   await xRitaseDetail.save()
-                              }
-                         }
-                    }
-
-                    let xresult = null
-
-                    if (checkIfExist) {
-                         console.log('is exist ? yes')
-                         xresult = (
-                              await DailyRitaseDetail.query()
-                                   .with('daily_ritase', wh => {
-                                        wh.with('material_details')
-                                   })
-                                   .with('checker', wh => {
-                                        wh.with('profile')
-                                   })
-                                   .with('spv', wh => {
-                                        wh.with('profile')
-                                   })
-                                   .where(
-                                        'dailyritase_id',
-                                        checkIfExist?.id
-                                   )
-                                   .fetch()
-                         ).toJSON()
-                    } else {
-                         console.log('is exist ? no, lets create one')
-                         xresult = (
-                              await DailyRitaseDetail.query()
-                                   .with('daily_ritase', wh => {
-                                        wh.with('material_details')
-                                   })
-                                   .with('checker', wh => {
-                                        wh.with('profile')
-                                   })
-                                   .with('spv', wh => {
-                                        wh.with('profile')
-                                   })
-                                   .where(
-                                        'dailyritase_id',
-                                        xDailyRitase.id
-                                   )
-                                   .fetch()
-                         ).toJSON()
-                    }
-
-                    /** after being uploaded, then throw a notif to the company's owner */
-                    const userRec = (
-                         await User.query()
-                              .whereIn('user_tipe', [
-                                   'owner',
-                                   'administrator',
-                                   'manager',
-                              ])
                               .fetch()
                     ).toJSON()
 
-                    for (const obj of userRec) {
-                         const userDevices = (
-                              await UserDevice.query()
-                                   .where('user_id', obj.id)
-                                   .fetch()
-                         ).toJSON()
+                    const currentDailyFleetEquipIds = dailyFleetEquip
+                         .filter(
+                              v => v.equipment.tipe !== 'excavator'
+                         )
+                         .map(v => v.equipment.id)
+                    const ritaseHaulers = reqCollect.map(
+                         v => parseInt(v.hauler_id)
+                    )
+                    const newEquipment = _.difference(
+                         ritaseHaulers,
+                         currentDailyFleetEquipIds
+                    )
 
-                         if (userDevices) {
-                              const xhours = reqCollect[0].check_in
-
-                              const xexcaName = (
-                                   await MasEquipment.query()
-                                        .where('id', reqx.exca_id)
-                                        .first()
-                              ).toJSON().kode
-
-                              const xpitName = (
-                                   await DailyFleet.query()
-                                        .with('pit')
-                                        .where(
-                                             'id',
-                                             reqx.dailyfleet_id
-                                        )
-                                        .first()
-                              ).toJSON().pit.name
-
-                              const xmaterialName = (
-                                   await MasMaterial.query()
-                                        .where('id', reqx.material)
-                                        .first()
-                              ).toJSON().name
-
-                              const xstart = moment(
-                                   `${reqx.date} ${xhours}`
-                              )
-                                   .startOf('hour')
-                                   .format('HH:mm')
-                              const xend = moment(
-                                   `${reqx.date} ${xhours}`
-                              )
-                                   .endOf('hour')
-                                   .format('HH:mm')
-
-                              const checkerName =
-                                   xresult && xresult.length > 0
-                                        ? `${xresult[0].checker.profile.nm_depan} ${xresult[0].checker.profile.nm_belakang}`
-                                        : 'No Name'
-                              const totalBCM =
-                                   xresult.reduce(
-                                        (a, b) =>
-                                             a +
-                                             b.daily_ritase
-                                                  .material_details
-                                                  .vol,
-                                        0
-                                   ) || 0
-                              let msg = `Hourly Report OB ${xstart} - ${xend} | ${moment(
-                                   reqx.date
-                              ).format('DD MMM')}
-          ${xpitName} - ${xexcaName} - ${xmaterialName}
-           BCM : ${await numberFormatter(String(totalBCM))}
-           Author : ${checkerName}
-          `
-
-                              const _dat = {}
-
-                              for (const x of userDevices) {
-                                   await sendMessage(
-                                        x.playerId,
-                                        msg,
-                                        _dat,
-                                        x.platform
-                                   )
+                    const GET_DATA_RITASE_HAULER = hauler_id => {
+                         let opr_id = null
+                         let check_in = null
+                         let qty = null
+                         for (const value of reqCollect) {
+                              if (parseInt(value.hauler_id) === hauler_id) {
+                                   opr_id = value.opr_id
+                                   check_in = value.check_in
+                                   qty = value.qty
                               }
+                         }
+
+                         return {
+                              opr_id,
+                              check_in,
+                              qty,
                          }
                     }
 
-                    return {
-                         success: true,
-                         data: xresult,
-                         message:
-                              'data berhasil di simpan ' +
-                              xresult.length +
-                              ' items...',
+                    const checkDailyFleetExca =
+                         dailyFleetEquip.length > 0 &&
+                         dailyFleetEquip.some(
+                              v => v.equipment.tipe === 'excavator'
+                         )
+
+                    if (checkDailyFleetExca) {
+                         const excaID = dailyFleetEquip.filter(
+                              v => v.equipment.tipe === 'excavator'
+                         )[0]?.equip_id
+
+                         const checkIfExist =
+                              await DailyRitase.query()
+                                   .where(wh => {
+                                        wh.where('date', reqx.date)
+                                        wh.andWhere('exca_id', excaID)
+                                        wh.andWhere(
+                                             'distance',
+                                             reqx.distance
+                                        )
+                                        wh.andWhere(
+                                             'material',
+                                             reqx.material
+                                        )
+                                        wh.andWhere(
+                                             'dailyfleet_id',
+                                             reqx.dailyfleet_id
+                                        )
+                                   })
+                                   .last()
+
+                         if (checkIfExist) {
+                              xDailyRitase = checkIfExist
+
+                              console.log('this runs')
+                         } else {
+                              console.log('this runs two')
+                              xDailyRitase = new DailyRitase()
+
+                              xDailyRitase.fill({
+                                   dailyfleet_id: reqx.dailyfleet_id,
+                                   exca_id: excaID,
+                                   material: reqx.material,
+                                   distance: reqx.distance,
+                                   date: reqx.date,
+                              })
+
+                              await xDailyRitase.save()
+                         }
+
+
+                         console.log('new equipment >> ', newEquipment)
+                         if (newEquipment.length > 0) {
+                              for (const equip of newEquipment) {
+
+                              const dailyFleetEquip =
+                              new DailyFleetEquip()
+
+                                   dailyFleetEquip.fill({
+                                        dailyfleet_id:
+                                             dailyFleet.id,
+                                        equip_id: equip,
+                                        datetime: `${reqx.date} ${GET_DATA_RITASE_HAULER(equip).check_in}:00`,
+                                   })
+                                   await dailyFleetEquip.save()
+                              }
+                         }
+
+                         for (const obj of prepData) {
+                              if (parseInt(obj.qty) > 0) {
+                                   for (
+                                        let i = 0;
+                                        i < parseInt(obj.qty);
+                                        i++
+                                   ) {
+                                        const xRitaseDetail =
+                                             new DailyRitaseDetail()
+                                        xRitaseDetail.fill({
+                                             hauler_id: obj.hauler_id,
+                                             opr_id: obj.opr_id,
+                                             check_in:
+                                                  moment(
+                                                       reqx.date
+                                                  ).format(
+                                                       'YYYY-MM-DD'
+                                                  ) +
+                                                  ' ' +
+                                                  obj.check_in,
+                                             checker_id:
+                                                  obj.checker_id,
+                                             spv_id: obj.spv_id,
+                                             dailyritase_id:
+                                                  xDailyRitase.id,
+                                        })
+                                        await xRitaseDetail.save()
+                                   }
+                              }
+                         }
+
+                         let xresult = null
+
+                         if (checkIfExist) {
+                              console.log('is exist ? yes')
+                              xresult = (
+                                   await DailyRitaseDetail.query()
+                                        .with('daily_ritase', wh => {
+                                             wh.with(
+                                                  'material_details'
+                                             )
+                                        })
+                                        .with('checker', wh => {
+                                             wh.with('profile')
+                                        })
+                                        .with('spv', wh => {
+                                             wh.with('profile')
+                                        })
+                                        .where(
+                                             'dailyritase_id',
+                                             checkIfExist?.id
+                                        )
+                                        .fetch()
+                              ).toJSON()
+                         } else {
+                              console.log(
+                                   'is exist ? no, lets create one'
+                              )
+                              xresult = (
+                                   await DailyRitaseDetail.query()
+                                        .with('daily_ritase', wh => {
+                                             wh.with(
+                                                  'material_details'
+                                             )
+                                        })
+                                        .with('checker', wh => {
+                                             wh.with('profile')
+                                        })
+                                        .with('spv', wh => {
+                                             wh.with('profile')
+                                        })
+                                        .where(
+                                             'dailyritase_id',
+                                             xDailyRitase.id
+                                        )
+                                        .fetch()
+                              ).toJSON()
+                         }
+
+                         /** after being uploaded, then throw a notif to the company's owner */
+                         const userRec = (
+                              await User.query()
+                                   .whereIn('user_tipe', [
+                                        'owner',
+                                        'administrator',
+                                        'manager',
+                                   ])
+                                   .fetch()
+                         ).toJSON()
+
+                         for (const obj of userRec) {
+                              const userDevices = (
+                                   await UserDevice.query()
+                                        .where('user_id', obj.id)
+                                        .fetch()
+                              ).toJSON()
+
+                              if (userDevices) {
+                                   const xhours =
+                                        reqCollect[0].check_in
+
+                                   const xexcaName = (
+                                        await MasEquipment.query()
+                                             .where('id', excaID)
+                                             .first()
+                                   ).toJSON().kode
+
+                                   const xpitName = (
+                                        await DailyFleet.query()
+                                             .with('pit')
+                                             .where(
+                                                  'id',
+                                                  reqx.dailyfleet_id
+                                             )
+                                             .first()
+                                   ).toJSON().pit.name
+
+                                   const xmaterialName = (
+                                        await MasMaterial.query()
+                                             .where(
+                                                  'id',
+                                                  reqx.material
+                                             )
+                                             .first()
+                                   ).toJSON().name
+
+                                   const xstart = moment(
+                                        `${reqx.date} ${xhours}`
+                                   )
+                                        .startOf('hour')
+                                        .format('HH:mm')
+                                   const xend = moment(
+                                        `${reqx.date} ${xhours}`
+                                   )
+                                        .endOf('hour')
+                                        .format('HH:mm')
+
+                                   const checkerName =
+                                        xresult && xresult.length > 0
+                                             ? `${xresult[0].checker.profile.nm_depan} ${xresult[0].checker.profile.nm_belakang}`
+                                             : 'No Name'
+                                   const totalBCM =
+                                        xresult.reduce(
+                                             (a, b) =>
+                                                  a +
+                                                  b.daily_ritase
+                                                       .material_details
+                                                       .vol,
+                                             0
+                                        ) || 0
+                                   let msg = `Hourly Report OB ${xstart} - ${xend} | ${moment(
+                                        reqx.date
+                                   ).format('DD MMM')}
+                                   ${xpitName} - ${xexcaName} - ${xmaterialName}
+                                   BCM : ${await numberFormatter(
+                                        String(totalBCM)
+                                   )}
+                                   Author : ${checkerName}
+                                   `
+
+                                   const _dat = {}
+
+                                   for (const x of userDevices) {
+                                        await sendMessage(
+                                             x.playerId,
+                                             msg,
+                                             _dat,
+                                             x.platform
+                                        )
+                                   }
+                              }
+                         }
+
+                         return {
+                              success: true,
+                              data: xresult,
+                              message:
+                                   'data berhasil di simpan ' +
+                                   xresult.length +
+                                   ' items...',
+                         }
+                    } else {
+                         const df = dailyFleet.toJSON()
+                         const msg = `${df.pit.kode} | ${df.fleet.name} | ${df.shift.name} | ${df.activities.name}`
+                         return {
+                              success: false,
+                              message: `Daily Fleet ( ${msg} ) belum ada exca yang dipilih, silahkan pilih exca terlebih dahulu`,
+                         }
                     }
                } catch (error) {
                     console.log(error)

@@ -1,6 +1,7 @@
 $(function(){
     initDeafult()
     HightChart()
+    getHaulerByDailyFleet()
     function initDeafult(lim, url){
         $('div.content-module').css('display', 'none')
         var limit = lim || 25
@@ -72,12 +73,15 @@ $(function(){
 
     $('body').on('click', 'input[name="metodeInput"]', function(e){
         var value = $(this).is(':checked')
+        $('body').find('tbody > tr.advance-table-row').remove()
         if(value){
             $('div#manual-input').show()
             $('#sheet-section').addClass('hidden')
             $('div#upload-file').hide()
+
+            initGetHaulerByDailyFleet()
+            getHaulerByDailyFleet()
             $('input[type="file"]').removeAttr('required').val(null)
-            addHauler()
         }else{
             $('#sheet-section').removeClass('hidden')
             $('body').find('tbody#item-details').children().remove()
@@ -447,6 +451,7 @@ $(function(){
             success: function(result){
                 $('tbody#item-details').append(result)
                 $('body').find('tbody > tr.advance-table-row').each(function(i, e){
+                    console.log('test >> ', i)
                     console.log($(this));
                     $(this).find('td.urut').html(i + 1)
                 })
@@ -455,6 +460,69 @@ $(function(){
                 console.log(err);
             }
         })
+    }
+
+
+    function initGetHaulerByDailyFleet() {
+
+        var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
+        if(isUploadFile) {
+            const id = $(this).attr('data-check') || $('select.select2dailyfleet').find(':selected').val()
+                console.log('id >> ', id)
+                $.ajax({
+                    async: true,
+                    url: '/operation/daily-ritase-ob/haulers/default/'+id,
+                    method: 'GET',
+                    success: function(result){
+                        for(const txt of result.data) {
+                            $('tbody#item-details').append(txt)
+                            $('body').find('tbody > tr.advance-table-row').each(function(i, e){
+                                $(this).find('td.urut').html(i + 1)
+                            })
+                        }
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+        }
+        
+    }
+
+    function getHaulerByDailyFleet(){
+        console.log('does this running >> ')
+        var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
+        if(isUploadFile) {
+            $('body').on('change','select.select2dailyfleet', function(e) {
+                const id = $(this).attr('data-check') || $('select.select2dailyfleet').find(':selected').val()
+                console.log('id >> ', id)
+                $.ajax({
+                    async: true,
+                    url: '/operation/daily-ritase-ob/haulers/default/'+id,
+                    method: 'GET',
+                    success: function(result){
+                        $('body').find('tbody > tr.advance-table-row').remove()
+
+                        if(result.data.length <= 0) {
+                            addHauler()
+                        } else {
+                            for(const txt of result.data) {
+                                $('tbody#item-details').append(txt)
+                                $('body').find('tbody > tr.advance-table-row').each(function(i, e){
+                                    $(this).find('td.urut').html(i + 1)
+                                })
+                            }
+                        }
+                        
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+            })
+        }
+        
+        
     }
 
     function HightChart(){

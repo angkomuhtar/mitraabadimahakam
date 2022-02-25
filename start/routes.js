@@ -326,6 +326,8 @@ Route.group(() => {
     
     Route.get('/daily-ritase-ob', 'DailyRitaseController.index').as('opr.daily-ritase-ob.index').middleware('R')
 
+    Route.get('/daily-ritase-ob/upload/backdate', 'DailyRitaseController.showBackDateUpload').as('opr.daily-ritase-ob.backDateUpload').middleware('R')
+
     Route.post('/daily-ritase-ob', 'DailyRitaseController.store').as('opr.daily-ritase-ob.store').middleware('C')
 
     Route.get('/daily-ritase-ob/list', 'DailyRitaseController.list').as('opr.daily-ritase-ob.list').middleware('R')
@@ -336,6 +338,8 @@ Route.group(() => {
 
     Route.get('/daily-ritase-ob/create/addItems', 'DailyRitaseController.addItems').as('opr.daily-ritase-ob.addItems').middleware('R')
 
+    Route.get('/daily-ritase-ob/haulers/default/:dailyfleet_id', 'DailyRitaseController.getDefaultHaulerByDailyFleet').as('opr.daily-ritase-ob.getHaulerByDailyFleet').middleware('R')
+
     Route.get('/daily-ritase-ob/:id/show', 'DailyRitaseController.show').as('opr.daily-ritase-ob.show').middleware('U')
     
     Route.post('/daily-ritase-ob/:id/update', 'DailyRitaseController.update').as('opr.daily-ritase-ob.update').middleware('U')
@@ -343,6 +347,8 @@ Route.group(() => {
     Route.post('/daily-ritase-ob/:id/delete', 'DailyRitaseController.delete').as('opr.daily-ritase-ob.delete').middleware('D')
     
     Route.post('/daily-ritase-ob/upload-file', 'DailyRitaseController.uploadFile').as('opr.daily-ritase-ob.uploadFile').middleware('C')
+
+    Route.post('/daily-ritase-ob/upload-file/month', 'DailyRitaseController.GET_MONTH_EXCEL_DATA_PRODUCTION').as('opr.daily-ritase-ob.GET_MONTH_EXCEL_DATA_PRODUCTION').middleware('C')
 
     Route.get('/daily-ritase-ob/list/pit/:pit_id', 'DailyRitaseController.listByPIT').as('opr.daily-ritase-ob.listByPIT').middleware('R')
     
@@ -834,6 +840,8 @@ Route.group(() => {
     Route.post('/:id/update', 'DailyRitaseApiController.update')
 
     Route.get('/filter-date', 'DailyRitaseApiController.filterByDate')
+
+    Route.get('/testupload', 'DailyRitaseApiController.GET_MONTH_EXCEL_DATA_PRODUCTION')
 
     Route.delete('/:id/destroy', 'DailyRitaseApiController.destroy')
 
