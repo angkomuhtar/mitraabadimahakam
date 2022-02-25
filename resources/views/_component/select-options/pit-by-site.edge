@@ -1,0 +1,8 @@
+@if(list.length > 0)
+    <option value="">Semua</option>
+    @each(item in list)
+    <option value="{{item.id}}" {{item.selected ? 'selected':''}}>{{item.name}}</option>
+    @endeach
+@else 
+    <option value="">Data tidak ditemukan</option>
+@endif

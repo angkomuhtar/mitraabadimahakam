@@ -322,6 +322,27 @@ $(function(){
             }
         })
     })
+
+    $('body select.select2pitBySite').each(function(){
+        var site_id = $(this).data('site')
+        var selected = $(this).data('check')
+        var elm = $(this)
+        elm.children().remove()
+        $.get('/ajax/pit?selected='+selected+'&site_id='+site_id, function(data){
+            console.log(data);
+            if(data.length > 0){
+                const list = data.map(nod => '<option value="'+nod.id+'" site="'+nod.site_id+'" '+nod.selected+'>'+nod.name+'</option>')
+                elm.html(list)
+                if(list.filter(el => el.selected === 'selected').length === 0){
+                    elm.prepend('<option value="" selected>Pilih</option>')
+                }else{
+                    elm.prepend('<option value="">Pilih</option>')
+                }
+            }else{
+                elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
+        })
+    })
     
     $('body select.select2fleet').each(function(){
         var selected = $(this).data('check')

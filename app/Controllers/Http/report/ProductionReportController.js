@@ -15,7 +15,7 @@ class ProductionReportController {
         return view.render('report.ob.index')
     }
 
-    async dataGraphOB ( { auth, request } ) {
+    async dataGraphOB ( { request } ) {
         const req = request.all()
         console.log(req);
         let pit
@@ -28,7 +28,12 @@ class ProductionReportController {
         }
 
         const data = await ReportOBHelpers.SHOW(req)
+        // console.log('XXXXX', JSON.stringify(data, null, 2));
+        
         return {
+            success: true,
+            chartType: req.graphType,
+            filterType: req.filterType,
             data: data,
             pit: pit?.name || 'ALL PIT LOCATIONS',
             shift: shift?.name || 'ALL SHIFT SCHEDULES',

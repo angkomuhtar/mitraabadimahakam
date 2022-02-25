@@ -220,7 +220,7 @@ body.stop-scrolling {
   overflow: hidden;
 }
 .sweet-overlay {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(145, 142, 142, 0.4);
   position: fixed;
   left: 0;
   right: 0;
@@ -230,8 +230,8 @@ body.stop-scrolling {
   z-index: 1040;
 }
 .sweet-alert {
-  background-color: #232832;
-  border: 1px solid;
+  background-color: #fff;
+  border: 1px solid #ddd;
   width: 478px;
   padding: 17px;
   border-radius: 5px;
