@@ -35,7 +35,9 @@ class DailyRitaseController {
      async showBackDateUpload({ view, auth }) {
           try {
                await auth.getUser()
-               return view.render('operation.daily-ritase-ob.backDateUpload')
+               return view.render(
+                    'operation.daily-ritase-ob.backDateUpload'
+               )
           } catch (error) {
                console.log(error)
           }
@@ -150,7 +152,9 @@ class DailyRitaseController {
                                  <div class="col-md-4">
                                      <label for="tgl">Operator Hauler</label>
                                      <div class="form-group">
-                                         <select class="form-control select2operator" name="opr_id" id="opr_id" data-check="${allOperators[0].id}" required>
+                                         <select class="form-control select2operator" name="opr_id" id="opr_id" data-check="${
+                                              allOperators[0].id
+                                         }" required>
                                          ${allOperators.map(v => {
                                               return `
                                               <option value="${v.id}">${v.fullname}</option>`
@@ -587,13 +591,63 @@ class DailyRitaseController {
      //      }
      // }
 
+     async uploadFileBackDate({ auth, request }) {
+          const validateFile = {
+               types: ['xls', 'xlsx'],
+               types: 'application',
+          }
+
+          const reqFile = request.file(
+               'back-date-upload',
+               validateFile
+          )
+          let aliasName
+          if (reqFile) {
+               aliasName = `back-date-upload-${moment().format(
+                    'DDMMYYHHmmss'
+               )}.${reqFile.extname}`
+
+               await reqFile.move(Helpers.publicPath(`/upload/`), {
+                    name: aliasName,
+                    overwrite: true,
+               })
+
+               if (!reqFile.moved()) {
+                    return reqFile.error()
+               }
+
+               var pathData = Helpers.publicPath(`/upload/`)
+
+               const convertJSON = excelToJson({
+                    sourceFile: `${pathData}${aliasName}`,
+                    header: {
+                         rows: 4,
+                    },
+               })
+
+               var arr = Object.keys(convertJSON).map(function (key) {
+                    return key
+               })
+
+               return {
+                    title: arr,
+                    data: convertJSON,
+                    fileName: aliasName,
+               }
+          } else {
+               return {
+                    title: ['No File Upload'],
+                    data: [],
+               }
+          }
+     }
+
      async uploadFile({ auth, request }) {
           const validateFile = {
                types: ['xls', 'xlsx'],
                types: 'application',
           }
 
-          console.log('request >> ', request.all())
           const reqFile = request.file(
                'detail-ritase-ob',
                validateFile
@@ -635,6 +689,49 @@ class DailyRitaseController {
                return {
                     title: ['No File Upload'],
                     data: [],
+               }
+          }
+     }
+
+     async storeBackDate({ request, auth }) {
+          const req = request.all()
+          let xuser
+          try {
+               xuser = await auth.getUser()
+          } catch (error) {
+               console.log(error)
+          }
+
+          console.log(' >> ', req)
+
+          const fileName = req.current_file_name
+               ? JSON.parse(req.current_file_name)
+               : false
+
+          var pathData = Helpers.publicPath(`/upload/`)
+          const filePath = `${pathData}${fileName}`
+
+          try {
+               const data =
+                    await DailyRitaseHelpers.GET_MONTH_EXCEL_DATA_PRODUCTION(
+                         filePath,
+                         req,
+                         xuser
+                    )
+
+               return {
+                    success: true,
+                    data: data,
+                    message:
+                         'data berhasil di upload ' +
+                         data.length +
+                         ' items...',
+               }
+          } catch (error) {
+               console.log(error)
+               return {
+                    success: false,
+                    message: error,
                }
           }
      }
@@ -747,8 +844,8 @@ class DailyRitaseController {
                               v => v.equipment.tipe !== 'excavator'
                          )
                          .map(v => v.equipment.id)
-                    const ritaseHaulers = reqCollect.map(
-                         v => parseInt(v.hauler_id)
+                    const ritaseHaulers = reqCollect.map(v =>
+                         parseInt(v.hauler_id)
                     )
                     const newEquipment = _.difference(
                          ritaseHaulers,
@@ -760,7 +857,10 @@ class DailyRitaseController {
                          let check_in = null
                          let qty = null
                          for (const value of reqCollect) {
-                              if (parseInt(value.hauler_id) === hauler_id) {
+                              if (
+                                   parseInt(value.hauler_id) ===
+                                   hauler_id
+                              ) {
                                    opr_id = value.opr_id
                                    check_in = value.check_in
                                    qty = value.qty
@@ -824,19 +924,23 @@ class DailyRitaseController {
                               await xDailyRitase.save()
                          }
 
-
-                         console.log('new equipment >> ', newEquipment)
+                         console.log(
+                              'new equipment >> ',
+                              newEquipment
+                         )
                          if (newEquipment.length > 0) {
                               for (const equip of newEquipment) {
-
-                              const dailyFleetEquip =
-                              new DailyFleetEquip()
+                                   const dailyFleetEquip =
+                                        new DailyFleetEquip()
 
                                    dailyFleetEquip.fill({
-                                        dailyfleet_id:
-                                             dailyFleet.id,
+                                        dailyfleet_id: dailyFleet.id,
                                         equip_id: equip,
-                                        datetime: `${reqx.date} ${GET_DATA_RITASE_HAULER(equip).check_in}:00`,
+                                        datetime: `${reqx.date} ${
+                                             GET_DATA_RITASE_HAULER(
+                                                  equip
+                                             ).check_in
+                                        }:00`,
                                    })
                                    await dailyFleetEquip.save()
                               }

@@ -1122,24 +1122,26 @@ class Ritase {
           }
      }
 
-     async GET_MONTH_EXCEL_DATA_PRODUCTION() {
-          var pathData = Helpers.publicPath(`/upload/`)
-          const filePath = `${pathData}db.xlsx`
+     async GET_MONTH_EXCEL_DATA_PRODUCTION(filePath, req, usr) {
+
+
+          console.log('file path >> ', filePath, req)
+          const sampleSheet = req.sheet || 'OB'
 
           const xlsx = excelToJson({
                sourceFile: filePath,
-               header: 1,
+               header: 1
           })
 
           const data = []
-          const monthLength = moment('2022-01-01').daysInMonth()
+          const monthLength = moment(req.date).daysInMonth()
           const endIndex =
-               xlsx['OB'].findIndex(v => v.F === 'PIT RPU') - 1
+               xlsx[sampleSheet].findIndex(v => v.F === 'PIT RPU') - 1
 
-          const sheetData = xlsx['OB'].slice(1, endIndex)
+          const sheetData = xlsx[sampleSheet].slice(1, endIndex)
           const daysArr = Array.from({ length: monthLength }).map(
                (v, i) => {
-                    return moment('2022-01-01')
+                    return moment(req.date)
                          .add(i, 'day')
                          .format('YYYY-MM-DD')
                }
@@ -1340,6 +1342,8 @@ class Ritase {
           for (const value of finalData) {
                // EXCA
                for (const data of value.excaData) {
+
+                    console.log('finished extracting exca data')
                     const dailyFleet = new DailyFleet()
 
                     let PIT_NAME = data.pitName.split(' ')[1]

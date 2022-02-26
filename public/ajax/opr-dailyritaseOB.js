@@ -261,6 +261,11 @@ $(function(){
         }
     })
 
+
+
+
+
+
     $('body').on('change', 'input[name="detail-ritase-ob"]', function(){
         var data = new FormData()
         
@@ -426,6 +431,101 @@ $(function(){
         var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}${material}${exca_id}`
         initDeafult(limit, url)
     })
+
+    // BACK DATE UPLOAD
+
+    $('body').on('submit', 'form#fm-back-date-upload', function(e){
+        e.preventDefault()
+        $('body').find('button[type="submit"]').attr('disabled', 'disabled')
+        var data = new FormData()
+        const currentFileName = $('body').find('input[name="current-file-name"]').val()
+        const date = $('body').find('input#date_2').val()
+        const sheet = $('body').find('select#sheet').val();
+
+            data = new FormData()
+
+            data.append('date', date);
+            data.append('current_file_name', currentFileName);
+            data.append('sheet', sheet);
+
+            swal({
+                title: "Apakah anda yakin?",
+                text: "Pastikan format data excel anda sudah sesuai!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-warning",
+                confirmButtonText: "Okey!",
+                closeOnConfirm: false
+              },
+              function(isConfirm){
+                swal("Please wait.....")
+                  if(isConfirm){
+                      $.ajax({
+                          async: true,
+                          headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                          url: '/operation/daily-ritase-ob/back-date-upload',
+                          method: 'POST',
+                          data: data,
+                          dataType: 'json',
+                          processData: false,
+                          mimeType: "multipart/form-data",
+                          contentType: false,
+                          success: function(result){
+                              console.log(result)
+                              if(result.success){
+                                  swal("Okey!", result.message, "success");
+                                  $("body form#fm-back-date-upload").trigger("reset");
+                                  window.location.reload()
+                              }else{
+                                  alert(result.message)
+                              }
+                          },
+                          error: function(err){
+                              console.log('error upload >> ', JSON.stringify(err))
+                              const { message } = err.responseJSON
+                              swal("Opps,,,!", message, "warning")
+                          }
+                      })
+                  }else{
+                    swal("Okey!", 'you cancel upload data...', "success");
+                  }
+            });
+    })
+
+    $('body').on('change', 'input[name="back-date-upload"]', function(){
+        var data = new FormData()
+        
+        data.append('back-date-upload', $(this)[0].files[0])
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-ritase-ob/upload-file/back-date',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            beforeSend: function(){
+                swal("Please wait!", "Data sedang di proses...")
+            },
+            success: function(result){
+                $('body').find('select[name="sheet"]').html(result.title.map(s => '<option value="'+s+'"> Sheet [ '+s+' ]</option>'))
+                $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
+                $('body').find('textarea[name="dataJson"]').val(JSON.stringify(result.data, null, 2))
+                $('body').find('input[name="current-file-name"]').val(JSON.stringify(result.fileName, null, 2))
+                
+                swal("Okey!", "Data berhasil di parsing....", "success")
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
+    
 
     /* show list ritase equipment details */
     function setRitaseUnit(id){

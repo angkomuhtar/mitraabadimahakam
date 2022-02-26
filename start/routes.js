@@ -330,6 +330,8 @@ Route.group(() => {
 
     Route.post('/daily-ritase-ob', 'DailyRitaseController.store').as('opr.daily-ritase-ob.store').middleware('C')
 
+    Route.post('/daily-ritase-ob/back-date-upload', 'DailyRitaseController.storeBackDate').as('opr.daily-ritase-ob.storeBackDate').middleware('C')
+
     Route.get('/daily-ritase-ob/list', 'DailyRitaseController.list').as('opr.daily-ritase-ob.list').middleware('R')
 
     // Route.get('/daily-ritase-ob/graph', 'DailyRitaseController.graph').as('opr.daily-ritase-ob.graph').middleware('R')
@@ -347,6 +349,9 @@ Route.group(() => {
     Route.post('/daily-ritase-ob/:id/delete', 'DailyRitaseController.delete').as('opr.daily-ritase-ob.delete').middleware('D')
     
     Route.post('/daily-ritase-ob/upload-file', 'DailyRitaseController.uploadFile').as('opr.daily-ritase-ob.uploadFile').middleware('C')
+
+    Route.post('/daily-ritase-ob/upload-file/back-date', 'DailyRitaseController.uploadFileBackDate').as('opr.daily-ritase-ob.uploadFileBackDate').middleware('C')
+    
 
     Route.post('/daily-ritase-ob/upload-file/month', 'DailyRitaseController.GET_MONTH_EXCEL_DATA_PRODUCTION').as('opr.daily-ritase-ob.GET_MONTH_EXCEL_DATA_PRODUCTION').middleware('C')
 
