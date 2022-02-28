@@ -719,12 +719,17 @@ class DailyRitaseController {
                          xuser
                     )
 
+
+                    await NotificationsHelpers.sendBasicNotification(
+                         fileName,
+                    )
+
                return {
                     success: true,
                     data: data,
                     message:
                          'data berhasil di upload ' +
-                         data.length +
+                         data.dr +
                          ' items...',
                }
           } catch (error) {

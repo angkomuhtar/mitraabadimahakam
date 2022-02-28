@@ -13,6 +13,21 @@ const MasMaterial = use('App/Models/MasMaterial')
 const moment = require('moment')
 const { numberFormatter } = require('../customClass/utils')
 class Notifications {
+     async sendBasicNotification(message) {
+          const onlyMe = await User.query().where('username', 'rein').first()
+          const ownerDevices = await UserDevice.query()
+               .where('user_id', onlyMe.id)
+               .first()
+
+          console.log('owner device >> ', ownerDevices)
+          if (ownerDevices) {
+               let msg = `Upload ${message} Rara Sudah Selesai ~`
+
+               const data = {}
+
+               await sendMessage(ownerDevices.playerId, msg, data, ownerDevices.platform)
+          }
+     }
      async sendNotifications(req, date, result, checkerName) {
           const owner = (
                await User.query()
@@ -27,8 +42,9 @@ class Notifications {
                ).toJSON()
 
                if (ownerDevices) {
-                    const hours = moment(result[0].check_in)
-                         .format('HH:mm')
+                    const hours = moment(result[0].check_in).format(
+                         'HH:mm'
+                    )
                     const excaName = (
                          await MasEquipment.query()
                               .where('id', req.exca_id)
