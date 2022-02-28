@@ -347,25 +347,7 @@ class repPoduction {
                 result.push(grp)
             }
         }
-        
-        // let arrShiftSiang = result.filter(el => el.kd_shift === 'DS').map(elm => elm.sum_volume)
-        // let arrShiftMalam = result.filter(el => el.kd_shift === 'NS').map(elm => elm.sum_volume)
-        // let arrTotal = []
 
-        // for (let i = 0; i < arrShiftSiang.length; i++) {
-        //     arrTotal.push(arrShiftSiang[i] + arrShiftMalam[i])
-            
-        // }
-        
-        // result = result.map(el => {
-        //     return {
-        //         items: el.items,
-        //         date: el.date,
-        //         ds: arrShiftSiang,
-        //         ns: arrShiftMalam,
-        //         tot: arrTotal
-        //     }
-        // })
         result = _.groupBy(result, 'date')
         result = Object.keys(result).map(key => {
             return {
@@ -385,10 +367,81 @@ class repPoduction {
                 items: el.items
             }
         })
-        // console.log(JSON.stringify(result, null, 2));
-        // result = Object.values(result.reduce((a, b)=>Object.assign(a, {[b.date]:b}),{}))
 
         return result
+    }
+
+    async MW_HOURLY (req) {
+        console.log('MW_HOURLY');
+        var getHoursArray = function(start, end) {
+            var arr = new Array();
+            var dt = moment(start).format('YYYY-MM-DD HH:mm');
+            while (dt <= end) {
+                arr.push(moment(dt).format('YYYY-MM-DD HH:mm'));
+                dt = moment(dt).add(1, 'hour').format('YYYY-MM-DD HH:mm')
+            }
+            return arr;
+        }
+        let startHour = moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm')
+        let endHour = moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm')
+        var arrHours = getHoursArray(startHour, endHour)
+
+        let arrRitaseId = (await DailyRitase.query().where( w => {
+            w.where('pit_id', req.pit_id)
+            w.where('date', req.date)
+        }).fetch()).toJSON().map(el => el.id)
+
+        let data = []
+        for (const obj of arrHours) {
+            // console.log(obj.substr(11, 2));
+            let x = []
+            for (const val of arrRitaseId) {
+                let dailyRitaseDetail = (
+                    await DailyRitaseDetail.query().with('daily_ritase').where( w => {
+                        w.where('dailyritase_id', val)
+                        w.where('check_in', '>=', obj)
+                        w.where('check_in', '<=', moment(obj).endOf('hour').format('YYYY-MM-DD HH:mm'))
+                    }).fetch()).toJSON() || []
+
+                dailyRitaseDetail = dailyRitaseDetail.map( el => {
+                    return {
+                        hour: moment(obj).format('HH'),
+                        hauler_id: el.hauler_id,
+                        site_id: el.daily_ritase.site_id,
+                        pit_id: el.daily_ritase.pit_id,
+                        material: el.daily_ritase.material
+                    }
+                })
+                if (dailyRitaseDetail.length > 0) {
+                    data.push(dailyRitaseDetail)
+                }
+            }
+        }
+
+        let joinData = _.flatten(data)
+        
+        
+        let grouping = []
+        for (const obj of joinData) {
+            const material = await MasMaterial.query().where('id', obj.material).last()
+            grouping.push({
+                ...obj,
+                vol: parseFloat(material.vol)
+            })
+        }
+
+        grouping = _.groupBy(grouping, 'hour')
+        grouping = Object.keys(grouping).map(key => {
+            return {
+                date: 'Hour-' + key,
+                sum_volume: parseFloat(grouping[key][0].vol) * parseFloat(grouping[key].length),
+                items: grouping[key]
+            }
+        })
+
+        grouping = _.sortBy(grouping, function(num){ return num.date })
+
+        return grouping
     }
 }
 module.exports = new repPoduction()

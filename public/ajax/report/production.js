@@ -84,10 +84,10 @@ $(function(){
                 body.find('div#box-shift').css('display', 'inline')
                 break;
             case 'HOURLY':
-                body.find('div#box-date').css('display', 'inline')
+                body.find('div#box-daily').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
-                body.find('div#box-shift').css('display', 'inline')
+                body.find('div#box-shift').css('display', 'none')
                 break;
             default:
                 body.find('div#box-date').css('display', 'inline')
@@ -147,6 +147,9 @@ $(function(){
         if(result.filterType === "WEEKLY"){
             arrDate = result.data.map(elm => elm.date)
         }
+        if(result.filterType === "HOURLY"){
+            arrDate = result.data.map(elm => elm.date)
+        }
         let arrTarget = result.data.map(elm => parseFloat(elm.avg_target))
         let arrVolume = result.data.map(elm => elm.sum_volume)
         let arrRit = result.data.map(elm => (elm.sum_rit))
@@ -165,16 +168,19 @@ $(function(){
                 {
                     name: 'Day Shift',
                     type: 'column',
+                    color: '#FFD41B',
                     data: arrVolume,
                     stack: 'actual'
                 }, {
                     name: 'Night Shift',
                     type: 'column',
+                    color: '#1A1FA7',
                     data: arrRit,
                     stack: 'actual'
                 }, {
                     name: 'Target',
                     type: 'column',
+                    color: '#A8A6A6',
                     data: arrTarget,
                     stack: 'target'
                 }
@@ -191,8 +197,7 @@ $(function(){
                         valueSuffix: ' bcm'
                     }
     
-                },
-                {
+                }, {
                     name: 'Target',
                     type: 'column',
                     color: '#A8A6A6',
@@ -201,8 +206,7 @@ $(function(){
                     tooltip: {
                         valueSuffix: ' bcm'
                     }
-                },
-                {
+                }, {
                     name: 'Trends',
                     type: 'spline',
                     color: '#41b3f9',
@@ -229,7 +233,7 @@ $(function(){
                     style: {
                         fontSize: '11px',
                         fontFamily: 'Verdana, sans-serif',
-                        color: '#ddd'
+                        color: '#000'
                     }
                 },
                 crosshair: true
@@ -243,7 +247,7 @@ $(function(){
                         style: {
                             fontSize: '11px',
                             fontFamily: 'Verdana, sans-serif',
-                            color: '#ddd'
+                            color: '#000'
                         }
                     },
                     title: {
@@ -251,25 +255,32 @@ $(function(){
                         style: {
                             fontSize: '15px',
                             fontFamily: 'Verdana, sans-serif',
-                            color: '#ddd'
+                            color: '#FF5A79'
                         }
                     }
                 }
             ],
             tooltip: {
-                shared: true
+                formatter: function () {
+                    return '<b>' + this.x + '</b><br/>' +
+                        this.series.name + ': ' + this.y + '<br/>' +
+                        'Total: ' + this.point.stackTotal;
+                }
             },
-            legend: {
-                layout: 'vertical',
-                align: 'left',
-                x: 120,
-                verticalAlign: 'top',
-                y: 50,
-                floating: true,
-                backgroundColor:
-                    Highcharts.defaultOptions.legend.backgroundColor || // theme
-                    'rgba(255,255,255,0.25)'
-            },
+            // tooltip: {
+            //     shared: true
+            // },
+            // legend: {
+            //     layout: 'vertical',
+            //     align: 'left',
+            //     x: 120,
+            //     verticalAlign: 'top',
+            //     y: 50,
+            //     floating: true,
+            //     backgroundColor:
+            //         Highcharts.defaultOptions.legend.backgroundColor || // theme
+            //         'rgba(255,255,255,0.25)'
+            // },
             plotOptions: {
                 column: {
                     stacking: 'normal'

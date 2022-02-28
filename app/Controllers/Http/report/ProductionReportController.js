@@ -122,16 +122,24 @@ async function MONTHLY_WISE(req){
         const data = await ReportPoductionHelpers.MW_MONTHLY(req)
         return data
     }
+
     if(req.filterType === 'WEEKLY'){
         const data = await ReportPoductionHelpers.MW_WEEKLY(req)
         return data
     }
+
     if(req.filterType === 'DATE'){
         const data = await ReportPoductionHelpers.MW_DAILY(req)
         return data
     }
+
     if(req.filterType === 'SHIFT'){
         const data = await ReportPoductionHelpers.MW_SHIFTLY(req)
+        return data
+    }
+
+    if(req.filterType === 'HOURLY'){
+        const data = await ReportPoductionHelpers.MW_HOURLY(req)
         return data
     }
 }
