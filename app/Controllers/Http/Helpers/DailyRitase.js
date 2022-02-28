@@ -1320,6 +1320,8 @@ class Ritase {
                v => v.excaData && v.excaData.length > 0
           )
 
+          console.log('final data >> ', finalData)
+
           const GET_SHIFT_DATA = async kode => {
                let startShift = null
 
@@ -1343,7 +1345,10 @@ class Ritase {
                // EXCA
                for (const data of value.excaData) {
 
-                    console.log('finished extracting exca data')
+                    const EXCA_NAME = (data.excaName.replace(' ', '')).replace('00', '0')
+
+                    console.log('exca name >> ', EXCA_NAME)
+
                     const dailyFleet = new DailyFleet()
 
                     let PIT_NAME = data.pitName.split(' ')[1]
@@ -1364,9 +1369,12 @@ class Ritase {
                     )?.id
                     const GET_EXCA_ID = (
                          await MasEquipment.query()
-                              .where('kode', data.excaName)
+                              .where('kode', EXCA_NAME)
                               .first()
                     )?.id
+
+
+                    console.log('exca id >> ', GET_EXCA_ID)
                     const GET_MATERIAL_ID = (
                          await MasMaterial.query()
                               .where('name', data.material)
@@ -1418,9 +1426,10 @@ class Ritase {
                     dailyFleetCreated.push(dailyFleet.id)
                     // HAULERS
                     for (const hauler of data.haulers) {
+                         const HAULER_NAME = hauler.hauler.replace(' ', '')
                          const GET_HAULER_ID = (
                               await MasEquipment.query()
-                                   .where('kode', hauler.hauler)
+                                   .where('kode', HAULER_NAME)
                                    .first()
                          )?.id
                          const dailyFleetEquip =
@@ -1456,10 +1465,13 @@ class Ritase {
                                    dailyritaseDetail.id
                               )
                          }
-                         
+                         console.log('finished creating data for daily ritase id >>> ', dailyRitase.id)
                     }
                }
           }
+
+          console.log('----- TASK FINISHED -----')
+          console.log(' at ' + moment().format('YYYY-MM-DD HH:mm:ss') + ' ')
           return {
                data: dailyFleetCreated,
                dr: dailyRitaseDetailCreated.length,
