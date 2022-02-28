@@ -1,8 +1,10 @@
-@if(list.length > 0)
-    <option value="">Semua</option>
-    @each(item in list)
-    <option value="{{item.id}}" {{item.selected ? 'selected':''}}>{{item.name}}</option>
-    @endeach
-@else 
-    <option value="">Data tidak ditemukan</option>
-@endif
+<label for="">Pilih PIT</label>
+<select class="form-control select2pit" name="pit_id">
+    @if(list.length > 0)
+        @each(item in list)
+        <option value="{{item.id}}" {{item.selected ? 'selected':''}}>{{item.name}}</option>
+        @endeach
+    @else 
+        <option value="">Data tidak ditemukan</option>
+    @endif
+</select>
