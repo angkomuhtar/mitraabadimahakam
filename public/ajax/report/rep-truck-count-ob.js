@@ -300,7 +300,7 @@ $(function(){
                 {
                     name: 'Volume',
                     type: 'column',
-                    color: '#FF5A79',
+                    color: '#75A5E3',
                     yAxis: 0,
                     data: arrVolume,
                     tooltip: {
@@ -311,7 +311,7 @@ $(function(){
                 {
                     name: 'Target',
                     type: 'column',
-                    color: '#A8A6A6',
+                    color: '#015CB1',
                     data: arrTarget,
                     tooltip: {
                         valueSuffix: ' bcm'
@@ -432,7 +432,7 @@ $(function(){
                 {
                     name: 'Target',
                     type: 'area',
-                    color: 'rgba(168, 166, 166, .1)',
+                    color: 'rgba(48, 50, 56, 0.1)',
                     data: arrTarget,
                     tooltip: {
                         valueSuffix: ' bcm'
@@ -524,6 +524,7 @@ $(function(){
                 {
                     name: 'Volume',
                     type: 'spline',
+                    color: '#79fc14',
                     yAxis: 0,
                     lineWidth: 1,
                     data: arrVolume,
@@ -535,7 +536,7 @@ $(function(){
                 {
                     name: 'Target',
                     type: 'spline',
-                    color: '#2f323e',
+                    color: '#015CB1',
                     lineWidth: 1,
                     data: arrTarget,
                     tooltip: {

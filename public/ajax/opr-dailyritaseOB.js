@@ -1,6 +1,7 @@
 $(function(){
     initDeafult()
     HightChart()
+    getHaulerByDailyFleet()
     function initDeafult(lim, url){
         $('div.content-module').css('display', 'none')
         var limit = lim || 25
@@ -72,12 +73,15 @@ $(function(){
 
     $('body').on('click', 'input[name="metodeInput"]', function(e){
         var value = $(this).is(':checked')
+        $('body').find('tbody > tr.advance-table-row').remove()
         if(value){
             $('div#manual-input').show()
             $('#sheet-section').addClass('hidden')
             $('div#upload-file').hide()
+
+            initGetHaulerByDailyFleet()
+            getHaulerByDailyFleet()
             $('input[type="file"]').removeAttr('required').val(null)
-            addHauler()
         }else{
             $('#sheet-section').removeClass('hidden')
             $('body').find('tbody#item-details').children().remove()
@@ -257,6 +261,11 @@ $(function(){
         }
     })
 
+
+
+
+
+
     $('body').on('change', 'input[name="detail-ritase-ob"]', function(){
         var data = new FormData()
         
@@ -423,6 +432,101 @@ $(function(){
         initDeafult(limit, url)
     })
 
+    // BACK DATE UPLOAD
+
+    $('body').on('submit', 'form#fm-back-date-upload', function(e){
+        e.preventDefault()
+        $('body').find('button[type="submit"]').attr('disabled', 'disabled')
+        var data = new FormData()
+        const currentFileName = $('body').find('input[name="current-file-name"]').val()
+        const date = $('body').find('input#date_2').val()
+        const sheet = $('body').find('select#sheet').val();
+
+            data = new FormData()
+
+            data.append('date', date);
+            data.append('current_file_name', currentFileName);
+            data.append('sheet', sheet);
+
+            swal({
+                title: "Apakah anda yakin?",
+                text: "Pastikan format data excel anda sudah sesuai!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-warning",
+                confirmButtonText: "Okey!",
+                closeOnConfirm: false
+              },
+              function(isConfirm){
+                swal("Please wait.....")
+                  if(isConfirm){
+                      $.ajax({
+                          async: true,
+                          headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                          url: '/operation/daily-ritase-ob/back-date-upload',
+                          method: 'POST',
+                          data: data,
+                          dataType: 'json',
+                          processData: false,
+                          mimeType: "multipart/form-data",
+                          contentType: false,
+                          success: function(result){
+                              console.log(result)
+                              if(result.success){
+                                  swal("Okey!", result.message, "success");
+                                  $("body form#fm-back-date-upload").trigger("reset");
+                                  window.location.reload()
+                              }else{
+                                  alert(result.message)
+                              }
+                          },
+                          error: function(err){
+                              console.log('error upload >> ', JSON.stringify(err))
+                              const { message } = err.responseJSON
+                              swal("Opps,,,!", message, "warning")
+                          }
+                      })
+                  }else{
+                    swal("Okey!", 'you cancel upload data...', "success");
+                  }
+            });
+    })
+
+    $('body').on('change', 'input[name="back-date-upload"]', function(){
+        var data = new FormData()
+        
+        data.append('back-date-upload', $(this)[0].files[0])
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-ritase-ob/upload-file/back-date',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            beforeSend: function(){
+                swal("Please wait!", "Data sedang di proses...")
+            },
+            success: function(result){
+                $('body').find('select[name="sheet"]').html(result.title.map(s => '<option value="'+s+'"> Sheet [ '+s+' ]</option>'))
+                $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
+                $('body').find('textarea[name="dataJson"]').val(JSON.stringify(result.data, null, 2))
+                $('body').find('input[name="current-file-name"]').val(JSON.stringify(result.fileName, null, 2))
+                
+                swal("Okey!", "Data berhasil di parsing....", "success")
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
+    
+
     /* show list ritase equipment details */
     function setRitaseUnit(id){
         $.ajax({
@@ -447,6 +551,7 @@ $(function(){
             success: function(result){
                 $('tbody#item-details').append(result)
                 $('body').find('tbody > tr.advance-table-row').each(function(i, e){
+                    console.log('test >> ', i)
                     console.log($(this));
                     $(this).find('td.urut').html(i + 1)
                 })
@@ -455,6 +560,69 @@ $(function(){
                 console.log(err);
             }
         })
+    }
+
+
+    function initGetHaulerByDailyFleet() {
+
+        var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
+        if(isUploadFile) {
+            const id = $(this).attr('data-check') || $('select.select2dailyfleet').find(':selected').val()
+                console.log('id >> ', id)
+                $.ajax({
+                    async: true,
+                    url: '/operation/daily-ritase-ob/haulers/default/'+id,
+                    method: 'GET',
+                    success: function(result){
+                        for(const txt of result.data) {
+                            $('tbody#item-details').append(txt)
+                            $('body').find('tbody > tr.advance-table-row').each(function(i, e){
+                                $(this).find('td.urut').html(i + 1)
+                            })
+                        }
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+        }
+        
+    }
+
+    function getHaulerByDailyFleet(){
+        console.log('does this running >> ')
+        var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
+        if(isUploadFile) {
+            $('body').on('change','select.select2dailyfleet', function(e) {
+                const id = $(this).attr('data-check') || $('select.select2dailyfleet').find(':selected').val()
+                console.log('id >> ', id)
+                $.ajax({
+                    async: true,
+                    url: '/operation/daily-ritase-ob/haulers/default/'+id,
+                    method: 'GET',
+                    success: function(result){
+                        $('body').find('tbody > tr.advance-table-row').remove()
+
+                        if(result.data.length <= 0) {
+                            addHauler()
+                        } else {
+                            for(const txt of result.data) {
+                                $('tbody#item-details').append(txt)
+                                $('body').find('tbody > tr.advance-table-row').each(function(i, e){
+                                    $(this).find('td.urut').html(i + 1)
+                                })
+                            }
+                        }
+                        
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+            })
+        }
+        
+        
     }
 
     function HightChart(){

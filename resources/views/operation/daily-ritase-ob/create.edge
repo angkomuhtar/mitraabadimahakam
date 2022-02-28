@@ -27,12 +27,7 @@
                                                 <select class="form-control input-sm select2dailyfleet" name="dailyfleet_id" id="dailyfleet_id_2" required></select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="tgl">Excavator</label>
-                                            <div class="form-group">
-                                                <select class="form-control inp-filter input-sm select2Excavator" name="exca_id" id="exca_id_2" required></select>
-                                            </div>
-                                        </div>
+                                        
                                         <div class="col-md-4">
                                             <label for="tgl">Material</label>
                                             <div class="form-group">
@@ -147,7 +142,14 @@
             var date = $(this).val() || moment().format('YYYY-MM-DD')
             selectDailyFleet (date)
         })
-        
+
+        // <div class="col-md-4">
+        //                                     <label for="tgl">Excavator</label>
+        //                                     <div class="form-group">
+        //                                         <select class="form-control inp-filter input-sm select2Excavator" name="exca_id" id="exca_id_2" required></select>
+        //                                     </div>
+        //                                 </div>
+
 
         function selectDailyFleet (date) {
             $('body select.select2dailyfleet').each(function(){
@@ -159,7 +161,8 @@
                     if(data.length > 0){
                         elm.html(
                             data.map(title => '<optgroup label="'+title.nm_pit+'">'+
-                                title.item.map(list => '<option value="'+list.id+'">'+list.nm_fleet+' || '+list.nm_shift+'</option>')
+                                title.item.map((list, index) => {
+                                    return '<option value="'+list.id+'">'+list.nm_fleet+' || '+list.nm_shift+'</option>' })
                                 +'</optgroup>')
                         )
                     }else{

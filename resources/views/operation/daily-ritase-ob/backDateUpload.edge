@@ -1,0 +1,180 @@
+@layout('_layouts.main')
+@section('content')
+    {{ script('https://code.highcharts.com/highcharts') }}
+    {{ script('https://code.highcharts.com/modules/exporting') }}
+    {{ script('https://code.highcharts.com/modules/export-data') }}
+    {{ script('https://code.highcharts.com/modules/drilldown') }}
+    {{ script('https://code.highcharts.com/modules/accessibility') }}
+    {{ script('ajax/opr-dailyritaseOB') }}
+    {{ script('ajax/index') }}
+    <div class="container-fluid">
+        <div class="row bg-title">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <h4 class="page-title">Daily Ritase OB Back Date Upload</h4> 
+            </div>
+        </div>
+        @include('operation.daily-ritase-ob.filter')
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+                <div class="white-box p-b-0">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form action="" class="" id="fm-back-date-upload">
+                                <div class="panel panel-default">
+                                    <div class="panel-wrapper collapse in">
+                                        <div class="panel-body">
+                                            {{ csrfField() }}
+                                            <div class="row b-all p-t-20 m-b-20">
+                                                <div class="col-md-4">
+                                                    <label for="tgl">Tanggal</label>
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                            <input type="date" class="form-control input-sm initDate" data-date="{{data.date}}" name="date" id="date_2" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                        <div id="sheet-section" class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label for="">Pilih Sheet</label>
+                                                            <div class="input-group">
+                                                                <div class="input-group-addon"><i class="icon-layers"></i></div>
+                                                                <select class="form-control" type="text" name="sheet" id="sheet"></select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <div class="col-md-12">
+                                                            <textarea class="form-control hidden" name="dataJson" rows="5"></textarea>
+                                                            <input type="hidden" name="current-file-name" value="" />
+                                                        </div>
+                                                    </div>
+                                                <div class="col-md-6" id="upload-file">
+                                                    <label for="tgl">Upload File</label>
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon"><i class="fa fa-file-excel-o"></i></span>
+                                                            <input type="file" class="form-control" name="back-date-upload" id="back-date-upload" required/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    &nbsp;
+                                                </div>
+                                                <div class="col-md-6 text-right">
+                                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                                    </button>
+                                                    <button type="submit" class="btn btn-success waves-effect waves-light"> 
+                                                        <i class="fa fa-save"></i> <span>Save</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+
+<script>
+    $(function(){
+
+        $('input[name="tipeInput"]').switcher();
+
+        $('body').find('input#date_2').attr('data-date', moment().format('YYYY-MM-DD'))
+        selectDailyFleet (moment().format('YYYY-MM-DD'))
+
+        $('input[name="date"]').on('change', function(){
+            var date = $(this).val() || moment().format('YYYY-MM-DD')
+            selectDailyFleet (date)
+        })
+
+        // <div class="col-md-4">
+        //                                     <label for="tgl">Excavator</label>
+        //                                     <div class="form-group">
+        //                                         <select class="form-control inp-filter input-sm select2Excavator" name="exca_id" id="exca_id_2" required></select>
+        //                                     </div>
+        //                                 </div>
+
+
+        function selectDailyFleet (date) {
+            $('body select.select2dailyfleet').each(function(){
+                var selected = $(this).data('check')
+                var elm = $(this)
+                elm.children().remove()
+                $.get('/ajax/fleet/dailyfleet?date='+date+'&selected='+selected, function(data){
+                    console.log(data);
+                    if(data.length > 0){
+                        elm.html(
+                            data.map(title => '<optgroup label="'+title.nm_pit+'">'+
+                                title.item.map((list, index) => {
+                                    return '<option value="'+list.id+'">'+list.nm_fleet+' || '+list.nm_shift+'</option>' })
+                                +'</optgroup>')
+                        )
+                    }else{
+                        elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                    }
+                })
+            })
+        }
+    })
+</script>
+
+<style>
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(83 230 157);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+</style>
