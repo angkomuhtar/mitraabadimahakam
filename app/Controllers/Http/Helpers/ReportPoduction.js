@@ -362,8 +362,8 @@ class repPoduction {
             return {
                 date: el.date,
                 avg_target: dataPlan[i]?.avg_target || null,
-                sum_volume: el.items.filter(obj => obj.kd_shift === 'DS').map(val => val.sum_volume)[0],
-                sum_rit: el.items.filter(obj => obj.kd_shift === 'NS').map(val => val.sum_volume)[0],
+                sum_volume: el.items.filter(obj => obj.kd_shift === 'DS').map(val => val.sum_volume)[0] || [0],
+                sum_rit: el.items.filter(obj => obj.kd_shift === 'NS').map(val => val.sum_volume)[0] || [0],
                 items: el.items
             }
         })

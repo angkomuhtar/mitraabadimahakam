@@ -112,7 +112,7 @@ $(function(){
             mimeType: "multipart/form-data",
             contentType: false,
             success: function(result){
-                // console.log(result)
+                console.log(result)
                 if(result.group === 'MW'){
                     showChart_MW(result)
                 }else{
