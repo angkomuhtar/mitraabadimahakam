@@ -23,9 +23,6 @@ class ProductionReportController {
 
     async applyFilter ( { request } ) {
         const req = request.all()
-        console.log('====================================');
-        console.log(req);
-        console.log('====================================');
         if(req.production_type === 'OB'){
 
             if(req.range_type === 'MW'){
@@ -37,7 +34,7 @@ class ProductionReportController {
                     filterType: req.filterType,
                     data: monthlyWise,
                     pit: pit?.name || 'ALL PIT LOCATIONS',
-                    shift: 'ALL SHIFT SCHEDULES',
+                    group: 'MW',
                     periode: {
                         start: req.start_date || moment().startOf('month').format('YYYY-MM-DD'),
                         end: req.end_date || moment().format('YYYY-MM-DD')
@@ -47,6 +44,11 @@ class ProductionReportController {
 
             if(req.range_type === 'PW'){
                 const periodWise = await PERIODE_WISE(req)
+                return {
+                    data: periodWise.data,
+                    x_Axis: periodWise.xAxis,
+                    group: 'PW',
+                }
             }
 
         }else{
@@ -144,5 +146,31 @@ async function MONTHLY_WISE(req){
     }
 }
 async function PERIODE_WISE(req){
-    console.log(req);
+    if(req.filterType === 'MONTHLY'){
+        const data = await ReportPoductionHelpers.PW_MONTHLY(req)
+        console.log('====================================');
+        console.log(JSON.stringify(data, null, 2));
+        console.log('====================================');
+        return data
+    }
+
+    if(req.filterType === 'WEEKLY'){
+        const data = await ReportPoductionHelpers.PW_WEEKLY(req)
+        return data
+    }
+
+    if(req.filterType === 'DATE'){
+        const data = await ReportPoductionHelpers.PW_DAILY(req)
+        return data
+    }
+
+    if(req.filterType === 'SHIFT'){
+        const data = await ReportPoductionHelpers.PW_SHIFTLY(req)
+        return data
+    }
+
+    if(req.filterType === 'HOURLY'){
+        const data = await ReportPoductionHelpers.PW_HOURLY(req)
+        return data
+    }
 }

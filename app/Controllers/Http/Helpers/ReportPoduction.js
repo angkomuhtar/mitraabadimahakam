@@ -372,7 +372,6 @@ class repPoduction {
     }
 
     async MW_HOURLY (req) {
-        console.log('MW_HOURLY');
         var getHoursArray = function(start, end) {
             var arr = new Array();
             var dt = moment(start).format('YYYY-MM-DD HH:mm');
@@ -442,6 +441,65 @@ class repPoduction {
         grouping = _.sortBy(grouping, function(num){ return num.date })
 
         return grouping
+    }
+
+    async PW_MONTHLY (req) {
+        let result = []
+        let data = (
+            await MonthlyPlan.query()
+            .with('pit', w => w.with('site'))
+            .where( w => {
+                w.where('tipe', req.production_type)
+                w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
+                w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
+            }).fetch()
+        ).toJSON()
+
+        data = data.map( el => {
+            return {
+                    xAxis: moment(el.month).format('MMM YYYY'),
+                    estimate: el.estimate,
+                    actual: el.actual,
+                    nm_pit: el.pit.name,
+                    nm_site: el.pit.site.name,
+            }
+        })
+
+        result = _.groupBy(data, 'nm_pit')
+        result = Object.keys(result).map(key => {
+            return {
+                    nm_pit: key,
+                    items: result[key]
+            }
+        })
+
+        let xAxis = _.groupBy(data, 'xAxis')
+        xAxis = Object.keys(xAxis).map(key => {
+            return {
+                x_axis: key
+            }
+        })
+        // console.log(JSON.stringify(data, null, 2));
+        return {
+            xAxis: xAxis.map( el => el.x_axis),
+            data: result
+        }
+    }
+
+    async PW_WEEKLY (req) {
+
+    }
+
+    async PW_DAILY (req) {
+
+    }
+
+    async PW_SHIFTLY (req) {
+
+    }
+
+    async PW_HOURLY (req) {
+
     }
 }
 module.exports = new repPoduction()

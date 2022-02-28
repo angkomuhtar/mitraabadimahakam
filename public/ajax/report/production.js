@@ -112,8 +112,12 @@ $(function(){
             mimeType: "multipart/form-data",
             contentType: false,
             success: function(result){
-                console.log(result)
-                showChart(result)
+                // console.log(result)
+                if(result.group === 'MW'){
+                    showChart_MW(result)
+                }else{
+                    showChart_PW(result)
+                }
             },
             error: function(err){
                 console.log(err)
@@ -139,7 +143,7 @@ $(function(){
         })
     }
 
-    function showChart(result){
+    function showChart_MW(result){
         let arrDate = result.data.map(elm => moment(elm.date).format('DD MMM YYYY'))
         if(result.filterType === "MONTHLY"){
             arrDate = result.data.map(elm => moment(elm.date).format('MMM YYYY'))
@@ -158,10 +162,24 @@ $(function(){
         $('b#end-date').html(result.periode.end)
         $('b#shift-schedule').html(result.shift)
         let isStack = result.filterType === "SHIFT" ? true : false
-        BAR_CHART(arrDate, arrVolume, arrTarget, arrRit, isStack)
+        BAR_CHART_MW(arrDate, arrVolume, arrTarget, arrRit, isStack)
     }
 
-    function BAR_CHART (arrDate, arrVolume, arrTarget, arrRit, isStack) {
+    function showChart_PW(result){
+        let xAxis = result.x_Axis
+        let series = result.data.map( el => {
+            return {
+                name: el.nm_pit,
+                type: 'column',
+                stack: el.nm_pit,
+                data: el.items.map( val => val.actual)
+            }
+        })
+
+        BAR_CHART_PW(xAxis, series)
+    }
+
+    function BAR_CHART_MW (arrDate, arrVolume, arrTarget, arrRit, isStack) {
         let series
         if(isStack){
             series = [
@@ -281,6 +299,67 @@ $(function(){
             //         Highcharts.defaultOptions.legend.backgroundColor || // theme
             //         'rgba(255,255,255,0.25)'
             // },
+            plotOptions: {
+                column: {
+                    stacking: 'normal'
+                }
+            },
+            series: series
+        });
+    }
+
+    function BAR_CHART_PW (xAxis, series) {
+        Highcharts.chart('container', {
+            chart: {
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Over Burden Production By Truck Count'
+            },
+            subtitle: {
+                text: 'Project BBE'
+            },
+            xAxis: [{
+                categories: xAxis,
+                labels: {
+                    rotation: -45,
+                    style: {
+                        fontSize: '11px',
+                        fontFamily: 'Verdana, sans-serif',
+                        color: '#000'
+                    }
+                },
+                crosshair: true
+            }],
+            yAxis: [
+                { // Primary yAxis
+                    gridLineColor: '#ddd',
+                    gridLineWidth: 0.2,
+                    labels: {
+                        format: '{value} BCM',
+                        style: {
+                            fontSize: '11px',
+                            fontFamily: 'Verdana, sans-serif',
+                            color: '#000'
+                        }
+                    },
+                    title: {
+                        text: 'Total Volume BCM',
+                        style: {
+                            fontSize: '15px',
+                            fontFamily: 'Verdana, sans-serif',
+                            color: '#FF5A79'
+                        }
+                    }
+                }
+            ],
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.x + '</b><br/>' +
+                        this.series.name + ': ' + this.y + '<br/>' +
+                        'Total: ' + this.point.stackTotal;
+                }
+            },
             plotOptions: {
                 column: {
                     stacking: 'normal'
