@@ -4,6 +4,7 @@ const moment = require("moment")
 const MasPit = use("App/Models/MasPit")
 const MasShift = use("App/Models/MasShift")
 const ReportOBHelpers = use("App/Controllers/Http/Helpers/ReportOB")
+const ReportPoductionHelpers = use("App/Controllers/Http/Helpers/ReportPoduction")
 
 class ProductionReportController {
 
@@ -12,7 +13,45 @@ class ProductionReportController {
         if(!user){
             return view.render('401')
         }
-        return view.render('report.ob.index')
+        // return view.render('report.ob.index')
+        return view.render('report.production.index')
+    }
+
+    async filterForm ( { view } ) {
+        return view.render('report.production.filter')
+    }
+
+    async applyFilter ( { request } ) {
+        const req = request.all()
+        console.log('====================================');
+        console.log(req);
+        console.log('====================================');
+        if(req.production_type === 'OB'){
+
+            if(req.range_type === 'MW'){
+                const pit = await MasPit.query().where('id', req.pit_id).last()
+                const monthlyWise = await MONTHLY_WISE(req)
+                return {
+                    success: true,
+                    chartType: req.graphType,
+                    filterType: req.filterType,
+                    data: monthlyWise,
+                    pit: pit?.name || 'ALL PIT LOCATIONS',
+                    shift: 'ALL SHIFT SCHEDULES',
+                    periode: {
+                        start: req.start_date || moment().startOf('month').format('YYYY-MM-DD'),
+                        end: req.end_date || moment().format('YYYY-MM-DD')
+                    }
+                }
+            }
+
+            if(req.range_type === 'PW'){
+                const periodWise = await PERIODE_WISE(req)
+            }
+
+        }else{
+
+        }
     }
 
     async dataGraphOB ( { request } ) {
@@ -76,4 +115,26 @@ async function userValidate(auth){
         console.log(error);
         return null
     }
+}
+
+async function MONTHLY_WISE(req){
+    if(req.filterType === 'MONTHLY'){
+        const data = await ReportPoductionHelpers.MW_MONTHLY(req)
+        return data
+    }
+    if(req.filterType === 'WEEKLY'){
+        const data = await ReportPoductionHelpers.MW_WEEKLY(req)
+        return data
+    }
+    if(req.filterType === 'DATE'){
+        const data = await ReportPoductionHelpers.MW_DAILY(req)
+        return data
+    }
+    if(req.filterType === 'SHIFT'){
+        const data = await ReportPoductionHelpers.MW_SHIFTLY(req)
+        return data
+    }
+}
+async function PERIODE_WISE(req){
+    console.log(req);
 }

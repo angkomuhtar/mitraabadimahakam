@@ -494,13 +494,17 @@ Route.group(() => {
 // REPORT
 Route.group(() => {
 
-    Route.get('/over-borden', 'ProductionReportController.index').as('rep.over-borden.index').middleware('R')
+    Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
+    Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
+    Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
 
-    Route.post('/over-borden/data-graph-ob', 'ProductionReportController.dataGraphOB').middleware('R')
+    // Route.get('/over-borden', 'ProductionReportController.index').as('rep.over-borden.index').middleware('R')
 
-    Route.get('/over-borden/view-graph-ob', 'ProductionReportController.viewGraphOB').middleware('R')
+    // Route.post('/over-borden/data-graph-ob', 'ProductionReportController.dataGraphOB').middleware('R')
 
-    Route.get('/over-borden/view-table-ob', 'ProductionReportController.viewTableOB').middleware('R')
+    // Route.get('/over-borden/view-graph-ob', 'ProductionReportController.viewGraphOB').middleware('R')
+
+    // Route.get('/over-borden/view-table-ob', 'ProductionReportController.viewTableOB').middleware('R')
 
 }).prefix('report').namespace('report').middleware(['MM'])
 

@@ -17,9 +17,6 @@ class OBReport {
         let result = []
         let tmp = []
         let data
-        console.log('====================================');
-        console.log(req);
-        console.log('====================================');
         /** FILTER BY DATE **/
         if(req.filterType === 'DATE'){
             try {
