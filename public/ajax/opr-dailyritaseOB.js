@@ -475,7 +475,7 @@ $(function(){
                               if(result.success){
                                   swal("Okey!", result.message, "success");
                                   $("body form#fm-back-date-upload").trigger("reset");
-                                  window.location.reload()
+                                //   window.location.reload()
                               }else{
                                   alert(result.message)
                               }

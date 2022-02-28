@@ -1347,6 +1347,45 @@ class Ritase {
 
                     const EXCA_NAME = (data.excaName.replace(' ', '')).replace('00', '0')
 
+                    let GET_EXCA_ID = (
+                         await MasEquipment.query()
+                              .where('kode', EXCA_NAME)
+                              .first()
+                    )
+
+                    if(GET_EXCA_ID) {
+                         GET_EXCA_ID = GET_EXCA_ID?.id
+                    } else {
+                         const masEquipment = new MasEquipment();
+                         const TEMP_EXCA = {
+                              kode : EXCA_NAME,
+                              unit_sn : `TEMP__${Math.random() * 99999999}`,
+                              tipe : 'excavator',
+                              brand : 'sany',
+                              unit_model : 'SY500H',
+                              qty_capacity : 2.70,
+                              fuel_capacity : 680,
+                              satuan : 'bcm',
+                              engine_model : '00',
+                              engine_sn : 'TEMP__' + EXCA_NAME,
+                              received_date : '2021-12-01',
+                              received_hm : 1.00,
+                              dealer_id : null,
+                              created_by : 2,
+                              img_uri : 'http://offices.mitraabadimahakam.id/images/equipments/excavator.jpg'
+                         }
+
+                         masEquipment.fill(TEMP_EXCA)
+
+                         await masEquipment.save()
+
+                         GET_EXCA_ID = masEquipment.id
+                    }
+
+                    
+
+
+                    // 280	ME035		15708	excavator	sany	SY500H	2.70	680	bcm	00	ME0035	2021-12-01	1.00		Y	N	Y	2022-12-01			28	Y		2021-12-13 14:37:00	2021-12-13 14:37:00
                     console.log('exca name >> ', EXCA_NAME)
 
                     const dailyFleet = new DailyFleet()
@@ -1367,11 +1406,7 @@ class Ritase {
                               .where('kode', data.shift)
                               .first()
                     )?.id
-                    const GET_EXCA_ID = (
-                         await MasEquipment.query()
-                              .where('kode', EXCA_NAME)
-                              .first()
-                    )?.id
+                    
 
 
                     console.log('exca id >> ', GET_EXCA_ID)
@@ -1381,13 +1416,14 @@ class Ritase {
                               .first()
                     )?.id
 
+                    
                     // DEFINE THE DAILY FLEET DATA
                     dailyFleet.fill({
                          fleet_id:
                               PIT_NAME === 'RPU'
-                                   ? 21
-                                   : PIT_NAME === 'DERAWAN BARU'
                                    ? 23
+                                   : PIT_NAME === 'DERAWAN BARU'
+                                   ? 21
                                    : 22,
                          pit_id: GET_PIT_ID,
                          shift_id: GET_SHIFT_ID,
@@ -1427,11 +1463,46 @@ class Ritase {
                     // HAULERS
                     for (const hauler of data.haulers) {
                          const HAULER_NAME = hauler.hauler.replace(' ', '')
-                         const GET_HAULER_ID = (
+
+                         // 295	OHT045		LWJMT960OHT045	hauler truck	lgmg	CMT96	22.00	700	bcm	WP13G530E310	00	2021-12-06	1.00		Y	N	Y	2022-12-06			28	Y		2021-12-16 14:31:32	2021-12-16 14:31:32
+
+                         let GET_HAULER_ID = (
                               await MasEquipment.query()
                                    .where('kode', HAULER_NAME)
                                    .first()
-                         )?.id
+                         )
+
+
+                         if(GET_HAULER_ID) {
+                              GET_HAULER_ID = GET_HAULER_ID?.id
+                         } else {
+                              const masEquipment = new MasEquipment();
+                              const TEMP_EXCA = {
+                                   kode : HAULER_NAME,
+                                   unit_sn : `TEMP__${Math.random() * 99999999}`,
+                                   tipe : 'hauler truck',
+                                   brand : 'lgmg',
+                                   unit_model : 'CMT96',
+                                   qty_capacity : 2.70,
+                                   fuel_capacity : 680,
+                                   satuan : 'bcm',
+                                   engine_model : '00',
+                                   engine_sn : 'TEMP__' + HAULER_NAME,
+                                   received_date : '2021-12-01',
+                                   received_hm : 1.00,
+                                   dealer_id : null,
+                                   created_by : 2,
+                                   img_uri : 'http://offices.mitraabadimahakam.id/images/equipments/dump_truck.jpg'
+                              }
+     
+                              masEquipment.fill(TEMP_EXCA)
+     
+                              await masEquipment.save()
+     
+                              GET_HAULER_ID = masEquipment.id
+                         }
+
+
                          const dailyFleetEquip =
                               new DailyFleetEquipment()
 
@@ -1471,7 +1542,9 @@ class Ritase {
           }
 
           console.log('----- TASK FINISHED -----')
-          console.log(' at ' + moment().format('YYYY-MM-DD HH:mm:ss') + ' ')
+          console.log(' at ' + moment().format('YYYY-MM-DD HH:mm:ss') + ' ');
+
+          
           return {
                data: dailyFleetCreated,
                dr: dailyRitaseDetailCreated.length,
