@@ -186,19 +186,19 @@ $(function(){
                 {
                     name: 'Day Shift',
                     type: 'column',
-                    color: '#FFD41B',
+                    color: '#42C2FF', 
                     data: arrVolume,
                     stack: 'actual'
                 }, {
                     name: 'Night Shift',
                     type: 'column',
-                    color: '#1A1FA7',
+                    color: '#5463FF',
                     data: arrRit,
                     stack: 'actual'
                 }, {
                     name: 'Target',
                     type: 'column',
-                    color: '#A8A6A6',
+                    color: '#051367',
                     data: arrTarget,
                     stack: 'target'
                 }
@@ -208,7 +208,7 @@ $(function(){
                 {
                     name: 'Volume',
                     type: 'column',
-                    color: '#FF5A79',
+                    color: '#75A5E3',
                     data: arrVolume,
                     stack: 'actual',
                     tooltip: {
@@ -218,7 +218,7 @@ $(function(){
                 }, {
                     name: 'Target',
                     type: 'column',
-                    color: '#A8A6A6',
+                    color: '#015CB1',
                     data: arrTarget,
                     stack: 'target',
                     tooltip: {
@@ -226,9 +226,9 @@ $(function(){
                     }
                 }, {
                     name: 'Trends',
-                    type: 'spline',
-                    color: '#41b3f9',
-                    lineWidth: 1,
+                    type: 'line',
+                    color: '#FF0000',
+                    lineWidth: 2,
                     data: arrVolume,
                 }
             ]

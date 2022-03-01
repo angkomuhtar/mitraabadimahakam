@@ -9,9 +9,9 @@ const MasEvent = use('App/Models/MasEvent')
 const MasShift = use('App/Models/MasShift')
 const MasSite = use('App/Models/MasSite')
 const MasMaterial = use('App/Models/MasMaterial')
-
 const moment = require('moment')
 const { numberFormatter } = require('../customClass/utils')
+
 class Notifications {
      async sendBasicNotification(message) {
           const onlyMe = await User.query().where('username', 'rein').first()
@@ -19,7 +19,6 @@ class Notifications {
                .where('user_id', onlyMe.id)
                .first()
 
-          console.log('owner device >> ', ownerDevices)
           if (ownerDevices) {
                let msg = `Upload ${message} Rara Sudah Selesai ~`
 
