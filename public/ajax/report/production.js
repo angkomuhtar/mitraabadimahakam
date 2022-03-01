@@ -169,10 +169,10 @@ $(function(){
         let xAxis = result.x_Axis
         let series = result.data.map( el => {
             return {
-                name: el.nm_pit,
+                name: el.nm_pit || el.name,
                 type: 'column',
-                stack: el.nm_pit,
-                data: el.items.map( val => val.actual)
+                stack: el.nm_pit || el.stack,
+                data: el.items?.map( val => val.actual) || el.data
             }
         })
 
@@ -309,6 +309,7 @@ $(function(){
     }
 
     function BAR_CHART_PW (xAxis, series) {
+        console.log(series);
         Highcharts.chart('container', {
             chart: {
                 zoomType: 'xy'
@@ -356,8 +357,8 @@ $(function(){
             tooltip: {
                 formatter: function () {
                     return '<b>' + this.x + '</b><br/>' +
-                        this.series.name + ': ' + this.y + '<br/>' +
-                        'Total: ' + this.point.stackTotal;
+                        this.series.name + ': ' + this.y + '<br/>'+
+                        'PIT: ' + this.series.userOptions.stack;
                 }
             },
             plotOptions: {

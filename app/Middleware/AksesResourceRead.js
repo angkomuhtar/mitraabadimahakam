@@ -25,7 +25,7 @@ class AksesResourceRead {
     console.log('USER-TIPE :::', usr.user_tipe);
     console.log('NM-MODULE :::', name);
     const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'R'}).first()
-    console.log('AKSES >>>>>', akses);
+    // console.log('AKSES >>>>>', akses);
     if(akses){
       await next()
     }else{

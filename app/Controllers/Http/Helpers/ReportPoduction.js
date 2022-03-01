@@ -487,15 +487,199 @@ class repPoduction {
     }
 
     async PW_WEEKLY (req) {
+        let result = []
+        let arrDate = []
+        var x = moment(req.week_begin).week()
+        var y = moment(req.week_end).week()
+        for (let i = x - 1; i < y; i++) {
+            var str = '-W'+'0'.repeat(2 - `${i}`.length) + i
+            var arrStart = moment(moment(req.week_begin).format('YYYY') + str).startOf('week').add(1, 'day')
+            var arrEnd = moment(moment(req.week_end).format('YYYY') + str).endOf('week').add(1, 'day')
 
+            var getDaysBetweenDates = function(startDate, endDate) {
+                var now = startDate.clone(), dates = [];
+          
+                while (now.isSameOrBefore(endDate)) {
+                    dates.push(now.format('YYYY-MM-DD'));
+                    now.add(1, 'days');
+                }
+                return dates;
+            };
+
+            var arrTgl = getDaysBetweenDates(arrStart, arrEnd)
+            arrDate.push({
+                date: 'week-'+i,
+                site_id: req.site_id,
+                items: arrTgl
+            })
+        }
+        
+        const arrPIT = (await MasPit.query().where( w => {
+            w.where('site_id', req.site_id)
+            w.where('sts', 'Y')
+        }).fetch()).toJSON()
+
+        for (const obj of arrDate) {
+            for (const val of arrPIT) {
+                const sumACT = await DailyPlan.query().where( w => {
+                    w.where('tipe', req.production_type)
+                    w.where('pit_id', val.id)
+                    w.whereIn('current_date', obj.items)
+                }).getSum('actual')
+                result.push({
+                    date: obj.date,
+                    site_id: obj.site_id,
+                    pit_id: val.id,
+                    nm_pit: val.name,
+                    actual: sumACT
+                })
+            }
+        }
+
+        result = _.groupBy(result, 'nm_pit')
+        result = Object.keys(result).map(key => {
+            return {
+                nm_pit: key,
+                items: result[key]
+            }
+        })
+        
+        return {
+            xAxis: arrDate.map( el => el.date),
+            data: result
+        }
     }
 
     async PW_DAILY (req) {
+        console.log(req);
+        let result = []
+        let arrData = (await DailyPlan.query().where( w => {
+            w.where('tipe', req.production_type)
+            w.where('site_id', req.site_id)
+            w.where('current_date', '>=', req.start_date)
+            w.where('current_date', '<=', req.end_date)
+        }).fetch()).toJSON()
 
+        let arrDate = _.uniq(arrData.map( el => moment(el.current_date).format('DD MMM YYYY')))
+
+        for (const obj of arrData) {
+            const pit = await MasPit.query().with('site').where('id', obj.pit_id).last()
+            result.push({
+                site_id: obj.site_id,
+                nm_site: pit.site.name,
+                pit_id: obj.pit_id,
+                nm_pit: pit.name,
+                actual: obj.actual,
+                estimate: obj.estimate,
+                tipe: obj.tipe,
+                current_date: moment(obj.current_date).format('YYYY-MM-DD')
+            })
+        }
+
+        result = _.groupBy(result, 'nm_pit')
+        result = Object.keys(result).map(key => {
+            return {
+                nm_pit: key,
+                items: result[key]
+            }
+        })
+
+        return {
+            xAxis: arrDate,
+            data: result
+        }
     }
 
     async PW_SHIFTLY (req) {
+        console.log(req);
+        let xresult = []
+        
+        let arrData = (
+            await DailyRitase.query()
+            .with('shift')
+            .with('pit', w => w.with('site'))
+            .where( w => {
+                if(req.shift_id){
+                    w.where('shift_id', req.shift_id)
+                }
+                w.where('date', '>=', moment(req.start_date).format('YYYY-MM-DD'))
+                w.where('date', '<=', moment(req.end_date).format('YYYY-MM-DD'))
+            }).fetch()
+        ).toJSON()
+        
+        console.log(arrData);
 
+        let arrDate = _.uniq(arrData.map( el => moment(el.date).format('DD MMM YYYY')))
+        let data = []
+        for (const obj of arrData) {
+            const material = await MasMaterial.query().where('id', obj.material).last()
+            data.push({
+                site_id: obj.site_id,
+                nm_site: obj.pit.site?.name,
+                pit_id: obj.pit_id,
+                nm_pit: obj.pit.name,
+                shift_id: obj.shift_id,
+                nm_shift: obj.shift.name,
+                material: obj.material,
+                distance: obj.distance,
+                tot_ritase: obj.tot_ritase,
+                date: moment(obj.date).format('YYYY-MM-DD'),
+                actual: parseFloat(obj.tot_ritase) * parseFloat(material.vol)
+            })
+        }
+
+        // const shift = (await MasShift.query().where('status', 'Y').fetch()).toJSON()
+        const pit = (await MasPit.query().where( w => {
+            w.where('sts', 'Y')
+            w.where('site_id', req.site_id)
+        }).fetch()).toJSON()
+
+        // for (const obj of shift) {
+        //     let arr = []
+        //     for (const val of pit) {
+        //         // let x = data.filter()
+        //     }
+        // }
+
+        /** GROUPING PIT **/
+        data = _.groupBy(data, 'shift_id')
+        data = Object.keys(data).map(key => {
+            return {
+                shift_id: key,
+                items: data[key]
+            }
+        })
+
+        for (const obj of data) {
+            const shift = await MasShift.query().where('id', obj.shift_id).last()
+            for (const val of pit) {
+
+                var result = [];
+                obj.items.filter(el => el.pit_id === val.id).reduce(function(res, value) {
+                if (!res[value.date]) {
+                    res[value.date] = { date: value.date, actual: 0 };
+                    result.push(res[value.date])
+                }
+                res[value.date].actual += value.actual;
+                return res;
+                }, {});
+
+                xresult.push({
+                    // shift_id: obj.shift_id,
+                    name: `${shift.name} (${val.kode})`,
+                    stack: val.name,
+                    group: val.name,
+                    items: result
+                });
+            }
+        }
+
+        xresult = _.sortBy(xresult, function(num){ return num.stack });
+        console.log(JSON.stringify(xresult, null, 2))
+        return {
+            xAxis: arrDate,
+            data: xresult
+        }
     }
 
     async PW_HOURLY (req) {
@@ -503,3 +687,69 @@ class repPoduction {
     }
 }
 module.exports = new repPoduction()
+
+// [
+//     {
+//         name: 'DS',
+//         data: [5, 3, 4, 7, 2],
+//         stack: 'RPU'
+//     }, 
+//     {
+//         name: 'NS',
+//         data: [3, 4, 4, 2, 5],
+//         stack: 'RPU'
+//     }, 
+//     {
+//         name: 'DS',
+//         data: [2, 1, 6, 7, 3],
+//         stack: 'DRW'
+//     },
+//     {
+//         name: 'NS',
+//         data: [2, 1, 6, 7, 3],
+//         stack: 'DRW'
+//     },
+//     {
+//         name: 'DS',
+//         data: [2, 1, 6, 7, 3],
+//         stack: 'KRM'
+//     },
+//     {
+//         name: 'NS',
+//         data: [2, 1, 6, 7, 3],
+//         stack: 'KRM'
+//     }
+// ]
+
+// [
+//     {
+//       name: "DAY SHIFT",
+//       stack: "DERAWAN BARU",
+//       data: [6468, 8074]
+//     },
+//     {
+//       name: "NIGHT SHIFT",
+//       stack: "DERAWAN BARU",
+//       data: [6270, 4378]
+//     },
+//     {
+//       name: "DAY SHIFT",
+//       stack: "KARIMATA",
+//       data: [10560, 10472]
+//     },
+//     {
+//       name: "NIGHT SHIFT",
+//       stack: "KARIMATA",
+//       data: [11770, 10890]
+//     },
+//     {
+//       name: "DAY SHIFT",
+//       stack: "RPU",
+//       data: [12540, 13266]
+//     },
+//     {
+//       name: "NIGHT SHIFT",
+//       stack: "RPU",
+//       data: [10142, 9680]
+//     }
+// ]
