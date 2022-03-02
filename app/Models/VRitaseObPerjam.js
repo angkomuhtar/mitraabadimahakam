@@ -19,6 +19,18 @@ class VRitaseObPerjam extends Model {
     material () {
         return this.belongsTo("App/Models/MasMaterial", "material_id", "id")
     }
+
+    site () {
+        return this.belongsTo("App/Models/MasSite", "site_id", "id")
+    }
+
+    pit () {
+        return this.belongsTo("App/Models/MasPit", "pit_id", "id")
+    }
+
+    shift () {
+        return this.belongsTo("App/Models/MasShift", "shift_id", "id")
+    }
 }
 
 module.exports = VRitaseObPerjam

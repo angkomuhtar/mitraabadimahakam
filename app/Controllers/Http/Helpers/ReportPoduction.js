@@ -11,6 +11,7 @@ const MasPit = use("App/Models/MasPit")
 const MasSite = use("App/Models/MasSite")
 const MasShift = use("App/Models/MasShift")
 const MasMaterial = use("App/Models/MasMaterial")
+const VRitaseObPerjam = use("App/Models/VRitaseObPerjam")
 
 class repPoduction {
     async MW_MONTHLY (req) {
@@ -583,6 +584,7 @@ class repPoduction {
                 items: result[key]
             }
         })
+        console.log(JSON.stringify(result, null, 2));
 
         return {
             xAxis: arrDate,
@@ -628,18 +630,10 @@ class repPoduction {
             })
         }
 
-        // const shift = (await MasShift.query().where('status', 'Y').fetch()).toJSON()
         const pit = (await MasPit.query().where( w => {
             w.where('sts', 'Y')
             w.where('site_id', req.site_id)
         }).fetch()).toJSON()
-
-        // for (const obj of shift) {
-        //     let arr = []
-        //     for (const val of pit) {
-        //         // let x = data.filter()
-        //     }
-        // }
 
         /** GROUPING PIT **/
         data = _.groupBy(data, 'shift_id')
@@ -683,7 +677,77 @@ class repPoduction {
     }
 
     async PW_HOURLY (req) {
+        console.log(req);
+        let result = []
+        let data = (
+            await VRitaseObPerjam.query().where( w => {
+                if(req.site_id){
+                    w.where('site_id', req.site_id)
+                }
+                w.where('tglx', req.date)
+            }).fetch()
+        ).toJSON()
 
+        data = _.groupBy(data, 'pit_id')
+        data = Object.keys(data).map(key => {
+            return {
+                pit_id: key,
+                items: data[key]
+            }
+        })
+
+        /** GENERATE xAxis DATA **/
+        let xAxis = []
+        for (let i = 0; i < 24; i++) {
+            var str = '0'.repeat(2 - `${i}`.length) + i
+            xAxis.push("Pukul " + str)
+        }
+
+        for (const obj of data) {
+            var arrData = [];
+
+            const pit = await MasPit.query().where('id', obj.pit_id).last()
+
+            /** GROUPING DATA BY WAKTU **/
+            obj.items.reduce(function(res, value) {
+              if (!res[value.jamx]) {
+                res[value.jamx] = { jamx: value.jamx, vol: 0 };
+                arrData.push(res[value.jamx])
+              }
+              res[value.jamx].vol += value.vol;
+              return res;
+            }, {});
+
+            for (let i = 0; i < 24; i++) {
+                var str = '0'.repeat(2 - `${i}`.length) + i
+                if(!arrData.map(el => el.jamx).includes(str)){
+                    arrData.push({
+                        jamx: str,
+                        vol: 0
+                    })
+                }
+            }
+
+            arrData = _.sortBy(arrData, 'jamx');
+            arrData = arrData.map(el => {
+                return {
+                    pukul: el.jamx + ':00',
+                    actual: el.vol
+                }
+            })
+
+            result.push({
+                pit_id: obj.pit_id,
+                name: `${pit.name} (${pit.kode})`,
+                stack: pit.kode,
+                items: arrData
+            })
+        }
+        console.log(result);
+        return {
+            xAxis: xAxis,
+            data: result
+        }
     }
 }
 module.exports = new repPoduction()
