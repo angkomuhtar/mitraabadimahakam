@@ -52,7 +52,23 @@ class ProductionReportController {
             }
 
         }else{
+            if(req.range_type === 'MW'){
+                const monthlyWise_bb = await BB_MONTHLY_WISE(req)
+                return {
+                    data: monthlyWise_bb.data,
+                    x_Axis: monthlyWise_bb.xAxis,
+                    group: 'MW',
+                }
+            }
 
+            if(req.range_type === 'PW'){
+                const periodWise_bb = await BB_PERIODE_WISE(req)
+                return {
+                    data: periodWise_bb.data,
+                    x_Axis: periodWise_bb.xAxis,
+                    group: 'PW',
+                }
+            }
         }
     }
 
@@ -148,9 +164,6 @@ async function MONTHLY_WISE(req){
 async function PERIODE_WISE(req){
     if(req.filterType === 'MONTHLY'){
         const data = await ReportPoductionHelpers.PW_MONTHLY(req)
-        console.log('====================================');
-        console.log(JSON.stringify(data, null, 2));
-        console.log('====================================');
         return data
     }
 
