@@ -24,6 +24,7 @@ MonthlyPlanHook.afterCreate = async (monthlyplan) => {
         estimate: monthlyplan.estimate / currentMonthDates.length,
         tipe: monthlyplan.tipe === "OB" ? "OB" : "COAL",
         monthlyplans_id: monthlyplan.id,
+        user_id: monthlyplan.user_id
       });
       await dailyPlans.save();
     }

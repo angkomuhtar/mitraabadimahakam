@@ -23,7 +23,7 @@ class MonthlyPlan {
             await MonthlyPlans
             .query()
             .with('pit')
-            .orderBy('created_at', 'desc')
+            .orderBy('month', 'desc')
             .paginate(halaman, limit)
         ).toJSON()
 
@@ -426,12 +426,20 @@ class MonthlyPlan {
         return data
     }
 
-    async POST (req) { 
+    async POST (req, user) { 
         const { pit_id, tipe, month, estimate, actual } = req
         const satuan = req.tipe === 'OB' ? 'BCM':'MT'
         try {
             const monthlyPlans = new MonthlyPlans()
-            monthlyPlans.fill({pit_id, tipe, month, estimate, actual, satuan})
+            monthlyPlans.fill({
+                user_id: user.id || null,
+                pit_id, 
+                tipe, 
+                month, 
+                estimate, 
+                actual, 
+                satuan
+            })
             await monthlyPlans.save()
             const data = await MonthlyPlans.query().with('daily_plan').last()
             return data
