@@ -1,6 +1,7 @@
 'use strict'
 
 const moment = require("moment")
+const { select } = require("underscore")
 const _ = require('underscore')
 const DailyFleet = use("App/Models/DailyFleet")
 const DailyRitase = use("App/Models/DailyRitase")
@@ -17,77 +18,153 @@ class repPoduction {
     async MW_MONTHLY (req) {
         console.log('startMonth', req);
         let result = []
-        let startMonth = req.month_begin ? moment(req.month_begin).startOf('month').format('YYYY-MM-DD') : moment().startOf('year').format('YYYY-MM-DD')
-        let endMonth = req.month_end ? moment(req.month_end).endOf('month').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')
-        
+        // let startMonth = req.month_begin ? moment(req.month_begin).startOf('month').format('YYYY-MM-DD') : moment().startOf('year').format('YYYY-MM-DD')
+        // let endMonth = req.month_end ? moment(req.month_end).endOf('month').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')
+        let data
         try {
-            const data = (
-                await DailyRitase.query().where( w => {
-                    if(req.site_id){
-                        w.where('site_id', req.site_id)
+            data = (
+                await MonthlyPlan.query()
+                .with('pit', w => w.with('site'))
+                .where( w => {
+                    if(req.production_type){
+                        w.where('tipe', req.production_type)
                     }
                     if(req.pit_id){
                         w.where('pit_id', req.pit_id)
                     }
-                    w.where('date', '>=', startMonth)
-                    w.where('date', '<=', endMonth)
+                    w.where('tipe', req.production_type)
+                    w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
+                    w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
                 }).fetch()
             ).toJSON()
-            
-            let estimateAvg = (await DailyPlan.query().where( w => {
-                if(req.pit_id){
-                    w.where('pit_id', req.pit_id)
-                }
-                if(req.site_id){
-                    w.where('site_id', req.site_id)
-                }
-                w.where('current_date', '>=', startMonth)
-                w.where('current_date', '<=', endMonth)
-                w.where('tipe', 'OB')
-            }).fetch()).toJSON() || []
-            
-            estimateAvg = estimateAvg.map(el => { return {...el, ym: moment(el.current_date).format('YYYY-MM')} })
-            estimateAvg = _.groupBy(estimateAvg, 'ym')
-            estimateAvg = Object.keys(estimateAvg).map(key => {
+
+            let xAxis = data.map(el => moment(el.month).format('MMM YYYY'))
+
+            let estimate  = data.map( el => {
                 return {
-                    ym: key,
-                    estimate: (estimateAvg[key].reduce((a, b) => {return a + b.estimate}, 0)).toFixed(2),
-                    items: estimateAvg[key]
+                        volume: el.estimate,
+                        nm_pit: el.pit.name,
+                        nm_site: el.pit.site.name,
                 }
             })
-            
-            for (let obj of data) {
-                const masMaterial = await MasMaterial.query().where('id', obj.material).last()
-                const masPit = await MasPit.query().where('id', obj.pit_id).last()
-                const masSite = await MasSite.query().where('id', obj.site_id).last()
-                result.push({
-                    ...obj,
-                    nmpit: masPit.name,
-                    nmsite: masSite.name,
-                    vol: parseFloat(masMaterial.vol) * parseFloat(obj.tot_ritase),
-                    ym: moment(obj.date).format('YYYY-MM')
-                })
+
+            estimate = _.groupBy(estimate, 'nm_pit')
+            estimate = Object.keys(estimate).map(key => {
+                return {
+                    nm_pit: `Target (${key})`,
+                    type: 'column',
+                    color: '#75A5E3',
+                    items: estimate[key]
+                }
+            })
+
+            let actual  = data.map( el => {
+                return {
+                        volume: el.actual,
+                        nm_pit: el.pit.name,
+                        nm_site: el.pit.site.name,
+                }
+            })
+
+            actual = _.groupBy(actual, 'nm_pit')
+            actual = Object.keys(actual).map(key => {
+                return {
+                    nm_pit: `Actual (${key})`,
+                    type: 'column',
+                    color: '#015CB1',
+                    items: actual[key]
+                }
+            })
+
+            let trand  = data.map( el => {
+                return {
+                        volume: el.actual,
+                        nm_pit: el.pit.name,
+                        nm_site: el.pit.site.name,
+                }
+            })
+
+            trand = _.groupBy(trand, 'nm_pit')
+            trand = Object.keys(trand).map(key => {
+                return {
+                    nm_pit: `Trands`,
+                    type: 'spline',
+                    color: 'red',
+                    items: trand[key]
+                }
+            })
+
+            return {
+                xAxis: xAxis,
+                data: [...estimate, ...actual, ...trand]
             }
-            result = _.groupBy(result, 'ym')
-            result = Object.keys(result).map(key => {
-                let sum_volume = result[key].reduce((a, b) => { return a + parseInt(b.vol) }, 0)
-                let avg_distance = (result[key].reduce((a, b) => { return a + parseInt(b.distance) }, 0) /  result[key].length).toFixed(2)
-                let sum_rit = result[key].reduce((a, b) => { return a + parseInt(b.tot_ritase) }, 0)
-                return {
-                    date: key,
-                    avg_distance: avg_distance,
-                    sum_rit: sum_rit,
-                    sum_volume: sum_volume,
-                    items: result[key]
-                }
-            })
-            result = result.map((el, i) => {
-                return {
-                    ...el,
-                    avg_target: estimateAvg[i]?.estimate || null
-                }
-            })
-            result = result
+            // const data = (
+            //     await DailyRitase.query().where( w => {
+            //         if(req.site_id){
+            //             w.where('site_id', req.site_id)
+            //         }
+            //         if(req.pit_id){
+            //             w.where('pit_id', req.pit_id)
+            //         }
+            //         w.where('date', '>=', startMonth)
+            //         w.where('date', '<=', endMonth)
+            //     }).fetch()
+            // ).toJSON()
+            
+            // let estimateAvg = (await DailyPlan.query().where( w => {
+            //     if(req.pit_id){
+            //         w.where('pit_id', req.pit_id)
+            //     }
+            //     if(req.site_id){
+            //         w.where('site_id', req.site_id)
+            //     }
+            //     w.where('current_date', '>=', startMonth)
+            //     w.where('current_date', '<=', endMonth)
+            //     w.where('tipe', 'OB')
+            // }).fetch()).toJSON() || []
+            
+            // estimateAvg = estimateAvg.map(el => { return {...el, ym: moment(el.current_date).format('YYYY-MM')} })
+            // estimateAvg = _.groupBy(estimateAvg, 'ym')
+            // estimateAvg = Object.keys(estimateAvg).map(key => {
+            //     return {
+            //         ym: key,
+            //         estimate: (estimateAvg[key].reduce((a, b) => {return a + b.estimate}, 0)).toFixed(2),
+            //         items: estimateAvg[key]
+            //     }
+            // })
+            
+            // for (let obj of data) {
+            //     const masMaterial = await MasMaterial.query().where('id', obj.material).last()
+            //     const masPit = await MasPit.query().where('id', obj.pit_id).last()
+            //     const masSite = await MasSite.query().where('id', obj.site_id).last()
+            //     result.push({
+            //         ...obj,
+            //         nmpit: masPit.name,
+            //         nmsite: masSite.name,
+            //         vol: parseFloat(masMaterial.vol) * parseFloat(obj.tot_ritase),
+            //         ym: moment(obj.date).format('YYYY-MM')
+            //     })
+            // }
+            // result = _.groupBy(result, 'ym')
+            // result = Object.keys(result).map(key => {
+            //     let sum_volume = result[key].reduce((a, b) => { return a + parseInt(b.vol) }, 0)
+            //     let avg_distance = (result[key].reduce((a, b) => { return a + parseInt(b.distance) }, 0) /  result[key].length).toFixed(2)
+            //     let sum_rit = result[key].reduce((a, b) => { return a + parseInt(b.tot_ritase) }, 0)
+            //     return {
+            //         date: key,
+            //         avg_distance: avg_distance,
+            //         sum_rit: sum_rit,
+            //         sum_volume: sum_volume,
+            //         items: result[key]
+            //     }
+            // })
+            // result = result.map((el, i) => {
+            //     return {
+            //         ...el,
+            //         avg_target: estimateAvg[i]?.estimate || null
+            //     }
+            // })
+            // result = result
         } catch (error) {
             console.log('ERR CHART :::', error);
         }
@@ -108,6 +185,8 @@ class repPoduction {
             var arrStart = moment(moment(req.week_begin).format('YYYY') + str).startOf('week').add(1, 'day')
             var arrEnd = moment(moment(req.week_end).format('YYYY') + str).endOf('week').add(1, 'day')
 
+            const pit = (await MasPit.query().with('site').where('id', req.pit_id).last()).toJSON()
+
             var getDaysBetweenDates = function(startDate, endDate) {
                 var now = startDate.clone(), dates = [];
           
@@ -121,141 +200,205 @@ class repPoduction {
                 date: 'week-'+i,
                 site_id: req.site_id,
                 pit_id: req.pit_id,
+                kd_pit: pit.kode,
+                nm_pit: pit.name,
                 items: getDaysBetweenDates(arrStart, arrEnd)
             })
-            
         }
-        for (const elm of arrDate) {
-            // console.log(elm.items);
-            let estimate = []
-            let distance = []
-            let rit = []
-            let volume = []
-            let items = []
 
-            let ritase = (await DailyRitase.query().where( w => {
-                if(elm.site_id){
-                    w.where('site_id', elm.site_id)
+        let xAxis = arrDate.map(el => el.date)
+
+        let tmpActual = []
+        let tmpTarget = []
+        let tmpTrands = []
+
+        req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
+
+        for (const obj of arrDate) {
+            let planActual = await DailyPlan.query().where( w => {
+                if(req.production_type){
+                    w.where('tipe', req.production_type)
                 }
-                if(elm.pit_id){
-                    w.where('pit_id', elm.pit_id)
+                w.where('current_date', '>=', _.first(obj.items))
+                w.where('current_date', '<=', _.last(obj.items))
+            }).select('actual').getSum('actual')
+
+            let planTarget = await DailyPlan.query().where( w => {
+                if(req.production_type){
+                    w.where('tipe', req.production_type)
                 }
-                w.whereIn('date', elm.items)
-            }).fetch()).toJSON() || []
+                w.where('current_date', '>=', _.first(obj.items))
+                w.where('current_date', '<=', _.last(obj.items))
+            }).select('estimate').getSum('estimate')
 
-            for (const obj of ritase) {
-                const masMaterial = (await MasMaterial.query().where('id', obj.material).last()).toJSON() || []
-                volume.push(parseFloat(obj.tot_ritase) * parseFloat(masMaterial.vol))
-                distance.push(obj.distance)
-                rit.push(obj.tot_ritase)
-            }
-
-            let plan = (await DailyPlan.query().where( w => {
-                if(elm.site_id){
-                    w.where('site_id', elm.site_id)
-                }
-                if(elm.pit_id){
-                    w.where('pit_id', elm.pit_id)
-                }
-                w.where('tipe', 'OB')
-                w.whereIn('current_date', elm.items)
-            }).fetch()).toJSON()
-
-            let tmpEstimate = plan.map(el => el.estimate).reduce((a, b) => { return a + b }, 0)
-            estimate.push(tmpEstimate)
-            items.push(plan)
-
-            let avg_target = estimate.reduce((a, b) => { return a + b }, 0).toFixed(2)
-            let avg_distance = (distance.reduce((a, b) => { return a + b }, 0) / distance.length).toFixed(2)
-            let sum_rit = (rit.reduce((a, b) => { return a + b }, 0)).toFixed(2)
-            let sum_volume = (volume.reduce((a, b) => { return a + b }, 0)).toFixed(2)
-            // console.log('SUM ::', estimate);
-            result.push({
-                ...elm, 
-                avg_target: parseFloat(avg_target),
-                avg_distance: parseFloat(avg_distance),
-                sum_rit: parseFloat(sum_rit),
-                sum_volume: parseFloat(sum_volume),
-                items: items
+            tmpTarget.push({
+                nm_pit: `Target ${obj.nm_pit}`,
+                volume: planTarget
+            })
+            tmpActual.push({
+                nm_pit: `Actual ${obj.nm_pit}`,
+                volume: planActual
+            })
+            tmpTrands.push({
+                nm_pit: `Trands`,
+                volume: planActual
             })
         }
 
-        return result
+        tmpTarget = _.groupBy(tmpTarget, 'nm_pit')
+        tmpTarget = Object.keys(tmpTarget).map(key => {
+            return {
+                nm_pit: key,
+                color: "#75A5E3",
+                type: 'column',
+                items: tmpTarget[key]
+            }
+        })
+        tmpActual = _.groupBy(tmpActual, 'nm_pit')
+        tmpActual = Object.keys(tmpActual).map(key => {
+            return {
+                nm_pit: key,
+                color: "#015CB1",
+                type: 'column',
+                items: tmpActual[key]
+            }
+        })
+        tmpTrands = _.groupBy(tmpTrands, 'nm_pit')
+        tmpTrands = Object.keys(tmpTrands).map(key => {
+            return {
+                nm_pit: key,
+                color: "red",
+                type: 'spline',
+                items: tmpTrands[key]
+            }
+        })
+
+        return {
+            xAxis: xAxis,
+            data: [...tmpTarget, ...tmpActual, ...tmpTrands]
+        }
     }
 
     async MW_DAILY (req) {
         let result = []
-        const data = (await DailyFleet.query()
-        .with('ritase')
-        .where( w => {
-            w.where('activity_id', '11')
-            if(req.pit_id){
-                w.where('pit_id', req.pit_id)
-            }
-            if(req.shift_id){
-                w.where('shift_id', req.shift_id)
-            }
-            if(!req.start_date || !req.end_date){
-                w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD'))
-                w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD'))
-            }else{
-                w.where('date', '>=', req.start_date)
-                w.where('date', '<=', req.end_date)
 
+        req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
+
+        const planDaily = (await DailyPlan.query().where( w => {
+            if(req.production_type){
+                w.where('tipe', req.production_type)
             }
+            w.where('pit_id', req.pit_id)
+            w.where('current_date', '>=', req.start_date)
+            w.where('current_date', '<=', req.end_date)
         }).fetch()).toJSON()
-        
-        
-        const monthlyPlan = (
-            await MonthlyPlan.query().where( w => {
-                    if(req.pit_id){
-                        w.where('pit_id', req.pit_id)
-                    }
-                    w.where('month', moment(req.start_date).startOf('month').format('YYYY-MM-DD') 
-                    || moment().startOf('month').format('YYYY-MM-DD'))
-                    w.where('tipe', 'OB')
-                }).fetch()
-            ).toJSON() || []
 
-        let total = monthlyPlan.reduce((a, b) => { return a + b.estimate }, 0)
-        let jumHari = moment(req.start_date).daysInMonth() || moment().daysInMonth()
-            
-        for (const obj of data) {
-            let masPit = await MasPit.query().where('id', obj.pit_id).last()
-            let avgDistance = (obj.ritase).reduce((a, b) => { return a + b.distance }, 0) / (obj.ritase).length || 0
-            
-            let totActual = []
-            let totRit = []
-            for (const elm of obj.ritase) {
-                const masMaterial = await MasMaterial.query().where('id', elm.material).last()
-                totActual.push(parseFloat(masMaterial.vol) * parseFloat(elm.tot_ritase))
-                totRit.push(parseFloat(elm.tot_ritase))
-            }
-            result.push({
-                idFleet: obj.id,
-                idpit: obj.pit_id,
-                nmpit: masPit.name,
-                idshift: obj.shift_id,
-                target: total / parseInt(jumHari),
-                date: moment(obj.date).format('YYYY-MM-DD'),
-                avgJarak: avgDistance,
-                totRit: totRit.reduce((a, b) => { return a + b }, 0),
-                avgVolume: totActual.reduce((a, b) => { return a + b }, 0)
+        let xAxis = planDaily.map(el => moment(el.current_date).format('DD-MM-YYYY'))
+
+        // console.log(planDaily);
+
+        let arrTarget = []
+        let arrActual = []
+        let arrTrands = []
+        for (const el of planDaily) {
+            const pit = await MasPit.query().where('id', el.pit_id).last()
+            arrTarget.push({
+                site_id: el.site_id,
+                pit_id: el.pit_id,
+                kd_pit: pit.kode,
+                nm_pit: pit.name,
+                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                volume: el.estimate
+            })
+            arrActual.push({
+                site_id: el.site_id,
+                pit_id: el.pit_id,
+                kd_pit: pit.kode,
+                nm_pit: pit.name,
+                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                volume: el.actual
+            })
+            arrTrands.push({
+                site_id: el.site_id,
+                pit_id: el.pit_id,
+                kd_pit: pit.kode,
+                nm_pit: pit.name,
+                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                volume: el.actual
             })
         }
+        console.log([...arrTarget, ...arrActual, ...arrTrands]);
+        // const data = (await DailyFleet.query()
+        // .with('ritase')
+        // .where( w => {
+        //     w.where('activity_id', '11')
+        //     if(req.pit_id){
+        //         w.where('pit_id', req.pit_id)
+        //     }
+        //     if(req.shift_id){
+        //         w.where('shift_id', req.shift_id)
+        //     }
+        //     if(!req.start_date || !req.end_date){
+        //         w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD'))
+        //         w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD'))
+        //     }else{
+        //         w.where('date', '>=', req.start_date)
+        //         w.where('date', '<=', req.end_date)
 
-        result = _.groupBy(result, 'date')
-        result = Object.keys(result).map(key => {
-            let avg_distance = result[key].reduce((a, b) => { return a + b.avgJarak }, 0) / result[key].length
-            return {
-                date: key,
-                avg_distance: avg_distance.toFixed(0),
-                avg_target: result[key].reduce((a, b) => { return a + b.target }, 0) / result[key].length,
-                sum_rit: result[key].reduce((a, b) => { return a + b.totRit }, 0),
-                sum_volume: result[key].reduce((a, b) => { return a + b.avgVolume }, 0),
-                item: result[key]
-            }
-        })
+        //     }
+        // }).fetch()).toJSON()
+        
+        
+        // const monthlyPlan = (
+        //     await MonthlyPlan.query().where( w => {
+        //             if(req.pit_id){
+        //                 w.where('pit_id', req.pit_id)
+        //             }
+        //             w.where('month', moment(req.start_date).startOf('month').format('YYYY-MM-DD') 
+        //             || moment().startOf('month').format('YYYY-MM-DD'))
+        //             w.where('tipe', 'OB')
+        //         }).fetch()
+        //     ).toJSON() || []
+
+        // let total = monthlyPlan.reduce((a, b) => { return a + b.estimate }, 0)
+        // let jumHari = moment(req.start_date).daysInMonth() || moment().daysInMonth()
+            
+        // for (const obj of data) {
+        //     let masPit = await MasPit.query().where('id', obj.pit_id).last()
+        //     let avgDistance = (obj.ritase).reduce((a, b) => { return a + b.distance }, 0) / (obj.ritase).length || 0
+            
+        //     let totActual = []
+        //     let totRit = []
+        //     for (const elm of obj.ritase) {
+        //         const masMaterial = await MasMaterial.query().where('id', elm.material).last()
+        //         totActual.push(parseFloat(masMaterial.vol) * parseFloat(elm.tot_ritase))
+        //         totRit.push(parseFloat(elm.tot_ritase))
+        //     }
+        //     result.push({
+        //         idFleet: obj.id,
+        //         idpit: obj.pit_id,
+        //         nmpit: masPit.name,
+        //         idshift: obj.shift_id,
+        //         target: total / parseInt(jumHari),
+        //         date: moment(obj.date).format('YYYY-MM-DD'),
+        //         avgJarak: avgDistance,
+        //         totRit: totRit.reduce((a, b) => { return a + b }, 0),
+        //         avgVolume: totActual.reduce((a, b) => { return a + b }, 0)
+        //     })
+        // }
+
+        // result = _.groupBy(result, 'date')
+        // result = Object.keys(result).map(key => {
+        //     let avg_distance = result[key].reduce((a, b) => { return a + b.avgJarak }, 0) / result[key].length
+        //     return {
+        //         date: key,
+        //         avg_distance: avg_distance.toFixed(0),
+        //         avg_target: result[key].reduce((a, b) => { return a + b.target }, 0) / result[key].length,
+        //         sum_rit: result[key].reduce((a, b) => { return a + b.totRit }, 0),
+        //         sum_volume: result[key].reduce((a, b) => { return a + b.avgVolume }, 0),
+        //         item: result[key]
+        //     }
+        // })
 
         return result
     }
@@ -470,6 +613,7 @@ class repPoduction {
         result = Object.keys(result).map(key => {
             return {
                     nm_pit: key,
+                    type: 'column',
                     items: result[key]
             }
         })
@@ -541,6 +685,7 @@ class repPoduction {
         result = Object.keys(result).map(key => {
             return {
                 nm_pit: key,
+                type: 'column',
                 items: result[key]
             }
         })
@@ -751,39 +896,6 @@ class repPoduction {
     }
 }
 module.exports = new repPoduction()
-
-// [
-//     {
-//         name: 'DS',
-//         data: [5, 3, 4, 7, 2],
-//         stack: 'RPU'
-//     }, 
-//     {
-//         name: 'NS',
-//         data: [3, 4, 4, 2, 5],
-//         stack: 'RPU'
-//     }, 
-//     {
-//         name: 'DS',
-//         data: [2, 1, 6, 7, 3],
-//         stack: 'DRW'
-//     },
-//     {
-//         name: 'NS',
-//         data: [2, 1, 6, 7, 3],
-//         stack: 'DRW'
-//     },
-//     {
-//         name: 'DS',
-//         data: [2, 1, 6, 7, 3],
-//         stack: 'KRM'
-//     },
-//     {
-//         name: 'NS',
-//         data: [2, 1, 6, 7, 3],
-//         stack: 'KRM'
-//     }
-// ]
 
 // [
 //     {
