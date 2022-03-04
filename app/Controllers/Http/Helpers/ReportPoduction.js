@@ -306,7 +306,7 @@ class repPoduction {
                 site_id: el.site_id,
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
-                nm_pit: pit.name,
+                nm_pit: `Target ${pit.name}`,
                 current_date: moment(el.current_date).format('DD-MM-YYYY'),
                 volume: el.estimate
             })
@@ -314,7 +314,7 @@ class repPoduction {
                 site_id: el.site_id,
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
-                nm_pit: pit.name,
+                nm_pit: `Actual ${pit.name}`,
                 current_date: moment(el.current_date).format('DD-MM-YYYY'),
                 volume: el.actual
             })
@@ -322,12 +322,44 @@ class repPoduction {
                 site_id: el.site_id,
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
-                nm_pit: pit.name,
+                nm_pit: `Trends ${pit.name}`,
                 current_date: moment(el.current_date).format('DD-MM-YYYY'),
                 volume: el.actual
             })
         }
-        console.log([...arrTarget, ...arrActual, ...arrTrands]);
+
+        arrTarget = _.groupBy(arrTarget, 'nm_pit')
+        arrTarget = Object.keys(arrTarget).map(key => {
+            return {
+                nm_pit: key,
+                color: "#75A5E3",
+                type: 'column',
+                items: arrTarget[key]
+            }
+        })
+        arrActual = _.groupBy(arrActual, 'nm_pit')
+        arrActual = Object.keys(arrActual).map(key => {
+            return {
+                nm_pit: key,
+                color: "#015CB1",
+                type: 'column',
+                items: arrActual[key]
+            }
+        })
+        arrTrands = _.groupBy(arrTrands, 'nm_pit')
+        arrTrands = Object.keys(arrTrands).map(key => {
+            return {
+                nm_pit: key,
+                color: "red",
+                type: 'spline',
+                items: arrTrands[key]
+            }
+        })
+        return {
+            xAxis: xAxis,
+            data: [...arrTarget, ...arrActual, ...arrTrands]
+        }
+        // console.log([...arrTarget, ...arrActual, ...arrTrands]);
         // const data = (await DailyFleet.query()
         // .with('ritase')
         // .where( w => {
