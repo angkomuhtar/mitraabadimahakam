@@ -45,7 +45,7 @@ class FuelDistributeController {
             'mengetahui',
             'recipient'
         ])
-        console.log(req);
+        // console.log(req);
         try {
             await FuelDistibutionHelpers.FUEL_DIST_POST(req)
             return {

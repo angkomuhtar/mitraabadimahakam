@@ -12,6 +12,14 @@ class DailyRitase extends Model {
         return this.belongsTo("App/Models/DailyFleet", "dailyfleet_id", "id")
     }
 
+    pit(){
+        return this.belongsTo("App/Models/MasPit", "pit_id", "id")
+    }
+
+    shift(){
+        return this.belongsTo("App/Models/MasShift", "shift_id", "id")
+    }
+
     material_details(){
         return this.belongsTo("App/Models/MasMaterial", "material", "id")
     }

@@ -144,102 +144,116 @@ $(function(){
     }
 
     function showChart_MW(result){
-        let arrDate = result.data.map(elm => moment(elm.date).format('DD MMM YYYY'))
-        if(result.filterType === "MONTHLY"){
-            arrDate = result.data.map(elm => moment(elm.date).format('MMM YYYY'))
-        }
-        if(result.filterType === "WEEKLY"){
-            arrDate = result.data.map(elm => elm.date)
-        }
-        if(result.filterType === "HOURLY"){
-            arrDate = result.data.map(elm => elm.date)
-        }
-        let arrTarget = result.data.map(elm => parseFloat(elm.avg_target))
-        let arrVolume = result.data.map(elm => elm.sum_volume)
-        let arrRit = result.data.map(elm => (elm.sum_rit))
-        $('b#pit-area').html(result.pit)
-        $('b#begin-date').html(result.periode.start)
-        $('b#end-date').html(result.periode.end)
-        $('b#shift-schedule').html(result.shift)
-        let isStack = result.filterType === "SHIFT" ? true : false
-        BAR_CHART_MW(arrDate, arrVolume, arrTarget, arrRit, isStack)
-    }
+        // let arrDate = result.data.map(elm => moment(elm.date).format('DD MMM YYYY'))
+        // if(result.filterType === "MONTHLY"){
+        //     arrDate = result.data.map(elm => moment(elm.xAxis).format('MMM YYYY'))
+        // }
+        // if(result.filterType === "WEEKLY"){
+        //     arrDate = result.data.map(elm => elm.date)
+        // }
+        // if(result.filterType === "HOURLY"){
+        //     arrDate = result.data.map(elm => elm.date)
+        // }
+        // let arrTarget = result.data.map(elm => parseFloat(elm.avg_target))
+        // let arrVolume = result.data.map(elm => elm.sum_volume)
+        // let arrRit = result.data.map(elm => (elm.sum_rit))
+        // $('b#pit-area').html(result.pit)
+        // $('b#begin-date').html(result.periode.start)
+        // $('b#end-date').html(result.periode.end)
+        // $('b#shift-schedule').html(result.shift)
+        // let isStack = result.filterType === "SHIFT" ? true : false
+        // BAR_CHART_MW(arrDate, arrVolume, arrTarget, arrRit, isStack)
 
-    function showChart_PW(result){
         let xAxis = result.x_Axis
         let series = result.data.map( el => {
             return {
-                name: el.nm_pit,
-                type: 'column',
-                stack: el.nm_pit,
-                data: el.items.map( val => val.actual)
+                name: el.nm_pit || el.name,
+                type: el.type,
+                color: el.color || '',
+                stack: el.nm_pit || el.stack,
+                data: el.items?.map( val => val.volume)
+            }
+        })
+        console.log(series);
+        BAR_CHART_MW(xAxis, series)
+    }
+
+    function showChart_PW(result){
+        console.log(result);
+        let xAxis = result.x_Axis
+        let series = result.data.map( el => {
+            return {
+                name: el.nm_pit || el.name,
+                type: el.type || 'column',
+                stack: el.nm_pit || el.stack,
+                data: el.items?.map( val => val.actual) || el.data
             }
         })
 
         BAR_CHART_PW(xAxis, series)
     }
 
-    function BAR_CHART_MW (arrDate, arrVolume, arrTarget, arrRit, isStack) {
-        let series
-        if(isStack){
-            series = [
-                {
-                    name: 'Day Shift',
-                    type: 'column',
-                    color: '#42C2FF', 
-                    data: arrVolume,
-                    stack: 'actual'
-                }, {
-                    name: 'Night Shift',
-                    type: 'column',
-                    color: '#5463FF',
-                    data: arrRit,
-                    stack: 'actual'
-                }, {
-                    name: 'Target',
-                    type: 'column',
-                    color: '#051367',
-                    data: arrTarget,
-                    stack: 'target'
-                }
-            ]
-        }else{
-            series = [
-                {
-                    name: 'Volume',
-                    type: 'column',
-                    color: '#75A5E3',
-                    data: arrVolume,
-                    stack: 'actual',
-                    tooltip: {
-                        valueSuffix: ' bcm'
-                    }
+    function BAR_CHART_MW (arrDate, series) {
+        // let series
+        // if(isStack){
+        //     series = [
+        //         {
+        //             name: 'Day Shift',
+        //             type: 'column',
+        //             color: '#42C2FF', 
+        //             data: arrVolume,
+        //             stack: 'actual'
+        //         }, {
+        //             name: 'Night Shift',
+        //             type: 'column',
+        //             color: '#5463FF',
+        //             data: arrRit,
+        //             stack: 'actual'
+        //         }, {
+        //             name: 'Target',
+        //             type: 'column',
+        //             color: '#051367',
+        //             data: arrTarget,
+        //             stack: 'target'
+        //         }
+        //     ]
+        // }else{
+        //     series = [
+        //         {
+        //             name: 'Volume',
+        //             type: 'column',
+        //             color: '#75A5E3',
+        //             data: arrVolume,
+        //             stack: 'actual',
+        //             tooltip: {
+        //                 valueSuffix: ' bcm'
+        //             }
     
-                }, {
-                    name: 'Target',
-                    type: 'column',
-                    color: '#015CB1',
-                    data: arrTarget,
-                    stack: 'target',
-                    tooltip: {
-                        valueSuffix: ' bcm'
-                    }
-                }, {
-                    name: 'Trends',
-                    type: 'line',
-                    color: '#FF0000',
-                    lineWidth: 2,
-                    data: arrVolume,
-                }
-            ]
-        }
+        //         }, {
+        //             name: 'Target',
+        //             type: 'column',
+        //             color: '#015CB1',
+        //             data: arrTarget,
+        //             stack: 'target',
+        //             tooltip: {
+        //                 valueSuffix: ' bcm'
+        //             }
+        //         }, {
+        //             name: 'Trends',
+        //             type: 'line',
+        //             color: '#FF0000',
+        //             lineWidth: 2,
+        //             data: arrVolume,
+        //         }
+        //     ]
+        // }
 
         Highcharts.chart('container', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: 'Over Burden Production By Truck Count'
+                text: 'Production By Truck Count'
             },
             subtitle: {
                 text: 'Project BBE'
@@ -281,8 +295,7 @@ $(function(){
             tooltip: {
                 formatter: function () {
                     return '<b>' + this.x + '</b><br/>' +
-                        this.series.name + ': ' + this.y + '<br/>' +
-                        'Total: ' + this.point.stackTotal;
+                        '<b>' + this.series.name + ': </b>' + this.y
                 }
             },
             // tooltip: {
@@ -309,12 +322,13 @@ $(function(){
     }
 
     function BAR_CHART_PW (xAxis, series) {
+        console.log(series);
         Highcharts.chart('container', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: 'Over Burden Production By Truck Count'
+                text: 'Production By Truck Count'
             },
             subtitle: {
                 text: 'Project BBE'
@@ -356,8 +370,8 @@ $(function(){
             tooltip: {
                 formatter: function () {
                     return '<b>' + this.x + '</b><br/>' +
-                        this.series.name + ': ' + this.y + '<br/>' +
-                        'Total: ' + this.point.stackTotal;
+                        this.series.name + ': ' + this.y + '<br/>'+
+                        'PIT: ' + this.series.userOptions.stack;
                 }
             },
             plotOptions: {

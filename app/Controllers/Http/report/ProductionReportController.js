@@ -23,37 +23,61 @@ class ProductionReportController {
 
     async applyFilter ( { request } ) {
         const req = request.all()
-        if(req.production_type === 'OB'){
-
-            if(req.range_type === 'MW'){
-                const pit = await MasPit.query().where('id', req.pit_id).last()
-                const monthlyWise = await MONTHLY_WISE(req)
-                return {
-                    success: true,
-                    chartType: req.graphType,
-                    filterType: req.filterType,
-                    data: monthlyWise,
-                    pit: pit?.name || 'ALL PIT LOCATIONS',
-                    group: 'MW',
-                    periode: {
-                        start: req.start_date || moment().startOf('month').format('YYYY-MM-DD'),
-                        end: req.end_date || moment().format('YYYY-MM-DD')
-                    }
-                }
+        console.log('====================================');
+        console.log(req);
+        console.log('====================================');
+        if(req.range_type === 'MW'){
+            const monthlyWise = await MONTHLY_WISE(req)
+            // const pit = await MasPit.query().where('id', req.pit_id).last()
+            // return {
+            //     success: true,
+            //     chartType: req.graphType,
+            //     filterType: req.filterType,
+            //     data: monthlyWise,
+            //     pit: pit?.name,
+            //     group: 'MW',
+            //     periode: {
+            //         start: req.start_date || moment().startOf('month').format('YYYY-MM-DD'),
+            //         end: req.end_date || moment().format('YYYY-MM-DD')
+            //     }
+            // }
+            return {
+                data: monthlyWise.data,
+                x_Axis: monthlyWise.xAxis,
+                group: 'MW',
             }
-
-            if(req.range_type === 'PW'){
-                const periodWise = await PERIODE_WISE(req)
-                return {
-                    data: periodWise.data,
-                    x_Axis: periodWise.xAxis,
-                    group: 'PW',
-                }
-            }
-
-        }else{
-
         }
+
+        if(req.range_type === 'PW'){
+            const periodWise = await PERIODE_WISE(req)
+            return {
+                data: periodWise.data,
+                x_Axis: periodWise.xAxis,
+                group: 'PW',
+            }
+        }
+        // if(req.production_type === 'OB'){
+
+
+        // }else{
+        //     if(req.range_type === 'MW'){
+        //         const monthlyWise_bb = await BB_MONTHLY_WISE(req)
+        //         return {
+        //             data: monthlyWise_bb.data,
+        //             x_Axis: monthlyWise_bb.xAxis,
+        //             group: 'MW',
+        //         }
+        //     }
+
+        //     if(req.range_type === 'PW'){
+        //         const periodWise_bb = await BB_PERIODE_WISE(req)
+        //         return {
+        //             data: periodWise_bb.data,
+        //             x_Axis: periodWise_bb.xAxis,
+        //             group: 'PW',
+        //         }
+        //     }
+        // }
     }
 
     async dataGraphOB ( { request } ) {
@@ -148,9 +172,6 @@ async function MONTHLY_WISE(req){
 async function PERIODE_WISE(req){
     if(req.filterType === 'MONTHLY'){
         const data = await ReportPoductionHelpers.PW_MONTHLY(req)
-        console.log('====================================');
-        console.log(JSON.stringify(data, null, 2));
-        console.log('====================================');
         return data
     }
 

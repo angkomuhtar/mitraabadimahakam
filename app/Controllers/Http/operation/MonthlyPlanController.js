@@ -36,11 +36,12 @@ class MonthlyPlanController {
   }
 
   
-  async store ({ request, response }) {
+  async store ({ auth, request, response }) {
     const req = request.only(['pit_id', 'tipe', 'month', 'estimate'])
-    console.log(req);
+    // console.log(req);
     try {
-      await MonthlyPlanHelpers.POST(req)
+      const user = await auth.getUser()
+      await MonthlyPlanHelpers.POST(req, user)
       return {
         success: true,
         message: 'Success save data...'
