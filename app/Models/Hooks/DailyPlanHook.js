@@ -13,3 +13,17 @@ DailyPlanHook.afterUpdate = async (dailyplan) => {
         await monthlyPlan.save()
     }
 }
+
+
+DailyPlanHook.beforeInsertData = async dailyplan => {
+    const check = await MonthlyPlan.query()
+         .with('pit', wh => wh.with('site'))
+         .where('id', dailyplan.monthlyplans_id)
+         .last()
+
+    if (check) {
+         const data = check;
+         dailyplan.site_id = data.pit.site.id;
+         dailyplan.pit_id = data.pit.id;
+    }
+}
