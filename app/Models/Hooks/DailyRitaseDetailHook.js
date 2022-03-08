@@ -95,9 +95,11 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
     });
   }
 
-  dailyPlan.merge({
-    actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol),
-  });
+
+    dailyPlan.merge({
+      actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol),
+    });
+  
   
   await dailyPlan.save();
 };

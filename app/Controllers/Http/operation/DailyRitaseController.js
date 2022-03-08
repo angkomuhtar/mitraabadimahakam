@@ -27,6 +27,7 @@ const EmployeeHelpers = use('App/Controllers/Http/Helpers/Employee')
 
 const DailyFleetEquip = use('App/Models/DailyFleetEquip')
 
+const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime");
 class DailyRitaseController {
      async index({ view }) {
           return view.render('operation.daily-ritase-ob.index')
@@ -696,6 +697,10 @@ class DailyRitaseController {
      async storeBackDate({ request, auth }) {
           const req = request.all()
           let xuser
+
+          var t0 = performance.now();
+          let durasi;
+
           try {
                xuser = await auth.getUser()
           } catch (error) {
@@ -711,6 +716,7 @@ class DailyRitaseController {
           var pathData = Helpers.publicPath(`/upload/`)
           const filePath = `${pathData}${fileName}`
 
+          
           try {
                const data =
                     await DailyRitaseHelpers.GET_MONTH_EXCEL_DATA_PRODUCTION(
