@@ -253,7 +253,7 @@ class PDFReport {
             },
             content: dataTitle,
         }
-        // console.log(JSON.stringify(dd, null, 2));
+        console.log(JSON.stringify(dd, null, 2));
         return dd
     }
 
@@ -357,7 +357,7 @@ class PDFReport {
             }
             result.push([
                 {
-                    text: `TOTAL ${obj.week} - (${moment(obj.date_begin).startOf('week').format('DD/MM')} - ${moment(obj.date_end).startOf('week').format('DD/MM')})`, 
+                    text: `TOTAL ${obj.week} - (${moment(obj.date_begin).format('DD/MM')} to ${moment(obj.date_end).format('DD/MM')})`, 
                     colSpan: 2, 
                     alignment: 'left', 
                     bold: true, 
@@ -501,7 +501,7 @@ class PDFReport {
             content: dataTitle,
         }
 
-        // console.log(JSON.stringify(data, null, 2));
+        console.log(JSON.stringify(dd, null, 2));
         return dd
     }
 }

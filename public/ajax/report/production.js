@@ -70,6 +70,7 @@ $(function(){
                     body.find('div#select-duration-type').css('display', 'inline')
                     // body.find('select#filterType option[value!="DATE"]').removeAttr('disabled')
                     body.find('div#box-apply-chart').css('display', 'inline')
+                    body.find('div#box-type-chart').css('display', 'inline')
                 }
             })
         }
@@ -96,6 +97,7 @@ $(function(){
     $('body').on('change', 'select[name="filterType"]', function(){
         var values = $(this).val()
         body.find('div.container-type').css('display', 'none')
+        body.find('div#box-chart').css('display', 'none')
         // body.find('div.container-type').children('select, input').val()
         switch (values) {
             case 'MONTHLY':
@@ -103,6 +105,7 @@ $(function(){
                 body.find('div#box-monthly').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
+                body.find('div#box-type-chart').css('display', 'inline')
                 body.find('div#box-apply-chart').css('display', 'inline')
                 break;
             case 'WEEKLY':
@@ -110,6 +113,7 @@ $(function(){
                 body.find('div#box-weekly').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
+                body.find('div#box-type-chart').css('display', 'inline')
                 body.find('div#box-apply-chart').css('display', 'inline')
                 break;
             case 'DATE':
@@ -117,6 +121,7 @@ $(function(){
                 body.find('div#box-date').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
+                body.find('div#box-type-chart').css('display', 'inline')
                 body.find('div#box-apply-chart').css('display', 'inline')
                 break;
             case 'SHIFT':
@@ -125,6 +130,7 @@ $(function(){
                 body.find('div#box-date').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
+                body.find('div#box-type-chart').css('display', 'inline')
                 body.find('div#box-apply-chart').css('display', 'inline')
                 break;
             case 'HOURLY':
@@ -132,6 +138,7 @@ $(function(){
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
                 body.find('div#box-shift').css('display', 'none')
+                body.find('div#box-type-chart').css('display', 'inline')
                 body.find('div#box-apply-chart').css('display', 'inline')
                 break;
             case '':
@@ -264,6 +271,7 @@ $(function(){
 
     function showChart_PW(result){
         console.log(result);
+        let site = result.site
         let xAxis = result.x_Axis
         let series = result.data.map( el => {
             return {
@@ -274,7 +282,7 @@ $(function(){
             }
         })
 
-        BAR_CHART_PW(xAxis, series)
+        BAR_CHART_PW(xAxis, series, site)
     }
 
     function BAR_CHART_MW (arrDate, series) {
@@ -352,7 +360,7 @@ $(function(){
         });
     }
 
-    function BAR_CHART_PW (xAxis, series) {
+    function BAR_CHART_PW (xAxis, series, site) {
         console.log(series);
         Highcharts.chart('container', {
             chart: {
@@ -362,7 +370,7 @@ $(function(){
                 text: 'Production By Truck Count'
             },
             subtitle: {
-                text: 'Project BBE'
+                text: 'Project '+ site
             },
             xAxis: [{
                 categories: xAxis,

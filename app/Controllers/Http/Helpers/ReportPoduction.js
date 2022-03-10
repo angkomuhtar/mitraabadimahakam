@@ -552,7 +552,11 @@ class repPoduction {
             }
         })
 
+        const site = await MasSite.query().where('id', req.site_id).last()
+        // site_nm: site.name,
+
         return {
+            site_nm: site.name,
             xAxis: xAxis.map( el => el.x_axis),
             data: result
         }
@@ -617,8 +621,11 @@ class repPoduction {
                 items: result[key]
             }
         })
-        
+
+        const site = await MasSite.query().where('id', req.site_id).last()
+
         return {
+            site_nm: site.name,
             xAxis: arrDate.map( el => el.date),
             data: result
         }
@@ -635,9 +642,9 @@ class repPoduction {
             w.where('current_date', '<=', req.end_date)
         }).fetch()).toJSON()
 
-        console.log(req.start_date);
-        console.log(req.end_date);
-        console.log(req.production_type);
+        // console.log(req.start_date);
+        // console.log(req.end_date);
+        // console.log(req.production_type);
 
         let arrDate = _.uniq(arrData.map( el => moment(el.current_date).format('DD MMM YYYY')))
 

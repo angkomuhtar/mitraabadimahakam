@@ -39,6 +39,7 @@ class ProductionReportController {
         if(req.range_type === 'PW'){
             const periodWise = await PERIODE_WISE(req)
             return {
+                site: periodWise.site_nm || 'BBE',
                 data: periodWise.data,
                 x_Axis: periodWise.xAxis,
                 group: 'PW',
