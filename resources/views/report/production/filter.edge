@@ -1,5 +1,8 @@
 {{ script('ajax/index') }}
 {{ script('ajax/report/production-filter') }}
+<!-- Select2 -->
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
 <div class="row">
     <div class="col-md-12">
         <div class="white-box">
@@ -118,11 +121,11 @@
                                         </div>
                                     </div>
                                     <div class="panel-footer text-right">
-                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
-                                            <i class="fa fa-close"></i> <span>Reset Filter</span>
+                                        <button type="button" class="btn btn-default waves-effect waves-light bt-cancel" id="bt-show-data"> 
+                                            <i class="fa fa-table"></i> <span>View Data</span>
                                         </button>
-                                        <button class="btn btn-info waves-effect waves-light" id="bt-save-employee"> 
-                                            <i class="fa fa-filter"></i> <span>Apply Filter</span>
+                                        <button class="btn btn-info waves-effect waves-light" type="submit"> 
+                                            <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
                                         </button>
                                     </div>
                                 </div>

@@ -126,6 +126,59 @@ $(function(){
         console.log('...');
     })
 
+    $('body').on('click', 'button#bt-show-data', function(e){
+        e.preventDefault()
+        let data = {
+            site_id: $('select[name="site_id"]').val(),
+            pit_id: $('select[name="pit_id"]').val(),
+            production_type: $('select[name="production_type"]').val(),
+            range_type: $('select[name="range_type"]').val(),
+            filterType: $('select[name="filterType"]').val(),
+            start_date: $('input[name="start_date"]').val(),
+            end_date: $('input[name="end_date"]').val(),
+            month_begin: $('input[name="month_begin"]').val(),
+            month_end: $('input[name="month_end"]').val(),
+            week_begin: $('input[name="week_begin"]').val(),
+            week_end: $('input[name="week_end"]').val(),
+            date: $('input[name="date"]').val(),
+            shift_id: $('select[name="shift_id"]').val()
+        }
+       
+        function objectToQueryString(obj) {
+            var str = [];
+            for (var p in obj)
+              if (obj.hasOwnProperty(p)) {
+                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+              }
+            return str.join("&");
+        }
+          
+        var queryString = objectToQueryString(data);
+        console.log(queryString);
+        $.ajax({
+            async: true,
+            url: '/report/production/show-data?'+queryString,
+            method: 'GET',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                GEN_PDF(result)
+            },
+            error: function(err){
+                console.log(err)
+            }
+        })
+        // console.log('...', data);
+    })
+
+    function GEN_PDF(content){
+        pdfMake.createPdf(content).open();
+    }
+
     function initFilter(){
         $.ajax({
             async: true,
@@ -144,25 +197,6 @@ $(function(){
     }
 
     function showChart_MW(result){
-        // let arrDate = result.data.map(elm => moment(elm.date).format('DD MMM YYYY'))
-        // if(result.filterType === "MONTHLY"){
-        //     arrDate = result.data.map(elm => moment(elm.xAxis).format('MMM YYYY'))
-        // }
-        // if(result.filterType === "WEEKLY"){
-        //     arrDate = result.data.map(elm => elm.date)
-        // }
-        // if(result.filterType === "HOURLY"){
-        //     arrDate = result.data.map(elm => elm.date)
-        // }
-        // let arrTarget = result.data.map(elm => parseFloat(elm.avg_target))
-        // let arrVolume = result.data.map(elm => elm.sum_volume)
-        // let arrRit = result.data.map(elm => (elm.sum_rit))
-        // $('b#pit-area').html(result.pit)
-        // $('b#begin-date').html(result.periode.start)
-        // $('b#end-date').html(result.periode.end)
-        // $('b#shift-schedule').html(result.shift)
-        // let isStack = result.filterType === "SHIFT" ? true : false
-        // BAR_CHART_MW(arrDate, arrVolume, arrTarget, arrRit, isStack)
 
         let xAxis = result.x_Axis
         let series = result.data.map( el => {
@@ -170,7 +204,7 @@ $(function(){
                 name: el.nm_pit || el.name,
                 type: el.type,
                 color: el.color || '',
-                stack: el.nm_pit || el.stack,
+                stack: el.stack || el.nm_pit,
                 data: el.items?.map( val => val.volume)
             }
         })
@@ -194,59 +228,6 @@ $(function(){
     }
 
     function BAR_CHART_MW (arrDate, series) {
-        // let series
-        // if(isStack){
-        //     series = [
-        //         {
-        //             name: 'Day Shift',
-        //             type: 'column',
-        //             color: '#42C2FF', 
-        //             data: arrVolume,
-        //             stack: 'actual'
-        //         }, {
-        //             name: 'Night Shift',
-        //             type: 'column',
-        //             color: '#5463FF',
-        //             data: arrRit,
-        //             stack: 'actual'
-        //         }, {
-        //             name: 'Target',
-        //             type: 'column',
-        //             color: '#051367',
-        //             data: arrTarget,
-        //             stack: 'target'
-        //         }
-        //     ]
-        // }else{
-        //     series = [
-        //         {
-        //             name: 'Volume',
-        //             type: 'column',
-        //             color: '#75A5E3',
-        //             data: arrVolume,
-        //             stack: 'actual',
-        //             tooltip: {
-        //                 valueSuffix: ' bcm'
-        //             }
-    
-        //         }, {
-        //             name: 'Target',
-        //             type: 'column',
-        //             color: '#015CB1',
-        //             data: arrTarget,
-        //             stack: 'target',
-        //             tooltip: {
-        //                 valueSuffix: ' bcm'
-        //             }
-        //         }, {
-        //             name: 'Trends',
-        //             type: 'line',
-        //             color: '#FF0000',
-        //             lineWidth: 2,
-        //             data: arrVolume,
-        //         }
-        //     ]
-        // }
 
         Highcharts.chart('container', {
             chart: {

@@ -508,6 +508,7 @@ Route.group(() => {
     Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
     Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
     Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
+    Route.get('/production/show-data', 'ProductionReportController.showData').as('rep.production.showData').middleware('R')
 
     // Route.get('/over-borden', 'ProductionReportController.index').as('rep.over-borden.index').middleware('R')
 

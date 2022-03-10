@@ -70,17 +70,17 @@ async function UPDATE_DATA_MASTER (data) {
                     w.where('checkin_jt', '<=', data.checkin_jt)
                 })
                 .andWhere('ritasecoal_id', data.ritasecoal_id)
-                .getSum('w_gross')
+                .getSum('w_gross') / 1000   // Konversi ke Metrik Ton
 
             const tw_tare = await DailyRitaseCoalDetail.query(trx)
                 .where(w => w.where('checkin_jt', '>=', awalBulan).andWhere('checkin_jt', '<=', data.checkin_jt))
                 .andWhere('ritasecoal_id', data.ritasecoal_id)
-                .getSum('w_tare')
+                .getSum('w_tare')  / 1000   // Konversi ke Metrik Ton
 
             const tw_netto = await DailyRitaseCoalDetail.query(trx)
                 .where(w => w.where('checkin_jt', '>=', awalBulan).andWhere('checkin_jt', '<=', data.checkin_jt))
                 .andWhere('ritasecoal_id', data.ritasecoal_id)
-                .getSum('w_netto')
+                .getSum('w_netto')  / 1000   // Konversi ke Metrik Ton
 
             const dailyRitaseCoal = await DailyRitaseCoal.findOrFail(data.ritasecoal_id, trx)
             dailyRitaseCoal.merge({
