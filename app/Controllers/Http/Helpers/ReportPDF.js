@@ -94,42 +94,7 @@ class PDFReport {
 
         for (const obj of monthlyPlan) {
             const pit = await MasPit.query().where('id', obj.pit_id).last()
-            result.push([
-                {
-                    text: `(${obj.pit_nm}) - ${moment(obj.month).format('MMMM YYYY')}`, 
-                    colSpan: 2, 
-                    alignment: 'left', 
-                    bold: true, 
-                    fontSize: 8,
-                    fillColor: '#FFBCBC', 
-                    margin: [10, 3, 0, 3]
-                },
-                {},
-                {
-                    text: `${(obj.estimate).toLocaleString('id-ID')} BCM`,
-                    alignment: 'right', 
-                    bold: true,
-                    fontSize: 8,
-                    fillColor: '#FFBCBC', 
-                    margin: [10, 3, 0, 3]
-                },
-                {
-                    text: `${(obj.actual).toLocaleString('id-ID')} BCM`,
-                    alignment: 'right', 
-                    bold: true,
-                    fontSize: 8,
-                    fillColor: '#FFBCBC', 
-                    margin: [10, 3, 0, 3]
-                },
-                {
-                    text: `${(parseFloat(obj.actual) - parseFloat(obj.estimate)).toLocaleString('id-ID')} BCM`,
-                    alignment: 'right', 
-                    bold: true,
-                    fontSize: 8,
-                    fillColor: '#FFBCBC', 
-                    margin: [10, 3, 0, 3]
-                },
-            ])
+            
             for (const [i, val] of obj.daily_plan.entries()) {
                 result.push([
                     {text: pit.name, style: 'tableCell_L'},
@@ -139,6 +104,42 @@ class PDFReport {
                     {text: (parseFloat(val.actual) - parseFloat(val.estimate)).toFixed(2), style: 'tableCell_R'},
                 ])
             }
+            result.push([
+                {
+                    text: `TOTAL ${pit.name} - (${moment(obj.month).format('MMMM YYYY')})`, 
+                    colSpan: 2, 
+                    alignment: 'left', 
+                    bold: true, 
+                    fontSize: 8,
+                    fillColor: '#FFBCBC', 
+                    margin: [5, 3, 5, 3]
+                },
+                {},
+                {
+                    text: `${(obj.estimate).toLocaleString('id-ID')} BCM`,
+                    alignment: 'right', 
+                    bold: true,
+                    fontSize: 8,
+                    fillColor: '#FFBCBC', 
+                    margin: [5, 3, 5, 3]
+                },
+                {
+                    text: `${(obj.actual).toLocaleString('id-ID')} BCM`,
+                    alignment: 'right', 
+                    bold: true,
+                    fontSize: 8,
+                    fillColor: '#FFBCBC', 
+                    margin: [5, 3, 5, 3]
+                },
+                {
+                    text: `${(parseFloat(obj.actual) - parseFloat(obj.estimate)).toLocaleString('id-ID')} BCM`,
+                    alignment: 'right', 
+                    bold: true,
+                    fontSize: 8,
+                    fillColor: '#FFBCBC', 
+                    margin: [5, 3, 5, 3]
+                },
+            ])
         }
 
         // console.log(result);
@@ -281,7 +282,7 @@ class PDFReport {
                 return dates;
             };
             arrDate.push({
-                date: 'week-'+i,
+                date: 'WEEK-'+i,
                 items: getDaysBetweenDates(arrStart, arrEnd)
             })
         }
@@ -297,7 +298,7 @@ class PDFReport {
                 w.where('tipe', 'OB')
                 w.where('current_date', '>=', _.first(obj.items))
                 w.where('current_date', '<=', _.last(obj.items))
-            }).fetch()).toJSON()
+            }).orderBy('pit_id').fetch()).toJSON()
 
             for (const val of dataWeekly) {
                 const pit = await MasPit.query().where('id', val.pit_id).last()
@@ -317,6 +318,10 @@ class PDFReport {
             const site = await MasSite.query().where('id', req.site_id).last()
             data.push({
                 week: obj.date,
+                date_begin: _.first(obj.items),
+                date_end: _.last(obj.items),
+                estimate: (dataWeekly.reduce((a, b) => { return a + b.estimate }, 0)).toFixed(2),
+                actual: (dataWeekly.reduce((a, b) => { return a + b.actual }, 0)).toFixed(2),
                 pit_nm: pit?.name || 'ALL PIT',
                 site_nm: site.name,
                 items: tmp
@@ -340,45 +345,52 @@ class PDFReport {
         ])
 
         for (const obj of data) {
+            
+            for (const val of obj.items) {
+                result.push([
+                    {text: val.pit_nm, style: 'tableCell_L'},
+                    {text: moment(val.date).format('DD-MM-YYYY'), style: 'tableCell_L'},
+                    {text: val.estimate, style: 'tableCell_R'},
+                    {text: val.actual, style: 'tableCell_R'},
+                    {text: (parseFloat(val.actual) - parseFloat(val.estimate)).toFixed(2), style: 'tableCell_R'},
+                ])
+            }
             result.push([
                 {
-                    text: `(${pit.name}) - ${moment(obj.month).format('MMMM YYYY')}`, 
+                    text: `TOTAL ${obj.week} - (${moment(obj.date_begin).startOf('week').format('DD/MM')} - ${moment(obj.date_end).startOf('week').format('DD/MM')})`, 
                     colSpan: 2, 
                     alignment: 'left', 
                     bold: true, 
                     fontSize: 8,
                     fillColor: '#FFBCBC', 
-                    margin: [10, 3, 0, 3]
+                    margin: [5, 3, 5, 3]
                 },
                 {},
                 {
-                    text: `${(obj.estimate).toLocaleString('id-ID')} BCM`,
+                    text: `${(obj.estimate)} BCM`,
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
                     fillColor: '#FFBCBC', 
-                    margin: [10, 3, 0, 3]
+                    margin: [5, 3, 5, 3]
                 },
                 {
-                    text: `${(obj.actual).toLocaleString('id-ID')} BCM`,
+                    text: `${(obj.actual)} BCM`,
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
                     fillColor: '#FFBCBC', 
-                    margin: [10, 3, 0, 3]
+                    margin: [5, 3, 5, 3]
                 },
                 {
-                    text: `${(parseFloat(obj.actual) - parseFloat(obj.estimate)).toLocaleString('id-ID')} BCM`,
+                    text: `${(parseFloat(obj.actual) - parseFloat(obj.estimate)).toFixed(2)} BCM`,
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
                     fillColor: '#FFBCBC', 
-                    margin: [10, 3, 0, 3]
+                    margin: [5, 3, 5, 3]
                 },
             ])
-            // for (const val of obj.items) {
-                
-            // }
         }
 
         const dataTitle = [
@@ -489,7 +501,7 @@ class PDFReport {
             content: dataTitle,
         }
 
-        console.log(JSON.stringify(data, null, 2));
+        // console.log(JSON.stringify(data, null, 2));
         return dd
     }
 }

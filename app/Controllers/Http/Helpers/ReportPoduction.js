@@ -34,7 +34,7 @@ class repPoduction {
                     w.where('tipe', req.production_type)
                     w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
                     w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
-                }).fetch()
+                }).orderBy('month').fetch()
             ).toJSON()
 
             let xAxis = data.map(el => moment(el.month).format('MMM YYYY'))

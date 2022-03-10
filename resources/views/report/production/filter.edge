@@ -9,124 +9,192 @@
             <div class="" id="content-list">
                 <div class="row">
                     <div class="col-md-12">
-                        <form action="" id="filter-data">
+                        <form class="form-horizontal" action="" id="filter-data">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><i class="ti-filter" style="margin-right: 10px;"></i> Filter Data</div>
                                 <div class="panel-wrapper collapse in">
                                     <div class="panel-body">
                                         {{ csrfField() }}
                                         <div class="row">
-                                            <div class="col-md-3">
-                                                <label for="">Pilih Site/Project</label>
-                                                <div class="form-group">
-                                                    <select class="form-control inp-filter select2site" name="site_id" id="site_id"></select>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-md-3" id="select-production-type" style="display:none">
-                                                <label for="">Pilih Production Type</label>
-                                                <select class="form-control select2production_type" name="production_type">
-                                                    <option value="">Pilih</option>
-                                                    <option value="OB">Over Burden (OB)</option>
-                                                    <option value="BB">Coal</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-3" id="select-range-type" style="display:none">
-                                                <label for="">Pilih Ranges Type </label>
-                                                <select class="form-control select2range_type" name="range_type">
-                                                    <option value="">Pilih</option>
-                                                    <option value="MW">Month Wise</option>
-                                                    <option value="PW">Periode Wise</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-3" id="select-pit"></div>
-                                        </div>
-                                        <div class="row">
-                                            <div id="select-duration-type" class="col-md-3" style="display:none">
-                                                <label for="">Duration Type</label>
-                                                <div class="form-group">
-                                                    <select class="form-control inp-filter" name="filterType" id="filterType">
-                                                        <option value="">Pilih</option>
-                                                        <option value="DATE">By Date</option>
-                                                        <option value="MONTHLY">By Monthly</option>
-                                                        <option value="WEEKLY">By Weekly</option>
-                                                        <option value="SHIFT">By Shift Schedules</option>
-                                                        <option value="HOURLY">By Hourly</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="container-type" id="box-date" style="display:none">
-                                                <div class="col-md-3">
-                                                    <label for="mulai_tanggal">Start Of Date</label>
-                                                    <div class="form-group">
-                                                        <input type="date" class="form-control inp-filter range_begin" name="start_date" id="start_date">
+                                            <div class="form-group m-b-10">
+                                                <label for="" class="col-sm-4 control-label">Site/Project*</label>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-direction-alt"></i>
+                                                        </div>
+                                                        <select class="form-control inp-filter select2site" name="site_id" id="site_id"></select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <label for="hingga_tanggal">End Of Date</label>
-                                                    <div class="form-group">
-                                                        <input type="date" class="form-control inp-filter range_end" name="end_date" id="end_date">
+                                            </div>
+                                            <div class="form-group m-b-10" id="select-production-type" style="display:none">
+                                                <label for="" class="col-sm-4 control-label">Production Type*</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-shopping-cart-full"></i>
+                                                        </div>
+                                                        <select class="form-control select2production_type" name="production_type">
+                                                            <option value="">Pilih</option>
+                                                            <option value="OB">Over Burden (OB)</option>
+                                                            <option value="BB">Coal</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group m-b-10" id="select-range-type" style="display:none">
+                                                <label for="" class="col-sm-4 control-label">Group By*</label>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-infinite"></i>
+                                                        </div>
+                                                        <select class="form-control select2range_type" name="range_type" id="range_type">
+                                                            <option value="">Pilih</option>
+                                                            <option value="MW">Month Wise</option>
+                                                            <option value="PW">Periode Wise</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
 
+                                            <div class="form-group m-b-10" id="select-pit"></div>
+
+                                            <div class="form-group m-b-10" id="select-duration-type" style="display:none">
+                                                <label for="" class="col-sm-4 control-label">Range By*</label>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-pin-alt"></i>
+                                                        </div>
+                                                        <select class="form-control inp-filter" name="filterType" id="filterType">
+                                                            <option value="">Pilih</option>
+                                                            <option value="MONTHLY">By Monthly</option>
+                                                            <option value="WEEKLY">By Weekly</option>
+                                                            <option value="DATE">By Date</option>
+                                                            <option value="SHIFT">By Shift Schedules</option>
+                                                            <option value="HOURLY">By Hourly</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group m-b-10" id="box-daily" style="display:none">
+                                                <label for="" class="col-sm-4 control-label">Date By Hours*</label>
+                                                <div class="col-sm-3">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-calendar"></i>
+                                                        </div>
+                                                        <input type="date" class="form-control inp-filter initDate" name="date" id="date">
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="container-type" id="box-monthly" style="display:none">
-                                                <div class="col-md-3">
-                                                    <label for="hingga_tanggal">Start Of Month</label>
-                                                    <div class="form-group">
-                                                        <input type="month" class="form-control inp-filter" name="month_begin" id="month_begin">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label">From Month</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-forward"></i>
+                                                            </div>
+                                                            <input type="month" class="form-control inp-filter" name="month_begin" id="month_begin">
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <label for="hingga_tanggal">End Of Month</label>
-                                                    <div class="form-group">
-                                                        <input type="month" class="form-control inp-filter" name="month_end" id="month_end">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label">To Month</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-backward"></i>
+                                                            </div>
+                                                            <input type="month" class="form-control inp-filter" name="month_end" id="month_end">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="container-type" id="box-weekly" style="display:none">
-                                                <div class="col-md-3">
-                                                    <label for="hingga_tanggal">Start Of Week</label>
-                                                    <div class="form-group">
-                                                        <input type="week" class="form-control inp-filter" name="week_begin" id="week_begin">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label">From Week</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-forward"></i>
+                                                            </div>
+                                                            <input type="week" class="form-control inp-filter" name="week_begin" id="week_begin">
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <label for="hingga_tanggal">End Of Week</label>
-                                                    <div class="form-group">
-                                                        <input type="week" class="form-control inp-filter" name="week_end" id="week_end">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label">To Week</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-backward"></i>
+                                                            </div>
+                                                            <input type="week" class="form-control inp-filter" name="week_end" id="week_end">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <div class="container-type" id="box-daily" style="display:none">
-                                                <div class="col-md-3">
-                                                    <label for="">Select Date</label>
-                                                    <div class="form-group">
-                                                        <input type="date" class="form-control inp-filter initDate" name="date" id="date">
+                                            <div class="container-type" id="box-date" style="display:none">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label">From Date</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-forward"></i>
+                                                            </div>
+                                                            <input type="date" class="form-control inp-filter range_begin" name="start_date" id="start_date">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label">To Date</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-backward"></i>
+                                                            </div>
+                                                            <input type="date" class="form-control inp-filter range_end" name="end_date" id="end_date">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="container-type" id="box-shift" style="display:none">
-                                                <div class="col-md-3">
-                                                    <label for="">Pilih Shift</label>
-                                                    <div class="form-group">
-                                                        <select class="form-control inp-filter select2shift" name="shift_id" id="shift_id"></select>
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label">Shift Name</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-reload"></i>
+                                                            </div>
+                                                            <select class="form-control inp-filter select2shift" name="shift_id" id="shift_id"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-apply-chart" style="display:none">
+                                                <div class="form-group m-t-20">
+                                                    <label for="" class="col-sm-4 control-label">&nbsp;</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <button class="btn btn-info waves-effect waves-light" type="submit"> 
+                                                                <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="panel-footer text-right">
-                                        <button type="button" class="btn btn-default waves-effect waves-light bt-cancel" id="bt-show-data"> 
-                                            <i class="fa fa-table"></i> <span>View Data</span>
-                                        </button>
+                                    <div class="panel-footer">
+                                        <!--
                                         <button class="btn btn-info waves-effect waves-light" type="submit"> 
                                             <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
-                                        </button>
+                                        </button>-->
+                                        <small>If range input selected, click button Apply Chart to display Chart and download data</small>
                                     </div>
                                 </div>
                             </div>
@@ -138,10 +206,21 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="white-box">
-            <div id="container" class="text-center"></div>
+<div id="box-chart" class="row" style="display:none">
+    <div class="white-box">
+        <div id="container" class="text-center"></div>
+        <hr>
+        <div class="text-center">
+            <button type="button" class="btn btn-default waves-effect waves-light btn-sm" id="bt-show-data"> 
+                <i class="fa fa-file-pdf-o"></i> <span>Download PDF</span>
+            </button>
+            <button type="button" class="btn btn-default waves-effect waves-light btn-sm" id="bt-show-data"> 
+                <i class="fa fa-file-excel-o"></i> <span>Download XLS</span>
+            </button>
+
         </div>
     </div>
+    <!--
+    <div class="col-md-12">
+    </div>-->
 </div>

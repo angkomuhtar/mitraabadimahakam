@@ -9,13 +9,30 @@ $(function(){
     $('body').on('change', 'select[name="site_id"]', function(){
         var values = $(this).val()
         if(values){
+            body.find('select[name="production_type"]').val('')
+            body.find('select[name="range_type"]').val('')
+            body.find('div.select-duration-type').css('display', 'none')
             body.find('div#select-pit').css('display', 'none')
             body.find('div#select-production-type').css('display', 'inline')
-            
+            body.find('div#select-range-type').css('display', 'none')
+            body.find('div#select-duration-type').css('display', 'none')
+            body.find('div.container-type').css('display', 'none')
         }else{
             body.find('div#select-pit').html('')
+            body.find('select#production_type').val('')
+            body.find('select#range_type').val('')
+            body.find('select#filterType').val('')
+            body.find('input#date').val('')
+            body.find('input#month_begin').val('')
+            body.find('input#month_end').val('')
+            body.find('input#week_begin').val('')
+            body.find('input#week_end').val('')
+            body.find('input#start_date').val('')
+            body.find('input#end_date').val('')
+            body.find('div#select-duration-type').css('display', 'none')
             body.find('div#select-production-type').css('display', 'none')
             body.find('div#select-range-type').css('display', 'none')
+            body.find('div.container-type').css('display', 'none')
         }
     })
 
@@ -40,6 +57,10 @@ $(function(){
                 success: function(result){
                     console.log(result);
                     body.find('div#select-pit').html(result)
+                    body.find('div.container-type').css('display', 'none')
+                    body.find('select[name="filterType"]').val('DATE')
+                    body.find('select#filterType option[value!="DATE"]').attr('disabled', 'true')
+                    body.find('div#box-date').css('display', 'inline')
                 },
                 error: function(err){
                     console.log(err);
@@ -47,18 +68,28 @@ $(function(){
                 complete: function(){
                     console.log('finish...');
                     body.find('div#select-duration-type').css('display', 'inline')
+                    // body.find('select#filterType option[value!="DATE"]').removeAttr('disabled')
+                    body.find('div#box-apply-chart').css('display', 'inline')
                 }
             })
         }
         if(values === 'PW'){
+            body.find('select[name="filterType"]').val('')
+            body.find('select#filterType option[value!="DATE"]').removeAttr('disabled')
             body.find('div#select-pit').css('display', 'none')
+            body.find('div#box-date').css('display', 'none')
             body.find('div#select-duration-type').css('display', 'inline')
             body.find('select[name="pit_id"]').val('')
+            body.find('div#box-apply-chart').css('display', 'none')
         }
         if(!values){
+            body.find('select[name="filterType"]').val('')
+            body.find('select#filterType option[!value="DATE"]').removeAttr('disabled')
             body.find('div#select-pit').css('display', 'none')
             body.find('div#select-duration-type').css('display', 'none')
+            body.find('div#box-date').css('display', 'none')
             body.find('select[name="pit_id"]').val('')
+            body.find('div#box-apply-chart').css('display', 'none')
         }
     })
 
@@ -68,26 +99,43 @@ $(function(){
         // body.find('div.container-type').children('select, input').val()
         switch (values) {
             case 'MONTHLY':
+                body.find('div#box-daily').css('display', 'none')
                 body.find('div#box-monthly').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
+                body.find('div#box-apply-chart').css('display', 'inline')
                 break;
             case 'WEEKLY':
+                body.find('div#box-daily').css('display', 'none')
                 body.find('div#box-weekly').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
+                body.find('div#box-apply-chart').css('display', 'inline')
                 break;
-            case 'SHIFT':
+            case 'DATE':
+                body.find('div#box-daily').css('display', 'none')
                 body.find('div#box-date').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
+                body.find('div#box-apply-chart').css('display', 'inline')
+                break;
+            case 'SHIFT':
+                body.find('div#box-daily').css('display', 'none')
                 body.find('div#box-shift').css('display', 'inline')
+                body.find('div#box-date').css('display', 'inline')
+                body.find('div#box-site').css('display', 'inline')
+                body.find('div#box-pit').css('display', 'inline')
+                body.find('div#box-apply-chart').css('display', 'inline')
                 break;
             case 'HOURLY':
                 body.find('div#box-daily').css('display', 'inline')
                 body.find('div#box-site').css('display', 'inline')
                 body.find('div#box-pit').css('display', 'inline')
                 body.find('div#box-shift').css('display', 'none')
+                body.find('div#box-apply-chart').css('display', 'inline')
+                break;
+            case '':
+                body.find('div.container-type').css('display', 'none')
                 break;
             default:
                 body.find('div#box-date').css('display', 'inline')
@@ -118,9 +166,11 @@ $(function(){
                 }else{
                     showChart_PW(result)
                 }
+                body.find('div#box-chart').css('display', 'inline')
             },
             error: function(err){
                 console.log(err)
+                body.find('div#box-chart').css('display', 'none')
             }
         })
         console.log('...');
@@ -256,7 +306,7 @@ $(function(){
                     gridLineColor: '#ddd',
                     gridLineWidth: 0.2,
                     labels: {
-                        format: '{value} BCM',
+                        format: '{value}',
                         style: {
                             fontSize: '11px',
                             fontFamily: 'Verdana, sans-serif',
@@ -264,7 +314,7 @@ $(function(){
                         }
                     },
                     title: {
-                        text: 'Total Volume BCM',
+                        text: 'Total Volume',
                         style: {
                             fontSize: '15px',
                             fontFamily: 'Verdana, sans-serif',
@@ -331,7 +381,7 @@ $(function(){
                     gridLineColor: '#ddd',
                     gridLineWidth: 0.2,
                     labels: {
-                        format: '{value} BCM',
+                        format: '{value}',
                         style: {
                             fontSize: '11px',
                             fontFamily: 'Verdana, sans-serif',
@@ -339,7 +389,7 @@ $(function(){
                         }
                     },
                     title: {
-                        text: 'Total Volume BCM',
+                        text: 'Total Volume',
                         style: {
                             fontSize: '15px',
                             fontFamily: 'Verdana, sans-serif',
