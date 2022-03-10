@@ -16,6 +16,9 @@ const MasEquipment = use('App/Models/MasEquipment')
 const DailyFleetEquipment = use('App/Models/DailyFleetEquip')
 const MasMaterial = use('App/Models/MasMaterial')
 const Helpers = use('Helpers')
+const diagnoticTime = use(
+     'App/Controllers/Http/customClass/diagnoticTime'
+)
 
 class Ritase {
      async ALL(req) {
@@ -1123,39 +1126,58 @@ class Ritase {
      }
 
      async GET_MONTH_EXCEL_DATA_PRODUCTION(filePath, req, usr) {
-
-
-          console.log('file path >> ', filePath, req)
           const sampleSheet = req.sheet || 'OB'
 
           const xlsx = excelToJson({
                sourceFile: filePath,
-               header: 1
+               header: 1,
           })
+
+          var t0 = performance.now()
+          let durasi
 
           const data = []
           const monthLength = moment(req.date).daysInMonth()
-          const endIndex =
-               xlsx[sampleSheet].findIndex(v => v.F === 'PIT RPU') - 1
+          const endIndex = xlsx[sampleSheet].findIndex(v => !v.F)
 
           const sheetData = xlsx[sampleSheet].slice(1, endIndex)
           const daysArr = Array.from({ length: monthLength }).map(
                (v, i) => {
                     return moment(req.date)
+                         .startOf('month')
                          .add(i, 'day')
                          .format('YYYY-MM-DD')
                }
           )
+          console.log('>> ', daysArr)
 
           let idx = 0
 
-          // console.log('data length >> ', dataLength)
-          // console.log('first date >> ', moment(sheetData[0].A).format('YYYY-MM-DD'));
-          // console.log('first index >> ', sheetData[0]);
-          // console.log('end date >> ', moment(sheetData[sheetData.length - 1].A).format('YYYY-MM-DD'));
-          // console.log('last index >> ', sheetData[sheetData.length - 1])
+          console.log(
+               'first date >> ',
+               moment(sheetData[0].A)
+                    .add(1, 'days')
+                    .format('YYYY-MM-DD')
+          )
+          console.log('first index >> ', sheetData[0])
+          console.log(
+               'end date >> ',
+               moment(sheetData[sheetData.length - 1].A)
+                    .add(1, 'days')
+                    .format('YYYY-MM-DD')
+          )
+          console.log(
+               'last index >> ',
+               sheetData[sheetData.length - 1]
+          )
+
+          let sheetIndexs = 0
+          let sheetIndexLog = ''
+          let originalData = []
+          let originalDataIDs = []
 
           for (const value of sheetData) {
+               sheetIndexs += 1
                const obj = {
                     date: moment(value.A)
                          .add(1, 'day')
@@ -1163,14 +1185,18 @@ class Ritase {
                     shift: value.B,
                     exca: value.E,
                     pitName: value.H,
-                    material: value.J,
+                    material: value.R === 14 ? 'Lumpur' : value.J,
                     hauler: value.M,
                     distance: value.P,
                     totalRitase: value.Q,
                     bucketCapacity: value.R,
                     bcmRtiase: value.S,
                     bcmAccumulate: value.U,
+                    sheetIndex: sheetIndexs,
                }
+               sheetIndexLog += `${sheetIndexs} \n \n`
+               originalData.push(obj)
+               originalDataIDs.push(sheetIndexs)
                data.push(obj)
           }
 
@@ -1182,6 +1208,8 @@ class Ritase {
                }
                daysData.push(obj)
           }
+
+          console.log('days data >> ', daysData)
 
           const tempData = []
 
@@ -1340,39 +1368,50 @@ class Ritase {
 
           const dailyFleetCreated = []
           const dailyRitaseDetailCreated = []
+          let totalBCM = []
+          let _totalRitase = []
+          let toCompare = []
+          let toComparePit = []
+          let txtLog = ''
+          let indexLog = ''
+          let toCompareArr = []
+          let toCompareIDs = []
+
           // CREATE THE DAILY FLEET
           for (const value of finalData) {
+               console.log('final data date >> ', value.date)
                // EXCA
                for (const data of value.excaData) {
+                    const EXCA_NAME = data.excaName
+                         .replace(' ', '')
+                         .replace('00', '0')
 
-                    const EXCA_NAME = (data.excaName.replace(' ', '')).replace('00', '0')
+                    let GET_EXCA_ID = await MasEquipment.query()
+                         .where('kode', EXCA_NAME)
+                         .first()
 
-                    let GET_EXCA_ID = (
-                         await MasEquipment.query()
-                              .where('kode', EXCA_NAME)
-                              .first()
-                    )
-
-                    if(GET_EXCA_ID) {
+                    if (GET_EXCA_ID) {
                          GET_EXCA_ID = GET_EXCA_ID?.id
                     } else {
-                         const masEquipment = new MasEquipment();
+                         const masEquipment = new MasEquipment()
                          const TEMP_EXCA = {
-                              kode : EXCA_NAME,
-                              unit_sn : `TEMP__${Math.random() * 99999999}`,
-                              tipe : 'excavator',
-                              brand : 'sany',
-                              unit_model : 'SY500H',
-                              qty_capacity : 2.70,
-                              fuel_capacity : 680,
-                              satuan : 'bcm',
-                              engine_model : '00',
-                              engine_sn : 'TEMP__' + EXCA_NAME,
-                              received_date : '2021-12-01',
-                              received_hm : 1.00,
-                              dealer_id : null,
-                              created_by : 2,
-                              img_uri : 'http://offices.mitraabadimahakam.id/images/equipments/excavator.jpg'
+                              kode: EXCA_NAME,
+                              unit_sn: `TEMP__${
+                                   Math.random() * 99999999
+                              }`,
+                              tipe: 'excavator',
+                              brand: 'sany',
+                              unit_model: 'SY500H',
+                              qty_capacity: 2.7,
+                              fuel_capacity: 680,
+                              satuan: 'bcm',
+                              engine_model: '00',
+                              engine_sn: 'TEMP__' + EXCA_NAME,
+                              received_date: '2021-12-01',
+                              received_hm: 1.0,
+                              dealer_id: null,
+                              created_by: 2,
+                              img_uri: 'http://offices.mitraabadimahakam.id/images/equipments/excavator.jpg',
                          }
 
                          masEquipment.fill(TEMP_EXCA)
@@ -1382,11 +1421,7 @@ class Ritase {
                          GET_EXCA_ID = masEquipment.id
                     }
 
-                    
-
-
-                    // 280	ME035		15708	excavator	sany	SY500H	2.70	680	bcm	00	ME0035	2021-12-01	1.00		Y	N	Y	2022-12-01			28	Y		2021-12-13 14:37:00	2021-12-13 14:37:00
-                    console.log('exca name >> ', EXCA_NAME)
+                    console.log('================================== ', EXCA_NAME, ' ==================================')
 
                     const dailyFleet = new DailyFleet()
 
@@ -1406,17 +1441,12 @@ class Ritase {
                               .where('kode', data.shift)
                               .first()
                     )?.id
-                    
 
-
-                    console.log('exca id >> ', GET_EXCA_ID)
-                    const GET_MATERIAL_ID = (
+                    const GET_MATERIAL_DATA =
                          await MasMaterial.query()
                               .where('name', data.material)
                               .first()
-                    )?.id
 
-                    
                     // DEFINE THE DAILY FLEET DATA
                     dailyFleet.fill({
                          fleet_id:
@@ -1428,7 +1458,7 @@ class Ritase {
                          pit_id: GET_PIT_ID,
                          shift_id: GET_SHIFT_ID,
                          activity_id: 11, // loading OB
-                         user_id: 57,
+                         user_id: usr.id,
                          date: data.date,
                     })
 
@@ -1440,68 +1470,125 @@ class Ritase {
                     dailyFleetEquip.fill({
                          dailyfleet_id: dailyFleet.id,
                          equip_id: GET_EXCA_ID,
-                         datetime: `${data.date} ${await GET_SHIFT_DATA(
-                              data.shift
-                         )}`,
+                         datetime: `${
+                              data.date
+                         } ${await GET_SHIFT_DATA(data.shift)}`,
                     })
                     await dailyFleetEquip.save()
 
-                    const dailyRitase = new DailyRitase()
-                    dailyRitase.fill({
-                         dailyfleet_id: dailyFleet.id,
-                         exca_id: GET_EXCA_ID,
-                         material: GET_MATERIAL_ID,
-                         distance: data.haulers
-                              ? data.haulers[0].distance
-                              : 0,
-                         date: data.date,
-                    })
+                    const dailyRitaseCheck = await DailyRitase.query()
+                         .where(wh => {
+                              wh.where('pit_id', GET_PIT_ID)
+                              wh.andWhere('shift_id', GET_SHIFT_ID)
+                              wh.andWhere('exca_id', GET_EXCA_ID)
+                              wh.andWhere(
+                                   'material',
+                                   GET_MATERIAL_DATA?.id
+                              )
+                              wh.andWhere(
+                                   'distance',
+                                   data.haulers[0].distance
+                              )
+                              wh.andWhere('date', data.date)
+                         })
+                         .first()
 
-                    await dailyRitase.save()
+                    let dailyRitase = null
+                    if (dailyRitaseCheck) {
+                         dailyRitase = dailyRitaseCheck
+
+                         console.log(
+                              'using existing daily ritase id >> ',
+                              dailyRitaseCheck.id
+                         )
+
+                         console.log(
+                              ' --- starting deleting all ritase detail for id ' +
+                                   dailyRitaseCheck.id +
+                                   ' ---'
+                         )
+
+                         await DailyRitaseDetail.query()
+                              .where(
+                                   'dailyritase_id',
+                                   dailyRitaseCheck.id
+                              )
+                              .delete()
+
+                         console.log(
+                              ' --- finished deleting all ritase detail for id ' +
+                                   dailyRitaseCheck.id +
+                                   ' ---'
+                         )
+                    } else {
+                         const dR = new DailyRitase()
+                         dR.fill({
+                              dailyfleet_id: dailyFleet.id,
+                              exca_id: GET_EXCA_ID,
+                              material: GET_MATERIAL_DATA?.id,
+                              distance: data.haulers
+                                   ? data.haulers[0].distance
+                                   : 0,
+                              date: data.date,
+                              user_id: usr.id,
+                              description: 'back date upload',
+                         })
+
+                         await dR.save()
+
+                         dailyRitase = dR.toJSON()
+
+                         console.log(
+                              'creating new daily ritase id >> ',
+                              dR.id
+                         )
+                    }
 
                     dailyFleetCreated.push(dailyFleet.id)
                     // HAULERS
+                    let indexs = 0
                     for (const hauler of data.haulers) {
-                         const HAULER_NAME = hauler.hauler.replace(' ', '')
+                         indexs += 1
+                         const HAULER_NAME = hauler.hauler.replace(
+                              ' ',
+                              ''
+                         )
 
-                         // 295	OHT045		LWJMT960OHT045	hauler truck	lgmg	CMT96	22.00	700	bcm	WP13G530E310	00	2021-12-06	1.00		Y	N	Y	2022-12-06			28	Y		2021-12-16 14:31:32	2021-12-16 14:31:32
-
-                         let GET_HAULER_ID = (
+                         let GET_HAULER_ID =
                               await MasEquipment.query()
                                    .where('kode', HAULER_NAME)
                                    .first()
-                         )
 
-
-                         if(GET_HAULER_ID) {
+                         if (GET_HAULER_ID) {
                               GET_HAULER_ID = GET_HAULER_ID?.id
                          } else {
-                              const masEquipment = new MasEquipment();
+                              const masEquipment = new MasEquipment()
                               const TEMP_EXCA = {
-                                   kode : HAULER_NAME,
-                                   unit_sn : `TEMP__${Math.random() * 99999999}`,
-                                   tipe : 'hauler truck',
-                                   brand : 'lgmg',
-                                   unit_model : 'CMT96',
-                                   qty_capacity : 2.70,
-                                   fuel_capacity : 680,
-                                   satuan : 'bcm',
-                                   engine_model : '00',
-                                   engine_sn : 'TEMP__' + HAULER_NAME,
-                                   received_date : '2021-12-01',
-                                   received_hm : 1.00,
-                                   dealer_id : null,
-                                   created_by : 2,
-                                   img_uri : 'http://offices.mitraabadimahakam.id/images/equipments/dump_truck.jpg'
+                                   kode: HAULER_NAME,
+                                   unit_sn: `TEMP__${
+                                        Math.random() * 99999999
+                                   }`,
+                                   tipe: 'hauler truck',
+                                   brand: 'lgmg',
+                                   unit_model: 'CMT96',
+                                   qty_capacity: 2.7,
+                                   fuel_capacity: 680,
+                                   satuan: 'bcm',
+                                   engine_model: '00',
+                                   engine_sn: 'TEMP__' + HAULER_NAME,
+                                   received_date: '2021-12-01',
+                                   received_hm: 1.0,
+                                   dealer_id: null,
+                                   created_by: 2,
+                                   img_uri: 'http://offices.mitraabadimahakam.id/images/equipments/dump_truck.jpg',
                               }
-     
+
                               masEquipment.fill(TEMP_EXCA)
-     
+
                               await masEquipment.save()
-     
+
                               GET_HAULER_ID = masEquipment.id
                          }
-
 
                          const dailyFleetEquip =
                               new DailyFleetEquipment()
@@ -1515,11 +1602,57 @@ class Ritase {
                          })
 
                          await dailyFleetEquip.save()
+                         let countRitase = 0
 
-                         for(let totalRitase = 0; totalRitase < hauler.totalRitase; totalRitase++) {
+                         _totalRitase.push(
+                              parseInt(hauler.totalRitase)
+                         )
+
+                         indexLog += `${hauler.sheetIndex} \n \n`
+
+                         txtLog += `${hauler.sheetIndex} - ${data.date} - ${data.shift} - ${data.excaName} - ${data.pitName} - ${data.material} - ${hauler.hauler} - ${hauler.distance} - ${hauler.totalRitase}
+                         \n`
+
+                         toCompareArr.push({
+                              sheetIndex: hauler.sheetIndex,
+                              date: data.date,
+                              shift: data.shift,
+                              excaName: data.excaName,
+                              pitName: data.pitName,
+                              material: data.material,
+                              hauler: hauler.hauler,
+                              distance: hauler.distance,
+                              totalRitase: hauler.totalRitase,
+                         })
+
+                         toCompareIDs.push(hauler.sheetIndex)
+                         for (
+                              let totalRitase = 1;
+                              totalRitase <=
+                              parseInt(hauler.totalRitase);
+                              totalRitase++
+                         ) {
+                              countRitase += 1
+
+                              toCompare.push(`${data.pitName} - ${data.shift} - ${data.date} - ${data.excaName} - ${data.material} - ${hauler.hauler} - ${hauler.totalRitase}
+                              `)
+
+                              toComparePit.push({
+                                   pitName:
+                                        data.pitName === 'PIT DERAWAN'
+                                             ? 'PIT DERAWAN BARU'
+                                             : data.pitName,
+                                   shift: data.shift,
+                                   date: data.date,
+                                   excaName: data.excaName,
+                                   material: data.material,
+                                   hauler: hauler.hauler,
+                                   totalRitase: hauler.totalRitase,
+                              })
+
                               const dailyritaseDetail =
                                    new DailyRitaseDetail()
-     
+
                               dailyritaseDetail.fill({
                                    dailyritase_id: dailyRitase.id,
                                    checker_id: 28,
@@ -1528,23 +1661,665 @@ class Ritase {
                                    opr_id: null,
                                    check_in: `${
                                         data.date
-                                   } ${await GET_SHIFT_DATA(data.shift)}`,
+                                   } ${await GET_SHIFT_DATA(
+                                        data.shift
+                                   )}`,
                               })
-     
+
                               await dailyritaseDetail.save()
                               dailyRitaseDetailCreated.push(
                                    dailyritaseDetail.id
                               )
                          }
-                         console.log('finished creating data for daily ritase id >>> ', dailyRitase.id)
+
+                         // 20 is ADT bcm max capacity
+                         totalBCM.push(
+                              GET_MATERIAL_DATA.vol *
+                                   parseInt(hauler.totalRitase)
+                         )
+                         console.log(
+                              `---- Finished creating data for ${
+                                   data.date
+                              } - ${EXCA_NAME} - ${
+                                   data.shift
+                              } - ${HAULER_NAME} - ${PIT_NAME} - ${
+                                   GET_MATERIAL_DATA.name
+                              } - ${countRitase} RIT  ${
+                                   GET_MATERIAL_DATA.vol *
+                                   parseInt(hauler.totalRitase)
+                              } BCM ---- `
+                         )
                     }
                }
           }
 
-          console.log('----- TASK FINISHED -----')
-          console.log(' at ' + moment().format('YYYY-MM-DD HH:mm:ss') + ' ');
+          console.log(
+               '----- INSERT TO DATABASE FINISHED ------ \n \n'
+          )
 
-          
+          try {
+               // CHECK IF ALL DATA INSERTED CORRECTLY
+               const originalDataLength = originalData.length
+               const insertedDataLength = toCompareArr.length
+
+               const GET_DATA_BY_ID = id => {
+                    let result = null
+                    for (const value of originalData) {
+                         if (value.sheetIndex === id) {
+                              result = value
+                         }
+                    }
+                    return result
+               }
+
+               if (insertedDataLength !== originalDataLength) {
+                    // check the index difference
+                    const difference = _.difference(
+                         originalDataIDs,
+                         toCompareIDs
+                    )
+
+                    console.log(
+                         '------ STARTING INSERT EXCLUDED DATA TO DATABASE ------ '
+                    )
+
+                    // get the missing data from the original sheet data
+                    const data = []
+                    for (const index of difference) {
+                         data.push(GET_DATA_BY_ID(index))
+                    }
+
+                    // create days array
+                    const daysData = []
+                    for (const day of daysArr) {
+                         const obj = {
+                              date: day,
+                              data: data.filter(v => v.date === day),
+                         }
+                         daysData.push(obj)
+                    }
+
+                    const tempData = []
+
+                    const shifts = (await MasShift.query().fetch())
+                         .toJSON()
+                         .map(v => v.kode)
+
+                    for (const value of daysData) {
+                         for (const data of value.data) {
+                              tempData.push({
+                                   date: value.date,
+                                   excaName: data.exca,
+                                   shift: data.shift,
+                                   material: data.material,
+                                   pitName: data.pitName,
+                              })
+                         }
+                    }
+
+                    const GET_DATA_BY_SHIFT_AND_DATE = (
+                         shift,
+                         date
+                    ) => {
+                         let result = []
+                         for (const data of tempData) {
+                              if (
+                                   data.shift === shift &&
+                                   data.date === date
+                              )
+                                   result.push(data)
+                         }
+
+                         return result
+                    }
+
+                    const shiftData = []
+                    for (const day of daysArr) {
+                         for (const shift of shifts) {
+                              const obj = {
+                                   date: day,
+                                   shiftName: shift,
+                                   data: GET_DATA_BY_SHIFT_AND_DATE(
+                                        shift,
+                                        day
+                                   ),
+                              }
+                              shiftData.push(obj)
+                         }
+                    }
+
+                    const GET_DATA_BY_EXCA_NAME = (
+                         excaName,
+                         date,
+                         shift
+                    ) => {
+                         let result = {}
+
+                         for (const data of tempData) {
+                              if (
+                                   data.excaName === excaName &&
+                                   data.date === date &&
+                                   data.shift === shift
+                              ) {
+                                   result = data
+                              }
+                         }
+                         return result
+                    }
+
+                    const _temp = []
+                    for (const data of shiftData) {
+                         const obj = {
+                              date: data.date,
+                              shift: data.shiftName,
+                              excas: _.uniq(
+                                   data.data.map(v => v.excaName)
+                              ),
+                         }
+
+                         _temp.push(obj)
+                    }
+
+                    const __temp = []
+                    for (const data of _temp) {
+                         let obj = {
+                              date: data.date,
+                              shift: data.shift,
+                         }
+
+                         let excaData = []
+                         for (const exca of data.excas) {
+                              excaData.push(
+                                   GET_DATA_BY_EXCA_NAME(
+                                        exca,
+                                        data.date,
+                                        data.shift
+                                   )
+                              )
+                         }
+                         obj = {
+                              ...obj,
+                              excaData,
+                         }
+
+                         __temp.push(obj)
+                    }
+
+                    const GET_DATA = (
+                         date,
+                         shift,
+                         exca,
+                         material,
+                         pitName
+                    ) => {
+                         let result = []
+
+                         for (const value of data) {
+                              if (
+                                   value.shift === shift &&
+                                   value.date === date &&
+                                   value.exca === exca &&
+                                   value.material === material &&
+                                   value.pitName === pitName
+                              ) {
+                                   result.push(value)
+                              }
+                         }
+                         return result
+                    }
+
+                    const _temp_ = []
+                    for (const value of __temp) {
+                         let haulers = []
+                         for (const data of value.excaData) {
+                              haulers.push({
+                                   ...data,
+                                   haulers: GET_DATA(
+                                        data.date,
+                                        data.shift,
+                                        data.excaName,
+                                        data.material,
+                                        data.pitName
+                                   ),
+                              })
+                         }
+
+                         const obj = {
+                              ...value,
+                              excaData: haulers,
+                         }
+
+                         _temp_.push(obj)
+                    }
+
+                    // FINAL DATA AFTER PARSING FROM EXCEL
+                    const finalData = _temp_.filter(
+                         v => v.excaData && v.excaData.length > 0
+                    )
+
+                    console.log(
+                         'missing indexs final data >> ',
+                         finalData
+                    )
+
+                    const GET_SHIFT_DATA = async kode => {
+                         let startShift = null
+
+                         const shifts = (
+                              await MasShift.query().fetch()
+                         ).toJSON()
+
+                         for (const shift of shifts) {
+                              if (shift.kode === kode) {
+                                   startShift = shift.start_shift
+                              }
+                         }
+
+                         return startShift
+                    }
+
+                    // CREATE THE DAILY FLEET
+                    for (const value of finalData) {
+                         // EXCA
+                         for (const data of value.excaData) {
+                              const EXCA_NAME = data.excaName
+                                   .replace(' ', '')
+                                   .replace('00', '0')
+
+                              let GET_EXCA_ID =
+                                   await MasEquipment.query()
+                                        .where('kode', EXCA_NAME)
+                                        .first()
+
+                              if (GET_EXCA_ID) {
+                                   GET_EXCA_ID = GET_EXCA_ID?.id
+                              } else {
+                                   const masEquipment =
+                                        new MasEquipment()
+                                   const TEMP_EXCA = {
+                                        kode: EXCA_NAME,
+                                        unit_sn: `TEMP__${
+                                             Math.random() * 99999999
+                                        }`,
+                                        tipe: 'excavator',
+                                        brand: 'sany',
+                                        unit_model: 'SY500H',
+                                        qty_capacity: 2.7,
+                                        fuel_capacity: 680,
+                                        satuan: 'bcm',
+                                        engine_model: '00',
+                                        engine_sn:
+                                             'TEMP__' + EXCA_NAME,
+                                        received_date: '2021-12-01',
+                                        received_hm: 1.0,
+                                        dealer_id: null,
+                                        created_by: 2,
+                                        img_uri: 'http://offices.mitraabadimahakam.id/images/equipments/excavator.jpg',
+                                   }
+
+                                   masEquipment.fill(TEMP_EXCA)
+
+                                   await masEquipment.save()
+
+                                   GET_EXCA_ID = masEquipment.id
+                              }
+
+                              const dailyFleet = new DailyFleet()
+
+                              let PIT_NAME =
+                                   data.pitName.split(' ')[1]
+
+                              if (PIT_NAME === 'DERAWAN') {
+                                   PIT_NAME = 'DERAWAN BARU'
+                              }
+
+                              const GET_PIT_ID = (
+                                   await MasPit.query()
+                                        .where('name', PIT_NAME)
+                                        .first()
+                              )?.id
+                              const GET_SHIFT_ID = (
+                                   await MasShift.query()
+                                        .where('kode', data.shift)
+                                        .first()
+                              )?.id
+
+                              const GET_MATERIAL_DATA =
+                                   await MasMaterial.query()
+                                        .where('name', data.material)
+                                        .first()
+
+                              // DEFINE THE DAILY FLEET DATA
+                              dailyFleet.fill({
+                                   fleet_id:
+                                        PIT_NAME === 'RPU'
+                                             ? 23
+                                             : PIT_NAME ===
+                                               'DERAWAN BARU'
+                                             ? 21
+                                             : 22,
+                                   pit_id: GET_PIT_ID,
+                                   shift_id: GET_SHIFT_ID,
+                                   activity_id: 11, // loading OB
+                                   user_id: usr.id,
+                                   date: data.date,
+                              })
+
+                              // SAVE THE DAILY FLEET
+                              await dailyFleet.save()
+
+                              const dailyFleetEquip =
+                                   new DailyFleetEquipment()
+
+                              dailyFleetEquip.fill({
+                                   dailyfleet_id: dailyFleet.id,
+                                   equip_id: GET_EXCA_ID,
+                                   datetime: `${
+                                        data.date
+                                   } ${await GET_SHIFT_DATA(
+                                        data.shift
+                                   )}`,
+                              })
+                              await dailyFleetEquip.save()
+
+                              const dailyRitaseCheck =
+                                   await DailyRitase.query()
+                                        .where(wh => {
+                                             wh.where(
+                                                  'pit_id',
+                                                  GET_PIT_ID
+                                             )
+                                             wh.andWhere(
+                                                  'shift_id',
+                                                  GET_SHIFT_ID
+                                             )
+                                             wh.andWhere(
+                                                  'exca_id',
+                                                  GET_EXCA_ID
+                                             )
+                                             wh.andWhere(
+                                                  'material',
+                                                  GET_MATERIAL_DATA?.id
+                                             )
+                                             wh.andWhere(
+                                                  'distance',
+                                                  data.haulers[0]
+                                                       .distance
+                                             )
+                                             wh.andWhere(
+                                                  'date',
+                                                  data.date
+                                             )
+                                        })
+                                        .first()
+
+                              let dailyRitase = null
+                              if (dailyRitaseCheck) {
+                                   dailyRitase = dailyRitaseCheck
+
+                                   console.log(
+                                        'using existing daily ritase id >> ',
+                                        dailyRitaseCheck.id
+                                   )
+
+                                   console.log(
+                                        ' --- starting deleting all ritase detail for id ' +
+                                             dailyRitaseCheck.id +
+                                             ' ---'
+                                   )
+
+                                   await DailyRitaseDetail.query()
+                                        .where(
+                                             'dailyritase_id',
+                                             dailyRitaseCheck.id
+                                        )
+                                        .delete()
+
+                                   console.log(
+                                        ' --- finished deleting all ritase detail for id ' +
+                                             dailyRitaseCheck.id +
+                                             ' ---'
+                                   )
+                              } else {
+                                   const dR = new DailyRitase()
+                                   dR.fill({
+                                        dailyfleet_id: dailyFleet.id,
+                                        exca_id: GET_EXCA_ID,
+                                        material:
+                                             GET_MATERIAL_DATA?.id,
+                                        distance: data.haulers
+                                             ? data.haulers[0]
+                                                    .distance
+                                             : 0,
+                                        date: data.date,
+                                        user_id: usr.id,
+                                        description:
+                                             'back date upload',
+                                   })
+
+                                   await dR.save()
+
+                                   dailyRitase = dR.toJSON()
+
+                                   console.log(
+                                        'creating new daily ritase id >> ',
+                                        dR.id
+                                   )
+                              }
+
+                              // HAULERS
+                              let indexs = 0
+                              for (const hauler of data.haulers) {
+                                   indexs += 1
+                                   const HAULER_NAME =
+                                        hauler.hauler.replace(' ', '')
+
+                                   let GET_HAULER_ID =
+                                        await MasEquipment.query()
+                                             .where(
+                                                  'kode',
+                                                  HAULER_NAME
+                                             )
+                                             .first()
+
+                                   if (GET_HAULER_ID) {
+                                        GET_HAULER_ID =
+                                             GET_HAULER_ID?.id
+                                   } else {
+                                        const masEquipment =
+                                             new MasEquipment()
+                                        const TEMP_EXCA = {
+                                             kode: HAULER_NAME,
+                                             unit_sn: `TEMP__${
+                                                  Math.random() *
+                                                  99999999
+                                             }`,
+                                             tipe: 'hauler truck',
+                                             brand: 'lgmg',
+                                             unit_model: 'CMT96',
+                                             qty_capacity: 2.7,
+                                             fuel_capacity: 680,
+                                             satuan: 'bcm',
+                                             engine_model: '00',
+                                             engine_sn:
+                                                  'TEMP__' +
+                                                  HAULER_NAME,
+                                             received_date:
+                                                  '2021-12-01',
+                                             received_hm: 1.0,
+                                             dealer_id: null,
+                                             created_by: 2,
+                                             img_uri: 'http://offices.mitraabadimahakam.id/images/equipments/dump_truck.jpg',
+                                        }
+
+                                        masEquipment.fill(TEMP_EXCA)
+
+                                        await masEquipment.save()
+
+                                        GET_HAULER_ID =
+                                             masEquipment.id
+                                   }
+
+                                   const dailyFleetEquip =
+                                        new DailyFleetEquipment()
+
+                                   dailyFleetEquip.fill({
+                                        dailyfleet_id: dailyFleet.id,
+                                        equip_id: GET_HAULER_ID,
+                                        datetime: `${
+                                             data.date
+                                        } ${await GET_SHIFT_DATA(
+                                             data.shift
+                                        )}`,
+                                   })
+
+                                   await dailyFleetEquip.save()
+                                   let countRitase = 0
+
+                                   _totalRitase.push(
+                                        parseInt(hauler.totalRitase)
+                                   )
+
+                                   for (
+                                        let totalRitase = 1;
+                                        totalRitase <=
+                                        parseInt(hauler.totalRitase);
+                                        totalRitase++
+                                   ) {
+                                        countRitase += 1
+
+                                        const dailyritaseDetail =
+                                             new DailyRitaseDetail()
+
+                                        dailyritaseDetail.fill({
+                                             dailyritase_id:
+                                                  dailyRitase.id,
+                                             checker_id: 28,
+                                             spv_id: 8,
+                                             hauler_id: GET_HAULER_ID,
+                                             opr_id: null,
+                                             check_in: `${
+                                                  data.date
+                                             } ${await GET_SHIFT_DATA(
+                                                  data.shift
+                                             )}`,
+                                        })
+
+                                        await dailyritaseDetail.save()
+                                   }
+                                   totalBCM.push(
+                                        GET_MATERIAL_DATA.vol *
+                                             parseInt(
+                                                  hauler.totalRitase
+                                             )
+                                   )
+                                   console.log(
+                                        `---- missing indexs finished ${
+                                             data.date
+                                        } - ${EXCA_NAME} - ${
+                                             data.shift
+                                        } - ${HAULER_NAME} - ${PIT_NAME} - ${
+                                             GET_MATERIAL_DATA.name
+                                        } - ${countRitase} RIT  ${
+                                             GET_MATERIAL_DATA.vol *
+                                             parseInt(
+                                                  hauler.totalRitase
+                                             )
+                                        } BCM ---- `
+                                   )
+                              }
+                         }
+                    }
+               }
+          } catch (err) {
+               throw new Error(err)
+          }
+
+          // GET THE NUMBER OF RITASE ACROSS ALL PIT
+          const GET_PIT_DATA = pitName => {
+               let arr = []
+               for (const value of toComparePit) {
+                    if (value.pitName === pitName) {
+                         arr.push(value)
+                    }
+               }
+
+               return arr.length
+          }
+
+          const ARRAY_PIT = (
+               await MasPit.query().whereIn('id', [1, 2, 6]).fetch()
+          )?.toJSON()
+
+          let resultPit = []
+
+          for (const pitName of ARRAY_PIT) {
+               const obj = {
+                    pitName: pitName,
+                    data: GET_PIT_DATA(`PIT ${pitName.name}`),
+               }
+               resultPit.push(obj)
+          }
+
+          console.log(
+               'total bcm >> ',
+               totalBCM.reduce((a, b) => a + b, 0)
+          )
+          console.log(
+               'total ritase >> ',
+               _totalRitase.reduce((a, b) => a + b, 0)
+          )
+          console.log('----- TASK FINISHED -----')
+          console.log(
+               ' at ' + moment().format('YYYY-MM-DD HH:mm:ss') + ' '
+          )
+
+          console.log('row inserted across all pit >> ', resultPit)
+          // END OF GET NUMBER OF RITAES ACROSS ALL PIT
+
+          // WRITE TO TXT FILE FOR THE LOG
+          // log data inserted
+          fs.writeFile('log.txt', txtLog, (err, data) => {
+               if (err) {
+                    console.error(err)
+               }
+
+               console.log('txt data >> ', data)
+               console.log(
+                    '----- finished writing to txt file ------ '
+               )
+          })
+
+          // sheet data indexs
+          fs.writeFile('log1.txt', sheetIndexLog, (err, data) => {
+               if (err) {
+                    console.error(err)
+               }
+
+               console.log('txt data >> ', data)
+               console.log(
+                    '----- finished writing to txt file ------ '
+               )
+          })
+
+          // inserted data indexs
+          fs.writeFile('log2.txt', indexLog, (err, data) => {
+               if (err) {
+                    console.error(err)
+               }
+
+               console.log('txt data >> ', data)
+               console.log(
+                    '----- finished writing to txt file ------ '
+               )
+          })
+
+          durasi = await diagnoticTime.durasi(t0)
+
+          console.log(` ------ SCRIPT FINISHED IN ${durasi} ------`)
+
+          // END OF WRITE TO TXT FILE FOR THE LOG
+
           return {
                data: dailyFleetCreated,
                dr: dailyRitaseDetailCreated.length,
