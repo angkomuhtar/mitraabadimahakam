@@ -1421,7 +1421,7 @@ class Ritase {
                          GET_EXCA_ID = masEquipment.id
                     }
 
-                    console.log('exca name >> ', EXCA_NAME)
+                    console.log('================================== ', EXCA_NAME, ' ==================================')
 
                     const dailyFleet = new DailyFleet()
 
@@ -1458,7 +1458,7 @@ class Ritase {
                          pit_id: GET_PIT_ID,
                          shift_id: GET_SHIFT_ID,
                          activity_id: 11, // loading OB
-                         user_id: usr.id, 
+                         user_id: usr.id,
                          date: data.date,
                     })
 
@@ -1476,22 +1476,73 @@ class Ritase {
                     })
                     await dailyFleetEquip.save()
 
-                    const dailyRitase = new DailyRitase()
-                    dailyRitase.fill({
-                         dailyfleet_id: dailyFleet.id,
-                         exca_id: GET_EXCA_ID,
-                         material: GET_MATERIAL_DATA?.id,
-                         distance: data.haulers
-                              ? data.haulers[0].distance
-                              : 0,
-                         date: data.date,
-                         user_id: usr.id,
-                         description: 'back date upload',
-                    })
+                    const dailyRitaseCheck = await DailyRitase.query()
+                         .where(wh => {
+                              wh.where('pit_id', GET_PIT_ID)
+                              wh.andWhere('shift_id', GET_SHIFT_ID)
+                              wh.andWhere('exca_id', GET_EXCA_ID)
+                              wh.andWhere(
+                                   'material',
+                                   GET_MATERIAL_DATA?.id
+                              )
+                              wh.andWhere(
+                                   'distance',
+                                   data.haulers[0].distance
+                              )
+                              wh.andWhere('date', data.date)
+                         })
+                         .first()
 
-                    console.log('data . date >> ', data.date)
+                    let dailyRitase = null
+                    if (dailyRitaseCheck) {
+                         dailyRitase = dailyRitaseCheck
 
-                    await dailyRitase.save()
+                         console.log(
+                              'using existing daily ritase id >> ',
+                              dailyRitaseCheck.id
+                         )
+
+                         console.log(
+                              ' --- starting deleting all ritase detail for id ' +
+                                   dailyRitaseCheck.id +
+                                   ' ---'
+                         )
+
+                         await DailyRitaseDetail.query()
+                              .where(
+                                   'dailyritase_id',
+                                   dailyRitaseCheck.id
+                              )
+                              .delete()
+
+                         console.log(
+                              ' --- finished deleting all ritase detail for id ' +
+                                   dailyRitaseCheck.id +
+                                   ' ---'
+                         )
+                    } else {
+                         const dR = new DailyRitase()
+                         dR.fill({
+                              dailyfleet_id: dailyFleet.id,
+                              exca_id: GET_EXCA_ID,
+                              material: GET_MATERIAL_DATA?.id,
+                              distance: data.haulers
+                                   ? data.haulers[0].distance
+                                   : 0,
+                              date: data.date,
+                              user_id: usr.id,
+                              description: 'back date upload',
+                         })
+
+                         await dR.save()
+
+                         dailyRitase = dR.toJSON()
+
+                         console.log(
+                              'creating new daily ritase id >> ',
+                              dR.id
+                         )
+                    }
 
                     dailyFleetCreated.push(dailyFleet.id)
                     // HAULERS
@@ -1971,20 +2022,90 @@ class Ritase {
                               })
                               await dailyFleetEquip.save()
 
-                              const dailyRitase = new DailyRitase()
-                              dailyRitase.fill({
-                                   dailyfleet_id: dailyFleet.id,
-                                   exca_id: GET_EXCA_ID,
-                                   material: GET_MATERIAL_DATA?.id,
-                                   distance: data.haulers
-                                        ? data.haulers[0].distance
-                                        : 0,
-                                   date: data.date,
-                                   user_id: usr.id,
-                                   description: 'back date upload',
-                              })
+                              const dailyRitaseCheck =
+                                   await DailyRitase.query()
+                                        .where(wh => {
+                                             wh.where(
+                                                  'pit_id',
+                                                  GET_PIT_ID
+                                             )
+                                             wh.andWhere(
+                                                  'shift_id',
+                                                  GET_SHIFT_ID
+                                             )
+                                             wh.andWhere(
+                                                  'exca_id',
+                                                  GET_EXCA_ID
+                                             )
+                                             wh.andWhere(
+                                                  'material',
+                                                  GET_MATERIAL_DATA?.id
+                                             )
+                                             wh.andWhere(
+                                                  'distance',
+                                                  data.haulers[0]
+                                                       .distance
+                                             )
+                                             wh.andWhere(
+                                                  'date',
+                                                  data.date
+                                             )
+                                        })
+                                        .first()
 
-                              await dailyRitase.save()
+                              let dailyRitase = null
+                              if (dailyRitaseCheck) {
+                                   dailyRitase = dailyRitaseCheck
+
+                                   console.log(
+                                        'using existing daily ritase id >> ',
+                                        dailyRitaseCheck.id
+                                   )
+
+                                   console.log(
+                                        ' --- starting deleting all ritase detail for id ' +
+                                             dailyRitaseCheck.id +
+                                             ' ---'
+                                   )
+
+                                   await DailyRitaseDetail.query()
+                                        .where(
+                                             'dailyritase_id',
+                                             dailyRitaseCheck.id
+                                        )
+                                        .delete()
+
+                                   console.log(
+                                        ' --- finished deleting all ritase detail for id ' +
+                                             dailyRitaseCheck.id +
+                                             ' ---'
+                                   )
+                              } else {
+                                   const dR = new DailyRitase()
+                                   dR.fill({
+                                        dailyfleet_id: dailyFleet.id,
+                                        exca_id: GET_EXCA_ID,
+                                        material:
+                                             GET_MATERIAL_DATA?.id,
+                                        distance: data.haulers
+                                             ? data.haulers[0]
+                                                    .distance
+                                             : 0,
+                                        date: data.date,
+                                        user_id: usr.id,
+                                        description:
+                                             'back date upload',
+                                   })
+
+                                   await dR.save()
+
+                                   dailyRitase = dR.toJSON()
+
+                                   console.log(
+                                        'creating new daily ritase id >> ',
+                                        dR.id
+                                   )
+                              }
 
                               // HAULERS
                               let indexs = 0

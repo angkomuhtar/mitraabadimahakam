@@ -60,28 +60,31 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
     .last();
 
   /* GET PIT ID */
-  const dailyFleet = await DailyFleet.query()
-    .where("id", dailyRitase.dailyfleet_id)
-    .last();
+  const GET_PIT_ID = (await DailyRitase.query()
+    .where("id", dailyritasedetail.dailyritase_id)
+    .first()).toJSON()
 
   /* GET MONTLY PLAN */
-  const awalBulan = moment(dailyritasedetail.check_in).startOf('month').format('YYYY-MM-DD')
+  const awalBulan = moment(dailyritasedetail.check_in).startOf('month').format('YYYY-MM-DD HH:mm:ss')
+
+  
   const montlyPlan = await MonthlyPlan.query()
     .where((w) => {
-      w.where("pit_id", dailyFleet.pit_id);
+      w.where("pit_id", GET_PIT_ID.pit_id)
       w.where('month', awalBulan)
-      w.where("tipe", "OB");
+      w.where("tipe", "OB")
     })
-    .last();
+    .last()
 
   /* GET PLAN DATE */
-  const date = moment(dailyritasedetail.check_in).format("YYYY-MM-DD");
+  const date = moment(dailyritasedetail.check_in).format("YYYY-MM-DD")
   const dailyPlan = await DailyPlan.query()
     .where((w) => {
-      w.where("current_date", date);
-      w.where("monthlyplans_id", montlyPlan.id);
+      w.where("current_date", date)
+      w.where("monthlyplans_id", montlyPlan.id)
     })
-    .first();
+    .first()
+
 
 
   /** check whether this is a OHT or SFI */
@@ -89,19 +92,19 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
   const equipmentName = hauler.kode;
   const checkIfSFIType = regTest.test(equipmentName);
 
-  if (checkIfSFIType) {
-    dailyPlan.merge({
-      actual: parseFloat(dailyPlan.actual) + parseFloat(hauler.qty_capacity),
-    });
-  }
+  // if (checkIfSFIType) {
+  //   dailyPlan.merge({
+  //     actual: parseFloat(dailyPlan.actual) + parseFloat(hauler.qty_capacity),
+  //   })
+  // }
 
 
-    dailyPlan.merge({
-      actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol),
-    });
+  //   dailyPlan.merge({
+  //     actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol),
+  //   });
   
   
-  await dailyPlan.save();
+  // await dailyPlan.save();
 };
 
 DailyRitaseDetailHook.afterDeleteData = async (dailyritasedetail) => {
@@ -120,7 +123,7 @@ DailyRitaseDetailHook.afterDeleteData = async (dailyritasedetail) => {
   /* GET VOLUME MATERIAL */
   const volume = await MasMaterial.query()
     .where("id", dailyRitase.material)
-    .last();
+    .last()
 
   /* GET PLAN DATE */
   const date = moment(dailyritasedetail.check_in).format("YYYY-MM-DD");
