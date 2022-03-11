@@ -8,6 +8,7 @@ $(function(){
 
     $('body').on('change', 'select[name="site_id"]', function(){
         var values = $(this).val()
+        body.find('div#box-chart').css('display', 'none')
         if(values){
             body.find('select[name="production_type"]').val('')
             body.find('select[name="range_type"]').val('')
@@ -277,6 +278,7 @@ $(function(){
             return {
                 name: el.nm_pit || el.name,
                 type: el.type || 'column',
+                color: el.color || null,
                 stack: el.nm_pit || el.stack,
                 data: el.items?.map( val => val.actual) || el.data
             }

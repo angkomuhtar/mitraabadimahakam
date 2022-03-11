@@ -69,19 +69,30 @@ class PDFReport {
         console.log(req);
         console.log('====================================');
 
-        const monthlyPlan = (
-            await MonthlyPlan.query()
-            .with('daily_plan')
-            .where( w => {
-                if(req.pit_id != 'null'){
-                    w.where('pit_id', req.pit_id)
-                }
-                w.where('tipe', 'OB')
-                w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
-                w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
-            }).orderBy([{ column: 'pit_id' }, { column: 'month' }]).fetch()
-        ).toJSON()
+        if(req.pit_id === 'undefined' || req.pit_id === 'null'){
+            req.pit_id = null
+        }
+        
+        let monthlyPlan
+        try {
+            monthlyPlan = (
+                await MonthlyPlan.query()
+                .with('daily_plan')
+                .where( w => {
+                    if(req.pit_id){
+                        w.where('pit_id', req.pit_id)
+                    }
+                    w.where('tipe', 'OB')
+                    w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
+                    w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
+                }).orderBy([{ column: 'pit_id'}, { column: 'month' }]).fetch()
+                // }).orderBy([{ column: 'month' }]).fetch()
+            ).toJSON()
+        } catch (error) {
+            console.log(error);
+        }
 
+        
         let result = []
         result.push([
             { text: 'Location', style: 'tableHeader_L' },
@@ -253,7 +264,7 @@ class PDFReport {
             },
             content: dataTitle,
         }
-        console.log(JSON.stringify(dd, null, 2));
+        // console.log(JSON.stringify(dd, null, 2));
         return dd
     }
 
@@ -291,8 +302,12 @@ class PDFReport {
         for (const obj of arrDate) {
             let tmp = []
 
+            if(req.pit_id === 'undefined' || req.pit_id === 'null'){
+                req.pit_id = null
+            }
+
             const dataWeekly = (await DailyPlan.query().where( w => {
-                if(req.pit_id != 'null'){
+                if(req.pit_id){
                     w.where('pit_id', req.pit_id)
                 }
                 w.where('tipe', 'OB')
@@ -501,7 +516,202 @@ class PDFReport {
             content: dataTitle,
         }
 
-        console.log(JSON.stringify(dd, null, 2));
+        // console.log(JSON.stringify(dd, null, 2));
+        return dd
+    }
+
+    async DAILY_OB_PDF(req){
+        console.log('daily====================================');
+        console.log(req);
+        console.log('====================================');
+
+        if(req.pit_id === 'undefined' || req.pit_id === 'null'){
+            req.pit_id = null
+        }
+
+        const dataDaily = (await DailyPlan.query().where( w => {
+            if(req.pit_id){
+                w.where('pit_id', req.pit_id)
+            }
+            w.where('tipe', 'OB')
+            w.where('current_date', '>=', req.start_date)
+            w.where('current_date', '<=', req.end_date)
+        }).orderBy([{ column: 'pit_id', order: 'asc' }, { column: 'current_date', order: 'asc' }]).fetch()).toJSON()
+
+        console.log(dataDaily);
+
+        let result = []
+        result.push([
+            { text: 'Location', style: 'tableHeader_L' },
+            { text: 'Periode', style: 'tableHeader_L' },
+            { text: 'Target', style: 'tableHeader_R' },
+            { text: 'Actual', style: 'tableHeader_R' },
+            { text: 'Diff', style: 'tableHeader_R' }
+        ])
+
+        let arrEstimate = []
+        let arrActual = []
+        for (const obj of dataDaily) {
+            let pit = await MasPit.query().where('id', obj.pit_id).last()
+            arrEstimate.push(obj.estimate)
+            arrActual.push(obj.actual)
+            result.push([
+                {text: pit.name, style: 'tableCell_L'},
+                {text: moment(obj.current_date).format('DD-MM-YYYY'), style: 'tableCell_L'},
+                {text: obj.estimate, style: 'tableCell_R'},
+                {text: obj.actual, style: 'tableCell_R'},
+                {text: (parseFloat(obj.actual) - parseFloat(obj.estimate)).toFixed(2), style: 'tableCell_R'},
+            ])
+        }
+
+        result.push([
+            {
+                text: `Grand Total`, 
+                colSpan: 2, 
+                alignment: 'left', 
+                bold: true, 
+                fontSize: 8,
+                fillColor: '#FFBCBC', 
+                margin: [5, 3, 5, 3]
+            },
+            {},
+            {
+                text: (arrEstimate.reduce((a, b) => { return a + b }, 0)).toFixed(2) + ' BCM',
+                alignment: 'right', 
+                bold: true,
+                fontSize: 8,
+                fillColor: '#FFBCBC', 
+                margin: [5, 3, 5, 3]
+            },
+            {
+                text: (arrActual.reduce((a, b) => { return a + b }, 0)).toFixed(2) + ' BCM',
+                alignment: 'right', 
+                bold: true,
+                fontSize: 8,
+                fillColor: '#FFBCBC', 
+                margin: [5, 3, 5, 3]
+            },
+            {
+                text: ((arrActual.reduce((a, b) => { return a + b }, 0)) - (arrEstimate.reduce((a, b) => { return a + b }, 0))).toFixed(2) + ' BCM',
+                alignment: 'right', 
+                bold: true,
+                fontSize: 8,
+                fillColor: '#FFBCBC', 
+                margin: [5, 3, 5, 3]
+            },
+        ])
+
+        const site = await MasSite.query().where('id', req.site_id).last()
+        const imgPath = Helpers.publicPath('logo.jpg')
+        const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
+        const dataTitle = [
+            {
+                columns: [
+                    {
+                        width: 100,
+                        fit: [80, 80],
+                        image: `${imageAsBase64}`
+                    },
+                    [
+                        {text: 'Monthly Production Report', style: 'title'},
+                        {
+                            columns: [
+                                [
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Periode '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${moment(req.month_begin).format('MMMM YYYY')} s/d ${moment(req.month_end).format('MMMM YYYY')}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Site '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${site.name}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Pit '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: ': All Pit'
+                                            }
+                                        ]
+                                    },
+                                    {text: '', margin: [0, 0, 0, 5]},
+                                ]
+                            ]
+                        }
+                    ]
+                ]
+            },
+            {
+                style: 'tableExample',
+                layout: 'headerLineOnly',
+                table: {
+                    headerRows: 1,
+                    widths: ['auto', '*', 80, 80, 'auto'],
+                    body: result
+                }
+            }
+        ]
+
+        const dd = {
+            styles: {
+                title: {
+                    fontSize: 16,
+                    bold: true,
+                    margin: [0, 0, 0, 5]
+                },
+                subtitle: {
+                    fontSize: 10,
+                    italics: true
+                },
+                tableHeader_L: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'left'
+                },
+                tableHeader_R: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'right'
+                },
+                tableCell_L: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'left'
+                },
+                tableCell_R: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'right'
+                }
+            },
+            content: dataTitle,
+        }
+        // console.log(JSON.stringify(dd, null, 2));
         return dd
     }
 }

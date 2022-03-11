@@ -69,7 +69,7 @@ class repPoduction {
             actual = Object.keys(actual).map(key => {
                 return {
                     nm_pit: `Actual (${key})`,
-                    type: 'column',
+                    type: req.typeChart,
                     color: '#015CB1',
                     items: actual[key]
                 }
@@ -88,7 +88,7 @@ class repPoduction {
                 return {
                     nm_pit: `Trands`,
                     type: 'spline',
-                    color: 'red',
+                    color: '#F16767',
                     items: trand[key]
                 }
             })
@@ -182,7 +182,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 color: "#75A5E3",
-                type: 'column',
+                type: req.typeChart,
                 items: tmpTarget[key]
             }
         })
@@ -191,7 +191,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 color: "#015CB1",
-                type: 'column',
+                type: req.typeChart,
                 items: tmpActual[key]
             }
         })
@@ -199,7 +199,7 @@ class repPoduction {
         tmpTrands = Object.keys(tmpTrands).map(key => {
             return {
                 nm_pit: key,
-                color: "red",
+                color: "#F16767",
                 type: 'spline',
                 items: tmpTrands[key]
             }
@@ -236,6 +236,7 @@ class repPoduction {
         let arrTarget = []
         let arrActual = []
         let arrTrands = []
+        let arrDiff = []
         for (const el of planDaily) {
             const pit = await MasPit.query().where('id', el.pit_id).last()
             arrTarget.push({
@@ -258,9 +259,17 @@ class repPoduction {
                 site_id: el.site_id,
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
-                nm_pit: `Trends ${pit.name}`,
+                nm_pit: `Trands ${pit.name}`,
                 current_date: moment(el.current_date).format('DD-MM-YYYY'),
                 volume: el.actual
+            })
+            arrDiff.push({
+                site_id: el.site_id,
+                pit_id: el.pit_id,
+                kd_pit: pit.kode,
+                nm_pit: `Diff ${pit.name}`,
+                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                volume: parseFloat(el.actual) - parseFloat(el.estimate)
             })
         }
 
@@ -269,7 +278,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 color: "#75A5E3",
-                type: 'column',
+                type: req.typeChart,
                 items: arrTarget[key]
             }
         })
@@ -278,26 +287,32 @@ class repPoduction {
             return {
                 nm_pit: key,
                 color: "#015CB1",
-                type: 'column',
+                type: req.typeChart,
                 items: arrActual[key]
+            }
+        })
+        arrDiff = _.groupBy(arrDiff, 'nm_pit')
+        arrDiff = Object.keys(arrDiff).map(key => {
+            return {
+                nm_pit: key,
+                color: "#C4C4C4",
+                type: req.typeChart,
+                items: arrDiff[key]
             }
         })
         arrTrands = _.groupBy(arrTrands, 'nm_pit')
         arrTrands = Object.keys(arrTrands).map(key => {
             return {
                 nm_pit: key,
-                color: "red",
+                color: "#F16767",
                 type: 'spline',
                 items: arrTrands[key]
             }
         })
 
-        let x = [...arrTarget, ...arrActual, ...arrTrands]
-
-        console.log(JSON.stringify(x, null, 2));
         return {
             xAxis: xAxis,
-            data: [...arrTarget, ...arrActual, ...arrTrands]
+            data: [...arrTarget, ...arrActual, ...arrDiff, ...arrTrands]
         }
     }
 
@@ -363,7 +378,7 @@ class repPoduction {
                 nm_pit: key,
                 stack: 'target',
                 // color: "#75A5E3",
-                type: 'column',
+                type: req.typeChart,
                 items: arrTarget[key]
             }
         })
@@ -373,7 +388,7 @@ class repPoduction {
                 nm_pit: key,
                 stack: 'actual',
                 // color: "#015CB1",
-                type: 'column',
+                type: req.typeChart,
                 items: arrActual[key]
             }
         })
@@ -491,12 +506,12 @@ class repPoduction {
         })
         
         let resultx = [
-            {name: 'Target', type: 'column', stack: 'tgt', color: '#015CB1', items: result.map(el => {
+            {name: 'Target', type: req.typeChart, stack: 'tgt', color: '#015CB1', items: result.map(el => {
                 return {
                     volume: el.target
                 }
             })},
-            {name: 'Actual', type: 'column', stack: 'act', color: '#75A5E3', items: result.map(el => {
+            {name: 'Actual', type: req.typeChart, stack: 'act', color: '#75A5E3', items: result.map(el => {
                 return {
                     volume: el.sum_volume
                 }
@@ -536,11 +551,13 @@ class repPoduction {
             }
         })
 
+        let color = ['#F2B416', '#F16767', '#16CBF2']
         result = _.groupBy(data, 'nm_pit')
-        result = Object.keys(result).map(key => {
+        result = Object.keys(result).map((key, i) => {
             return {
                     nm_pit: key,
-                    type: 'column',
+                    type: req.typeChart,
+                    color: color[i],
                     items: result[key]
             }
         })
@@ -553,7 +570,6 @@ class repPoduction {
         })
 
         const site = await MasSite.query().where('id', req.site_id).last()
-        // site_nm: site.name,
 
         return {
             site_nm: site.name,
@@ -613,11 +629,14 @@ class repPoduction {
             }
         }
 
+        let color = ['#F2B416', '#F16767', '#16CBF2']
         result = _.groupBy(result, 'nm_pit')
-        result = Object.keys(result).map(key => {
+        result = Object.keys(result).map((key, i) => {
+            console.log(i);
             return {
                 nm_pit: key,
-                type: 'column',
+                type: req.typeChart,
+                color: color[i],
                 items: result[key]
             }
         })
@@ -662,10 +681,13 @@ class repPoduction {
             })
         }
 
+        let color = ['#F2B416', '#F16767', '#16CBF2']
         result = _.groupBy(result, 'nm_pit')
-        result = Object.keys(result).map(key => {
+        result = Object.keys(result).map((key, i) => {
             return {
                 nm_pit: key,
+                type: req.typeChart,
+                color: color[i],
                 items: result[key]
             }
         })
@@ -747,6 +769,7 @@ class repPoduction {
                     name: `${shift.name} (${val.kode})`,
                     stack: val.name,
                     group: val.name,
+                    type: req.typeChart,
                     items: result
                 });
             }
@@ -824,6 +847,7 @@ class repPoduction {
                 pit_id: obj.pit_id,
                 name: `${pit.name} (${pit.kode})`,
                 stack: pit.kode,
+                type: req.typeChart,
                 items: arrData
             })
         }
@@ -832,11 +856,6 @@ class repPoduction {
             xAxis: xAxis,
             data: result
         }
-    }
-
-    /** GENERATE DATA PDF **/
-    async MONTHLY_OB_PDF (req) {
-
     }
 }
 module.exports = new repPoduction()
