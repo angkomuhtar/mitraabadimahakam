@@ -1,3 +1,5 @@
+{{ script('plugins/bower_components/dom-to-image/src/dom-to-image') }}
+{{ script('plugins/bower_components/dom-to-image/dist/dom-to-image.min') }}
 {{ script('ajax/index') }}
 {{ script('ajax/report/production-filter') }}
 <!-- Select2 -->
@@ -226,16 +228,22 @@
 
 <div id="box-chart" class="row" style="display:none">
     <div class="white-box">
-        <div id="container" class="text-center"></div>
-        <hr>
-        <div class="text-center">
-            <button type="button" class="btn btn-default waves-effect waves-light btn-sm" id="bt-show-data"> 
-                <i class="fa fa-file-pdf-o"></i> <span>Download PDF</span>
-            </button>
-            <button type="button" class="btn btn-default waves-effect waves-light btn-sm" id="bt-show-data"> 
-                <i class="fa fa-file-excel-o"></i> <span>Download XLS</span>
-            </button>
-
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="container" class="text-center"></div>
+                <div id="xxx" class="text-center"></div>
+            </div>
+            <div class="panel-footer">
+                <button type="button" class="btn btn-default waves-effect waves-light btn-sm pull-left" id="bt-back"> 
+                    <i class="fa fa-angle-left"></i> <span>Back</span>
+                </button>
+                <button type="button" class="btn btn-success waves-effect waves-light btn-sm pull-right" id="bt-generate-xls"> 
+                    <i class="fa fa-file-excel-o"></i> <!--<span>Download XLS</span>-->
+                </button>
+                <button type="button" class="m-r-10 btn btn-inverse waves-effect waves-light btn-sm pull-right" id="bt-generate-pdf"> 
+                    <i class="fa fa-file-pdf-o"></i> <!--<span>Download PDF</span>-->
+                </button>
+            </div>
         </div>
     </div>
     <!--

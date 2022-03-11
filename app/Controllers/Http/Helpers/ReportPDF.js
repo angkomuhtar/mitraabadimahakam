@@ -15,6 +15,7 @@ const MasShift = use("App/Models/MasShift")
 const MasMaterial = use("App/Models/MasMaterial")
 const VRitaseObPerjam = use("App/Models/VRitaseObPerjam")
 const Image64Helpers = use("App/Controllers/Http/Helpers/_EncodingImage")
+// const nodeHtmlToImage = require('node-html-to-image')
 // const converImg = require('svg-png-converter')
 
 
@@ -64,7 +65,7 @@ class PDFReport {
         return groupingData
     }
 
-    async MONTHLY_OB_PDF (req) {
+    async MONTHLY_OB_PDF (req, grafikPath) {
         console.log('monthly====================================');
         console.log(req);
         console.log('====================================');
@@ -122,7 +123,7 @@ class PDFReport {
                     alignment: 'left', 
                     bold: true, 
                     fontSize: 8,
-                    fillColor: '#FFBCBC', 
+                    fillColor: '#75A5E3', 
                     margin: [5, 3, 5, 3]
                 },
                 {},
@@ -131,7 +132,7 @@ class PDFReport {
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
-                    fillColor: '#FFBCBC', 
+                    fillColor: '#75A5E3', 
                     margin: [5, 3, 5, 3]
                 },
                 {
@@ -139,7 +140,7 @@ class PDFReport {
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
-                    fillColor: '#FFBCBC', 
+                    fillColor: '#75A5E3', 
                     margin: [5, 3, 5, 3]
                 },
                 {
@@ -147,7 +148,7 @@ class PDFReport {
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
-                    fillColor: '#FFBCBC', 
+                    fillColor: '#75A5E3', 
                     margin: [5, 3, 5, 3]
                 },
             ])
@@ -157,6 +158,8 @@ class PDFReport {
         const site = await MasSite.query().where('id', req.site_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
         const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
+        const chartPath = Helpers.publicPath(grafikPath)
+        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
         const dataTitle = [
             {
                 columns: [
@@ -219,6 +222,9 @@ class PDFReport {
                     ]
                 ]
             },
+            {text: '\n'},
+            {image: chartAsBase64, width: 500},
+            {text: '\n'},
             {
                 style: 'tableExample',
                 layout: 'headerLineOnly',
@@ -268,7 +274,7 @@ class PDFReport {
         return dd
     }
 
-    async WEEKLY_OB_PDF(req){
+    async WEEKLY_OB_PDF(req, grafikPath){
         console.log('weekly====================================');
         console.log(req);
         console.log('====================================');
@@ -346,8 +352,11 @@ class PDFReport {
         
 
         const site = await MasSite.query().where('id', req.site_id).last()
+        const pit = await MasPit.query().where('id', req.pit_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
         const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
+        const chartPath = Helpers.publicPath(grafikPath)
+        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
         // console.log(data);
 
         let result = []
@@ -377,7 +386,7 @@ class PDFReport {
                     alignment: 'left', 
                     bold: true, 
                     fontSize: 8,
-                    fillColor: '#FFBCBC', 
+                    fillColor: '#75A5E3', 
                     margin: [5, 3, 5, 3]
                 },
                 {},
@@ -386,7 +395,7 @@ class PDFReport {
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
-                    fillColor: '#FFBCBC', 
+                    fillColor: '#75A5E3', 
                     margin: [5, 3, 5, 3]
                 },
                 {
@@ -394,7 +403,7 @@ class PDFReport {
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
-                    fillColor: '#FFBCBC', 
+                    fillColor: '#75A5E3', 
                     margin: [5, 3, 5, 3]
                 },
                 {
@@ -402,7 +411,7 @@ class PDFReport {
                     alignment: 'right', 
                     bold: true,
                     fontSize: 8,
-                    fillColor: '#FFBCBC', 
+                    fillColor: '#75A5E3', 
                     margin: [5, 3, 5, 3]
                 },
             ])
@@ -431,7 +440,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: `: ${moment(req.week_begin).startOf('week').format('DD MMM YYYY')} s/d ${moment(req.week_end).endOf('week').format('DD MMM YYYY')}`
+                                                text: `: ${moment(req.week_begin).format('DD MMM YYYY')} s/d ${moment(req.week_end).format('DD MMM YYYY')}`
                                             }
                                         ]
                                     },
@@ -459,7 +468,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: ': All Pit'
+                                                text: `: ${pit?.name || 'All Pit'}`
                                             }
                                         ]
                                     },
@@ -470,6 +479,9 @@ class PDFReport {
                     ]
                 ]
             },
+            {text: '\n'},
+            {image: chartAsBase64, width: 500},
+            {text: '\n'},
             {
                 style: 'tableExample',
                 layout: 'headerLineOnly',
@@ -520,10 +532,12 @@ class PDFReport {
         return dd
     }
 
-    async DAILY_OB_PDF(req){
-        console.log('daily====================================');
-        console.log(req);
-        console.log('====================================');
+    async DAILY_OB_PDF(req, grafikPath){
+        // console.log('daily====================================');
+        // console.log(req);
+        // console.log(img);
+        // console.log('====================================');
+        
 
         if(req.pit_id === 'undefined' || req.pit_id === 'null'){
             req.pit_id = null
@@ -538,7 +552,7 @@ class PDFReport {
             w.where('current_date', '<=', req.end_date)
         }).orderBy([{ column: 'pit_id', order: 'asc' }, { column: 'current_date', order: 'asc' }]).fetch()).toJSON()
 
-        console.log(dataDaily);
+        // console.log(dataDaily);
 
         let result = []
         result.push([
@@ -571,7 +585,7 @@ class PDFReport {
                 alignment: 'left', 
                 bold: true, 
                 fontSize: 8,
-                fillColor: '#FFBCBC', 
+                fillColor: '#75A5E3', 
                 margin: [5, 3, 5, 3]
             },
             {},
@@ -580,7 +594,7 @@ class PDFReport {
                 alignment: 'right', 
                 bold: true,
                 fontSize: 8,
-                fillColor: '#FFBCBC', 
+                fillColor: '#75A5E3', 
                 margin: [5, 3, 5, 3]
             },
             {
@@ -588,7 +602,7 @@ class PDFReport {
                 alignment: 'right', 
                 bold: true,
                 fontSize: 8,
-                fillColor: '#FFBCBC', 
+                fillColor: '#75A5E3', 
                 margin: [5, 3, 5, 3]
             },
             {
@@ -596,14 +610,17 @@ class PDFReport {
                 alignment: 'right', 
                 bold: true,
                 fontSize: 8,
-                fillColor: '#FFBCBC', 
+                fillColor: '#75A5E3', 
                 margin: [5, 3, 5, 3]
             },
         ])
 
         const site = await MasSite.query().where('id', req.site_id).last()
+        const pit = await MasPit.query().where('id', req.pit_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
         const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
+        const chartPath = Helpers.publicPath(grafikPath)
+        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
         const dataTitle = [
             {
                 columns: [
@@ -613,7 +630,7 @@ class PDFReport {
                         image: `${imageAsBase64}`
                     },
                     [
-                        {text: 'Monthly Production Report', style: 'title'},
+                        {text: 'Daily Production Report', style: 'title'},
                         {
                             columns: [
                                 [
@@ -627,7 +644,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: `: ${moment(req.month_begin).format('MMMM YYYY')} s/d ${moment(req.month_end).format('MMMM YYYY')}`
+                                                text: `: ${moment(req.start_date).format('DD MMMM YYYY')} s/d ${moment(req.end_date).format('DD MMMM YYYY')}`
                                             }
                                         ]
                                     },
@@ -655,7 +672,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: ': All Pit'
+                                                text: `: ${pit?.name || 'All Pit'}`
                                             }
                                         ]
                                     },
@@ -666,6 +683,9 @@ class PDFReport {
                     ]
                 ]
             },
+            {text: '\n'},
+            {image: chartAsBase64, width: 500},
+            {text: '\n'},
             {
                 style: 'tableExample',
                 layout: 'headerLineOnly',

@@ -5,6 +5,9 @@ $(function(){
     var body = $('body')
 
     initFilter()
+    $('body').on('click', 'button#bt-back', function(){
+        window.location = window.location
+    })
 
     $('body').on('change', 'select[name="site_id"]', function(){
         var values = $(this).val()
@@ -184,7 +187,7 @@ $(function(){
         console.log('...');
     })
 
-    $('body').on('click', 'button#bt-show-data', function(e){
+    $('body').on('click', 'button#bt-generate-pdf', function(e){
         e.preventDefault()
         let data = {
             site_id: $('select[name="site_id"]').val(),
@@ -201,35 +204,230 @@ $(function(){
             date: $('input[name="date"]').val(),
             shift_id: $('select[name="shift_id"]').val()
         }
+
+        // var html = document.getElementById('container');
+
+        // domtoimage.toPng(document.getElementById('container'))
+        //     .then(function (dataUrl) {
+        //         console.log('dataUrl :::', dataUrl);
+        //         // data.img = dataUrl
+        //         // var img = new Image();
+        //         // img.src = dataUrl;
+        //         // console.log('img :::', img);
+        //         // document.body.appendChild(img);
+
+                
+                
+        //     })
+        //     .catch(function (error) {
+        //         console.error('...............oops, something went wrong!', error);
+        //     });
+
+        domtoimage.toBlob(document.getElementById('container'))
+        .then(function (blob) {
+            console.log(blob);
+            blob.fileName = 'chart.png'
+            blob.extname = 'png'
+            blob.extname = 'png'
+            var fd = new FormData()
+            fd.append('fname', 'chart.png');
+            fd.append('chartImg', blob);
+            fd.append('site_id', data.site_id);
+            fd.append('pit_id', data.pit_id);
+            fd.append('production_type', data.production_type);
+            fd.append('range_type', data.range_type);
+            fd.append('filterType', data.filterType);
+            fd.append('start_date', data.start_date);
+            fd.append('end_date', data.end_date);
+            fd.append('month_begin', data.month_begin);
+            fd.append('month_end', data.month_end);
+            fd.append('week_begin', data.week_begin);
+            fd.append('week_end', data.week_end);
+            fd.append('date', data.date);
+            fd.append('shift_id', data.shift_id);
+            $.ajax({
+                async: true,
+                url: '/report/production/show-data',
+                method: 'POST',
+                data: fd,
+                dataType: 'json',
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                success: function(result){
+                    console.log(result)
+                    GEN_PDF(result)
+                },
+                error: function(err){
+                    console.log(err)
+                }
+            })
+            // window.saveAs(blob, 'my-node.png');
+        });
+
+
+        
+
+        // async function dataURLtoFile(dataurl, filename) {
+
+        //     var arr = dataurl.split(','),
+        //         mime = arr[0].match(/:(.*?);/)[1],
+        //         bstr = atob(arr[1]), 
+        //         n = bstr.length, 
+        //         u8arr = new Uint8Array(n);
+                
+        //     while(n--){
+        //         u8arr[n] = bstr.charCodeAt(n);
+        //     }
+            
+        //     return new File([u8arr], filename, {type:mime});
+        // }
+        
+        // //Usage example:
+        // let xxx = await dataURLtoFile(fileImg,'hello.png');
+       
+        // function objectToQueryString(obj) {
+        //     var str = [];
+        //     for (var p in obj)
+        //       if (obj.hasOwnProperty(p)) {
+        //         str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        //       }
+        //     return str.join("&");
+        // }
+          
+        // var queryString = objectToQueryString(data);
+        // console.log(queryString);
+
+        // $.ajax({
+        //     async: true,
+        //     url: '/report/production/show-data',
+        //     method: 'POST',
+        //     data: data,
+        //     dataType: 'json',
+        //     processData: false,
+        //     mimeType: "multipart/form-data",
+        //     contentType: false,
+        //     success: function(result){
+        //         console.log(result)
+        //         GEN_PDF(result)
+        //     },
+        //     error: function(err){
+        //         console.log(err)
+        //     }
+        // })
+        // console.log('...', data);
+    })
+
+    function base64ToBlob(base64, mime) {
+        mime = mime || '';
+        var sliceSize = 1024;
+        var byteChars = window.atob(base64);
+        var byteArrays = [];
+
+        for (var offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
+            var slice = byteChars.slice(offset, offset + sliceSize);
+
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+
+            var byteArray = new Uint8Array(byteNumbers);
+
+            byteArrays.push(byteArray);
+        }
+
+        return new Blob(byteArrays, {type: mime});
+    }
+
+    $('body').on('click', 'button#bt-generate-xls', function(e){
+        e.preventDefault()
+        
+        let data = {
+            site_id: $('select[name="site_id"]').val(),
+            pit_id: $('select[name="pit_id"]').val(),
+            production_type: $('select[name="production_type"]').val(),
+            range_type: $('select[name="range_type"]').val(),
+            filterType: $('select[name="filterType"]').val(),
+            start_date: $('input[name="start_date"]').val(),
+            end_date: $('input[name="end_date"]').val(),
+            month_begin: $('input[name="month_begin"]').val(),
+            month_end: $('input[name="month_end"]').val(),
+            week_begin: $('input[name="week_begin"]').val(),
+            week_end: $('input[name="week_end"]').val(),
+            date: $('input[name="date"]').val(),
+            shift_id: $('select[name="shift_id"]').val(),
+            img: ''
+        }
+        var html = document.getElementById('container');
+
+        domtoimage.toPng(html)
+            .then(function (dataUrl) {
+                console.log('dataUrl :::', dataUrl);
+                data.img = dataUrl
+                // var img = new Image();
+                // img.src = dataUrl;
+                // console.log('img :::', img);
+                // document.body.appendChild(img);
+            })
+            .catch(function (error) {
+                console.error('...............oops, something went wrong!', error);
+            });
        
         function objectToQueryString(obj) {
             var str = [];
             for (var p in obj)
               if (obj.hasOwnProperty(p)) {
-                str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+                    console.log(encodeURIComponent(obj[p]));
+                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
               }
             return str.join("&");
         }
           
         var queryString = objectToQueryString(data);
         console.log(queryString);
-        $.ajax({
-            async: true,
-            url: '/report/production/show-data?'+queryString,
-            method: 'GET',
-            data: data,
-            dataType: 'json',
-            processData: false,
-            mimeType: "multipart/form-data",
-            contentType: false,
-            success: function(result){
-                console.log(result)
-                GEN_PDF(result)
-            },
-            error: function(err){
-                console.log(err)
-            }
-        })
+
+        var html = document.getElementById('container');
+
+        domtoimage.toPng(html)
+            .then(function (dataUrl) {
+                console.log('dataUrl :::', dataUrl);
+                // var img = new Image();
+                // img.src = dataUrl;
+                // console.log('img :::', img);
+                // document.body.appendChild(img);
+            })
+            .catch(function (error) {
+                console.error('...............oops, something went wrong!', error);
+            });
+
+        // var obj = {},
+        // chart;
+    
+        // chart = $('#container').highcharts();
+        // obj.svg = chart.getSVG();
+        // obj.type = 'image/png';
+        // obj.width = 450; 
+        // obj.async = true;
+        // console.log(obj)
+        alert('on development....')
+        // $.ajax({
+        //     async: true,
+        //     url: '/report/production/show-data?'+queryString,
+        //     method: 'GET',
+        //     data: data,
+        //     dataType: 'json',
+        //     processData: false,
+        //     mimeType: "multipart/form-data",
+        //     contentType: false,
+        //     success: function(result){
+        //         console.log(result)
+        //         GEN_PDF(result)
+        //     },
+        //     error: function(err){
+        //         console.log(err)
+        //     }
+        // })
         // console.log('...', data);
     })
 
@@ -313,8 +511,10 @@ $(function(){
             }],
             yAxis: [
                 { // Primary yAxis
-                    gridLineColor: '#ddd',
-                    gridLineWidth: 0.2,
+                    // gridLineColor: '#ddd',
+                    // gridLineWidth: 0.2,
+                    lineColor: '#FF0000',
+                    lineWidth: 1,
                     labels: {
                         format: '{value}',
                         style: {
@@ -386,28 +586,51 @@ $(function(){
                 },
                 crosshair: true
             }],
-            yAxis: [
-                { // Primary yAxis
-                    gridLineColor: '#ddd',
-                    gridLineWidth: 0.2,
-                    labels: {
-                        format: '{value}',
-                        style: {
-                            fontSize: '11px',
-                            fontFamily: 'Verdana, sans-serif',
-                            color: '#000'
-                        }
-                    },
-                    title: {
-                        text: 'Total Volume',
-                        style: {
-                            fontSize: '15px',
-                            fontFamily: 'Verdana, sans-serif',
-                            color: '#FF5A79'
-                        }
+
+            yAxis: {
+                lineColor: '#c4c4c4',
+                lineWidth: 1,
+                gridLineColor: '#ddd',
+                gridLineWidth: 0.2,
+                labels: {
+                    format: '{value}',
+                    style: {
+                        fontSize: '11px',
+                        fontFamily: 'Verdana, sans-serif',
+                        color: '#000'
+                    }
+                },
+                title: {
+                    text: 'total volume',
+                    style: {
+                        fontSize: '11px',
+                        fontFamily: 'Verdana, sans-serif',
+                        color: '#014584'
                     }
                 }
-            ],
+            },
+            // yAxis: [
+            //     { // Primary yAxis
+            //         gridLineColor: '#ddd',
+            //         gridLineWidth: 0.2,
+            //         labels: {
+            //             format: '{value}',
+            //             style: {
+            //                 fontSize: '11px',
+            //                 fontFamily: 'Verdana, sans-serif',
+            //                 color: '#000'
+            //             }
+            //         },
+            //         title: {
+            //             text: 'Total Volume',
+            //             style: {
+            //                 fontSize: '15px',
+            //                 fontFamily: 'Verdana, sans-serif',
+            //                 color: '#FF5A79'
+            //             }
+            //         }
+            //     }
+            // ],
             tooltip: {
                 formatter: function () {
                     return '<b>' + this.x + '</b><br/>' +

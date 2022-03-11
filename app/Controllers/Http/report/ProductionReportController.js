@@ -1,5 +1,6 @@
 'use strict'
 
+const Helpers = use('Helpers')
 const moment = require("moment")
 const MasPit = use("App/Models/MasPit")
 const MasShift = use("App/Models/MasShift")
@@ -50,11 +51,35 @@ class ProductionReportController {
     async showData ( { request } ) {
         let req = request.all()
         console.log('QUERY STRING :::', req);
+
+        // const validateFile = {
+        //     types: ['image'],
+        //     size: '10mb',
+        //     extnames: ['png']
+        // }
+        const attchment = request.file('chartImg')
+
+        if(attchment){
+            const randURL = moment().format('YYYYMMDDHHmm')
+            const aliasName = `chart-${req.production_type}-${req.range_type}-${req.filterType}-${randURL}.png`
+            var grafikPath = '/upload/'+aliasName
+
+            await attchment.move(Helpers.publicPath(`upload`), {
+                name: aliasName,
+                overwrite: true,
+            })
+            if (!attchment.moved()) {
+                console.log(attchment.error());
+                return 'gagal simpan gambar....'
+            }
+            
+        }
+
         if(req.production_type === 'OB'){
-            const dataOB = await GEN_PDF_OB (req)
+            const dataOB = await GEN_PDF_OB (req, grafikPath)
             return dataOB
         }else{
-            const dataCOAL = await GEN_PDF_COAL (req)
+            const dataCOAL = await GEN_PDF_COAL (req, grafikPath)
             return dataCOAL
         }
     }
@@ -177,29 +202,29 @@ async function PERIODE_WISE(req){
 }
 
 /** DETAILS DATA DOWNLOAD **/
-async function GEN_PDF_OB (req) {
+async function GEN_PDF_OB (req, img) {
     if(req.filterType === 'MONTHLY'){
-        const data = await ReportPDFHelpers.MONTHLY_OB_PDF(req)
+        const data = await ReportPDFHelpers.MONTHLY_OB_PDF(req, img)
         return data
     }
 
     if(req.filterType === 'WEEKLY'){
-        const data = await ReportPDFHelpers.WEEKLY_OB_PDF(req)
+        const data = await ReportPDFHelpers.WEEKLY_OB_PDF(req, img)
         return data
     }
 
     if(req.filterType === 'DATE'){
-        const data = await ReportPDFHelpers.DAILY_OB_PDF(req)
+        const data = await ReportPDFHelpers.DAILY_OB_PDF(req, img)
         return data
     }
 
     if(req.filterType === 'SHIFT'){
-        const data = await ReportPDFHelpers.SHIFTLY_OB_PDF(req)
+        const data = await ReportPDFHelpers.SHIFTLY_OB_PDF(req, img)
         return data
     }
 
     if(req.filterType === 'HOURLY'){
-        const data = await ReportPDFHelpers.HOURLY_OB_PDF(req)
+        const data = await ReportPDFHelpers.HOURLY_OB_PDF(req, img)
         return data
     }
 }

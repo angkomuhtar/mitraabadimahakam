@@ -531,19 +531,19 @@ class repPoduction {
 
     async PW_MONTHLY (req) {
         let result = []
-        let data = (
-            await MonthlyPlan.query()
+        let data = (await MonthlyPlan.query()
             .with('pit', w => w.with('site'))
             .where( w => {
                 w.where('tipe', req.production_type)
                 w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
                 w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
-            }).fetch()
-        ).toJSON()
+            }).orderBy('month').fetch()).toJSON()
 
         data = data.map( el => {
             return {
                     xAxis: moment(el.month).format('MMM YYYY'),
+                    date: moment(el.month).startOf('month').format('YYYY-MM-DD'),
+                    pit_id: el.pit_id,
                     estimate: el.estimate,
                     actual: el.actual,
                     nm_pit: el.pit.name,
@@ -551,7 +551,9 @@ class repPoduction {
             }
         })
 
-        let color = ['#F2B416', '#F16767', '#16CBF2']
+        
+
+        let color = ['#75A5E3', '#1873C8', '#014584']
         result = _.groupBy(data, 'nm_pit')
         result = Object.keys(result).map((key, i) => {
             return {
@@ -561,6 +563,18 @@ class repPoduction {
                     items: result[key]
             }
         })
+
+       
+        let arrTrands = []
+        for (const [i, obj] of result.entries()) {
+            arrTrands.push({
+                nm_pit: 'Trands '+obj.nm_pit,
+                type: 'spline',
+                color: color[i],
+                items: obj.items
+            })
+        }
+        let joinTrends = [...result, ...arrTrands]
 
         let xAxis = _.groupBy(data, 'xAxis')
         xAxis = Object.keys(xAxis).map(key => {
@@ -574,7 +588,7 @@ class repPoduction {
         return {
             site_nm: site.name,
             xAxis: xAxis.map( el => el.x_axis),
-            data: result
+            data: req.typeChart === 'column' ? joinTrends : result
         }
     }
 
@@ -629,7 +643,7 @@ class repPoduction {
             }
         }
 
-        let color = ['#F2B416', '#F16767', '#16CBF2']
+        let color = ['#75A5E3', '#1873C8', '#014584']
         result = _.groupBy(result, 'nm_pit')
         result = Object.keys(result).map((key, i) => {
             console.log(i);
@@ -641,12 +655,23 @@ class repPoduction {
             }
         })
 
+        let arrTrands = []
+        for (const [i, obj] of result.entries()) {
+            arrTrands.push({
+                nm_pit: 'Trands '+obj.nm_pit,
+                type: 'spline',
+                color: color[i],
+                items: obj.items
+            })
+        }
+        let joinTrends = [...result, ...arrTrands]
+
         const site = await MasSite.query().where('id', req.site_id).last()
 
         return {
             site_nm: site.name,
             xAxis: arrDate.map( el => el.date),
-            data: result
+            data: req.typeChart === 'column' ? joinTrends : result
         }
     }
 
@@ -681,7 +706,7 @@ class repPoduction {
             })
         }
 
-        let color = ['#F2B416', '#F16767', '#16CBF2']
+        let color = ['#75A5E3', '#1873C8', '#014584']
         result = _.groupBy(result, 'nm_pit')
         result = Object.keys(result).map((key, i) => {
             return {
@@ -692,9 +717,20 @@ class repPoduction {
             }
         })
 
+        let arrTrands = []
+        for (const [i, obj] of result.entries()) {
+            arrTrands.push({
+                nm_pit: 'Trands '+obj.nm_pit,
+                type: 'spline',
+                color: color[i],
+                items: obj.items
+            })
+        }
+        let joinTrends = [...result, ...arrTrands]
+
         return {
             xAxis: arrDate,
-            data: result
+            data: req.typeChart === 'column' ? joinTrends : result
         }
     }
 
@@ -776,7 +812,7 @@ class repPoduction {
         }
 
         xresult = _.sortBy(xresult, function(num){ return num.stack });
-        console.log(JSON.stringify(xresult, null, 2))
+        // console.log(JSON.stringify(xresult, null, 2))
         return {
             xAxis: arrDate,
             data: xresult
