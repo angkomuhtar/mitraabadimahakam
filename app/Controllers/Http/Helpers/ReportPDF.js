@@ -734,6 +734,14 @@ class PDFReport {
         // console.log(JSON.stringify(dd, null, 2));
         return dd
     }
+
+    async SHIFTLY_OB_PDF() {
+
+    }
+
+    async HOURLY_OB_PDF() {
+
+    }
 }
 
 module.exports = new PDFReport()
