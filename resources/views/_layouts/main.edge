@@ -112,7 +112,8 @@
                 @!section('content')
                 @include('_layouts.sidebar_setting')
             </div>
-            <footer class="footer" style="padding-left: 80px;">
+            <footer class="footer" style="padding-left: 30px;">
+                <!--
                 <div class="pull-right hidden-xs">
                     &copy; 2021 develop by <span class="text-primary">Ayat Ekapoetra</span> 
                     <br>
@@ -122,10 +123,66 @@
                     <h5>
                         <span class="text-danger">PT. Mitra Abadi Mahakam</span> Personal license
                     </h5>
+                </div>-->
+                <div class="runtext-container">
+                    <div class="main-runtext">
+                        <marquee direction="" onmouseover="this.stop();" onmouseout="this.start();">
+                        
+                        <div class="holder" id="container-runningtext"></div>
+                        
+                        </marquee>
+                    </div>
                 </div>
             </footer>
         </div>
     </div>
+
+    <style>
+        marquee {
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .runtext-container {
+        overflow-x: hidden;
+        overflow-y: visible;
+        padding-bottom: 5px;
+        /* margin: 0 60px 0 30px; */
+        /* padding:0 3px 0 3px; */
+        }
+
+        .main-runtext {margin: 0 auto;
+        overflow: visible;
+        position: relative;
+        height: 20px;
+        }
+
+        .runtext-container .holder {
+        position: relative;
+        overflow: visible;
+        display:inline;
+        float:left;
+
+        }
+
+        .runtext-container .holder .text-container {
+            display:inline;
+        }
+
+        .runtext-container .holder a{
+            text-decoration: none;
+            /* font-weight: bold; */
+            color:#ff0000;
+            text-shadow:0 -1px 0 rgba(0,0,0,0.25);
+            line-height: -0.5em;
+            /* font-size:16px; */
+        }
+
+        .runtext-container .holder a:hover{
+            text-decoration: none;
+            color:#6600ff;
+        }
+    </style>
 
     
 
@@ -229,33 +286,54 @@
             sleep_delay: 5000, // default 5 seconds
         };
 
-      var js_network_monitor = new JsNetworkMonitor(options);
-      js_network_monitor.on('online', function() {
-            $.toast({
-                heading: 'Okey,,,',
-                text: 'Anda sedang online.',
-                position: 'top-right',
-                loaderBg: '#FFF',
-                icon: 'info',
-                bgColor: '#5bc6f5',
-                hideAfter: 3500,
-                stack: 6
-            });
-        });
-        js_network_monitor.on('offline', function() {
-            $.toast({
-                heading: 'Peringatan',
-                text: 'Jaringan internet anda sedang offline.',
-                position: 'top-right',
-                loaderBg: '#FFF',
-                icon: 'warning',
-                hideAfter: 3500,
-                stack: 6
-            });
-        }
-      );
-      js_network_monitor.start();
+        var js_network_monitor = new JsNetworkMonitor(options);
+        js_network_monitor.on('online', function() {
+              $.toast({
+                  heading: 'Okey,,,',
+                  text: 'Anda sedang online.',
+                  position: 'top-right',
+                  loaderBg: '#FFF',
+                  icon: 'info',
+                  bgColor: '#5bc6f5',
+                  hideAfter: 3500,
+                  stack: 6
+              });
+          });
+          js_network_monitor.on('offline', function() {
+              $.toast({
+                  heading: 'Peringatan',
+                  text: 'Jaringan internet anda sedang offline.',
+                  position: 'top-right',
+                  loaderBg: '#FFF',
+                  icon: 'warning',
+                  hideAfter: 3500,
+                  stack: 6
+              });
+          }
+        );
+        js_network_monitor.start();
 
+        var runningText = $('#container-runningtext')
+        GET_ISSUE()
+
+        function GET_ISSUE(){
+            $.ajax({
+                async: true,
+                url: '/ajax/running-text',
+                method: 'GET',
+                success: function(data){
+                    console.log(data);
+                    if(data.length > 0){
+                        runningText.html(
+                            data.map( el => '<div class="text-container m-r-30"><span><i class="ti-alarm-clock"></i></span>'+el.items[0].report_time+' || <span class="text-danger">'+ el.issue +'</span> <strong>[ '+el.items.map(el => el.unit)+' ]</strong> <i class="ti-user"></i> <small>Report By: '+el.items[0].reportby+'</small></div>')
+                        )
+                    }
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        }
       
     </script>
     

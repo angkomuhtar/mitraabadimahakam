@@ -509,6 +509,7 @@ Route.group(() => {
     Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
     Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
     Route.post('/production/show-data', 'ProductionReportController.showData').as('rep.production.showData').middleware('R')
+    // Route.post('/production/running-text', 'ProductionReportController.runningText').as('rep.production.runningText').middleware('R')
 
     // Route.get('/over-borden', 'ProductionReportController.index').as('rep.over-borden.index').middleware('R')
 
@@ -584,6 +585,8 @@ Route.group(() => {
     Route.get('/subcon', 'AjaxSubcontractorController.getSubcon').as('subcon.getSubcon')
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
+
+    Route.get('/running-text', 'AjaxIssueController.runningText')
     
     // GRAFIK
     Route.get('/grafik1', 'AjaxChartController.grafik_OB_MTD')

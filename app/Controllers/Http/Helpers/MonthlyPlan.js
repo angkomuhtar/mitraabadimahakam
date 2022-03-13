@@ -429,10 +429,12 @@ class MonthlyPlan {
     async POST (req, user) { 
         const { pit_id, tipe, month, estimate, actual } = req
         const satuan = req.tipe === 'OB' ? 'BCM':'MT'
+        const site = await MasPit.query().where('id', pit_id).last()
         try {
             const monthlyPlans = new MonthlyPlans()
             monthlyPlans.fill({
                 user_id: user.id || null,
+                site_id: site?.site_id || null,
                 pit_id, 
                 tipe, 
                 month, 
