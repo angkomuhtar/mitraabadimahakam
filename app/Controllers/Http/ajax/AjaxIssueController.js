@@ -9,8 +9,8 @@ class AjaxIssueController {
         let issue
         try {
             issue = (await MamIssue.query().with('unit').with('user').where( w => {
-                // w.where('report_at', 'like', `${moment().format('YYYY-MM-DD')}%`)
-                w.where('report_at', 'like', `2022-03-10%`)
+                w.where('report_at', 'like', `${moment().format('YYYY-MM-DD')}%`)
+                // w.where('report_at', 'like', `2022-03-10%`)
             }).fetch()).toJSON()
         } catch (error) {
             console.log(error);
