@@ -1,8 +1,8 @@
-{{ script('plugins/bower_components/dom-to-image/src/dom-to-image') }}
-{{ script('plugins/bower_components/dom-to-image/dist/dom-to-image.min') }}
 {{ script('ajax/index') }}
 {{ script('ajax/report/production-filter') }}
-<!-- Select2 -->
+
+{{ script('plugins/bower_components/dom-to-image/src/dom-to-image') }}
+{{ script('plugins/bower_components/dom-to-image/dist/dom-to-image.min') }}
 {{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
 {{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
 <div class="row">
@@ -208,21 +208,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--
-                                    <div class="panel-footer">
-                                        <button class="btn btn-info waves-effect waves-light" type="submit"> 
-                                            <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
-                                        </button>
-                                        <div class="runtext-container">
-                                            <div class="main-runtext">
-                                                <marquee direction="" onmouseover="this.stop();" onmouseout="this.start();">
-                                                
-                                                <div class="holder" id="container-runningtext"></div>
-                                                
-                                                </marquee>
-                                            </div>
-                                        </div>
-                                    </div>-->
                                 </div>
                             </div>
                         </form>
@@ -240,20 +225,43 @@
                 <div id="container" class="text-center"></div>
                 <div id="xxx" class="text-center"></div>
             </div>
-            <div class="panel-footer">
+            <div class="panel-footer text-center">
                 <button type="button" class="btn btn-default waves-effect waves-light btn-sm pull-left" id="bt-back"> 
                     <i class="fa fa-angle-left"></i> <span>Back</span>
                 </button>
-                <button type="button" class="btn btn-success waves-effect waves-light btn-sm pull-right" id="bt-generate-xls"> 
-                    <i class="fa fa-file-excel-o"></i> <!--<span>Download XLS</span>-->
-                </button>
-                <button type="button" class="m-r-10 btn btn-inverse waves-effect waves-light btn-sm pull-right" id="bt-generate-pdf"> 
-                    <i class="fa fa-file-pdf-o"></i> <!--<span>Download PDF</span>-->
-                </button>
+                <span class="mytooltip tooltip-effect-1">
+                    <span class="tooltip-item" style="background: none;">
+                        <button class="btn btn-success waves-effect waves-light" type="button" id="bt-generate-xls">
+                            <span class="btn-label">
+                                <i class="ti-download"></i>
+                            </span>
+                            XLS Files
+                        </button>
+                    </span> 
+                    <span class="tooltip-content clearfix">
+                        <img src="{{ assetsUrl('images/xls.png')}}" width="100">
+                        <span class="tooltip-text">
+                            Download data berformat EXCEL sesuai dengan filtering data yang telah di tentukan.
+                        </span> 
+                    </span>
+                </span>
+                <span class="mytooltip tooltip-effect-1">
+                    <span class="tooltip-item" style="background: none;">
+                        <button class="btn btn-inverse waves-effect waves-light" type="button" id="bt-generate-pdf">
+                            <span class="btn-label">
+                                <i class="ti-download"></i>
+                            </span>
+                            PDF Files
+                        </button>
+                    </span> 
+                    <span class="tooltip-content clearfix">
+                      <img src="{{ assetsUrl('images/pdf.png')}}">
+                      <span class="tooltip-text">
+                        Download data berformat PDF sesuai dengan filtering data yang telah di tentukan.
+                      </span> 
+                    </span>
+                </span>
             </div>
         </div>
     </div>
-    <!--
-    <div class="col-md-12">
-    </div>-->
 </div>

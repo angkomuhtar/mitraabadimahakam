@@ -893,7 +893,9 @@ class repPoduction {
             xAxis.push("Pukul " + str)
         }
 
-        for (const obj of data) {
+        let color = ['#75A5E3', '#1873C8', '#014584']
+        for (const [i, obj] of data.entries()) {
+            
             var arrData = [];
 
             const pit = await MasPit.query().where('id', obj.pit_id).last()
@@ -926,13 +928,27 @@ class repPoduction {
                 }
             })
 
+            console.log(i);
+
             result.push({
                 pit_id: obj.pit_id,
                 name: `${pit.name} (${pit.kode})`,
                 stack: pit.kode,
                 type: req.typeChart,
+                color: color[i],
                 items: arrData
             })
+
+            if(req.typeChart === 'column'){
+                result.push({
+                    pit_id: obj.pit_id,
+                    name: `TREND ${pit.kode}`,
+                    stack: pit.kode,
+                    type: 'spline',
+                    color: color[i],
+                    items: arrData
+                })
+            }
         }
         // console.log(result);
         return {

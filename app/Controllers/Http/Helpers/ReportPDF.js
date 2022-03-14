@@ -533,11 +533,6 @@ class PDFReport {
     }
 
     async DAILY_OB_PDF(req, grafikPath){
-        // console.log('daily====================================');
-        // console.log(req);
-        // console.log(img);
-        // console.log('====================================');
-        
 
         if(req.pit_id === 'undefined' || req.pit_id === 'null'){
             req.pit_id = null
@@ -735,12 +730,478 @@ class PDFReport {
         return dd
     }
 
-    async SHIFTLY_OB_PDF() {
+    async SHIFTLY_OB_PDF(req, grafikPath) {
+        console.log('shiftly====================================');
+        console.log(req);
+        // console.log(img);
+        console.log('====================================');
 
+        let arrData
+        try {
+            arrData = (
+                await DailyRitase.query()
+                .with('shift')
+                .with('pit', w => w.with('site'))
+                .where( w => {
+                    if(req.shift_id){
+                        w.where('shift_id', req.shift_id)
+                    }
+                    w.where('site_id', req.site_id)
+                    w.where('date', '>=', moment(req.start_date).format('YYYY-MM-DD'))
+                    w.where('date', '<=', moment(req.end_date).format('YYYY-MM-DD'))
+                }).fetch()
+            ).toJSON()
+        } catch (error) {
+            console.log(error);
+        }
+        
+        // console.log(arrData);
+        let data = []
+        for (const obj of arrData) {
+            const material = await MasMaterial.query().where('id', obj.material).last()
+            // console.log(moment(obj.date).format('YYYY-MM-DD'));
+            // console.log(obj.pit.name);
+            data.push({
+                site_id: obj.site_id,
+                nm_site: obj.pit.site?.name,
+                pit_id: obj.pit_id,
+                nm_pit: obj.pit.name,
+                shift_id: obj.shift_id,
+                nm_shift: obj.shift.name,
+                kd_shift: obj.shift.kode,
+                date: moment(obj.date).format('YYYY-MM-DD'),
+                actual: parseFloat(obj.tot_ritase) * parseFloat(material.vol)
+            })
+        }
+        data = _.groupBy(_.sortBy(data, 'nm_pit'), 'nm_pit')
+        data = Object.keys(data).map(key => {
+            return {
+                nm_pit: key,
+                items: data[key]
+            }
+        })
+
+        let tmp = []
+        for (const obj of data) {
+            let itemx = []
+            for (const val of obj.items) {
+                const target = await DailyPlan.query().where( w => {
+                    w.where('current_date', val.date)
+                    w.where('pit_id', val.pit_id)
+                }).last()
+
+                var estimasi = parseFloat(target.estimate) / 2
+                var diff = parseFloat(val.actual) - (parseFloat(target.estimate) / 2)
+                itemx.push({
+                    ...val, 
+                    estimate: estimasi.toFixed(2),
+                    diff: diff.toFixed(2)
+                })
+            }
+
+            tmp.push({
+                ...obj, 
+                items: itemx
+            })
+        }
+        // console.log(JSON.stringify(tmp, null, 2));
+
+        let result = []
+        result.push([
+            { text: 'Location', style: 'tableHeader_L' },
+            { text: 'Periode', style: 'tableHeader_L' },
+            { text: 'Shift', style: 'tableHeader_L' },
+            { text: 'Target', style: 'tableHeader_R' },
+            { text: 'Actual', style: 'tableHeader_R' },
+            { text: 'Diff', style: 'tableHeader_R' }
+        ])
+
+        for (const obj of tmp) {
+            var arrEstimate = []
+            var arrActual = []
+            for (const val of obj.items) {
+                arrEstimate.push(parseFloat(val.estimate))
+                arrActual.push(parseFloat(val.actual))
+
+                result.push([
+                    {text: val.nm_pit, fillColor: val.kd_shift != 'NS' ? '#C4C4C4':'#DDD', fontSize: 8, alignment: 'left'},
+                    {text: moment(val.date).format('DD-MM-YYYY'), fillColor: val.kd_shift != 'NS' ? '#C4C4C4':'#DDD', fontSize: 8, alignment: 'left'},
+                    {text: val.kd_shift, fillColor: val.kd_shift != 'NS' ? '#C4C4C4':'#DDD', fontSize: 8, alignment: 'left'},
+                    {text: val.estimate, fillColor: val.kd_shift != 'NS' ? '#C4C4C4':'#DDD', fontSize: 8, alignment: 'right'},
+                    {text: val.actual, fillColor: val.kd_shift != 'NS' ? '#C4C4C4':'#DDD', fontSize: 8, alignment: 'right'},
+                    {text: (parseFloat(val.actual) - parseFloat(val.estimate)).toFixed(2), fillColor: val.kd_shift != 'NS' ? '#C4C4C4':'#DDD', fontSize: 8, alignment: 'right'},
+                ])
+            }
+
+            result.push([
+                {
+                    text: `Grand Total`, 
+                    colSpan: 3, 
+                    alignment: 'left', 
+                    bold: true, 
+                    fontSize: 8,
+                    fillColor: '#75A5E3', 
+                    margin: [5, 3, 5, 3]
+                },
+                {},
+                {},
+                {
+                    text: (arrEstimate.reduce((a, b) => { return a + b }, 0)).toFixed(2) + ' BCM',
+                    alignment: 'right', 
+                    bold: true,
+                    fontSize: 8,
+                    fillColor: '#75A5E3', 
+                    margin: [5, 3, 5, 3]
+                },
+                {
+                    text: (arrActual.reduce((a, b) => { return a + b }, 0)).toFixed(2) + ' BCM',
+                    alignment: 'right', 
+                    bold: true,
+                    fontSize: 8,
+                    fillColor: '#75A5E3', 
+                    margin: [5, 3, 5, 3]
+                },
+                {
+                    text: ((arrActual.reduce((a, b) => { return a + b }, 0)) - (arrEstimate.reduce((a, b) => { return a + b }, 0))).toFixed(2) + ' BCM',
+                    alignment: 'right', 
+                    bold: true,
+                    fontSize: 8,
+                    fillColor: '#75A5E3', 
+                    margin: [5, 3, 5, 3]
+                },
+            ])
+        }
+
+        const site = await MasSite.query().where('id', req.site_id).last()
+        const pit = await MasPit.query().where('id', req.pit_id).last()
+        const imgPath = Helpers.publicPath('logo.jpg')
+        const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
+        const chartPath = Helpers.publicPath(grafikPath)
+        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+        const dataTitle = [
+            {
+                columns: [
+                    {
+                        width: 100,
+                        fit: [80, 80],
+                        image: `${imageAsBase64}`
+                    },
+                    [
+                        {text: 'Daily Production Report', style: 'title'},
+                        {
+                            columns: [
+                                [
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Periode '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${moment(req.start_date).format('DD MMMM YYYY')} s/d ${moment(req.end_date).format('DD MMMM YYYY')}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Site '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${site.name}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Pit '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${pit?.name || 'All Pit'}`
+                                            }
+                                        ]
+                                    },
+                                    {text: '', margin: [0, 0, 0, 5]},
+                                ]
+                            ]
+                        }
+                    ]
+                ]
+            },
+            {text: '\n'},
+            {image: chartAsBase64, width: 500},
+            {text: '\n'},
+            {
+                style: 'tableExample',
+                layout: 'headerLineOnly',
+                table: {
+                    headerRows: 1,
+                    widths: ['auto', '*', 50, 80, 80, 'auto'],
+                    body: result
+                }
+            }
+        ]
+
+        const dd = {
+            styles: {
+                title: {
+                    fontSize: 16,
+                    bold: true,
+                    margin: [0, 0, 0, 5]
+                },
+                subtitle: {
+                    fontSize: 10,
+                    italics: true
+                },
+                tableHeader_L: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'left'
+                },
+                tableHeader_R: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'right'
+                },
+                tableCell_L: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'left'
+                },
+                tableCell_R: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'right'
+                }
+            },
+            content: dataTitle,
+        }
+        // console.log(JSON.stringify(dd, null, 2));
+        return dd
     }
 
-    async HOURLY_OB_PDF() {
+    async HOURLY_OB_PDF(req, grafikPath) {
+        console.log(req);
+        let resultx = []
+        let result = []
+        let data 
+        try {
+            data = (
+                await VRitaseObPerjam.query().where( w => {
+                    if(req.site_id){
+                        w.where('site_id', req.site_id)
+                    }
+                    w.where('tglx', req.date)
+                }).fetch()
+            ).toJSON()
+        } catch (error) {
+            console.log(error);
+        }
 
+        data = _.groupBy(data, 'pit_id')
+        data = Object.keys(data).map(key => {
+            return {
+                pit_id: key,
+                items: data[key]
+            }
+        })
+        
+        // let color = ['#75A5E3', '#1873C8', '#014584']
+        for (const [i, obj] of data.entries()) {
+            
+            var arrData = [];
+
+            const pit = await MasPit.query().where('id', obj.pit_id).last()
+
+            /** GROUPING DATA BY WAKTU **/
+            obj.items.reduce(function(res, value) {
+              if (!res[value.jamx]) {
+                res[value.jamx] = { jamx: value.jamx, nm_pit: pit.name, vol: 0 };
+                arrData.push(res[value.jamx])
+              }
+              res[value.jamx].vol += value.vol;
+              return res;
+            }, {});
+
+            for (let i = 0; i < 24; i++) {
+                var str = '0'.repeat(2 - `${i}`.length) + i
+                if(!arrData.map(el => el.jamx).includes(str)){
+                    arrData.push({
+                        jamx: str,
+                        nm_pit: pit.name,
+                        vol: 0
+                    })
+                }
+            }
+
+            arrData = _.sortBy(arrData, 'jamx');
+            arrData = arrData.map(el => {
+                return {
+                    pukul: el.jamx + ':00',
+                    date: moment(req.date).format('DD MMM YYYY'),
+                    nm_pit: pit.name,
+                    actual: el.vol
+                }
+            })
+
+            // console.log(obj);
+            console.log(arrData);
+            resultx.push({
+                pit_id: obj.pit_id,
+                pit_nm: pit.name,
+                actual: arrData.reduce((a, b) => {return a + b.actual}, 0),
+                items: arrData
+            })
+        }
+        
+        result.push([
+            { text: 'Location', style: 'tableHeader_L' },
+            { text: 'Date', style: 'tableHeader_L' },
+            { text: 'Time', style: 'tableHeader_L' },
+            { text: 'Actual', style: 'tableHeader_R' }
+        ])
+
+        for (const obj of resultx) {
+            for (const val of obj.items) {
+                result.push([
+                    {text: val.nm_pit, style: 'tableCell_L'},
+                    {text: moment(val.date).format('DD-MM-YYYY'), style: 'tableCell_L'},
+                    {text: val.pukul, style: 'tableCell_L'},
+                    {text: val.actual, style: 'tableCell_R'},
+                ])
+            }
+        }
+
+        const site = await MasSite.query().where('id', req.site_id).last()
+        const pit = await MasPit.query().where('id', req.pit_id).last()
+        const imgPath = Helpers.publicPath('logo.jpg')
+        const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
+        const chartPath = Helpers.publicPath(grafikPath)
+        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+        const dataTitle = [
+            {
+                columns: [
+                    {
+                        width: 100,
+                        fit: [80, 80],
+                        image: `${imageAsBase64}`
+                    },
+                    [
+                        {text: 'Daily Production Report', style: 'title'},
+                        {
+                            columns: [
+                                [
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Periode '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${moment(req.date).format('DD MMMM YYYY')}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Site '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${site.name}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Pit '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${pit?.name || 'All Pit'}`
+                                            }
+                                        ]
+                                    },
+                                    {text: '', margin: [0, 0, 0, 5]},
+                                ]
+                            ]
+                        }
+                    ]
+                ]
+            },
+            {text: '\n'},
+            {image: chartAsBase64, width: 500},
+            {text: '\n'},
+            {
+                style: 'tableExample',
+                layout: 'headerLineOnly',
+                table: {
+                    headerRows: 1,
+                    widths: ['auto', '*', 80, 'auto'],
+                    body: result
+                }
+            }
+        ]
+
+        const dd = {
+            styles: {
+                title: {
+                    fontSize: 16,
+                    bold: true,
+                    margin: [0, 0, 0, 5]
+                },
+                subtitle: {
+                    fontSize: 10,
+                    italics: true
+                },
+                tableHeader_L: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'left'
+                },
+                tableHeader_R: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'right'
+                },
+                tableCell_L: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'left'
+                },
+                tableCell_R: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'right'
+                }
+            },
+            content: dataTitle,
+        }
+        // console.log(JSON.stringify(dd, null, 2));
+        return dd
     }
 }
 
