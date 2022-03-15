@@ -7,6 +7,7 @@ const MasShift = use("App/Models/MasShift")
 const ReportOBHelpers = use("App/Controllers/Http/Helpers/ReportOB")
 const ReportPoductionHelpers = use("App/Controllers/Http/Helpers/ReportPoduction")
 const ReportPDFHelpers = use("App/Controllers/Http/Helpers/ReportPDF")
+const ReportXLSHelpers = use("App/Controllers/Http/Helpers/ReportXLS")
 
 class ProductionReportController {
 
@@ -48,15 +49,10 @@ class ProductionReportController {
         }
     }
 
-    async showData ( { request } ) {
+    async genDataPDF ( { request } ) {
         let req = request.all()
         console.log('QUERY STRING :::', req);
 
-        // const validateFile = {
-        //     types: ['image'],
-        //     size: '10mb',
-        //     extnames: ['png']
-        // }
         const attchment = request.file('chartImg')
 
         if(attchment){
@@ -82,6 +78,20 @@ class ProductionReportController {
             const dataCOAL = await GEN_PDF_COAL (req, grafikPath)
             return dataCOAL
         }
+    }
+
+    async genDataXLS ( { request } ) {
+        let req = request.all()
+        // console.log('====================================');
+        // console.log(req);
+        // console.log('====================================');
+        const data = await GEN_XLS (req)
+        return data
+        // if(req.production_type === 'OB'){
+        // }else{
+        //     const dataCOAL = await GEN_XLS_COAL (req)
+        //     return dataCOAL
+        // }
     }
 
     // async dataGraphOB ( { request } ) {
@@ -255,3 +265,86 @@ async function GEN_PDF_COAL (req) {
         return data
     }
 }
+
+/** DETAILS DATA DOWNLOAD **/
+async function GEN_XLS (req) {
+    // console.log('REQ ::::', req);
+    if(req.filterType === 'MONTHLY'){
+        const data = await ReportXLSHelpers.MONTHLY_XLS(req)
+        return data
+    }
+
+    if(req.filterType === 'WEEKLY'){
+        const data = await ReportXLSHelpers.WEEKLY_XLS(req)
+        return data
+    }
+
+    if(req.filterType === 'DATE'){
+        const data = await ReportXLSHelpers.DAILY_XLS(req)
+        return data
+    }
+
+    if(req.filterType === 'SHIFT'){
+        const data = await ReportXLSHelpers.SHIFTLY_XLS(req)
+        return data
+    }
+
+    if(req.filterType === 'HOURLY'){
+        const data = await ReportXLSHelpers.HOURLY_XLS(req)
+        return data
+    }
+}
+// async function GEN_XLS_OB (req) {
+//     // console.log('REQ ::::', req);
+//     if(req.filterType === 'MONTHLY'){
+//         const data = await ReportXLSHelpers.MONTHLY_OB_XLS(req)
+//         return data
+//     }
+
+//     if(req.filterType === 'WEEKLY'){
+//         const data = await ReportXLSHelpers.WEEKLY_OB_XLS(req)
+//         return data
+//     }
+
+//     if(req.filterType === 'DATE'){
+//         const data = await ReportXLSHelpers.DAILY_OB_XLS(req)
+//         return data
+//     }
+
+//     if(req.filterType === 'SHIFT'){
+//         const data = await ReportXLSHelpers.SHIFTLY_OB_XLS(req)
+//         return data
+//     }
+
+//     if(req.filterType === 'HOURLY'){
+//         const data = await ReportXLSHelpers.HOURLY_OB_XLS(req)
+//         return data
+//     }
+// }
+
+// async function GEN_XLS_COAL (req) {
+//     if(req.filterType === 'MONTHLY'){
+//         const data = await ReportXLSHelpers.MONTHLY_COAL_XLS(req)
+//         return data
+//     }
+
+//     if(req.filterType === 'WEEKLY'){
+//         const data = await ReportXLSHelpers.WEEKLY_COAL_XLS(req)
+//         return data
+//     }
+
+//     if(req.filterType === 'DATE'){
+//         const data = await ReportXLSHelpers.DAILY_COAL_XLS(req)
+//         return data
+//     }
+
+//     if(req.filterType === 'SHIFT'){
+//         const data = await ReportXLSHelpers.SHIFTLY_COAL_XLS(req)
+//         return data
+//     }
+
+//     if(req.filterType === 'HOURLY'){
+//         const data = await ReportXLSHelpers.HOURLY_COAL_XLS(req)
+//         return data
+//     }
+// }

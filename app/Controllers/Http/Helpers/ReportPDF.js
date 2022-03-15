@@ -1017,7 +1017,7 @@ class PDFReport {
                 items: data[key]
             }
         })
-        
+
         // let color = ['#75A5E3', '#1873C8', '#014584']
         for (const [i, obj] of data.entries()) {
             

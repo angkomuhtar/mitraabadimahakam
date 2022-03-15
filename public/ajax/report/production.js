@@ -205,24 +205,6 @@ $(function(){
             shift_id: $('select[name="shift_id"]').val()
         }
 
-        // var html = document.getElementById('container');
-
-        // domtoimage.toPng(document.getElementById('container'))
-        //     .then(function (dataUrl) {
-        //         console.log('dataUrl :::', dataUrl);
-        //         // data.img = dataUrl
-        //         // var img = new Image();
-        //         // img.src = dataUrl;
-        //         // console.log('img :::', img);
-        //         // document.body.appendChild(img);
-
-                
-                
-        //     })
-        //     .catch(function (error) {
-        //         console.error('...............oops, something went wrong!', error);
-        //     });
-
         domtoimage.toBlob(document.getElementById('container'))
         .then(function (blob) {
             console.log(blob);
@@ -247,7 +229,7 @@ $(function(){
             fd.append('shift_id', data.shift_id);
             $.ajax({
                 async: true,
-                url: '/report/production/show-data',
+                url: '/report/production/gen-data-pdf',
                 method: 'POST',
                 data: fd,
                 dataType: 'json',
@@ -262,173 +244,66 @@ $(function(){
                     console.log(err)
                 }
             })
-            // window.saveAs(blob, 'my-node.png');
         });
-
-
-        
-
-        // async function dataURLtoFile(dataurl, filename) {
-
-        //     var arr = dataurl.split(','),
-        //         mime = arr[0].match(/:(.*?);/)[1],
-        //         bstr = atob(arr[1]), 
-        //         n = bstr.length, 
-        //         u8arr = new Uint8Array(n);
-                
-        //     while(n--){
-        //         u8arr[n] = bstr.charCodeAt(n);
-        //     }
-            
-        //     return new File([u8arr], filename, {type:mime});
-        // }
-        
-        // //Usage example:
-        // let xxx = await dataURLtoFile(fileImg,'hello.png');
-       
-        // function objectToQueryString(obj) {
-        //     var str = [];
-        //     for (var p in obj)
-        //       if (obj.hasOwnProperty(p)) {
-        //         str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-        //       }
-        //     return str.join("&");
-        // }
-          
-        // var queryString = objectToQueryString(data);
-        // console.log(queryString);
-
-        // $.ajax({
-        //     async: true,
-        //     url: '/report/production/show-data',
-        //     method: 'POST',
-        //     data: data,
-        //     dataType: 'json',
-        //     processData: false,
-        //     mimeType: "multipart/form-data",
-        //     contentType: false,
-        //     success: function(result){
-        //         console.log(result)
-        //         GEN_PDF(result)
-        //     },
-        //     error: function(err){
-        //         console.log(err)
-        //     }
-        // })
-        // console.log('...', data);
     })
 
-    function base64ToBlob(base64, mime) {
-        mime = mime || '';
-        var sliceSize = 1024;
-        var byteChars = window.atob(base64);
-        var byteArrays = [];
+    // function base64ToBlob(base64, mime) {
+    //     mime = mime || '';
+    //     var sliceSize = 1024;
+    //     var byteChars = window.atob(base64);
+    //     var byteArrays = [];
 
-        for (var offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
-            var slice = byteChars.slice(offset, offset + sliceSize);
+    //     for (var offset = 0, len = byteChars.length; offset < len; offset += sliceSize) {
+    //         var slice = byteChars.slice(offset, offset + sliceSize);
 
-            var byteNumbers = new Array(slice.length);
-            for (var i = 0; i < slice.length; i++) {
-                byteNumbers[i] = slice.charCodeAt(i);
-            }
+    //         var byteNumbers = new Array(slice.length);
+    //         for (var i = 0; i < slice.length; i++) {
+    //             byteNumbers[i] = slice.charCodeAt(i);
+    //         }
 
-            var byteArray = new Uint8Array(byteNumbers);
+    //         var byteArray = new Uint8Array(byteNumbers);
 
-            byteArrays.push(byteArray);
-        }
+    //         byteArrays.push(byteArray);
+    //     }
 
-        return new Blob(byteArrays, {type: mime});
-    }
+    //     return new Blob(byteArrays, {type: mime});
+    // }
 
     $('body').on('click', 'button#bt-generate-xls', function(e){
         e.preventDefault()
+
+        var fd = new FormData()
+            fd.append('site_id', $('select[name="site_id"]').val());
+            fd.append('pit_id', $('select[name="pit_id"]').val());
+            fd.append('production_type', $('select[name="production_type"]').val());
+            fd.append('range_type', $('select[name="range_type"]').val());
+            fd.append('filterType', $('select[name="filterType"]').val());
+            fd.append('start_date', $('input[name="start_date"]').val());
+            fd.append('end_date', $('input[name="end_date"]').val());
+            fd.append('month_begin', $('input[name="month_begin"]').val());
+            fd.append('month_end', $('input[name="month_end"]').val());
+            fd.append('week_begin', $('input[name="week_begin"]').val());
+            fd.append('week_end', $('input[name="week_end"]').val());
+            fd.append('date', $('input[name="date"]').val());
+            fd.append('shift_id', $('select[name="shift_id"]').val());
+            $.ajax({
+                async: true,
+                url: '/report/production/gen-data-xls',
+                method: 'POST',
+                data: fd,
+                dataType: 'json',
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                success: function(result){
+                    console.log(result)
+                    window.open('../'+result.uri, '_blank');
+                },
+                error: function(err){
+                    console.log(err)
+                }
+            })
         
-        let data = {
-            site_id: $('select[name="site_id"]').val(),
-            pit_id: $('select[name="pit_id"]').val(),
-            production_type: $('select[name="production_type"]').val(),
-            range_type: $('select[name="range_type"]').val(),
-            filterType: $('select[name="filterType"]').val(),
-            start_date: $('input[name="start_date"]').val(),
-            end_date: $('input[name="end_date"]').val(),
-            month_begin: $('input[name="month_begin"]').val(),
-            month_end: $('input[name="month_end"]').val(),
-            week_begin: $('input[name="week_begin"]').val(),
-            week_end: $('input[name="week_end"]').val(),
-            date: $('input[name="date"]').val(),
-            shift_id: $('select[name="shift_id"]').val(),
-            img: ''
-        }
-        var html = document.getElementById('container');
-
-        domtoimage.toPng(html)
-            .then(function (dataUrl) {
-                console.log('dataUrl :::', dataUrl);
-                data.img = dataUrl
-                // var img = new Image();
-                // img.src = dataUrl;
-                // console.log('img :::', img);
-                // document.body.appendChild(img);
-            })
-            .catch(function (error) {
-                console.error('...............oops, something went wrong!', error);
-            });
-       
-        function objectToQueryString(obj) {
-            var str = [];
-            for (var p in obj)
-              if (obj.hasOwnProperty(p)) {
-                    console.log(encodeURIComponent(obj[p]));
-                    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-              }
-            return str.join("&");
-        }
-          
-        var queryString = objectToQueryString(data);
-        console.log(queryString);
-
-        var html = document.getElementById('container');
-
-        domtoimage.toPng(html)
-            .then(function (dataUrl) {
-                console.log('dataUrl :::', dataUrl);
-                // var img = new Image();
-                // img.src = dataUrl;
-                // console.log('img :::', img);
-                // document.body.appendChild(img);
-            })
-            .catch(function (error) {
-                console.error('...............oops, something went wrong!', error);
-            });
-
-        // var obj = {},
-        // chart;
-    
-        // chart = $('#container').highcharts();
-        // obj.svg = chart.getSVG();
-        // obj.type = 'image/png';
-        // obj.width = 450; 
-        // obj.async = true;
-        // console.log(obj)
-        alert('on development....')
-        // $.ajax({
-        //     async: true,
-        //     url: '/report/production/show-data?'+queryString,
-        //     method: 'GET',
-        //     data: data,
-        //     dataType: 'json',
-        //     processData: false,
-        //     mimeType: "multipart/form-data",
-        //     contentType: false,
-        //     success: function(result){
-        //         console.log(result)
-        //         GEN_PDF(result)
-        //     },
-        //     error: function(err){
-        //         console.log(err)
-        //     }
-        // })
-        // console.log('...', data);
     })
 
     function GEN_PDF(content){

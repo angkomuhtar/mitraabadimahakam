@@ -12,6 +12,7 @@ const MasSite = use("App/Models/MasSite")
 const MasShift = use("App/Models/MasShift")
 const MasMaterial = use("App/Models/MasMaterial")
 const VRitaseObPerjam = use("App/Models/VRitaseObPerjam")
+const VRitaseCoalPerjam = use("App/Models/VRitaseCoalPerjam")
 
 class repPoduction {
     async MW_MONTHLY (req) {
@@ -869,14 +870,28 @@ class repPoduction {
     async PW_HOURLY (req) {
         console.log(req);
         let result = []
-        let data = (
-            await VRitaseObPerjam.query().where( w => {
-                if(req.site_id){
-                    w.where('site_id', req.site_id)
-                }
-                w.where('tglx', req.date)
-            }).fetch()
-        ).toJSON()
+        let data
+        if(req.production_type === 'OB'){
+            data = (
+                await VRitaseObPerjam.query().where( w => {
+                    if(req.site_id){
+                        w.where('site_id', req.site_id)
+                    }
+                    w.where('tglx', req.date)
+                }).fetch()
+            ).toJSON()
+        }else{
+            data = (
+                await VRitaseCoalPerjam.query().where( w => {
+                    if(req.site_id){
+                        w.where('site_id', req.site_id)
+                    }
+                    w.where('tglx', req.date)
+                }).fetch()
+            ).toJSON()
+        }
+
+        console.log(data);
 
         data = _.groupBy(data, 'pit_id')
         data = Object.keys(data).map(key => {
