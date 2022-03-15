@@ -1,5 +1,6 @@
 'use strict'
 
+const si = require('systeminformation');
 const Helpers = use('Helpers')
 const moment = require("moment")
 const MasPit = use("App/Models/MasPit")
@@ -13,10 +14,12 @@ class ProductionReportController {
 
     async index ( { auth, view } ) {
         const user = await userValidate(auth)
+
+        // const info = si.diskLayout().then(data => console.log(data)).catch(error => console.error(error));
+
         if(!user){
             return view.render('401')
         }
-        // return view.render('report.ob.index')
         return view.render('report.production.index')
     }
 

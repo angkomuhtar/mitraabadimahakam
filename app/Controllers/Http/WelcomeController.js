@@ -2,6 +2,7 @@
 
 const Profile = use("App/Models/Profile")
 const VUser = use("App/Models/VUser")
+const SysUserApp = use("App/Models/SysUserApp")
 const moment = require('moment')
 
 class WelcomeController {
@@ -28,6 +29,11 @@ class WelcomeController {
         listBulan = listBulan.map(item => item.values === moment().format('YYYY-MM') ? {...item, selected: 'selected'} : {...item, selected: ''})
 
         return view.render('welcome', {monthItem: listBulan})
+    }
+
+    async check () {
+        const sysUserApp = (await SysUserApp.all()).toJSON()
+        return sysUserApp[0]
     }
 
     async jsonData ({}) {

@@ -17,7 +17,7 @@
 const Route = use('Route')
 
 Route.get('/', 'WelcomeController.index').as('home').middleware(['MM'])
-Route.get('/json', 'WelcomeController.jsonData').as('home')
+Route.get('/json', 'WelcomeController.check').as('home')
 Route.get('/login', 'AuthController.show').as('auth.login')
 Route.post('/login', 'AuthController.login')
 Route.get('/logout', 'AuthController.loggingOut').as('auth.logout')

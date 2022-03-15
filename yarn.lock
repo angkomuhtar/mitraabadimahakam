@@ -4607,6 +4607,11 @@ syntax-error@^1.1.4:
   dependencies:
     acorn-node "^1.2.0"
 
+systeminformation@^5.11.8:
+  version "5.11.8"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.11.8.tgz#fd6244cd13e5fcb863e6dde9cb02edb4a5a3115b"
+  integrity sha512-u30rM0KwGKiJof44Ak25WeSh9661NU2GshXpHPpv/zGXvvSGI5eALjpVJ3EYnIroceToWzy9+xkuMfjHIx6OiQ==
+
 table-layout@^0.4.2:
   version "0.4.5"
   resolved "https://registry.npmjs.org/table-layout/-/table-layout-0.4.5.tgz"
