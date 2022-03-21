@@ -17,7 +17,7 @@ DailyRitaseDetailHook.beforeInsertData = async (dailyritasedetail) => {
       hauler_id: dailyritasedetail.hauler_id,
       dailyritase_id: dailyritasedetail.dailyritase_id,
     })
-    .getCount();
+    .getCount()
   dailyritasedetail.urut = counter + 1;
 
   const lastData = await DailyRitaseDetail.query()
@@ -144,11 +144,11 @@ DailyRitaseDetailHook.beforeUpdateData = async (dailyritasedetail) => {
 
   dailyritasedetail.duration = lastData
     ? moment.duration(moment().diff(moment(lastData.check_in))).as("minutes")
-    : -1;
+    : -1
 
   const dailyRitase = await DailyRitase.findOrFail(
     dailyritasedetail.dailyritase_id
-  );
+  )
   const totalRitase = await DailyRitaseDetail.query()
     .where("dailyritase_id", dailyritasedetail.dailyritase_id)
     .getCount();

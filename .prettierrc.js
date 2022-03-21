@@ -3,8 +3,8 @@ module.exports = {
     jsxBracketSameLine: true,
     singleQuote: true,
     trailingComma: 'es5',
-    tabWidth: 5,
+    tabWidth: 2,
     semi: false,
     arrowParens: 'avoid',
-    printWidth: 70,
+    printWidth: 200,
 }
