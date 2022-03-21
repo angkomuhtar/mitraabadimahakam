@@ -17,7 +17,7 @@
 const Route = use('Route')
 
 Route.get('/', 'WelcomeController.index').as('home').middleware(['MM'])
-Route.get('/json', 'WelcomeController.jsonData').as('home')
+Route.get('/json', 'WelcomeController.check').as('home')
 Route.get('/login', 'AuthController.show').as('auth.login')
 Route.post('/login', 'AuthController.login')
 Route.get('/logout', 'AuthController.loggingOut').as('auth.logout')
@@ -508,6 +508,9 @@ Route.group(() => {
     Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
     Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
     Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
+    Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData').middleware('R')
+    Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData').middleware('R')
+    // Route.post('/production/running-text', 'ProductionReportController.runningText').as('rep.production.runningText').middleware('R')
 
     // Route.get('/over-borden', 'ProductionReportController.index').as('rep.over-borden.index').middleware('R')
 
@@ -583,6 +586,8 @@ Route.group(() => {
     Route.get('/subcon', 'AjaxSubcontractorController.getSubcon').as('subcon.getSubcon')
 
     Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
+
+    Route.get('/running-text', 'AjaxIssueController.runningText')
     
     // GRAFIK
     Route.get('/grafik1', 'AjaxChartController.grafik_OB_MTD')

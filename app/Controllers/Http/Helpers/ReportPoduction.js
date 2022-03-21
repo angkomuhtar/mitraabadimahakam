@@ -1,7 +1,6 @@
 'use strict'
 
 const moment = require("moment")
-const { select } = require("underscore")
 const _ = require('underscore')
 const DailyFleet = use("App/Models/DailyFleet")
 const DailyRitase = use("App/Models/DailyRitase")
@@ -13,6 +12,7 @@ const MasSite = use("App/Models/MasSite")
 const MasShift = use("App/Models/MasShift")
 const MasMaterial = use("App/Models/MasMaterial")
 const VRitaseObPerjam = use("App/Models/VRitaseObPerjam")
+const VRitaseCoalPerjam = use("App/Models/VRitaseCoalPerjam")
 
 class repPoduction {
     async MW_MONTHLY (req) {
@@ -32,10 +32,11 @@ class repPoduction {
                     if(req.pit_id){
                         w.where('pit_id', req.pit_id)
                     }
+                    w.where('site_id', req.site_id)
                     w.where('tipe', req.production_type)
                     w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
                     w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
-                }).fetch()
+                }).orderBy('month').fetch()
             ).toJSON()
 
             let xAxis = data.map(el => moment(el.month).format('MMM YYYY'))
@@ -70,7 +71,7 @@ class repPoduction {
             actual = Object.keys(actual).map(key => {
                 return {
                     nm_pit: `Actual (${key})`,
-                    type: 'column',
+                    type: req.typeChart,
                     color: '#015CB1',
                     items: actual[key]
                 }
@@ -89,7 +90,7 @@ class repPoduction {
                 return {
                     nm_pit: `Trands`,
                     type: 'spline',
-                    color: 'red',
+                    color: '#F16767',
                     items: trand[key]
                 }
             })
@@ -98,73 +99,6 @@ class repPoduction {
                 xAxis: xAxis,
                 data: [...estimate, ...actual, ...trand]
             }
-            // const data = (
-            //     await DailyRitase.query().where( w => {
-            //         if(req.site_id){
-            //             w.where('site_id', req.site_id)
-            //         }
-            //         if(req.pit_id){
-            //             w.where('pit_id', req.pit_id)
-            //         }
-            //         w.where('date', '>=', startMonth)
-            //         w.where('date', '<=', endMonth)
-            //     }).fetch()
-            // ).toJSON()
-            
-            // let estimateAvg = (await DailyPlan.query().where( w => {
-            //     if(req.pit_id){
-            //         w.where('pit_id', req.pit_id)
-            //     }
-            //     if(req.site_id){
-            //         w.where('site_id', req.site_id)
-            //     }
-            //     w.where('current_date', '>=', startMonth)
-            //     w.where('current_date', '<=', endMonth)
-            //     w.where('tipe', 'OB')
-            // }).fetch()).toJSON() || []
-            
-            // estimateAvg = estimateAvg.map(el => { return {...el, ym: moment(el.current_date).format('YYYY-MM')} })
-            // estimateAvg = _.groupBy(estimateAvg, 'ym')
-            // estimateAvg = Object.keys(estimateAvg).map(key => {
-            //     return {
-            //         ym: key,
-            //         estimate: (estimateAvg[key].reduce((a, b) => {return a + b.estimate}, 0)).toFixed(2),
-            //         items: estimateAvg[key]
-            //     }
-            // })
-            
-            // for (let obj of data) {
-            //     const masMaterial = await MasMaterial.query().where('id', obj.material).last()
-            //     const masPit = await MasPit.query().where('id', obj.pit_id).last()
-            //     const masSite = await MasSite.query().where('id', obj.site_id).last()
-            //     result.push({
-            //         ...obj,
-            //         nmpit: masPit.name,
-            //         nmsite: masSite.name,
-            //         vol: parseFloat(masMaterial.vol) * parseFloat(obj.tot_ritase),
-            //         ym: moment(obj.date).format('YYYY-MM')
-            //     })
-            // }
-            // result = _.groupBy(result, 'ym')
-            // result = Object.keys(result).map(key => {
-            //     let sum_volume = result[key].reduce((a, b) => { return a + parseInt(b.vol) }, 0)
-            //     let avg_distance = (result[key].reduce((a, b) => { return a + parseInt(b.distance) }, 0) /  result[key].length).toFixed(2)
-            //     let sum_rit = result[key].reduce((a, b) => { return a + parseInt(b.tot_ritase) }, 0)
-            //     return {
-            //         date: key,
-            //         avg_distance: avg_distance,
-            //         sum_rit: sum_rit,
-            //         sum_volume: sum_volume,
-            //         items: result[key]
-            //     }
-            // })
-            // result = result.map((el, i) => {
-            //     return {
-            //         ...el,
-            //         avg_target: estimateAvg[i]?.estimate || null
-            //     }
-            // })
-            // result = result
         } catch (error) {
             console.log('ERR CHART :::', error);
         }
@@ -219,6 +153,7 @@ class repPoduction {
                 if(req.production_type){
                     w.where('tipe', req.production_type)
                 }
+                w.where('site_id', req.site_id)
                 w.where('current_date', '>=', _.first(obj.items))
                 w.where('current_date', '<=', _.last(obj.items))
             }).select('actual').getSum('actual')
@@ -250,7 +185,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 color: "#75A5E3",
-                type: 'column',
+                type: req.typeChart,
                 items: tmpTarget[key]
             }
         })
@@ -259,7 +194,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 color: "#015CB1",
-                type: 'column',
+                type: req.typeChart,
                 items: tmpActual[key]
             }
         })
@@ -267,7 +202,7 @@ class repPoduction {
         tmpTrands = Object.keys(tmpTrands).map(key => {
             return {
                 nm_pit: key,
-                color: "red",
+                color: "#F16767",
                 type: 'spline',
                 items: tmpTrands[key]
             }
@@ -284,22 +219,28 @@ class repPoduction {
 
         req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
 
-        const planDaily = (await DailyPlan.query().where( w => {
-            if(req.production_type){
-                w.where('tipe', req.production_type)
-            }
-            w.where('pit_id', req.pit_id)
-            w.where('current_date', '>=', req.start_date)
-            w.where('current_date', '<=', req.end_date)
-        }).fetch()).toJSON()
+        let planDaily 
+        try {
+            planDaily = (await DailyPlan.query().where( w => {
+                if(req.production_type){
+                    w.where('tipe', req.production_type)
+                }
+                w.where('site_id', req.site_id)
+                w.where('pit_id', req.pit_id)
+                w.where('current_date', '>=', req.start_date)
+                w.where('current_date', '<=', req.end_date)
+            }).fetch()).toJSON()
+        } catch (error) {
+            console.log(error);
+        }
+
 
         let xAxis = planDaily.map(el => moment(el.current_date).format('DD-MM-YYYY'))
-
-        // console.log(planDaily);
 
         let arrTarget = []
         let arrActual = []
         let arrTrands = []
+        let arrDiff = []
         for (const el of planDaily) {
             const pit = await MasPit.query().where('id', el.pit_id).last()
             arrTarget.push({
@@ -322,9 +263,17 @@ class repPoduction {
                 site_id: el.site_id,
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
-                nm_pit: `Trends ${pit.name}`,
+                nm_pit: `Trands ${pit.name}`,
                 current_date: moment(el.current_date).format('DD-MM-YYYY'),
                 volume: el.actual
+            })
+            arrDiff.push({
+                site_id: el.site_id,
+                pit_id: el.pit_id,
+                kd_pit: pit.kode,
+                nm_pit: `Diff ${pit.name}`,
+                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                volume: parseFloat(el.actual) - parseFloat(el.estimate)
             })
         }
 
@@ -333,7 +282,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 color: "#75A5E3",
-                type: 'column',
+                type: req.typeChart,
                 items: arrTarget[key]
             }
         })
@@ -342,102 +291,44 @@ class repPoduction {
             return {
                 nm_pit: key,
                 color: "#015CB1",
-                type: 'column',
+                type: req.typeChart,
                 items: arrActual[key]
+            }
+        })
+        arrDiff = _.groupBy(arrDiff, 'nm_pit')
+        arrDiff = Object.keys(arrDiff).map(key => {
+            return {
+                nm_pit: key,
+                color: "#C4C4C4",
+                type: req.typeChart,
+                items: arrDiff[key]
             }
         })
         arrTrands = _.groupBy(arrTrands, 'nm_pit')
         arrTrands = Object.keys(arrTrands).map(key => {
             return {
                 nm_pit: key,
-                color: "red",
+                color: "#F16767",
                 type: 'spline',
                 items: arrTrands[key]
             }
         })
+
+        console.log(arrDiff);
+
         return {
             xAxis: xAxis,
-            data: [...arrTarget, ...arrActual, ...arrTrands]
+            data: [...arrTarget, ...arrActual, ...arrDiff, ...arrTrands]
         }
-        // console.log([...arrTarget, ...arrActual, ...arrTrands]);
-        // const data = (await DailyFleet.query()
-        // .with('ritase')
-        // .where( w => {
-        //     w.where('activity_id', '11')
-        //     if(req.pit_id){
-        //         w.where('pit_id', req.pit_id)
-        //     }
-        //     if(req.shift_id){
-        //         w.where('shift_id', req.shift_id)
-        //     }
-        //     if(!req.start_date || !req.end_date){
-        //         w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD'))
-        //         w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD'))
-        //     }else{
-        //         w.where('date', '>=', req.start_date)
-        //         w.where('date', '<=', req.end_date)
-
-        //     }
-        // }).fetch()).toJSON()
-        
-        
-        // const monthlyPlan = (
-        //     await MonthlyPlan.query().where( w => {
-        //             if(req.pit_id){
-        //                 w.where('pit_id', req.pit_id)
-        //             }
-        //             w.where('month', moment(req.start_date).startOf('month').format('YYYY-MM-DD') 
-        //             || moment().startOf('month').format('YYYY-MM-DD'))
-        //             w.where('tipe', 'OB')
-        //         }).fetch()
-        //     ).toJSON() || []
-
-        // let total = monthlyPlan.reduce((a, b) => { return a + b.estimate }, 0)
-        // let jumHari = moment(req.start_date).daysInMonth() || moment().daysInMonth()
-            
-        // for (const obj of data) {
-        //     let masPit = await MasPit.query().where('id', obj.pit_id).last()
-        //     let avgDistance = (obj.ritase).reduce((a, b) => { return a + b.distance }, 0) / (obj.ritase).length || 0
-            
-        //     let totActual = []
-        //     let totRit = []
-        //     for (const elm of obj.ritase) {
-        //         const masMaterial = await MasMaterial.query().where('id', elm.material).last()
-        //         totActual.push(parseFloat(masMaterial.vol) * parseFloat(elm.tot_ritase))
-        //         totRit.push(parseFloat(elm.tot_ritase))
-        //     }
-        //     result.push({
-        //         idFleet: obj.id,
-        //         idpit: obj.pit_id,
-        //         nmpit: masPit.name,
-        //         idshift: obj.shift_id,
-        //         target: total / parseInt(jumHari),
-        //         date: moment(obj.date).format('YYYY-MM-DD'),
-        //         avgJarak: avgDistance,
-        //         totRit: totRit.reduce((a, b) => { return a + b }, 0),
-        //         avgVolume: totActual.reduce((a, b) => { return a + b }, 0)
-        //     })
-        // }
-
-        // result = _.groupBy(result, 'date')
-        // result = Object.keys(result).map(key => {
-        //     let avg_distance = result[key].reduce((a, b) => { return a + b.avgJarak }, 0) / result[key].length
-        //     return {
-        //         date: key,
-        //         avg_distance: avg_distance.toFixed(0),
-        //         avg_target: result[key].reduce((a, b) => { return a + b.target }, 0) / result[key].length,
-        //         sum_rit: result[key].reduce((a, b) => { return a + b.totRit }, 0),
-        //         sum_volume: result[key].reduce((a, b) => { return a + b.avgVolume }, 0),
-        //         item: result[key]
-        //     }
-        // })
-
-        return result
     }
 
     async MW_SHIFTLY (req) {
+        req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
         let result = []
-        let plan = (await DailyPlan.query().where( w => {
+        let planDaily = (await DailyPlan.query().where( w => {
+            if(req.production_type){
+                w.where('tipe', req.production_type)
+            }
             if(req.site_id){
                 w.where('site_id', req.site_id)
             }
@@ -446,108 +337,92 @@ class repPoduction {
             }
             w.where('current_date', '>=', req.start_date)
             w.where('current_date', '<=', req.end_date)
-            w.where('tipe', 'OB')
         }).fetch()).toJSON()
 
-        /** HITUNG TARGET SETIAP SHIFT **/
-        let dataPlan = []
-        const shift = (await MasShift.query().where('status', 'Y').fetch()).toJSON()
-        for (const obj of plan) {
-            for (const elm of shift) {
-                dataPlan.push({
-                    ...obj, 
-                    estimate: (parseFloat(obj.estimate) / 2),
-                    actual: (parseFloat(obj.actual) / 2),
-                    date: moment(obj.current_date).format('YYYY-MM-DD'),
-                    shift_id: elm.id, 
-                    kode: elm.kode
+        let xAxis = planDaily.map(el => moment(el.current_date).format('DD-MM-YYYY'))
+        
+        let arrTarget = []
+        let arrActual = []
+        let arrTrands = []
+        for (const el of planDaily) {
+            const pit = await MasPit.query().where('id', el.pit_id).last()
+            arrTrands.push({
+                site_id: el.site_id,
+                pit_id: el.pit_id,
+                kd_pit: pit.kode,
+                nm_pit: `Trends`,
+                stack: 'Trends',
+                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                volume: el.actual
+            })
+            let shift = ['DS', 'NS']
+            for (const [i, val] of shift.entries()) {
+                arrTarget.push({
+                    site_id: el.site_id,
+                    pit_id: el.pit_id,
+                    kd_pit: pit.kode,
+                    nm_pit: `Target ${val}`,
+                    stack: val,
+                    current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                    volume: el.estimate /2
+                })
+                arrActual.push({
+                    site_id: el.site_id,
+                    pit_id: el.pit_id,
+                    kd_pit: pit.kode,
+                    nm_pit: `Actual ${val}`,
+                    stack: val,
+                    current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                    volume: el.actual /2
                 })
             }
         }
 
-        /** FILTER SHIFT BY REQUEST **/
-        if(req.shift_id){
-            dataPlan = dataPlan.filter(el => el.shift_id === parseInt(req.shift_id))
+        arrTarget = _.groupBy(arrTarget, 'nm_pit')
+        arrTarget = Object.keys(arrTarget).map(key => {
+            return {
+                nm_pit: key,
+                stack: 'target',
+                // color: "#75A5E3",
+                type: req.typeChart,
+                items: arrTarget[key]
+            }
+        })
+        arrActual = _.groupBy(arrActual, 'nm_pit')
+        arrActual = Object.keys(arrActual).map(key => {
+            return {
+                nm_pit: key,
+                stack: 'actual',
+                // color: "#015CB1",
+                type: req.typeChart,
+                items: arrActual[key]
+            }
+        })
+        arrTrands = _.groupBy(arrTrands, 'nm_pit')
+        arrTrands = Object.keys(arrTrands).map(key => {
+            return {
+                nm_pit: key,
+                stack: 'trands',
+                color: "red",
+                type: 'spline',
+                items: arrTrands[key]
+            }
+        })
+
+        result = [...arrTarget, ...arrActual, ...arrTrands]
+
+        result = _.sortBy(result, 'stack')
+        // console.log(result);
+        return {
+            xAxis: xAxis,
+            data: result
         }
-
-        /** GROUPING DATA BY DATE **/
-        dataPlan = _.groupBy(dataPlan, 'date')
-        dataPlan = Object.keys(dataPlan).map(key => {
-            return {
-                date: key,
-                avg_target: dataPlan[key].reduce((a, b) => { return a + b.estimate}, 0),
-                tot_actual: dataPlan[key].reduce((a, b) => { return a + b.actual}, 0),
-                items: dataPlan[key]
-            }
-        })
-
-        /** HITUNG ACTUAL TRUCK COUNT **/
-        for (const obj of dataPlan) {
-            const ritase = (
-                await DailyRitase.query().where( w => {
-                    if(req.site_id){
-                        w.where('site_id', req.site_id)
-                    }
-                    if(req.pit_id){
-                        w.where('pit_id', req.pit_id)
-                    }
-                    if(req.shift_id){
-                        w.where('shift_id', req.shift_id)
-                    }
-                    w.where('date', obj.date)
-                }).fetch() || []
-            ).toJSON()
-
-            let grpByShift = _.groupBy(ritase, 'shift_id')
-            grpByShift = Object.keys(grpByShift).map(key => {
-                return {
-                    date: obj.date,
-                    shift_id: key,
-                    items: grpByShift[key]
-                }
-            })
-
-            for (let grp of grpByShift) {
-                let arrVolume = []
-                const masShift = await MasShift.query().where('id', grp.shift_id).last()
-                for (const vol of grp.items) {
-                    const material = await MasMaterial.query().where('id', vol.material).last()
-                    arrVolume.push(parseFloat(vol.tot_ritase) * parseFloat(material.vol))
-                }
-                grp = {
-                    ...grp, 
-                    nm_shift: masShift?.name || null, 
-                    kd_shift: masShift?.kode || null,
-                    sum_volume: arrVolume.reduce((a, b) => { return a + b }, 0)
-                }
-                result.push(grp)
-            }
-        }
-
-        result = _.groupBy(result, 'date')
-        result = Object.keys(result).map(key => {
-            return {
-                date: key,
-                items: result[key]
-            }
-        })
-
-        console.log(dataPlan);
-
-        result = result.map((el, i) => {
-            return {
-                date: el.date,
-                avg_target: dataPlan[i]?.avg_target || null,
-                sum_volume: el.items.filter(obj => obj.kd_shift === 'DS').map(val => val.sum_volume)[0] || [0],
-                sum_rit: el.items.filter(obj => obj.kd_shift === 'NS').map(val => val.sum_volume)[0] || [0],
-                items: el.items
-            }
-        })
-
-        return result
     }
 
     async MW_HOURLY (req) {
+        let result = []
+        req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
+
         var getHoursArray = function(start, end) {
             var arr = new Array();
             var dt = moment(start).format('YYYY-MM-DD HH:mm');
@@ -557,19 +432,19 @@ class repPoduction {
             }
             return arr;
         }
+
         let startHour = moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm')
         let endHour = moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm')
         var arrHours = getHoursArray(startHour, endHour)
-
+        
         let arrRitaseId = (await DailyRitase.query().where( w => {
             w.where('pit_id', req.pit_id)
             w.where('date', req.date)
         }).fetch()).toJSON().map(el => el.id)
+        
 
         let data = []
         for (const obj of arrHours) {
-            // console.log(obj.substr(11, 2));
-            let x = []
             for (const val of arrRitaseId) {
                 let dailyRitaseDetail = (
                     await DailyRitaseDetail.query().with('daily_ritase').where( w => {
@@ -596,6 +471,7 @@ class repPoduction {
         let joinData = _.flatten(data)
         
         
+        
         let grouping = []
         for (const obj of joinData) {
             const material = await MasMaterial.query().where('id', obj.material).last()
@@ -604,36 +480,77 @@ class repPoduction {
                 vol: parseFloat(material.vol)
             })
         }
-
         grouping = _.groupBy(grouping, 'hour')
         grouping = Object.keys(grouping).map(key => {
             return {
-                date: 'Hour-' + key,
+                jamx: 'Pukul ' + key,
                 sum_volume: parseFloat(grouping[key][0].vol) * parseFloat(grouping[key].length),
                 items: grouping[key]
             }
         })
+        
+        grouping = _.sortBy(grouping, 'date')
 
-        grouping = _.sortBy(grouping, function(num){ return num.date })
+        let xAxis = grouping.map(el => el.jamx)
 
-        return grouping
+
+        /** GET TARGET PERJAM **/
+        const dailyPlan = await DailyPlan.query().where( w => {
+            w.where('tipe', req.production_type)
+            w.where('current_date', req.date)
+            w.where('pit_id', req.pit_id)
+        }).last()
+
+        let target = dailyPlan.toJSON().estimate / 22
+
+        result = grouping.map(el => {
+            return {
+                ...el,
+                name: el.jamx,
+                target: target
+            }
+        })
+        
+        let resultx = [
+            {name: 'Target', type: req.typeChart, stack: 'tgt', color: '#015CB1', items: result.map(el => {
+                return {
+                    volume: el.target
+                }
+            })},
+            {name: 'Actual', type: req.typeChart, stack: 'act', color: '#75A5E3', items: result.map(el => {
+                return {
+                    volume: el.sum_volume
+                }
+            })},
+            {name: 'Trands', type: 'spline', stack: 'act', color: 'red', items: result.map(el => {
+                return {
+                    volume: el.sum_volume
+                }
+            })}
+        ]
+
+        return {
+            xAxis: xAxis,
+            data: resultx
+        }
     }
 
     async PW_MONTHLY (req) {
         let result = []
-        let data = (
-            await MonthlyPlan.query()
+        let data = (await MonthlyPlan.query()
             .with('pit', w => w.with('site'))
             .where( w => {
                 w.where('tipe', req.production_type)
+                w.where('site_id', req.site_id)
                 w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
                 w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
-            }).fetch()
-        ).toJSON()
+            }).orderBy('month').fetch()).toJSON()
 
         data = data.map( el => {
             return {
                     xAxis: moment(el.month).format('MMM YYYY'),
+                    date: moment(el.month).startOf('month').format('YYYY-MM-DD'),
+                    pit_id: el.pit_id,
                     estimate: el.estimate,
                     actual: el.actual,
                     nm_pit: el.pit.name,
@@ -641,14 +558,31 @@ class repPoduction {
             }
         })
 
+        
+
+        let color = ['#75A5E3', '#1873C8', '#014584']
         result = _.groupBy(data, 'nm_pit')
-        result = Object.keys(result).map(key => {
+        result = Object.keys(result).map((key, i) => {
             return {
                     nm_pit: key,
-                    type: 'column',
+                    type: req.typeChart,
+                    color: color[i],
                     items: result[key]
             }
         })
+
+        console.log(result);
+       
+        let arrTrands = []
+        for (const [i, obj] of result.entries()) {
+            arrTrands.push({
+                nm_pit: 'Trands '+obj.nm_pit,
+                type: 'spline',
+                color: color[i],
+                items: obj.items
+            })
+        }
+        let joinTrends = [...result, ...arrTrands]
 
         let xAxis = _.groupBy(data, 'xAxis')
         xAxis = Object.keys(xAxis).map(key => {
@@ -656,16 +590,20 @@ class repPoduction {
                 x_axis: key
             }
         })
-        // console.log(JSON.stringify(data, null, 2));
+
+        const site = await MasSite.query().where('id', req.site_id).last()
+
         return {
+            site_nm: site.name,
             xAxis: xAxis.map( el => el.x_axis),
-            data: result
+            data: req.typeChart === 'column' ? joinTrends : result
         }
     }
 
     async PW_WEEKLY (req) {
         let result = []
         let arrDate = []
+        req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
         var x = moment(req.week_begin).week()
         var y = moment(req.week_end).week()
         for (let i = x - 1; i < y; i++) {
@@ -700,6 +638,7 @@ class repPoduction {
             for (const val of arrPIT) {
                 const sumACT = await DailyPlan.query().where( w => {
                     w.where('tipe', req.production_type)
+                    w.where('site_id', req.site_id)
                     w.where('pit_id', val.id)
                     w.whereIn('current_date', obj.items)
                 }).getSum('actual')
@@ -713,23 +652,41 @@ class repPoduction {
             }
         }
 
+        let color = ['#75A5E3', '#1873C8', '#014584']
         result = _.groupBy(result, 'nm_pit')
-        result = Object.keys(result).map(key => {
+        result = Object.keys(result).map((key, i) => {
+            // console.log(i);
             return {
                 nm_pit: key,
-                type: 'column',
+                type: req.typeChart,
+                color: color[i],
                 items: result[key]
             }
         })
-        
+
+        let arrTrands = []
+        for (const [i, obj] of result.entries()) {
+            arrTrands.push({
+                nm_pit: 'Trands '+obj.nm_pit,
+                type: 'spline',
+                color: color[i],
+                items: obj.items
+            })
+        }
+        let joinTrends = [...result, ...arrTrands]
+
+        const site = await MasSite.query().where('id', req.site_id).last()
+
         return {
+            site_nm: site.name,
             xAxis: arrDate.map( el => el.date),
-            data: result
+            data: req.typeChart === 'column' ? joinTrends : result
         }
     }
 
     async PW_DAILY (req) {
-        console.log(req);
+        console.log('req');
+        req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
         let result = []
         let arrData = (await DailyPlan.query().where( w => {
             w.where('tipe', req.production_type)
@@ -737,6 +694,10 @@ class repPoduction {
             w.where('current_date', '>=', req.start_date)
             w.where('current_date', '<=', req.end_date)
         }).fetch()).toJSON()
+
+        // console.log(req.start_date);
+        // console.log(req.end_date);
+        // console.log(req.production_type);
 
         let arrDate = _.uniq(arrData.map( el => moment(el.current_date).format('DD MMM YYYY')))
 
@@ -754,18 +715,31 @@ class repPoduction {
             })
         }
 
+        let color = ['#75A5E3', '#1873C8', '#014584']
         result = _.groupBy(result, 'nm_pit')
-        result = Object.keys(result).map(key => {
+        result = Object.keys(result).map((key, i) => {
             return {
                 nm_pit: key,
+                type: req.typeChart,
+                color: color[i],
                 items: result[key]
             }
         })
-        console.log(JSON.stringify(result, null, 2));
+
+        let arrTrands = []
+        for (const [i, obj] of result.entries()) {
+            arrTrands.push({
+                nm_pit: 'Trands '+obj.nm_pit,
+                type: 'spline',
+                color: color[i],
+                items: obj.items
+            })
+        }
+        let joinTrends = [...result, ...arrTrands]
 
         return {
             xAxis: arrDate,
-            data: result
+            data: req.typeChart === 'column' ? joinTrends : result
         }
     }
 
@@ -781,12 +755,13 @@ class repPoduction {
                 if(req.shift_id){
                     w.where('shift_id', req.shift_id)
                 }
+                w.where('site_id', req.site_id)
                 w.where('date', '>=', moment(req.start_date).format('YYYY-MM-DD'))
                 w.where('date', '<=', moment(req.end_date).format('YYYY-MM-DD'))
             }).fetch()
         ).toJSON()
         
-        console.log(arrData);
+        // console.log(arrData);
 
         let arrDate = _.uniq(arrData.map( el => moment(el.date).format('DD MMM YYYY')))
         let data = []
@@ -820,11 +795,29 @@ class repPoduction {
                 items: data[key]
             }
         })
+        // console.log(data);
 
-        for (const obj of data) {
+        let color = [
+            '#7A92E5', 
+            '#C1CFFF',
+            '#0334E2',
+            '#02249E',
+
+            '#E57590',
+            '#FFC1D0',
+            '#DF0136',
+            '#A50329',
+
+            '#EFD781',
+            '#FFF0BB',
+            '#EBB805',
+            '#A98403'
+        ]
+
+        for (const [i, obj] of data.entries()) {
             const shift = await MasShift.query().where('id', obj.shift_id).last()
             for (const val of pit) {
-
+                
                 var result = [];
                 obj.items.filter(el => el.pit_id === val.id).reduce(function(res, value) {
                 if (!res[value.date]) {
@@ -834,19 +827,40 @@ class repPoduction {
                 res[value.date].actual += value.actual;
                 return res;
                 }, {});
-
+                
+                
                 xresult.push({
-                    // shift_id: obj.shift_id,
+                    kode: shift.kode,
                     name: `${shift.name} (${val.kode})`,
                     stack: val.name,
                     group: val.name,
+                    type: req.typeChart,
                     items: result
                 });
+
+                if(req.typeChart === 'column'){
+                    xresult.push({
+                        kode: shift.kode,
+                        name: `TREND ${shift.kode} (${val.kode})`,
+                        stack: val.name,
+                        group: val.name,
+                        type: 'spline',
+                        items: result
+                    });
+                }
             }
         }
-
+       
         xresult = _.sortBy(xresult, function(num){ return num.stack });
-        console.log(JSON.stringify(xresult, null, 2))
+        console.log(xresult);
+        
+        xresult = xresult.map( (obj, i) => {
+            return {
+                ...obj,
+                color: color[i] || ''
+            }
+        })
+        
         return {
             xAxis: arrDate,
             data: xresult
@@ -856,14 +870,28 @@ class repPoduction {
     async PW_HOURLY (req) {
         console.log(req);
         let result = []
-        let data = (
-            await VRitaseObPerjam.query().where( w => {
-                if(req.site_id){
-                    w.where('site_id', req.site_id)
-                }
-                w.where('tglx', req.date)
-            }).fetch()
-        ).toJSON()
+        let data
+        if(req.production_type === 'OB'){
+            data = (
+                await VRitaseObPerjam.query().where( w => {
+                    if(req.site_id){
+                        w.where('site_id', req.site_id)
+                    }
+                    w.where('tglx', req.date)
+                }).fetch()
+            ).toJSON()
+        }else{
+            data = (
+                await VRitaseCoalPerjam.query().where( w => {
+                    if(req.site_id){
+                        w.where('site_id', req.site_id)
+                    }
+                    w.where('tglx', req.date)
+                }).fetch()
+            ).toJSON()
+        }
+
+        console.log(data);
 
         data = _.groupBy(data, 'pit_id')
         data = Object.keys(data).map(key => {
@@ -880,7 +908,9 @@ class repPoduction {
             xAxis.push("Pukul " + str)
         }
 
-        for (const obj of data) {
+        let color = ['#75A5E3', '#1873C8', '#014584']
+        for (const [i, obj] of data.entries()) {
+            
             var arrData = [];
 
             const pit = await MasPit.query().where('id', obj.pit_id).last()
@@ -913,14 +943,29 @@ class repPoduction {
                 }
             })
 
+            console.log(i);
+
             result.push({
                 pit_id: obj.pit_id,
                 name: `${pit.name} (${pit.kode})`,
                 stack: pit.kode,
+                type: req.typeChart,
+                color: color[i],
                 items: arrData
             })
+
+            if(req.typeChart === 'column'){
+                result.push({
+                    pit_id: obj.pit_id,
+                    name: `TREND ${pit.kode}`,
+                    stack: pit.kode,
+                    type: 'spline',
+                    color: color[i],
+                    items: arrData
+                })
+            }
         }
-        console.log(result);
+        // console.log(result);
         return {
             xAxis: xAxis,
             data: result
