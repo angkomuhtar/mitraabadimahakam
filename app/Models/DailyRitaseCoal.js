@@ -4,6 +4,10 @@
 const Model = use('Model')
 
 class DailyRitaseCoal extends Model {
+    static boot () {
+        super.boot()
+        this.addHook('beforeCreate', 'DailyRitaseCoalHook.beforeInsertData')
+    }
     daily_fleet(){
         return this.belongsTo("App/Models/DailyFleet", "dailyfleet_id", "id")
     }
