@@ -134,11 +134,16 @@ class DailyRitaseCoalController {
             let dataRadioRoom = []
             let dailyFleet = null
             for (const obj of selectSheet.details) {
+                console.log(obj);
                 var datetime = moment(req.date + ' ' + (obj.B).replace('.', ':')).format('YYYY-MM-DD HH:mm')
                 const dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
                 const pit = (await MasPit.query().with('site').where('kode', obj.G).last()).toJSON()
                 const shift = await MasShift.query().where('kode', obj.F).last()
                 const exca = await MasEquipment.query().where('kode', (obj.C).replace(' ', '')).last()
+                const seam = await MasSeam.query().where( w => {
+                    w.where('pit_id', pit.id)
+                    w.where('kode', obj.I)
+                }).last()
                 const fleet = await MasFleet.query().where( w => {
                     w.where('pit_id', pit.id)
                     w.where('tipe', 'CO')
@@ -163,6 +168,13 @@ class DailyRitaseCoalController {
                         success: false,
                         data: null,
                         message: 'Data fleet tidak di temukan...'
+                    }
+                }
+                if(!seam){
+                    return {
+                        success: false,
+                        data: null,
+                        message: 'Data seam tidak di temukan...'
                     }
                 }
 
@@ -221,7 +233,10 @@ class DailyRitaseCoalController {
                     shift_id: shift.id,
                     distance: pit.jarak_jetty,
                     volume: parseFloat(obj.E),
-                    kupon: obj.H || null
+                    kupon: obj.H || null,
+                    seam_id: seam.id,
+                    stockpile: obj.K,
+                    coal_tipe: obj.L
                 })
             }
 
@@ -314,6 +329,7 @@ class DailyRitaseCoalController {
 
                 /* INSERT RITASE COAL DETAILS */
                 for (const elm of obj.items) {
+                    
                     let dailyRitaseCoalDetail = await DailyRitaseCoalDetail.query().where('ritasecoal_id', dailyRitaseCoal.id).last()
                     if(!dailyRitaseCoalDetail){
                         dailyRitaseCoalDetail = new DailyRitaseCoalDetail()
@@ -323,6 +339,9 @@ class DailyRitaseCoalController {
                             checkout_pit: elm.checkout_pit,
                             tr_vol: elm.volume,
                             kupon: elm.kupon ? elm.kupon : 'unset',
+                            coal_tipe: elm.coal_tipe || null,
+                            stockpile: elm.stockpile || null,
+                            seam_id: elm.seam_id || null,
                             keterangan: 'data volume by truck count...'
                         })
                     }else{
@@ -332,6 +351,9 @@ class DailyRitaseCoalController {
                             checkout_pit: elm.checkout_pit,
                             tr_vol: elm.volume,
                             kupon: elm.kupon ? elm.kupon : 'unset',
+                            coal_tipe: elm.coal_tipe || null,
+                            stockpile: elm.stockpile || null,
+                            seam_id: elm.seam_id || null,
                             keterangan: 'data volume by truck count...'
                         })
                     }

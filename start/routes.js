@@ -500,6 +500,21 @@ Route.group(() => {
 
     Route.delete('/daily-issue/:id/destroy', 'DailyIssueController.destroy').as('opr.daily-issue.destroy').middleware('D')
 
+    // SOP Operational
+    Route.get('/sop', 'SopController.index').as('opr.sop.index').middleware('R')
+
+    Route.post('/sop', 'SopController.store').as('opr.sop.store').middleware('C')
+
+    Route.get('/sop/list', 'SopController.list').as('opr.sop.list').middleware('R')
+    
+    Route.get('/sop/create', 'SopController.create').as('opr.sop.create').middleware('C')
+
+    Route.get('/sop/:id/show', 'SopController.show').as('opr.sop.show').middleware('U')
+
+    Route.post('/sop/:id/update', 'SopController.update').as('opr.sop.update').middleware('U')
+
+    Route.delete('/sop/:id/destroy', 'SopController.destroy').as('opr.sop.destroy').middleware('D')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // REPORT
