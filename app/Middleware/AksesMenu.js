@@ -2,11 +2,12 @@
 
 const User = use("App/Models/User")
 const SysError = use("App/Models/SysError")
-
 class AksesMenu {
   
-  async handle ({ response, auth, view }, next) {
+  async handle ({ request, response, auth, view }, next) {
     // call next to advance the request
+   
+    
     try {
       const user = await auth.getUser()
       const check = await auth.check()
@@ -49,8 +50,6 @@ class AksesMenu {
       await syserror.save()
       return response.route('auth.login')
     }
-
-
     
     await next()
   }

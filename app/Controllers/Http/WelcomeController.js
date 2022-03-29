@@ -55,3 +55,14 @@ class WelcomeController {
 }
 
 module.exports = WelcomeController
+
+async function userValidate(auth){
+    let user
+    try {
+        user = await auth.getUser()
+        return user
+    } catch (error) {
+        console.log(error);
+        return null
+    }
+}

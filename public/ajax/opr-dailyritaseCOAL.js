@@ -43,6 +43,19 @@ $(function(){
         })
     })
 
+    $('body').on('click', 'input[name="metodeInput"]', function(){
+        var sts = $(this).is(':checked')
+        if (sts) {
+            $('body').find('div#jetty-form').css('display', 'inline')
+            $('body').find('div#radioroom-form').css('display', 'none')
+            $('body').find('label#teks-metode-input').html('Metode Input <span class="text-danger">Jetty Aktif</span>')
+        } else {
+            $('body').find('div#jetty-form').css('display', 'none')
+            $('body').find('div#radioroom-form').css('display', 'inline')
+            $('body').find('label#teks-metode-input').html('Metode Input <span class="text-warning">Radio Room Aktif</span>')
+        }
+    })
+
     /* View Data */
     $('body').on('click', 'button.bt-view-data', function(e){
         e.preventDefault()
@@ -145,6 +158,49 @@ $(function(){
 
         var elm = $('select[name="nm_sheet"]')
         var data = new FormData()
+        data.append('model', 'jetty')
+        data.append('uploadfiles', $('input#uploadfiles')[0].files[0])
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/daily-ritase-coal/file-validate',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: async function(result){
+                console.log(result)
+                await uploadBar(50)
+                $('body div#myBar').html('Parsing data...')
+                $('textarea[name="jsonData"]').val(JSON.stringify(result.data, null, 3))
+                elm.html(result.title.map(item => '<option value="'+item+'">'+item+'</option>'))
+                elm.prepend('<option value="" selected>Pilih Nama Sheet</option>')
+                $('div.selectSheet').show()
+                await uploadBar(95)
+                $('body div#myBar').html('Finishing proccess...')
+                await uploadBar(100)
+                $('body div#progressbar-upload').hide()
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
+    $('body').on('click', 'button#bt-check-excel-radio-room', async function(e){
+        e.preventDefault()
+        await uploadBar(0)
+
+        $('body div#progressbar-upload').show()
+        $('body div#myBar').html('Uploading file...')
+
+        var elm = $('select[name="nm_sheet"]')
+        var data = new FormData()
+        data.append('model', 'radioroom')
         data.append('uploadfiles', $('input#uploadfiles')[0].files[0])
         $.ajax({
             async: true,
@@ -180,6 +236,7 @@ $(function(){
     $('body').on('submit', 'form#fm-ritase-coal', function(e){
         e.preventDefault()
         var data = new FormData(this)
+        data.append('model', 'jetty')
         swal({
             title: "Apakah anda yakin?",
             text: "Pastikan format data excel anda sudah sesuai!",
@@ -216,6 +273,54 @@ $(function(){
                           console.log(err)
                           const { message } = err.responseJSON
                           swal("Opps,,,!", message, "warning")
+                      }
+                  })
+              }else{
+                swal("Okey!", 'you cancel upload data...', "success");
+              }
+        });
+    })
+
+    $('body').on('submit', 'form#fm-ritase-coal-radioroom', function(e){
+        e.preventDefault()
+        var data = new FormData(this)
+        data.append('model', 'radioroom')
+        swal({
+            title: "Apakah anda yakin?",
+            text: "Pastikan format data excel anda sudah sesuai!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-warning",
+            confirmButtonText: "Okey!",
+            closeOnConfirm: false
+          },
+          function(isConfirm){
+            swal("Please wait.....")
+              if(isConfirm){
+                  $.ajax({
+                      async: true,
+                      headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                      url: '/operation/daily-ritase-coal',
+                      method: 'POST',
+                      data: data,
+                      dataType: 'json',
+                      processData: false,
+                      mimeType: "multipart/form-data",
+                      contentType: false,
+                      success: function(result){
+                          console.log(result)
+                          if(result.success){
+                              swal("Okey!", result.message, "success");
+                            //   $("body form#fm-ritase-coal").trigger("reset");
+                              window.location.reload()
+                          }else{
+                            swal('Opps...', result.message, 'error')
+                          }
+                      },
+                      error: function(err){
+                          console.log(err)
+                        //   const { message } = err.responseJSON
+                          swal("Opps,,,!", err.responseJSON?.message || '', "warning")
                       }
                   })
               }else{
