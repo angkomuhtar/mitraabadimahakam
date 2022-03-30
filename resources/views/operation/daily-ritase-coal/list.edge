@@ -54,17 +54,17 @@
                                         <strong class="text-warning">{{item.ritase_coal.daily_fleet.pit.name}} </strong> <br>
                                         <span class="text-red">BLOCK {{item.ritase_coal.block}} </span> <br>
                                         <small class="text-info">{{item.ritase_coal.shift.name}} </small> <br>
-                                        <small class=" myDateFormat" data-date="{{item.checkout_pit}}"></small>
+                                        <small class="text-black myDateFormat" data-date="{{item.checkout_pit}}"></small>
                                     </td>
                                     <td>
                                         <i class="ti-user"></i> <span>PIT CHECKER</span> 
-                                        <span class=" pull-right">{{item.ritase_coal.checker ? item.ritase_coal.checker.nm_lengkap : ''}}</span> <br>
+                                        <span class="text-black pull-right">{{item.ritase_coal.checker ? item.ritase_coal.checker.nm_lengkap : ''}}</span> <br>
                                         @if(item.opr_subcon)
                                             <i class="ti-truck"></i> <span>Driver Subcon</span> 
-                                            <span class=" pull-right">{{item.opr_subcon.fullname}}</span>
+                                            <span class="text-black pull-right">{{item.opr_subcon.fullname}}</span>
                                         @else
                                             <i class="ti-truck"></i> <span>Driver MAM</span> 
-                                            <span class=" pull-right">{{item.opr.fullname || ''}}</span>
+                                            <span class="text-black pull-right">{{item.opr.fullname || ''}}</span>
                                         @endif
                                         <br>
                                         <span class="myTimeFormat" data-date="{{item.checkout_pit}}" data-elm="span">
@@ -79,11 +79,11 @@
                                     </td>
                                     <td class="single-line">
                                         <i class="ti-receipt"></i>
-                                        <strong class="">{{item.kupon}}</strong>
+                                        <strong class="text-black">{{item.kupon}}</strong>
                                         <span>
                                             @if(item.ticket != null)
                                             -
-                                            <strong class="">{{item.ticket}}</strong>
+                                            <strong class="text-black">{{item.ticket}}</strong>
                                             @endif
                                         </span>
                                         <p>
@@ -93,7 +93,7 @@
                                             <i class="mdi mdi-alarm-check"></i> <small class="myTimeFormat" data-date="{{item.checkout_jt}}"></small>
                                         </p>
                                     </td>
-                                    <td class="">
+                                    <td class="text-black">
                                         <p class="m-b-0">Tipe {{item.coal_tipe}}</p>
                                         <p class="m-b-0">Seam {{item.seam.kode}}</p>
                                         <p class="m-b-0">
@@ -106,17 +106,17 @@
                                     </td>
                                     <td class="">
                                         <i class="mdi mdi-weight-kilogram"></i> GROSS <span class="pull-right m-t-3">
-                                            <strong class=" w_gross" data-value="{{item.w_gross}}">
+                                            <strong class="text-black w_gross" data-value="{{item.w_gross}}">
                                                 {{(item.w_gross).toLocaleString('ID')}}
                                             </strong> KG
                                         </span> <br>
                                         <i class="mdi mdi-weight-kilogram"></i> TARE <span class="pull-right m-t-3">
-                                            <strong class=" w_tare" data-value="{{item.w_tare}}">
+                                            <strong class="text-black w_tare" data-value="{{item.w_tare}}">
                                                 {{(item.w_tare).toLocaleString('ID')}}
                                             </strong> KG
                                         </span> <br>
                                         <i class="mdi mdi-weight-kilogram"></i> NET  <span class="pull-right m-t-3">
-                                            <strong class=" w_netto" data-value="{{item.w_netto}}">
+                                            <strong class="text-black w_netto" data-value="{{item.w_netto}}">
                                                 {{(item.w_netto).toLocaleString('ID')}}
                                             </strong> KG
                                         </span>
