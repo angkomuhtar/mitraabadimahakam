@@ -134,8 +134,9 @@ class DailyRitaseCoalController {
             let dataRadioRoom = []
             let dailyFleet = null
             for (const obj of selectSheet.details) {
-                console.log(obj);
-                var datetime = moment(req.date + ' ' + (obj.B).replace('.', ':')).format('YYYY-MM-DD HH:mm')
+                // console.log(obj);
+                var datez = moment(req.date).format('YYYY-MM-DD')
+                var datetime = moment(datez + ' ' + (obj.B).replace('.', ':')).format('YYYY-MM-DD HH:mm')
                 const dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
                 const pit = (await MasPit.query().with('site').where('kode', obj.G).last()).toJSON()
                 const shift = await MasShift.query().where('kode', obj.F).last()
@@ -206,7 +207,7 @@ class DailyRitaseCoalController {
                     dailyFleetEquip.fill({
                         dailyfleet_id: dailyFleet.id,
                         equip_id: exca.id,
-                        datetime: req.date + ' ' + moment().format('HH:mm')
+                        datetime: moment(req.date).format('YYYY-MM-DD HH:mm')
                     })
                     try {
                         await dailyFleetEquip.save()
@@ -218,7 +219,7 @@ class DailyRitaseCoalController {
                         w.where('pit_id', pit.id)
                         w.where('activity_id', 8)
                         w.where('shift_id', shift.id)
-                        w.where('date', req.date)
+                        w.where('date', moment(req.date).format('YYYY-MM-DD'))
                     }).last()
                 }
 
@@ -236,7 +237,8 @@ class DailyRitaseCoalController {
                     kupon: obj.H || null,
                     seam_id: seam.id,
                     stockpile: obj.K,
-                    coal_tipe: obj.L
+                    coal_tipe: obj.L,
+                    datetime: datetime
                 })
             }
 
@@ -251,6 +253,10 @@ class DailyRitaseCoalController {
             let dailyRitaseCoal = null
             for (const obj of dataRadioRoom) {
 
+                // console.log(obj);
+                // var datez = moment(req.date).format('YYYY-MM-DD')
+                // var datetime = moment(datez + ' ' + (obj.timez).replace('.', ':')).format('YYYY-MM-DD HH:mm')
+
                 var tot_volum = (obj.items).reduce((a, b) => { return a + b.volume }, 0)
 
                 var dailyfleet = await DailyFleet.query().where('id', obj.dailyfleet_id).last()
@@ -259,8 +265,8 @@ class DailyRitaseCoalController {
                 dailyRitaseCoal = await DailyRitaseCoal.query().where( w => {
                     w.where('dailyfleet_id', obj.dailyfleet_id)
                     w.where('pit_id', dailyfleet.pit_id)
-                    w.where('date', '>=', moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm'))
-                    w.where('date', '<=', moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm'))
+                    w.where('date', '>=', moment(obj.datetime).startOf('day').format('YYYY-MM-DD HH:mm'))
+                    w.where('date', '<=', moment(obj.datetime).endOf('day').format('YYYY-MM-DD HH:mm'))
                 }).last()
 
                 if(!dailyRitaseCoal){
@@ -277,14 +283,14 @@ class DailyRitaseCoalController {
                         tw_netto: tot_volum,
                         coal_rit: obj.items.length,
                         checker_id: usr.id,
-                        date: req.date + ' ' + moment().format('HH:mm')
+                        date: req.date
                     })
                 }else{
                     dailyRitaseCoal.merge({
                         checker_id: usr.id,
-                        sum_vol: tot_volum,
+                        sum_vol: dailyRitaseCoal.sum_vol + tot_volum,
                         coal_rit: obj.items.length,
-                        tw_netto: tot_volum
+                        tw_netto: dailyRitaseCoal.sum_vol + tot_volum
                     })
                 }
 
@@ -293,20 +299,21 @@ class DailyRitaseCoalController {
                     await dailyRitaseCoal.save()
                 } catch (error) {
                     console.log(error);
-                    await trx.rollback()
+                    // await trx.rollback()
                     return {
                         success: false,
                         message: 'failed save ritase coal...'
                     }
                 }
 
+
                 /* UPDATE DAILY PLAN COAL */
                 let coalPlan = await DailyPlan.query().where( w => {
                     w.where('pit_id', dailyRitaseCoal.pit_id)
                     w.where('tipe', 'COAL')
-                    w.where('current_date', req.date)
+                    w.where('current_date', moment(obj.datetime).format('YYYY-MM-DD'))
                 }).last()
-
+                
                 if (!coalPlan) {
                     return {
                         success: false,
@@ -317,51 +324,36 @@ class DailyRitaseCoalController {
                     coalPlan.merge({
                         actual: tot_volum
                     })
-                    await coalPlan.save(trx)
+                    await coalPlan.save()
                 } catch (error) {
                     console.log(error);
-                    await trx.rollback()
+                    // await trx.rollback()
                     return {
                         success: false,
                         message: 'failed save daily plan coal...'
                     }
                 }
-
                 /* INSERT RITASE COAL DETAILS */
                 for (const elm of obj.items) {
                     
-                    let dailyRitaseCoalDetail = await DailyRitaseCoalDetail.query().where('ritasecoal_id', dailyRitaseCoal.id).last()
-                    if(!dailyRitaseCoalDetail){
-                        dailyRitaseCoalDetail = new DailyRitaseCoalDetail()
-                        dailyRitaseCoalDetail.fill({
-                            ritasecoal_id: dailyRitaseCoal.id,
-                            subcondt_id: elm.subcondt_id,
-                            checkout_pit: elm.checkout_pit,
-                            tr_vol: elm.volume,
-                            kupon: elm.kupon ? elm.kupon : 'unset',
-                            coal_tipe: elm.coal_tipe || null,
-                            stockpile: elm.stockpile || null,
-                            seam_id: elm.seam_id || null,
-                            keterangan: 'data volume by truck count...'
-                        })
-                    }else{
-                        dailyRitaseCoalDetail.merge({
-                            ritasecoal_id: dailyRitaseCoal.id,
-                            subcondt_id: elm.subcondt_id,
-                            checkout_pit: elm.checkout_pit,
-                            tr_vol: elm.volume,
-                            kupon: elm.kupon ? elm.kupon : 'unset',
-                            coal_tipe: elm.coal_tipe || null,
-                            stockpile: elm.stockpile || null,
-                            seam_id: elm.seam_id || null,
-                            keterangan: 'data volume by truck count...'
-                        })
-                    }
+                    let dailyRitaseCoalDetail = new DailyRitaseCoalDetail()
+                    dailyRitaseCoalDetail.fill({
+                        ritasecoal_id: dailyRitaseCoal.id,
+                        subcondt_id: elm.subcondt_id,
+                        checkout_pit: elm.checkout_pit,
+                        tr_vol: elm.volume,
+                        kupon: elm.kupon ? elm.kupon : 'unset',
+                        coal_tipe: elm.coal_tipe || null,
+                        stockpile: elm.stockpile || null,
+                        seam_id: elm.seam_id || null,
+                        keterangan: 'data volume by truck count...'
+                    })
+
                     try {
-                        await dailyRitaseCoalDetail.save(trx)
+                        await dailyRitaseCoalDetail.save()
                     } catch (error) {
                         console.log(error);
-                        await trx.rollback()
+                        // await trx.rollback()
                         return {
                             success: false,
                             message: 'failed save ritase coal details...'
