@@ -22,15 +22,11 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="tgl">Nama PIT</label>
+                                            <label for="tgl">Report Type</label>
                                             <div class="form-group">
-                                                <select class="form-control select2pit" name="pit_id" id="pit_id" required></select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="tgl">Nama Fleet</label>
-                                            <div class="form-group">
-                                                <select class="form-control select2fleetByPit" name="fleet_id" id="fleet_id" required></select>
+                                                <select class="form-control" name="tipe" id="report_type" required>
+                                                    <option value="hourly">Hourly</option>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -39,6 +35,8 @@
                                                 <input type="file" class="form-control" name="uploadfiles" id="uploadfiles" required>
                                             </div>
                                         </div>
+                                                <textarea class="form-control hidden" name="dataJson" rows="5"></textarea>
+                                                <input type="hidden" name="current_filename" value="" />
                                         <div class="col-md-2">
                                             <label for="">&nbsp;</label>
                                             <div class="form-group">

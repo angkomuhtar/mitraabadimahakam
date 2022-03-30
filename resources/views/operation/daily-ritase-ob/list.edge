@@ -94,7 +94,8 @@
                                                                     <th class="text-center">No</th>
                                                                     <th>Checker/SPV</th>
                                                                     <th>Hauler Unit</th>
-                                                                    <th>CheckIn</th>
+                                                                    <th>Urut</th>
+                                                                    <th>Check In</th>
                                                                 </thead>
                                                                 <tbody style="background-color: #262831;">
                                                                     @each(item in item.ritase_details)
@@ -121,6 +122,10 @@
                                                                             @else
                                                                                 <span class="text-muted">uncount</span>
                                                                             @endif
+                                                                        </td>
+
+                                                                        <td class="text-left text-info">
+                                                                            <span class="text-warning"><i class="ti-timer"></i>  {{item.check_in}}</span>
                                                                         </td>
                                                                     </tr>
                                                                     @endeach
