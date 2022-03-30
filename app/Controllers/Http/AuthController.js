@@ -115,6 +115,11 @@ class AuthController {
             const profil = await Profile.query().where('user_id', params.id).last()
             profil.merge({avatar: 'avatar/'+aliasName})
             await profil.save()
+            return {
+                success: true,
+                red_uri: '/profile/'+params.id,
+                message: 'Avatar update success, please reload page to take effect...'
+            }
        } else {
             return {
                  title: ['No File Upload'],
