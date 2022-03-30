@@ -131,9 +131,9 @@
             <li class="dropdown">
                 <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#"> 
                     @if(auth.user.avatar === null)
-                        <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="36" class="img-circle">
+                        <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="36" height="36" class="img-circle" style="border: 2px #ddd solid">
                     @else
-                        <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="30" class="img-circle">
+                        <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="36" height="36" class="img-circle" style="border: 2px #ddd solid">
                     @endif
                     <b class="hidden-xs">{{auth.user.nm_lengkap}}</b>
                     <span class="caret"></span> 
@@ -143,9 +143,9 @@
                         <div class="dw-user-box">
                             <div class="u-img">
                                 @if(auth.user.avatar === null)
-                                    <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="30" class="img-circle">
+                                    <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="30" height="30" class="img-circle">
                                 @else
-                                    <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="30" class="img-circle">
+                                    <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="30" width="30" class="img-circle">
                                 @endif
                             </div>
                             <div class="u-text">

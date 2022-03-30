@@ -23,6 +23,7 @@ Route.post('/login', 'AuthController.login')
 Route.get('/logout', 'AuthController.loggingOut').as('auth.logout')
 Route.post('/profile', 'AuthController.updatePassword').as('auth.upd-pass')
 Route.get('/profile/:id', 'AuthController.profile').as('auth.profile').middleware(['auth'])
+Route.post('/profile/:id/update-avatar', 'AuthController.updateAvatar').as('auth.updateAvatar').middleware(['auth'])
 
 Route.get('/test/user-group', 'TestingDatumController.userGroup')
 Route.get('/test/user-module', 'TestingDatumController.userModule')

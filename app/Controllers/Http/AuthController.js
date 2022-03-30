@@ -1,10 +1,12 @@
 'use strict'
 
 const Hash = use('Hash')
-const SysError = use("App/Models/SysError")
+const Helpers = use('Helpers')
+const moment = require("moment")
 const User = use("App/Models/User")
 const Token = use("App/Models/Token")
 const Profile = use("App/Models/Profile")
+const SysError = use("App/Models/SysError")
 
 class AuthController {
     async index ({view, auth, response}) {
@@ -87,6 +89,38 @@ class AuthController {
                 message: 'Password lama tidak sesuai...'
             })
         }
+    }
+
+    async updateAvatar ( { auth, params, request } ) {
+        const validateFile = {
+            types: ['jpg', 'jpeg', 'png'],
+            size: '2mb',
+            types: ['image']
+        }
+        
+        const avatar = request.file("avatar", validateFile)
+        if (avatar) {
+            let aliasName = `AVATAR-${params.id}-${moment().format(
+                 'DDMMYY'
+            )}.${avatar.extname}`
+
+            await avatar.move(Helpers.publicPath(`/avatar/`), {
+                 name: aliasName,
+                 overwrite: true,
+            })
+
+            if (!avatar.moved()) {
+                 return avatar.error()
+            }
+            const profil = await Profile.query().where('user_id', params.id).last()
+            profil.merge({avatar: 'avatar/'+aliasName})
+            await profil.save()
+       } else {
+            return {
+                 title: ['No File Upload'],
+                 data: [],
+            }
+       }
     }
 
     async loggingOut ({auth, response}) {
