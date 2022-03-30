@@ -13,6 +13,7 @@ const ReportXLSHelpers = use("App/Controllers/Http/Helpers/ReportXLS")
 class ProductionReportController {
 
     async index ( { auth, view } ) {
+        
         const user = await userValidate(auth)
 
         if(!user){

@@ -4,12 +4,12 @@
         <div class="white-box">
             <div class="" id="content-list">
                 <div class="row sales-report">
-                    <div class="col-md-9 col-sm-9 col-xs-12">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
                             <i class="fa fa-plus m-r-5"></i> <span>Upload Coal Production</span>
                         </button>
                     </div>
-                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
                         <div class="input-group">
                             <span class="input-group-btn"> 
                                 <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
@@ -30,8 +30,8 @@
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="20">ACT</th>
                                 <th class="sl" width="150">PIT Name</th>
-                                <th class="sl">OUT PIT</th>
-                                <th class="sl" width="200">No.Kupon - Ticket</th>
+                                <th class="sl" width="*">OUT PIT</th>
+                                <th class="sl" width="150">No.Kupon - Ticket</th>
                                 <th class="sl" width="150">Description</th>
                                 <th class="sl" width="200">Weight</th>
                             </tr>
@@ -64,7 +64,7 @@
                                             <span class="text-black pull-right">{{item.opr_subcon.fullname}}</span>
                                         @else
                                             <i class="ti-truck"></i> <span>Driver MAM</span> 
-                                            <span class="text-black pull-right">{{item.opr.fullname}}</span>
+                                            <span class="text-black pull-right">{{item.opr.fullname || ''}}</span>
                                         @endif
                                         <br>
                                         <span class="myTimeFormat" data-date="{{item.checkout_pit}}" data-elm="span">
@@ -73,7 +73,7 @@
                                             <span></span>
                                         </span>
                                         <br>
-                                        <span class="text-white" style="font-size:10px">
+                                        <span class="" style="font-size:10px">
                                             {{item.keterangan ? item.keterangan : ''}}
                                         </span>
                                     </td>

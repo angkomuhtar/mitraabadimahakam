@@ -32,6 +32,7 @@
     "convert-excel-to-json": "^1.7.0",
     "crypto-random-string": "^3.3.0",
     "faker": "^5.4.0",
+    "mam-npm": "^1.0.2",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
     "node-html-to-image": "^3.2.4",
