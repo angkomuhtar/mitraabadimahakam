@@ -1,0 +1,317 @@
+{{ script('ajax/index') }}
+{{ script('ajax/report/production-filter') }}
+
+{{ script('plugins/bower_components/dom-to-image/src/dom-to-image') }}
+{{ script('plugins/bower_components/dom-to-image/dist/dom-to-image.min') }}
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-horizontal" action="" id="filter-data">
+                            <div class="panel panel-default m-b-0">
+                                <div class="panel-heading"><i class="ti-filter" style="margin-right: 10px;"></i> Filter Data</div>
+                                <div class="panel-wrapper collapse in">
+                                    <div class="panel-body">
+                                        {{ csrfField() }}
+                                        <div class="row">
+                                            <div class="form-group m-b-10">
+                                                <label for="" class="col-sm-4 control-label">Site/Project*</label>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-direction-alt"></i>
+                                                        </div>
+                                                        <select class="form-control inp-filter select2site" name="site_id" id="site_id"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group m-b-10" id="select-range-type" style="display:none">
+                                                <label for="" class="col-sm-4 control-label">Group By*</label>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-infinite"></i>
+                                                        </div>
+                                                        <select class="form-control select2range_type" name="range_type" id="range_type">
+                                                            <option value="">Pilih</option>
+                                                            <option value="pit">PIT Wise</option>
+                                                            <option value="periode">Periode Wise</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type m-b-10" id="box-select-pit" style="display:none"></div>
+                                            <div class="container-type" id="box-select-periode" style="display:none">
+                                                <div>
+                                                    <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">Pilih Ranges</label>
+                                                    <div class="col-sm-8 m-b-20">
+                                                        <section>
+                                                            <div>
+                                                                <input type="radio" class="xxx" id="month" name="inp_ranges" value="month">
+                                                                <label class="text-center" for="month">
+                                                                    <i class="ti-calendar" style="font-size: xxx-large;text-align: center;"></i>
+                                                                    <h2 class="text-white">Monthly</h2>
+                                                                </label>
+                                                            </div>
+                                                            <div>&nbsp;</div>
+                                                            <div>
+                                                                <input type="radio" class="xxx" id="week" name="inp_ranges" value="week">
+                                                                <label class="text-center" for="week">
+                                                                    <i class="icon-calender" style="font-size: xxx-large;text-align: center;"></i>
+                                                                    <h2 class="text-white">Weekly</h2>
+                                                                </label>
+                                                            </div>
+                                                            <div>&nbsp;</div>
+                                                            <div>
+                                                                <input type="radio" id="date" name="inp_ranges" value="date" checked>
+                                                                <label class="text-center" for="date">
+                                                                    <i class="wi wi-day-cloudy-high" style="font-size: xxx-large;text-align: center;"></i>
+                                                                    <h2 class="text-white">Daily</h2>
+                                                                </label>
+                                                            </div>
+                                                        </section>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-duration" style="display:none">
+                                                <div class="form-group m-b-20">
+                                                    <label for="" class="col-sm-4 control-label">From</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-forward"></i>
+                                                            </div>
+                                                            <input type="date" class="form-control inp-filter" name="start" id="start">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group m-b-20">
+                                                    <label for="" class="col-sm-4 control-label">To</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-backward"></i>
+                                                            </div>
+                                                            <input type="date" class="form-control inp-filter" name="end" id="end">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-type-chart">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label">Chart Type</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-stats-up"></i>
+                                                            </div>
+                                                            <select class="form-control inp-filter" name="typeChart" id="typeChart">
+                                                                <option value="column">BAR CHART</option>
+                                                               <option value="spline">LINE CHART</option>
+                                                                <option value="areaspline">AREA CHART</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-apply-chart" style="display:none">
+                                                <div class="form-group m-t-20">
+                                                    <label for="" class="col-sm-4 control-label">&nbsp;</label>
+                                                    <div class="col-sm-3">
+                                                        <div class="input-group">
+                                                            <button class="btn btn-block btn-outline btn-rounded btn-info" type="submit"> 
+                                                                <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="box-chart" class="row" style="display:none">
+    <div class="white-box">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="container" class="text-center"></div>
+                <div id="xxx" class="text-center"></div>
+            </div>
+            <div class="panel-footer text-center">
+                <button type="button" class="btn btn-default waves-effect waves-light btn-sm pull-left" id="bt-back"> 
+                    <i class="fa fa-angle-left"></i> <span>Back</span>
+                </button>
+                <span class="mytooltip tooltip-effect-1">
+                    <span class="tooltip-item" style="background: none;">
+                        <button class="btn btn-success waves-effect waves-light" type="button" id="bt-generate-xls">
+                            <span class="btn-label">
+                                <i class="ti-download"></i>
+                            </span>
+                            XLS Files
+                        </button>
+                    </span> 
+                    <span class="tooltip-content clearfix">
+                        <img src="{{ assetsUrl('images/xls.png')}}" width="100">
+                        <span class="tooltip-text">
+                            Download data berformat EXCEL sesuai dengan filtering data yang telah di tentukan.
+                        </span> 
+                    </span>
+                </span>
+                <span class="mytooltip tooltip-effect-1">
+                    <span class="tooltip-item" style="background: none;">
+                        <button class="btn btn-inverse waves-effect waves-light" type="button" id="bt-generate-pdf">
+                            <span class="btn-label">
+                                <i class="ti-download"></i>
+                            </span>
+                            PDF Files
+                        </button>
+                    </span> 
+                    <span class="tooltip-content clearfix">
+                      <img src="{{ assetsUrl('images/pdf.png')}}">
+                      <span class="tooltip-text">
+                        Download data berformat PDF sesuai dengan filtering data yang telah di tentukan.
+                      </span> 
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $(".colorpicker").asColorPicker();
+        $(".complex-colorpicker").asColorPicker({
+            mode: 'complex'
+        });
+    })
+</script>
+<style>
+    .container-radio-border {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        padding: 15px 25px 20px 25px;
+        border: 1px #ddd solid;
+        border-radius: 7px;
+    }
+    .container-radio {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        /* margin-top: 15px; */
+        margin-bottom: 15px;
+        /* padding: 15px 25px 20px 25px; */
+    }
+    .box-option-ranges {
+        height: 100px;
+        width: 100px;
+        border: 1px #ddd solid;
+        margin-right: 10px;
+    }
+    .ico-range {
+        text-align: center;
+        font-size: xxx-large;
+        color: #009eff;
+    }
+    /* .ico-range :hover {
+        text-align: center;
+        font-size: xxx-large;
+        color: #fff;
+    } */
+    .ico-title {
+        text-align: center;
+    }
+</style>
+
+<style>
+    section {
+	 display: flex;
+	 flex-flow: row wrap;
+}
+ section > div {
+	 /* flex: 1; */
+     /* border-left: 1px #c4c4c4 solid;
+     border-right: 1px #c4c4c4 solid; */
+     /* border-radius: 5px; */
+	 /* padding: 0.5rem; */
+}
+ input[type="radio"] {
+	 display: none;
+}
+ input[type="radio"]:not(:disabled) ~ label {
+	 cursor: pointer;
+}
+ input[type="radio"]:disabled ~ label {
+    width: 125px;
+     height: 120px;
+	 color: rgba(188, 194, 191, 1);
+	 border-color: rgba(188, 194, 191, 1);
+     border-radius: 5px;
+	 box-shadow: none;
+	 cursor: not-allowed;
+}
+ input[type="radio"]:checked + label {
+     width: 125px;
+     height: 120px;
+     padding: 10px 20px 5px 20px;
+	 background: rgb(0 158 255);
+	 color: rgba(255, 255, 255, 1);
+     border-radius: 5px;
+	 /* box-shadow: 0px 0px 20px rgb(171 219 252); */
+}
+ input[type="radio"]:not(:checked) + label {
+     width: 125px;
+     height: 120px;
+     padding: 10px 20px 5px 20px;
+	 background: #ddd;
+	 color: rgba(255, 255, 255, 1);
+     border-radius: 5px;
+	 /* box-shadow: 0px 0px 20px rgb(171 219 252); */
+}
+ /* input[type="radio"]:checked + div::after {
+    padding: 10px 20px 10px 20px;
+	 color: rgba(61, 63, 67, 1);
+	 font-family: FontAwesome;
+	 border: 2px solid rgba(29, 201, 115, 1);
+	 content: "\f00c";
+	 font-size: 24px;
+	 position: absolute;
+	 top: -25px;
+	 left: 50%;
+	 transform: translateX(-50%);
+	 height: 50px;
+	 width: 50px;
+	 line-height: 50px;
+	 text-align: center;
+	 border-radius: 50%;
+	 background: white;
+	 box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.25);
+} */
+ input[type="radio"]#control_05:checked + label {
+	 background: red;
+	 border-color: red;
+}
+ p {
+	 font-weight: 900;
+}
+ /* @media only screen and (max-width: 700px) {
+	 section {
+		 flex-direction: column;
+	}
+} */
+ 
+</style>

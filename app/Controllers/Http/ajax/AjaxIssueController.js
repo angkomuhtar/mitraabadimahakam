@@ -16,7 +16,7 @@ class AjaxIssueController {
             console.log(error);
         }
 
-        console.log(issue);
+        // console.log(issue);
         let data = issue.map(obj => {
             return {
                 id: obj.id,

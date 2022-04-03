@@ -323,7 +323,7 @@
                 url: '/ajax/running-text',
                 method: 'GET',
                 success: function(data){
-                    console.log(data);
+                    // console.log(data);
                     if(data.length > 0){
                         runningText.html(
                             data.map( el => '<div class="text-container m-r-30"><span><i class="ti-alarm-clock"></i></span>'+el.items[0].report_time+' || <span class="text-danger">'+ el.issue +'</span> <strong>[ '+el.items.map(el => el.unit)+' ]</strong> <i class="ti-user"></i> <small>Report By: '+el.items[0].reportby+'</small></div>')
