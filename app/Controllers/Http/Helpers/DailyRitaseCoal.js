@@ -141,16 +141,15 @@ class RitaseCoal {
           check_in: typeof value.G === 'string' ? `${value.G}:00` : moment(value.G).format('HH:mm:ss'),
           check_out: typeof value.H === 'string' ? `${value.H}:00` : moment(value.H).format('HH:mm:ss'),
           no_tiket: value.I,
-          gross: parseFloat(value.M),
-          tarre: parseFloat(value.N),
-          netto: parseFloat(value.O),
+          gross: parseFloat(value.M) || 0,
+          tarre: parseFloat(value.N) || 0,
+          netto: parseFloat(value.O) || 0,
           divider: moment(value.F).format('YYYY-MM-DD') + ' ' + value.D + ' ' + value.K + ' ' + value.L,
           totalRitase: value.Q || 1,
           sheetIndex: sheetIndexs,
         }
 
         originalData.push(obj)
-        console.log('netto >> ', value.O, sheetIndexs)
         sheetIndexLog += `${sheetIndexs} \n \n`
         originalDataIDs.push(sheetIndexs)
         data.push(obj)
@@ -332,6 +331,7 @@ class RitaseCoal {
         const seamName = equipments.seam
 
         const masSeam = await MasSeam.query().where('kode', seamName).andWhere('pit_id', masPit?.id).first()
+
         if (masSeam) {
           // do nothing
         } else {
@@ -343,22 +343,29 @@ class RitaseCoal {
             kode: equipments.seam,
           })
 
-          await newSeam.save()
+          try {
+            await newSeam.save()
+          } catch (err) {
+            return {
+              success: false,
+              message: `Insert into MasSeam failed \n Reason : ${err.message}`,
+            }
+          }
         }
       }
     }
     // END OF CHECKING EQUIPMENT AND SEAM DATA
 
-    // TOP LEVEL VARIABLE
+    /**
+     * Top Level Variable
+     */
     let totalTonnMetric = []
 
-    // PROCESS THE FINAL DATA
+    /**
+     * Begin Process
+     */
     for (const value of finalData) {
       for (const data of value.pitData) {
-        // CREATE NEW DAILY FLEET
-        const dailyFleet = new DailyFleet()
-
-        // PIT NAME
         let PIT_NAME = data.pitName.split(' ')[1]
 
         if (PIT_NAME === 'DERAWAN') {
@@ -372,7 +379,10 @@ class RitaseCoal {
         const GET_PIT_ID = (await MasPit.query().where('name', PIT_NAME).first())?.id
         const GET_SHIFT_ID = (await MasShift.query().where('kode', data.shift).first())?.id
 
-        // DEFINE THE DAILY FLEET DATA
+        /**
+         * Add a new Daily Fleet
+         */
+        const dailyFleet = new DailyFleet()
         dailyFleet.fill({
           fleet_id: PIT_NAME === 'RPU' ? 26 : PIT_NAME === 'DERAWAN BARU' ? 24 : 25,
           pit_id: GET_PIT_ID,
@@ -382,21 +392,37 @@ class RitaseCoal {
           date: data.date,
         })
 
-        // save the daily fleet for coal
-        await dailyFleet.save()
+        try {
+          await dailyFleet.save()
+        } catch (err) {
+          return {
+            success: false,
+            message: `Insert into daily fleet failed \n Reason : ${err.message}`,
+          }
+        }
 
-        // also create the daily fleet equipment for this fleet
+        /**
+         * Add new Daily Fleet Equipment
+         */
         // const dailyFleetEquip = new DailyFleetEquipment()
-
         // dailyFleetEquip.fill({
         //   dailyfleet_id: dailyFleet.id,
         //   equip_id: GET_EXCA_ID,
         //   datetime: `${data.date} ${await GET_SHIFT_DATA(data.shift)}`,
         // })
-        // await dailyFleetEquip.save()
+        // try {
+        //   await dailyFleetEquip.save()
+        // } catch (err) {
+        //   return {
+        //     success: false,
+        //     message: 'Insert into daily fleet equipment failed \n Reason : ' + err.message,
+        //   }
+        // }
 
+        /**
+         * Checks for Existing Daily Ritase Coal
+         */
         const date = moment(`${data.date} ${await GET_SHIFT_DATA(data.shift)}`).format('YYYY-MM-DD HH:mm:ss')
-        // CHECK EXISTING DAILY RITASE COAL
         const dailyRitaseCheck = await DailyRitaseCoal.query()
           .where(wh => {
             wh.where('pit_id', GET_PIT_ID)
@@ -419,6 +445,9 @@ class RitaseCoal {
           })
           .first()
 
+        /**
+         * If Daily Ritase Coal Found, then use the existing one
+         */
         let dailyRitase = null
         if (dailyRitaseCheck) {
           dailyRitase = dailyRitaseCheck
@@ -431,7 +460,9 @@ class RitaseCoal {
 
           console.log(' --- finished deleting all ritase coal detail for id ' + dailyRitaseCheck.id + ' ---')
         } else {
-          // IF NOT EXISTING DAILY RITASE COAL THEN WE CREATE A NEW ONE
+          /**
+           * If Daily Ritase Coal not found, then we create a new one
+           */
           const dR = new DailyRitaseCoal()
           dR.fill({
             dailyfleet_id: dailyFleet.id,
@@ -444,10 +475,7 @@ class RitaseCoal {
           })
 
           await dR.save()
-
           dailyRitase = dR.toJSON()
-
-          console.log('creating new daily ritase coal id >> ', dR.id)
         }
 
         // HAULERS
@@ -460,20 +488,24 @@ class RitaseCoal {
           let GET_HAULER_ID = await MasEquipmentSubcon.query().where('kode', HAULER_NAME).first()
           let GET_SEAM_ID = await MasSeam.query().where('kode', hauler.seam).andWhere('pit_id', GET_PIT_ID).last()
 
-          // CUZ WE DONT ADD SUBCON TO DAILY FLEET EQUIPMENT
-          //   const dailyFleetEquip = new DailyFleetEquipment()
+          /**
+           * #TODO / Future Update
+           * We're not adding subcontractor equipment into our Daily Fleet Equipment
+           */
+          // const dailyFleetEquip = new DailyFleetEquipment()
 
-          //   dailyFleetEquip.fill({
-          //     dailyfleet_id: dailyFleet.id,
-          //     equip_id: GET_HAULER_ID?.id,
-          //     datetime: `${data.date} ${await GET_SHIFT_DATA(data.shift)}`,
-          //   })
+          // dailyFleetEquip.fill({
+          //   dailyfleet_id: dailyFleet.id,
+          //   equip_id: GET_HAULER_ID?.id,
+          //   datetime: `${data.date} ${await GET_SHIFT_DATA(data.shift)}`,
+          // })
 
-          //   await dailyFleetEquip.save()
+          // await dailyFleetEquip.save()
 
           let countRitase = 0
-
-          // TO COMPARE ARRAY
+          /**
+           * Array to Compare
+           */
           toCompareArr.push({
             sheetIndex: hauler.sheetIndex,
             date: data.date,
@@ -506,14 +538,21 @@ class RitaseCoal {
             coal_tipe: null,
           })
 
+          /**
+           * Array of sheet index to compare
+           */
           toCompareIDs.push(hauler.sheetIndex)
 
+          /**
+           * Loop based on number of Hauler's rotation
+           */
           for (let totalRitase = 1; totalRitase <= parseInt(hauler.totalRitase); totalRitase++) {
+            // num of current hauler's rotation
             countRitase += 1
+            // accumulate of all hauler's rotation
             _totalRitase += 1
 
             const dailyritaseCoalDetail = new DailyRitaseCoalDetail()
-
             dailyritaseCoalDetail.fill({
               ritasecoal_id: dailyRitase.id,
               seam_id: GET_SEAM_ID?.toJSON()?.id,
@@ -543,9 +582,17 @@ class RitaseCoal {
               coal_tipe: null,
             })
 
-            await dailyritaseCoalDetail.save()
+            try {
+              await dailyritaseCoalDetail.save()
+            } catch (err) {
+              return {
+                success: false,
+                message: `Failed insert into Daily Ritase Coal Detail \n Reason : ${err.message}`,
+              }
+            }
           }
 
+          // total metric tonnes
           totalTonnMetric.push(hauler.netto)
 
           console.log(
@@ -557,11 +604,12 @@ class RitaseCoal {
 
     // CHECK IF ALL DATA INSERTED CORRECTLY
     try {
+      /**
+       * Length of Original Array and Inserted into database
+       */
       const originalDataLength = originalData.length
       const insertedDataLength = toCompareArr.length
 
-      console.log('original data length >> ', originalDataLength)
-      console.log('inserted data length >> ', insertedDataLength)
       const GET_DATA_BY_ID = id => {
         let result = null
         for (const value of originalData) {
@@ -576,7 +624,6 @@ class RitaseCoal {
         // check the index difference
         const difference = _.difference(originalDataIDs, toCompareIDs)
 
-        console.log('differences >> ', difference)
         console.log('------ STARTING INSERT EXCLUDED DATA TO DATABASE ------ ')
 
         // get the missing data from the original sheet data
@@ -584,8 +631,6 @@ class RitaseCoal {
         for (const index of difference) {
           data.push(GET_DATA_BY_ID(index))
         }
-
-        console.log('data >> ', data)
 
         const daysData = []
         for (const day of daysArr) {
@@ -937,7 +982,7 @@ class RitaseCoal {
         }
       }
     } catch (err) {
-      throw new Error(err)
+      console.log('error >> ', err.message)
     }
     console.log('total ritase >> ', _totalRitase)
     console.log('---- SCRIPT FINISHED WITH ACCUMULATE ' + totalTonnMetric.reduce((a, b) => a + b, 0) + ' MT ----')
