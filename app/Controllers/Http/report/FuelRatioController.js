@@ -1,5 +1,9 @@
 'use strict'
 
+const Helpers = use('Helpers')
+const moment = require("moment")
+const ReportPDFHelpers = use("App/Controllers/Http/Helpers/ReportPDF")
+const ReportXLSHelpers = use("App/Controllers/Http/Helpers/ReportXLS")
 const ReportFuelRatioHelpers = use("App/Controllers/Http/Helpers/ReportFuelRatio")
 
 class FuelRatioController {
@@ -16,9 +20,7 @@ class FuelRatioController {
 
     async applyFilter ( { request } ) {
         const req = request.all()
-        console.log('====================================');
         console.log(req);
-        console.log('====================================');
         if(req.range_type === 'pit'){
             const data = await ReportFuelRatioHelpers.PIT_WISE(req)
             console.log(data);
@@ -27,6 +29,38 @@ class FuelRatioController {
             const data = await ReportFuelRatioHelpers.PERIODE_WISE(req)
             return data
         }
+    }
+
+    async genDataPDF ( { request } ) {
+        const req = request.all()
+        console.log(req);
+        const attchment = request.file('chartImg')
+
+        if(attchment){
+            const randURL = moment().format('YYYYMMDDHHmm')
+            const aliasName = `chart-fuelratio-${req.range_type}-${req.inp_ranges}-${randURL}.png`
+            var imagePath = '/upload/'+aliasName
+
+            req.imagePath = imagePath
+
+            await attchment.move(Helpers.publicPath(`upload`), {
+                name: aliasName,
+                overwrite: true,
+            })
+            if (!attchment.moved()) {
+                console.log(attchment.error());
+                return 'gagal simpan gambar....'
+            }
+        }
+
+        if(req.range_type === 'pit'){
+            const data = await ReportPDFHelpers.PIT_FUEL_RATIO_PDF(req)
+            return data
+        }else{
+            const data = await ReportPDFHelpers.PERIODE_FUEL_RATIO_PDF(req)
+            return data
+        }
+        
     }
 }
 

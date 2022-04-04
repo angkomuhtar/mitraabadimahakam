@@ -85,7 +85,7 @@ $(function(){
             contentType: false,
             success: function(result){
                 console.log(result)
-                PIT_WISE_CHART(result)
+                GEN_CHART(result.xAxis, result.series)
                 body.find('div#box-chart').css('display', 'inline')
             },
             error: function(err){
@@ -93,63 +93,39 @@ $(function(){
                 body.find('div#box-chart').css('display', 'none')
             }
         })
-        console.log('...');
     })
 
-    // $('body').on('click', 'button#bt-generate-pdf', function(e){
-    //     e.preventDefault()
-    //     let data = {
-    //         site_id: $('select[name="site_id"]').val(),
-    //         pit_id: $('select[name="pit_id"]').val(),
-    //         production_type: $('select[name="production_type"]').val(),
-    //         range_type: $('select[name="range_type"]').val(),
-    //         filterType: $('select[name="filterType"]').val(),
-    //         start: $('input[name="start"]').val(),
-    //         end: $('input[name="end"]').val(),
-    //         date: $('input[name="date"]').val()
-    //     }
+    $('body').on('click', 'button#bt-generate-pdf', function(e){
+        e.preventDefault()
 
-    //     domtoimage.toBlob(document.getElementById('container'))
-    //     .then(function (blob) {
-    //         console.log(blob);
-    //         blob.fileName = 'chart.png'
-    //         blob.extname = 'png'
-    //         blob.extname = 'png'
-    //         var fd = new FormData()
-    //         fd.append('fname', 'chart.png');
-    //         fd.append('chartImg', blob);
-    //         fd.append('site_id', data.site_id);
-    //         fd.append('pit_id', data.pit_id);
-    //         fd.append('production_type', data.production_type);
-    //         fd.append('range_type', data.range_type);
-    //         fd.append('filterType', data.filterType);
-    //         fd.append('start_date', data.start_date);
-    //         fd.append('end_date', data.end_date);
-    //         fd.append('month_begin', data.month_begin);
-    //         fd.append('month_end', data.month_end);
-    //         fd.append('week_begin', data.week_begin);
-    //         fd.append('week_end', data.week_end);
-    //         fd.append('date', data.date);
-    //         fd.append('shift_id', data.shift_id);
-    //         $.ajax({
-    //             async: true,
-    //             url: '/report/production/gen-data-pdf',
-    //             method: 'POST',
-    //             data: fd,
-    //             dataType: 'json',
-    //             processData: false,
-    //             mimeType: "multipart/form-data",
-    //             contentType: false,
-    //             success: function(result){
-    //                 console.log(result)
-    //                 GEN_PDF(result)
-    //             },
-    //             error: function(err){
-    //                 console.log(err)
-    //             }
-    //         })
-    //     });
-    // })
+        domtoimage.toBlob(document.getElementById('container'))
+        .then(function (blob) {
+            console.log(blob);
+            blob.fileName = 'chart.png'
+            blob.extname = 'png'
+            blob.extname = 'png'
+            var fd = new FormData(document.querySelector('form'))
+            fd.append('fname', 'chart.png');
+            fd.append('chartImg', blob);
+            $.ajax({
+                async: true,
+                url: '/report/fuel-ratio/gen-data-pdf',
+                method: 'POST',
+                data: fd,
+                dataType: 'json',
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                success: function(result){
+                    console.log(result)
+                    pdfMake.createPdf(result).open();
+                },
+                error: function(err){
+                    console.log(err)
+                }
+            })
+        });
+    })
 
     // $('body').on('click', 'button#bt-generate-xls', function(e){
     //     e.preventDefault()
@@ -209,29 +185,7 @@ $(function(){
         })
     }
 
-    function PIT_WISE_CHART (result){
-
-        BAR_CHART_PIT_WISE(result.xAxis, result.series)
-    }
-
-    function showChart_PW(result){
-        console.log(result);
-        let site = result.site
-        let xAxis = result.x_Axis
-        let series = result.data.map( el => {
-            return {
-                name: el.nm_pit || el.name,
-                type: el.type || 'column',
-                color: el.color || null,
-                stack: el.nm_pit || el.stack,
-                data: el.items?.map( val => val.actual) || el.data
-            }
-        })
-
-        BAR_CHART_PW(xAxis, series, site)
-    }
-
-    function BAR_CHART_PIT_WISE (arrDate, series) {
+    function GEN_CHART (xAxis, series) {
 
         Highcharts.chart('container', {
             chart: {
@@ -244,7 +198,7 @@ $(function(){
                 text: 'Project BBE'
             },
             xAxis: [{
-                categories: arrDate,
+                categories: xAxis,
                 labels: {
                     rotation: -45,
                     style: {
@@ -291,147 +245,7 @@ $(function(){
             series: series
         });
     }
-
-    function BAR_CHART_PW (xAxis, series, site) {
-        console.log(series);
-        Highcharts.chart('container', {
-            chart: {
-                zoomType: 'xy'
-            },
-            title: {
-                text: 'Production By Truck Count'
-            },
-            subtitle: {
-                text: 'Project '+ site
-            },
-            xAxis: [{
-                categories: xAxis,
-                labels: {
-                    rotation: -45,
-                    style: {
-                        fontSize: '11px',
-                        fontFamily: 'Verdana, sans-serif',
-                        color: '#000'
-                    }
-                },
-                crosshair: true
-            }],
-
-            yAxis: {
-                lineColor: '#c4c4c4',
-                lineWidth: 1,
-                gridLineColor: '#ddd',
-                gridLineWidth: 0.2,
-                labels: {
-                    format: '{value}',
-                    style: {
-                        fontSize: '11px',
-                        fontFamily: 'Verdana, sans-serif',
-                        color: '#000'
-                    }
-                },
-                title: {
-                    text: 'total volume',
-                    style: {
-                        fontSize: '11px',
-                        fontFamily: 'Verdana, sans-serif',
-                        color: '#014584'
-                    }
-                }
-            },
-            tooltip: {
-                formatter: function () {
-                    return '<b>' + this.x + '</b><br/>' +
-                        this.series.name + ': ' + this.y + '<br/>'+
-                        'PIT: ' + this.series.userOptions.stack;
-                }
-            },
-            plotOptions: {
-                column: {
-                    stacking: 'normal'
-                }
-            },
-            series: series
-        });
-    }
 })
 
 
 
-
-
-// Highcharts.chart('container', {
-//     chart: {
-//         zoomType: 'xy'
-//     },
-//     title: {
-//         text: 'Average Monthly Temperature and Rainfall in Tokyo'
-//     },
-//     subtitle: {
-//         text: 'Source: WorldClimate.com'
-//     },
-//     xAxis: [{
-//         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-//             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-//         crosshair: true
-//     }],
-//     yAxis: [{ // Primary yAxis
-//         labels: {
-//             format: '{value}°C',
-//             style: {
-//                 color: Highcharts.getOptions().colors[1]
-//             }
-//         },
-//         title: {
-//             text: 'Temperature',
-//             style: {
-//                 color: Highcharts.getOptions().colors[1]
-//             }
-//         }
-//     }, { // Secondary yAxis
-//         title: {
-//             text: 'Rainfall',
-//             style: {
-//                 color: Highcharts.getOptions().colors[0]
-//             }
-//         },
-//         labels: {
-//             format: '{value} mm',
-//             style: {
-//                 color: Highcharts.getOptions().colors[0]
-//             }
-//         },
-//         opposite: true
-//     }],
-//     tooltip: {
-//         shared: true
-//     },
-//     legend: {
-//         layout: 'vertical',
-//         align: 'left',
-//         x: 120,
-//         verticalAlign: 'top',
-//         y: 100,
-//         floating: true,
-//         backgroundColor:
-//             Highcharts.defaultOptions.legend.backgroundColor || // theme
-//             'rgba(255,255,255,0.25)'
-//     },
-//     series: [{
-//         name: 'Rainfall',
-//         type: 'column',
-//         yAxis: 1,
-//         data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
-//         tooltip: {
-//             valueSuffix: ' mm'
-//         }
-
-//     }, {
-//         name: 'Temperature',
-//         type: 'spline',
-//         data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6],
-//         tooltip: {
-//             valueSuffix: '°C'
-//         }
-//     }]
-// });

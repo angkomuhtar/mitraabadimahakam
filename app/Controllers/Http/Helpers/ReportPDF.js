@@ -3,20 +3,19 @@
 const Helpers = use('Helpers')
 const _ = require('underscore')
 const moment = require('moment')
-const MasEvent = use("App/Models/MasEvent")
-const DailyFleet = use("App/Models/DailyFleet")
+// const MasEvent = use("App/Models/MasEvent")
+// const DailyFleet = use("App/Models/DailyFleet")
 const DailyRitase = use("App/Models/DailyRitase")
-const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
+// const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 const MonthlyPlan = use("App/Models/MonthlyPlan")
 const DailyPlan = use("App/Models/DailyPlan")
 const MasPit = use("App/Models/MasPit")
 const MasSite = use("App/Models/MasSite")
-const MasShift = use("App/Models/MasShift")
+// const MasShift = use("App/Models/MasShift")
 const MasMaterial = use("App/Models/MasMaterial")
+const MamFuelRatio = use("App/Models/MamFuelRatio")
 const VRitaseObPerjam = use("App/Models/VRitaseObPerjam")
 const Image64Helpers = use("App/Controllers/Http/Helpers/_EncodingImage")
-// const nodeHtmlToImage = require('node-html-to-image')
-// const converImg = require('svg-png-converter')
 
 
 class PDFReport {
@@ -87,7 +86,6 @@ class PDFReport {
                     w.where('month', '>=', moment(req.month_begin).startOf('month').format('YYYY-MM-DD'))
                     w.where('month', '<=', moment(req.month_end).endOf('month').format('YYYY-MM-DD'))
                 }).orderBy([{ column: 'pit_id'}, { column: 'month' }]).fetch()
-                // }).orderBy([{ column: 'month' }]).fetch()
             ).toJSON()
         } catch (error) {
             console.log(error);
@@ -157,7 +155,7 @@ class PDFReport {
         // console.log(result);
         const site = await MasSite.query().where('id', req.site_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
-        const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
+        const logoAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
         const chartPath = Helpers.publicPath(grafikPath)
         const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
         const dataTitle = [
@@ -166,7 +164,7 @@ class PDFReport {
                     {
                         width: 100,
                         fit: [80, 80],
-                        image: `${imageAsBase64}`
+                        image: `${logoAsBase64}`
                     },
                     [
                         {text: 'Monthly Production Report', style: 'title'},
@@ -1200,7 +1198,654 @@ class PDFReport {
             },
             content: dataTitle,
         }
-        // console.log(JSON.stringify(dd, null, 2));
+        return dd
+    }
+
+    /* PDF FUEL RATIO BY PIT */
+    async PIT_FUEL_RATIO_PDF (req) {
+        let result = []
+        const site = await MasSite.query().where('id', req.site_id).last()
+        const logoPath = Helpers.publicPath('logo.jpg')
+        const logoAsBase64 = await Image64Helpers.GEN_BASE64(logoPath)
+        const chartPath = Helpers.publicPath(req.imagePath)
+        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+
+        const data = (
+            await MamFuelRatio.query().where( w => {
+                w.where('site_id', req.site_id)
+                w.where('pit_id', req.pit_id)
+                w.where('date', '>=', req.start)
+                w.where('date', '<=', req.end)
+            }).fetch()
+        ).toJSON()
+
+        /* TITLE HEADER TABLE DATA */
+        result.push([
+            { text: 'Location', style: 'tableHeader_L' },
+            { text: 'Periode', style: 'tableHeader_L' },
+            { text: 'OB (bcm)', style: 'tableHeader_R' },
+            { text: 'Coal (bcm)', style: 'tableHeader_R' },
+            { text: 'Fuel Used', style: 'tableHeader_R' },
+            { text: 'Ratio', style: 'tableHeader_R' }
+        ])
+
+        /* BODY TABLE DATA */
+        for (const obj of data) {
+            const pit = await MasPit.query().where('id', obj.pit_id).last()
+            result.push([
+                {text: pit.name, style: 'tableCell_L'},
+                {text: moment(obj.date).format('DD-MM-YYYY'), style: 'tableCell_L'},
+                {text: obj.ob, style: 'tableCell_R'},
+                {text: obj.coal_bcm, style: 'tableCell_R'},
+                {text: obj.fuel_used, style: 'tableCell_R'},
+                {text: obj.fuel_ratio, style: 'tableCell_R'}
+            ])
+        }
+
+        const PREP_DATA = [
+            {
+                columns: [
+                    {
+                        width: 100,
+                        fit: [80, 80],
+                        image: `${logoAsBase64}`
+                    },
+                    [
+                        {text: 'Fuel Ratio`s Report', style: 'title'},
+                        {
+                            columns: [
+                                [
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Periode '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${moment(req.start).format('DD MMMM YYYY')} s/d ${moment(req.end).format('DD MMMM YYYY')}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Site '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${site.name}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Pit '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: ': All Pit'
+                                            }
+                                        ]
+                                    },
+                                    {text: '', margin: [0, 0, 0, 5]},
+                                ]
+                            ]
+                        }
+                    ]
+                ]
+            },
+            {text: '\n'},
+            {image: chartAsBase64, width: 500},
+            {text: '\n'},
+            {
+                style: 'tableExample',
+                layout: 'headerLineOnly',
+                table: {
+                    headerRows: 1,
+                    widths: ['auto', '*', 80, 80, 'auto', 80],
+                    body: result
+                }
+            }
+        ]
+
+        /* GENERATE PDF OBJECT WITH DATA */
+        const dd = {
+            styles: {
+                title: {
+                    fontSize: 16,
+                    bold: true,
+                    margin: [0, 0, 0, 5]
+                },
+                subtitle: {
+                    fontSize: 10,
+                    italics: true
+                },
+                tableHeader_L: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'left'
+                },
+                tableHeader_R: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'right'
+                },
+                tableCell_L: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'left'
+                },
+                tableCell_R: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'right'
+                }
+            },
+            content: PREP_DATA,
+        }
+
+        return dd
+    }
+
+    /* PDF FUEL RATIO BY PERIODE */
+    async PERIODE_FUEL_RATIO_PDF (req) {
+
+        let result = []
+        let titleDocumentPeriode = ''
+        const site = await MasSite.query().where('id', req.site_id).last()
+        const logoPath = Helpers.publicPath('logo.jpg')
+        const logoAsBase64 = await Image64Helpers.GEN_BASE64(logoPath)
+        const chartPath = Helpers.publicPath(req.imagePath)
+        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+
+        const data = (
+            await MamFuelRatio.query().where( w => {
+                w.where('site_id', req.site_id)
+                w.where('date', '>=', req.start)
+                w.where('date', '<=', req.end)
+            }).fetch()
+        ).toJSON()
+
+        /* TITLE HEADER TABLE DATA */
+        result.push([
+            { text: 'Location', style: 'tableHeader_L' },
+            { text: 'Periode', style: 'tableHeader_L' },
+            { text: 'OB (bcm)', style: 'tableHeader_R' },
+            { text: 'Coal (bcm)', style: 'tableHeader_R' },
+            { text: 'Fuel Used', style: 'tableHeader_R' },
+            { text: 'Ratio', style: 'tableHeader_R' }
+        ])
+
+        if(req.inp_ranges === 'date'){
+            const data = (
+                await MamFuelRatio.query().where( w => {
+                    w.where('site_id', req.site_id)
+                    w.where('date', '>=', req.start)
+                    w.where('date', '<=', req.end)
+                }).fetch()
+            ).toJSON()
+
+            let groupingPIT = _.groupBy(data, 'pit_id')
+            groupingPIT = Object.keys(groupingPIT).map(key => {
+                return {
+                    pit_id: key,
+                    items: groupingPIT[key]
+                }
+            })
+
+            console.log(groupingPIT);
+            titleDocumentPeriode = `: ${moment(req.start).format('DD MMMM YYYY')} s/d ${moment(req.end).format('DD MMMM YYYY')}`
+            for (const obj of groupingPIT) {
+                // console.log(obj);
+                const pit = await MasPit.query().where('id', obj.pit_id).last()
+                const sumOB = (obj.items).reduce((a, b) => { return a + parseFloat(b.ob) }, 0)
+                const sumCoal = (obj.items).reduce((a, b) => { return a + parseFloat(b.coal_bcm) }, 0)
+                const sumFuel = (obj.items).reduce((a, b) => { return a + parseFloat(b.fuel_used) }, 0)
+                const ratio = ((sumOB + sumCoal) / sumFuel).toFixed('2')
+                for (const val of obj.items) {
+                    result.push([
+                        {text: pit.name, style: 'tableCell_L'},
+                        {text: moment(val.date).format('DD-MM-YYYY'), style: 'tableCell_L'},
+                        {text: val.ob, style: 'tableCell_R'},
+                        {text: val.coal_bcm, style: 'tableCell_R'},
+                        {text: val.fuel_used, style: 'tableCell_R'},
+                        {text: val.fuel_ratio, style: 'tableCell_R'}
+                    ])
+                }
+
+                result.push([
+                    {
+                        text: `TOTAL `, 
+                        colSpan: 2, 
+                        alignment: 'left', 
+                        bold: true, 
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {},
+                    {
+                        text: `${sumOB} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: `${sumCoal} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: `${sumFuel} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: ratio,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    }
+                ])
+            }
+        }
+
+        if(req.inp_ranges === 'week'){
+            titleDocumentPeriode = `: ${req.start} s/d ${req.end}`
+
+            let arrDate = []
+
+            var x = moment(req.start).week()
+            var y = moment(req.end).week()
+            for (let i = x - 1; i < y; i++) {
+                var str = '-W'+'0'.repeat(2 - `${i}`.length) + i
+                var arrStart = moment(moment(req.start).format('YYYY') + str).startOf('week').add(1, 'day')
+                var arrEnd = moment(moment(req.end).format('YYYY') + str).endOf('week').add(1, 'day')
+
+                var getDaysBetweenDates = function(startDate, endDate) {
+                    var now = startDate.clone(), dates = [];
+            
+                    while (now.isSameOrBefore(endDate)) {
+                        dates.push(now.format('YYYY-MM-DD'));
+                        now.add(1, 'days');
+                    }
+                    return dates;
+                };
+
+                var arrTgl = getDaysBetweenDates(arrStart, arrEnd)
+                arrDate.push({
+                    date: 'WEEK-'+i,
+                    site_id: req.site_id,
+                    items: arrTgl
+                })
+            }
+
+            const pit = (
+                await MasPit.query().where( w => {
+                    w.where('sts', 'Y')
+                    w.where('site_id', req.site_id)
+                }).fetch()
+            ).toJSON()
+
+            let tmp = []
+            for (const val of pit) {
+                for (const elm of arrDate) {
+                    
+                    const sumOB = await MamFuelRatio.query().where( w => {
+                        w.where('pit_id', val.id)
+                        w.where('date', '>=', _.first(elm.items))
+                        w.where('date', '<=', _.last(elm.items))
+                    }).getSum('ob')
+
+                    const sumCoal = await MamFuelRatio.query().where( w => {
+                        w.where('pit_id', val.id)
+                        w.where('date', '>=', _.first(elm.items))
+                        w.where('date', '<=', _.last(elm.items))
+                    }).getSum('coal_bcm')
+
+                    const sumFuel = await MamFuelRatio.query().where( w => {
+                        w.where('pit_id', val.id)
+                        w.where('date', '>=', _.first(elm.items))
+                        w.where('date', '<=', _.last(elm.items))
+                    }).getSum('fuel_used')
+
+                    tmp.push({
+                        name: val.name,
+                        periode: elm.date + '\n' + moment(_.first(elm.items)).format('DD-MM-YY') + ' s/d ' + moment(_.last(elm.items)).format('DD-MM-YY'),
+                        vol_ob: sumOB,
+                        vol_coal: sumCoal,
+                        vol_fuel: sumFuel,
+                        ratio: (sumOB + sumCoal) / sumFuel
+                    });
+                }
+            }
+
+            let groupingPIT = _.groupBy(tmp, 'name')
+            groupingPIT = Object.keys(groupingPIT).map(key => {
+                return {
+                    name: key,
+                    items: groupingPIT[key]
+                }
+            })
+
+            for (const obj of groupingPIT) {
+                const sumOB = (obj.items).reduce((a, b) => { return a + parseFloat(b.vol_ob) }, 0)
+                const sumCoal = (obj.items).reduce((a, b) => { return a + parseFloat(b.vol_coal) }, 0)
+                const sumFuel = (obj.items).reduce((a, b) => { return a + parseFloat(b.vol_fuel) }, 0)
+                const ratio = ((sumOB + sumCoal) / sumFuel).toFixed('2')
+                for (const val of obj.items) {
+                    result.push([
+                        {text: val.name, style: 'tableCell_L'},
+                        {text: val.periode, style: 'tableCell_L'},
+                        {text: val.vol_ob, style: 'tableCell_R'},
+                        {text: val.vol_coal, style: 'tableCell_R'},
+                        {text: val.vol_fuel, style: 'tableCell_R'},
+                        {text: (val.ratio).toFixed(2), style: 'tableCell_R'}
+                    ])
+                }
+                result.push([
+                    {
+                        text: `TOTAL `, 
+                        colSpan: 2, 
+                        alignment: 'left', 
+                        bold: true, 
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {},
+                    {
+                        text: `${sumOB.toFixed(2)} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: `${sumCoal.toFixed(2)} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: `${sumFuel.toFixed(2)} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: ratio,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    }
+                ])
+            }
+        }
+        if(req.inp_ranges === 'month'){
+            let arrMonth = []
+
+            var startDate = moment(req.start);
+            var endDate = moment(req.end);
+
+            if (endDate.isBefore(startDate)) {
+                throw new Error ("End date must be greated than start date.")
+            }      
+
+            while (startDate.isSameOrBefore(endDate)) {
+                arrMonth.push(startDate.format("YYYY-MM-DD"));
+                startDate.add(1, 'month');
+            }
+
+            const pit = (
+                await MasPit.query().where( w => {
+                    w.where('sts', 'Y')
+                    w.where('site_id', req.site_id)
+                }).fetch()
+            ).toJSON()
+            
+            let tmp = []
+            for (const val of pit) {
+                for (const elm of arrMonth) {
+
+                    const sumOB = await MamFuelRatio.query().where( w => {
+                        w.where('pit_id', val.id)
+                        w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                        w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                    }).getSum('ob') || 0
+
+                    const sumCoal = await MamFuelRatio.query().where( w => {
+                        w.where('pit_id', val.id)
+                        w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                        w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                    }).getSum('coal_bcm') || 0
+
+                    const sumFuel = await MamFuelRatio.query().where( w => {
+                        w.where('pit_id', val.id)
+                        w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                        w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                    }).getSum('fuel_used') || 0
+
+                    tmp.push({
+                        name: val.name,
+                        periode: moment(elm).format('MMMM YYYY'),
+                        vol_ob: sumOB,
+                        vol_coal: sumCoal,
+                        vol_fuel: sumFuel,
+                        ratio: (sumOB + sumCoal) / sumFuel || 0
+                    });
+                }
+            }
+            // console.log(tmp);
+            let groupingPIT = _.groupBy(tmp, 'name')
+            groupingPIT = Object.keys(groupingPIT).map(key => {
+                return {
+                    name: key,
+                    items: groupingPIT[key]
+                }
+            })
+
+            for (const obj of groupingPIT) {
+                const sumOB = (obj.items).reduce((a, b) => { return a + parseFloat(b.vol_ob) }, 0)
+                const sumCoal = (obj.items).reduce((a, b) => { return a + parseFloat(b.vol_coal) }, 0)
+                const sumFuel = (obj.items).reduce((a, b) => { return a + parseFloat(b.vol_fuel) }, 0)
+                const ratio = ((sumOB + sumCoal) / sumFuel).toFixed('2')
+                for (const val of obj.items) {
+                    result.push([
+                        {text: val.name, style: 'tableCell_L'},
+                        {text: val.periode, style: 'tableCell_L'},
+                        {text: val.vol_ob, style: 'tableCell_R'},
+                        {text: val.vol_coal, style: 'tableCell_R'},
+                        {text: val.vol_fuel, style: 'tableCell_R'},
+                        {text: (val.ratio).toFixed(2), style: 'tableCell_R'}
+                    ])
+                }
+                result.push([
+                    {
+                        text: `TOTAL `, 
+                        colSpan: 2, 
+                        alignment: 'left', 
+                        bold: true, 
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {},
+                    {
+                        text: `${sumOB.toFixed(2)} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: `${sumCoal.toFixed(2)} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: `${sumFuel.toFixed(2)} BCM`,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    },
+                    {
+                        text: ratio,
+                        alignment: 'right', 
+                        bold: true,
+                        fontSize: 8,
+                        fillColor: '#75A5E3', 
+                        margin: [5, 3, 5, 3]
+                    }
+                ])
+            }
+        }
+
+        const PREP_DATA = [
+            {
+                columns: [
+                    {
+                        width: 100,
+                        fit: [80, 80],
+                        image: `${logoAsBase64}`
+                    },
+                    [
+                        {text: 'Fuel Ratio`s Report', style: 'title'},
+                        {
+                            columns: [
+                                [
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Periode '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: titleDocumentPeriode
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Site '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: `: ${site.name}`
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        alignment: 'justify',
+                                        columns: [
+                                            {
+                                                width: 50,
+                                                style: 'subtitle',
+                                                text: 'Pit '
+                                            },
+                                            {
+                                                style: 'subtitle',
+                                                text: ': All Pit'
+                                            }
+                                        ]
+                                    },
+                                    {text: '', margin: [0, 0, 0, 5]},
+                                ]
+                            ]
+                        }
+                    ]
+                ]
+            },
+            {text: '\n'},
+            {image: chartAsBase64, width: 500},
+            {text: '\n'},
+            {
+                style: 'tableExample',
+                layout: 'headerLineOnly',
+                table: {
+                    headerRows: 1,
+                    widths: ['auto', '*', 80, 80, 'auto', 50],
+                    body: result
+                }
+            }
+        ]
+
+        /* GENERATE PDF OBJECT WITH DATA */
+        const dd = {
+            styles: {
+                title: {
+                    fontSize: 16,
+                    bold: true,
+                    margin: [0, 0, 0, 5]
+                },
+                subtitle: {
+                    fontSize: 10,
+                    italics: true
+                },
+                tableHeader_L: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'left'
+                },
+                tableHeader_R: {
+                    fillColor: '#E6E6E6',
+                    bold: true,
+                    alignment: 'right'
+                },
+                tableCell_L: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'left'
+                },
+                tableCell_R: {
+                    fillColor: '#FFF',
+                    fontSize: 8,
+                    alignment: 'right'
+                }
+            },
+            content: PREP_DATA,
+        }
+
         return dd
     }
 }

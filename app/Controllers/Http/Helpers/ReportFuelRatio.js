@@ -30,12 +30,13 @@ class repFuelRatio {
                 enabled: true,
                 rotation: -90,
                 color: '#FFFFFF',
-                align: 'right',
-                format: '{point.y:.2f}', // one decimal
-                y: 0, // 10 pixels down from the top
+                // align: 'right',
+                format: '{point.y:.2f}', // two decimal
+                y: 5, // 10 pixels down from the top
                 style: {
-                    fontSize: '11px',
-                    fontFamily: 'Verdana, sans-serif'
+                    fontSize: '10px',
+                    fontFamily: 'Arial Narrow'
+                    // fontFamily: 'Verdana, sans-serif'
                 }
             }
         })
@@ -265,7 +266,7 @@ class repFuelRatio {
 
             for (const val of pit) {
                 for (const elm of arrMonth) {
-                    
+
                     const sumOB = await MamFuelRatio.query().where( w => {
                         w.where('pit_id', val.id)
                         w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
