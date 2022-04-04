@@ -510,12 +510,32 @@ Route.group(() => {
     
     Route.get('/sop/create', 'SopController.create').as('opr.sop.create').middleware('C')
 
+    Route.post('/sop/store', 'SopController.store').as('opr.sop.store').middleware('C')
+
     Route.get('/sop/:id/show', 'SopController.show').as('opr.sop.show').middleware('U')
 
     Route.post('/sop/:id/update', 'SopController.update').as('opr.sop.update').middleware('U')
 
     Route.delete('/sop/:id/destroy', 'SopController.destroy').as('opr.sop.destroy').middleware('D')
 
+    // Fuel Usage Summary
+    Route.get('/fuel-summary', 'FuelUsageSummaryController.index').as('opr.fuel-summary.index').middleware('R')
+
+    Route.post('/fuel-summary', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
+
+    Route.post('/fuel-summary/uploadFile', 'FuelUsageSummaryController.uploadFile').as('opr.fuel-summary.uploadFile').middleware('C')
+
+    Route.get('/fuel-summary/list', 'FuelUsageSummaryController.list').as('opr.fuel-summary.list').middleware('R')
+    
+    Route.get('/fuel-summary/create', 'FuelUsageSummaryController.create').as('opr.fuel-summary.create').middleware('C')
+
+    Route.post('/fuel-summary/store', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
+
+    Route.get('/fuel-summary/:id/show', 'FuelUsageSummaryController.show').as('opr.fuel-summary.show').middleware('U')
+
+    Route.post('/fuel-sumamry/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
+
+    Route.delete('/fuel-summary/:id/destroy', 'FuelUsageSummaryController.destroy').as('opr.fuel-summary.destroy').middleware('D')
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // REPORT
