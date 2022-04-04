@@ -471,7 +471,7 @@ class RitaseCoal {
             shift_id: GET_SHIFT_ID,
             distance: PIT_NAME === 'RPU' ? 23.3 : PIT_NAME === 'DERAWAN BARU' ? 23.4 : PIT_NAME === 'KARIMATA' ? 22.9 : 21, // 21 is PIT PINANG
             date: date,
-            block: 0,
+            block: 0
           })
 
           await dR.save()

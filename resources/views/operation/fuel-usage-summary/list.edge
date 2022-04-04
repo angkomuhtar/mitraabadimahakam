@@ -1,0 +1,88 @@
+{{ script('ajax/index') }}
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Upload Fuel Usage Summary</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" class="form-control" value="{{list.perPage}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="200">Date</th>
+                                <th class="sl" width="*">Site</th>
+                                <th class="sl" width="*">PIT Name</th>
+                                <th class="sl" width="*">OB Actual</th>
+                                <th class="sl" width="150">Coal (MT)</th>
+                                <th class="sl" width="150">Coal (BCM)</th>
+                                <th class="sl" width="150">Fuel Used (Liter)</th>
+                                <th class="sl" width="150">Fuel Ratio</th>
+                                <th class="sl" width="150">HM Accumulate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                              <tr>
+                                  <td>{{$loop.index + 1}}</td>
+                                  <td>
+                                    <button class="btn btn-outline btn-success btn-xs bt-view-data">view</button>
+                                  </td>
+                                  <td>
+                                      {{item.date || ''}}
+                                  </td>
+                                  <td>
+                                    {{item.pit.site.kode || ''}}
+                                </td>
+                                <td>
+                                    {{item.pit.name || ''}}
+                                </td>
+                                  <td>
+                                      {{item.ob}}
+                                  </td>
+                                  <td>
+                                      {{item.coal_mt}}
+                                  </td>
+                                  <td>
+                                    {{item.coal_bcm}}
+                                </td>
+                                <td>
+                                    {{item.fuel_used}}
+                                </td>
+                                <td>
+                                    {{item.fuel_ratio}}
+                                </td>
+                                <td>
+                                    0
+                                </td>
+                              </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>

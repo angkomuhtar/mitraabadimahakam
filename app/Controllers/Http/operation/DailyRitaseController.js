@@ -672,6 +672,7 @@ class DailyRitaseController {
       } else if (req.sheet && req.sheet === 'COAL') {
         data = await DailyRitaseCoalHelpers.GET_MONTH_EXCEL_DATA_PRODUCTION(filePath, req, xuser)
 
+        console.log('coal working >> ')
         await NotificationsHelpers.sendBasicNotification(fileName)
       } else if (req.sheet && req.sheet.includes('PR')) {
         data = await InventoryHelpers.GET_MONTH_EXCEL_DATA_PURCHASE_REQUEST_INVENTORY(filePath, req, xuser)
