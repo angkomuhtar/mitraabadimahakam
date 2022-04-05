@@ -62,6 +62,38 @@ class FuelRatioController {
         }
         
     }
+    
+    async genDataXLS ( { request } ) {
+        const req = request.all()
+        console.log(req);
+        const attchment = request.file('chartImg')
+
+        if(attchment){
+            const randURL = moment().format('YYYYMMDDHHmm')
+            const aliasName = `chart-fuelratio-${req.range_type}-${req.inp_ranges}-${randURL}.png`
+            var imagePath = '/upload/'+aliasName
+
+            req.imagePath = imagePath
+
+            await attchment.move(Helpers.publicPath(`upload`), {
+                name: aliasName,
+                overwrite: true,
+            })
+            if (!attchment.moved()) {
+                console.log(attchment.error());
+                return 'gagal simpan gambar....'
+            }
+        }
+
+        if(req.range_type === 'pit'){
+            const data = await ReportXLSHelpers.PIT_FUEL_RATIO_XLS(req)
+            return data
+        }else{
+            const data = await ReportXLSHelpers.PERIODE_FUEL_RATIO_XLS(req)
+            return data
+        }
+        
+    }
 }
 
 module.exports = FuelRatioController

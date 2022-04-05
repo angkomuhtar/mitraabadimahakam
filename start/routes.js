@@ -544,14 +544,14 @@ Route.group(() => {
     Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
     Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
     Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
-    Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData').middleware('R')
-    Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData').middleware('R')
+    Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData-pdf').middleware('R')
+    Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData-xls').middleware('R')
 
     Route.get('/fuel-ratio', 'FuelRatioController.index').as('rep.fuel-ratio.index').middleware('R')
     Route.get('/fuel-ratio/filter', 'FuelRatioController.filter').as('rep.fuel-ratio.filter').middleware('R')
     Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
-    Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData').middleware('R')
-    Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData').middleware('R')
+    Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData-pdf').middleware('R')
+    Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData-xls').middleware('R')
 
 }).prefix('report').namespace('report').middleware(['MM'])
 

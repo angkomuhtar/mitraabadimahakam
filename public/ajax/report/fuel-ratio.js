@@ -127,46 +127,29 @@ $(function(){
         });
     })
 
-    // $('body').on('click', 'button#bt-generate-xls', function(e){
-    //     e.preventDefault()
+    $('body').on('click', 'button#bt-generate-xls', function(e){
+        e.preventDefault()
 
-    //     var fd = new FormData()
-    //         fd.append('site_id', $('select[name="site_id"]').val());
-    //         fd.append('pit_id', $('select[name="pit_id"]').val());
-    //         fd.append('production_type', $('select[name="production_type"]').val());
-    //         fd.append('range_type', $('select[name="range_type"]').val());
-    //         fd.append('filterType', $('select[name="filterType"]').val());
-    //         fd.append('start_date', $('input[name="start_date"]').val());
-    //         fd.append('end_date', $('input[name="end_date"]').val());
-    //         fd.append('month_begin', $('input[name="month_begin"]').val());
-    //         fd.append('month_end', $('input[name="month_end"]').val());
-    //         fd.append('week_begin', $('input[name="week_begin"]').val());
-    //         fd.append('week_end', $('input[name="week_end"]').val());
-    //         fd.append('date', $('input[name="date"]').val());
-    //         fd.append('shift_id', $('select[name="shift_id"]').val());
-    //         $.ajax({
-    //             async: true,
-    //             url: '/report/production/gen-data-xls',
-    //             method: 'POST',
-    //             data: fd,
-    //             dataType: 'json',
-    //             processData: false,
-    //             mimeType: "multipart/form-data",
-    //             contentType: false,
-    //             success: function(result){
-    //                 console.log(result)
-    //                 window.open('../'+result.uri, '_blank');
-    //             },
-    //             error: function(err){
-    //                 console.log(err)
-    //             }
-    //         })
+        var fd = new FormData(document.querySelector('form'))
+        $.ajax({
+            async: true,
+            url: '/report/fuel-ratio/gen-data-xls',
+            method: 'POST',
+            data: fd,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                window.open('../'+result.uri, '_blank');
+            },
+            error: function(err){
+                console.log(err)
+            }
+        })
         
-    // })
-
-    // function GEN_PDF(content){
-    //     pdfMake.createPdf(content).open();
-    // }
+    })
 
     function initFilter(){
         $.ajax({
@@ -192,7 +175,7 @@ $(function(){
                 zoomType: 'xy'
             },
             title: {
-                text: 'Production By Truck Count'
+                text: 'Fuel Ratio'
             },
             subtitle: {
                 text: 'Project BBE'
@@ -221,6 +204,17 @@ $(function(){
                             color: '#000'
                         }
                     },
+                    plotLines: [{
+                        value: 0.85,
+                        color: 'red',
+                        dashStyle: 'shortdash',
+                        width: 2,
+                        label: {
+                            text: 'Budget Ratio'
+                        }
+                    }],
+                    tickAmount: 5,
+                    tickInterval: 0.2,
                     title: {
                         text: 'FUEL RATIO',
                         style: {

@@ -41,12 +41,12 @@ class repFuelRatio {
             }
         })
 
-        result.push({
-            name: 'Budget',
-            type: 'spline',
-            color: 'red',
-            data: data.map(el => 0.85)
-        })
+        // result.push({
+        //     name: 'Budget',
+        //     type: 'spline',
+        //     color: 'red',
+        //     data: data.map(el => 0.85)
+        // })
 
         return {
             xAxis: xAxis,
@@ -116,14 +116,14 @@ class repFuelRatio {
                     }
                 }
             })
-            result = [...result, ...res]
-            result.push({
-                name: 'budget',
-                type: 'spline',
-                color: 'red',
-                data: data.map(el => 0.85),
+            // result = [...result, ...res]
+            // result.push({
+            //     name: 'budget',
+            //     type: 'spline',
+            //     color: 'red',
+            //     data: data.map(el => 0.85),
                 
-            })
+            // })
             return {
                 xAxis: xAxis,
                 series: result
@@ -224,17 +224,18 @@ class repFuelRatio {
                 }
             })
             
-            let budget = [{
-                name: 'budget',
-                type: 'spline',
-                color: 'red',
-                data: xAxis.map(el => 0.85),
+            // let budget = [{
+            //     name: 'budget',
+            //     type: 'spline',
+            //     color: 'red',
+            //     data: xAxis.map(el => 0.85),
                 
-            }]
+            // }]
 
             return {
                 xAxis: xAxis,
-                series: [...result, ...budget]
+                // series: [...result, ...budget]
+                series: result
             }
         }
 
@@ -316,17 +317,18 @@ class repFuelRatio {
                 }
             })
             
-            let budget = [{
-                name: 'budget',
-                type: 'spline',
-                color: 'red',
-                data: xAxis.map(el => 0.85),
+            // let budget = [{
+            //     name: 'budget',
+            //     type: 'spline',
+            //     color: 'red',
+            //     data: xAxis.map(el => 0.85),
                 
-            }]
+            // }]
             console.log(result);
             return {
                 xAxis: xAxis,
-                series: [...result, ...budget]
+                // series: [...result, ...budget]
+                series: result
             }
         }
     }
