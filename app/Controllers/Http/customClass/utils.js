@@ -1,4 +1,5 @@
 const _request = require('request')
+const moment = require('moment')
 
 class Utils {
      async infinityCheck(num) {
@@ -113,6 +114,48 @@ class Utils {
                     }
                }
           )
+     }
+
+     async GEN_KODE_PURCHASING_ORDER (site_id) {
+          const PurchasingRequest = use("App/Models/MamPurchasingRequest")
+          const MasSite = use("App/Models/MasSite")
+
+          let purchasingRequest
+          let kode
+
+          const strPrefix = (teks) => {
+               if(teks){
+                    let str = (teks).substr(11, 5)
+                    let strToNum = parseInt(str) + 1
+                    let prefix = '0'.repeat( 5 - strToNum ) + strToNum
+                    return prefix
+               }else{
+                    return '00001'
+               }
+          }
+
+
+          if(!site_id){
+               purchasingRequest = await PurchasingRequest.query().where( w => {
+                    w.where('kode', 'like', '%HOA%')
+                    w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD HH:mm'))
+                    w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD HH:mm'))
+               }).orderBy('date', 'asc').last()
+
+               kode = 'PR' + moment().format('YYMMDD') + 'HOA' + strPrefix(purchasingRequest?.kode)
+
+          }else{
+               const site = await MasSite.query().where('id', site_id).last()
+               purchasingRequest = await PurchasingRequest.query().where( w => {
+                    w.where('site_id', site_id)
+                    w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD HH:mm'))
+                    w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD HH:mm'))
+               }).orderBy('date', 'asc').last()
+
+               kode = 'PR' + moment().format('YYMMDD') + site.kode + strPrefix(purchasingRequest?.kode)
+          }
+          
+          return kode
      }
 }
 

@@ -1,13 +1,13 @@
 @layout('_layouts.main')
 @section('content')
-    {{ script('ajax/opr-fuel-summary') }}
+    {{ script('ajax/mst-barang') }}
     <div class="container-fluid">
         <div class="row bg-title">
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                <h4 class="page-title">List Fuel Summary</h4> 
+                <h4 class="page-title">Master Barang</h4> 
             </div>
         </div>
-        @include('operation.fuel-usage-summary.filter')
+        @include('master.barang.filter')
         <div class="content-module" id="list-content" style="display:none;"></div>
         <div class="content-module" id="form-content" style="display:none;"></div>
     </div>

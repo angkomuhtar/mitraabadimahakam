@@ -1,0 +1,77 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add Barang</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-inverse" type="button" id="bt-search-keyword">Keyword</button> 
+                            </span>
+                            <input type="text" name="keyword" class="form-control" value="" placeholder="Search for...">
+                            <span class="input-group-btn" style="margin-left: 10px"> 
+                                <button class="btn btn-info m-l-10" type="button" id="bt-filter-show" data-toggle="modal" data-target="#myModal">
+                                    <i class="fa fa-filter"></i>
+                                </button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="70">ConAcc</th>
+                                <th class="sl" width="150">Kode</th>
+                                <th class="sl">Descriptions</th>
+                                <th class="sl" width="150">Tipe</th>
+                                <th class="sl">Model</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="8">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td style="vertical-align: middle;">{{$loop.index + 1}}</td>
+                                    <td style="vertical-align: middle;">
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td class="single-line" style="vertical-align: middle;">
+                                        {{item.control_acc}}
+                                    </td>
+                                    <td class="single-line" style="vertical-align: middle;">
+                                        <strong>
+                                            {{item.kode}}
+                                        </strong>
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        <small>{{item.partnumber}}</small> <br>
+                                        <span>{{item.descriptions}}</span>
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        <small class="text-capitalize">{{item.parttype || ''}}</small> <br>
+                                        <span>{{item.equiptype || ''}}</span>
+                                    </td>
+                                    <td class="" style="vertical-align: middle;">
+                                        <small>{{item.planmodel || ''}}</small> <br>
+                                        <strong>{{item.manufacture || ''}}</strong>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.simple-pagination')
+            </div>
+        </div>
+    </div>
+</div>

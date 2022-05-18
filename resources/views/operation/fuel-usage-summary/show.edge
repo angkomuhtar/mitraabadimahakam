@@ -1,0 +1,216 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" class="form-horizontal" id="fm-update-fuel-summary" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="form-group">
+                                            <label for="exampleInputuname" class="col-sm-4 control-label">Tanggal*</label>
+                                            <div class="col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control setDate" data-date="{{data.date}}" name="date" id="date" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1" class="col-sm-4 control-label">Site Name*</label>
+                                            <div class="col-sm-5">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-map"></i></div>
+                                                    <select class="form-control select2site" data-check="{{data.site_id}}" id="site_id" name="site_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" id="pit-box">
+                                            <label for="inputEmail3" class="col-sm-4 control-label">PIT Name*</label>
+                                            <div class="col-sm-5">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-map-marker"></i></div>
+                                                    <select class="form-control select2pit" data-check="{{data.pit_id}}" id="pit_id" name="pit_id"></select> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="" class="col-sm-4 control-label">OB Volume*</label>
+                                            <div class="col-sm-3">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-shopping-cart-full"></i></div>
+                                                    <input type="number" step="any" class="form-control" name="ob" value="{{data.ob}}"> 
+                                                    <div class="input-group-addon"><strong>BCM</strong></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="" class="col-sm-4 control-label">Coal Volume*</label>
+                                            <div class="col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-shopping-cart-full"></i></div>
+                                                    <input type="number" step="0.01" class="form-control" name="coal_mt" value="{{data.coal_mt}}">
+                                                    <div class="input-group-addon"><strong>MT</strong></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="" class="col-sm-4 control-label">Coal BCM</label>
+                                            <div class="col-sm-3">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-shopping-cart-full"></i></div>
+                                                    <input type="number" step="any" class="form-control" name="coal_bcm" readonly style="background-color:#d5d6da" value="{{data.coal_bcm}}">
+                                                    <div class="input-group-addon"><strong>BCM</strong></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="" class="col-sm-4 control-label">Fuel Used*</label>
+                                            <div class="col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-paint-bucket"></i></div>
+                                                    <input type="number" step="any" class="form-control" name="fuel_used" value="{{data.fuel_used}}">
+                                                    <div class="input-group-addon"><strong>Liter</strong></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="" class="col-sm-4 control-label">Fuel Ratio</label>
+                                            <div class="col-sm-3">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-ruler-alt-2"></i></div>
+                                                    <input type="number" step="any" class="form-control" name="fuel_ratio" value="{{data.fuel_ratio}}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            &nbsp;
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-update"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button type="submit" class="btn btn-success waves-effect waves-light"> 
+                                                <i class="fa fa-save"></i> <span>Save</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+
+        $('select[name="site_id"]').on('change', function(){
+            var elm = $(this)
+            var val = elm.val()
+            elm.parents('form').find('div#pit-box').children().remove()
+            $.ajax({
+                async: true,
+                url: '/ajax/pit-by-site?site_id='+val,
+                method: 'GET',
+                success: function(data){
+                    console.log(data);
+                    elm.parents('form').find('div#pit-box').append(data)
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+
+        $('input[name="coal_mt"]').on('keyup', function(){
+            var val = $(this).val()
+            var ob = $('input[name="ob"]').val()
+            var fuel = $('input[name="fuel_used"]').val()
+            var coalBCM = (parseFloat(val) / 1.3).toFixed(2)
+            
+            $('input[name="coal_bcm"]').val(parseFloat(coalBCM))
+            var ratio = parseFloat(fuel) / (parseFloat(ob) + (parseFloat(val) / 1.3))
+            $('input[name="fuel_ratio"]').val(ratio)
+        })
+
+        $('input[name="ob"]').on('keyup', function(){
+            var ob = $(this).val()
+            var val = $('input[name="coal_mt"]').val()
+            var fuel = $('input[name="fuel_used"]').val()
+            var coalBCM = (parseFloat(val) / 1.3).toFixed(2)
+            
+            $('input[name="coal_bcm"]').val(parseFloat(coalBCM))
+            var ratio = parseFloat(fuel) / (parseFloat(ob) + (parseFloat(val) / 1.3))
+            $('input[name="fuel_ratio"]').val(ratio)
+        })
+
+        $('input[name="fuel_used"]').on('keyup', function(){
+            var fuel = $(this).val()
+            var val = $('input[name="coal_mt"]').val()
+            var ob = $('input[name="ob"]').val()
+            var coalBCM = (parseFloat(val) / 1.3).toFixed(2)
+            
+            $('input[name="coal_bcm"]').val(parseFloat(coalBCM))
+            var ratio = parseFloat(fuel) / (parseFloat(ob) + (parseFloat(val) / 1.3))
+            $('input[name="fuel_ratio"]').val(ratio)
+        })
+    })
+</script>
+
+<style>
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(83 230 157);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+</style>

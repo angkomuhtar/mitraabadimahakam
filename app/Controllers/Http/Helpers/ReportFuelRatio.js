@@ -41,13 +41,6 @@ class repFuelRatio {
             }
         })
 
-        // result.push({
-        //     name: 'Budget',
-        //     type: 'spline',
-        //     color: 'red',
-        //     data: data.map(el => 0.85)
-        // })
-
         return {
             xAxis: xAxis,
             series: result
@@ -79,6 +72,7 @@ class repFuelRatio {
                 }
             })
 
+            
             let xAxis = []
             let res = []
             for (const obj of data) {
@@ -116,17 +110,10 @@ class repFuelRatio {
                     }
                 }
             })
-            // result = [...result, ...res]
-            // result.push({
-            //     name: 'budget',
-            //     type: 'spline',
-            //     color: 'red',
-            //     data: data.map(el => 0.85),
-                
-            // })
+
             return {
                 xAxis: xAxis,
-                series: result
+                series: res
             }
         }
 
@@ -223,18 +210,9 @@ class repFuelRatio {
                     }
                 }
             })
-            
-            // let budget = [{
-            //     name: 'budget',
-            //     type: 'spline',
-            //     color: 'red',
-            //     data: xAxis.map(el => 0.85),
-                
-            // }]
 
             return {
                 xAxis: xAxis,
-                // series: [...result, ...budget]
                 series: result
             }
         }

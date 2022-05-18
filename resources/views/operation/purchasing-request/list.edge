@@ -1,0 +1,92 @@
+{{ script('ajax/index') }}
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Purchasing Request</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" class="form-control" value="{{list.perPage}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="100">ACT</th>
+                                <th class="sl" width="180">Kode</th>
+                                <th class="sl" width="150">CreatedAt</th>
+                                <th class="sl" width="*">Department/Section</th>
+                                <th class="sl" width="150">AcceptBy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs btn-edit-data" data-id="{{item.id}}">edit</button>
+                                        <button class="btn btn-outline btn-default btn-xs btn-view-data" data-id="{{item.id}}">view</button>
+                                    </td>
+                                    <td>
+                                        <strong>{{item.kode}}</strong> <br>
+                                        <small class="{{item.status != 'pending' ? 'text-success':'text-warning'}}">
+                                            {{item.status != 'pending' ? 'Accepted':'Pending'}}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <i class="ti-calendar m-r-10"></i><strong class="myDateFormat" data-date="{{item.date}}"></strong> <br>
+                                        <i class="ti-alarm-clock m-r-10"></i><small class="myTimeFormat" data-date="{{item.date}}"></small>
+                                    </td>
+                                    <td>
+                                        <strong>{{item.department}}</strong>
+                                        @if(item.priority === 'URGENT')
+                                            <small class="label label-danger pull-right">
+                                                URGENT
+                                            </small>
+                                        @endif
+                                        @if(item.priority === 'NORMAL')
+                                            <small class="label label-warning pull-right">
+                                                NORMAL
+                                            </small>
+                                        @endif
+                                        @if(item.priority === 'STOCK')
+                                            <small class="label label-info pull-right">
+                                                STOCK
+                                            </small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(item.mengetahui)
+                                            <i class="mdi mdi-account-circle m-r-10"></i>{{item.mengetahui.nm_lengkap}} <br>
+                                            <i class="ti-alarm-clock m-r-10"></i><small class="myDateTimeFormat" data-date="{{item.acceptAt}}"></small>
+                                        @endif
+                                    </td>
+                                </tr>
+                              
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>

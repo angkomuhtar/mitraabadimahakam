@@ -1,0 +1,54 @@
+
+<div class="modal-body">
+    <div class="table-responsive">
+        <table class="table table-hover dataTable" id="myTable">
+            <thead style="border-bottom: 2px solid;">
+                <tr class="bg-light">
+                    <th class="sl">ACT</th>
+                    <th class="sl">Control Acc <br>Kode</th>
+                    <th class="sl">Description<br> Manufacture</th>
+                    <th class="sl">Uom <br> Plan Model</th>
+                    <th class="sl">Part Number <br>Part Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @each(item in barang)
+                    <tr>
+                        <td>
+                            <button type="button" 
+                                class="btn btn-success btn-circle select-item" 
+                                data-barangid="{{item.id}}" 
+                                data-partnumber="{{item.partnumber || ''}}" 
+                                data-parttype="{{item.parttype}}" 
+                                data-uom="{{item.uom}}" 
+                                data-description="{{item.descriptions}}">
+                                <i class="ti-check-box"></i> 
+                            </button>
+                        </td>
+                        <td>
+                            <strong>{{item.control_acc}}</strong> <br>
+                            <small>{{item.kode}}</small>
+                        </td>
+                        <td>
+                            <strong>{{item.descriptions}}</strong> <br>
+                            <small>{{item.manufactur || ''}}</small>
+                        </td>
+                        <td>
+                            <strong>{{item.uom}}</strong> <br>
+                            <small>{{item.planmodel || ''}}</small>
+                        </td>
+                        <td>
+                            <strong>{{item.partnumber || ''}}</strong> <br>
+                            <small>{{item.parttype || ''}}</small>
+                        </td>
+                    </tr>
+                @endeach
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $(function(){
+        // $('.dataTable').DataTable();
+    })
+</script>

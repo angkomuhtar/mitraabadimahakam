@@ -233,6 +233,21 @@ Route.group(() => {
 
     Route.post('/supplier/:id/delete', 'MasSupplierController.delete').as('mas.supplier.delete').middleware('D')
 
+    // Barang
+    Route.get('/barang', 'MasBarangController.index').as('mas.barang.index').middleware('R')
+
+    Route.post('/barang', 'MasBarangController.store').as('mas.barang.store').middleware('C')
+
+    Route.get('/barang/list', 'MasBarangController.list').as('mas.barang.list').middleware('R')
+
+    Route.get('/barang/create', 'MasBarangController.create').as('mas.barang.create').middleware('R')
+
+    Route.get('/barang/:id/show', 'MasBarangController.show').as('mas.barang.show').middleware('U')
+
+    Route.post('/barang/:id/update', 'MasBarangController.update').as('mas.barang.update').middleware('U')
+
+    Route.post('/barang/:id/delete', 'MasBarangController.delete').as('mas.barang.delete').middleware('D')
+
     // Dokumentasi
     Route.get('/doc-details', 'MasDocumentationDetailsController.index').as('mas.doc-details.index').middleware('R')
 
@@ -523,6 +538,8 @@ Route.group(() => {
 
     Route.post('/fuel-summary', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
 
+    Route.post('/fuel-summary/entry', 'FuelUsageSummaryController.storeEntry').as('opr.fuel-summary.storeEntry').middleware('C')
+
     Route.post('/fuel-summary/uploadFile', 'FuelUsageSummaryController.uploadFile').as('opr.fuel-summary.uploadFile').middleware('C')
 
     Route.get('/fuel-summary/list', 'FuelUsageSummaryController.list').as('opr.fuel-summary.list').middleware('R')
@@ -533,9 +550,23 @@ Route.group(() => {
 
     Route.get('/fuel-summary/:id/show', 'FuelUsageSummaryController.show').as('opr.fuel-summary.show').middleware('U')
 
-    Route.post('/fuel-sumamry/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
+    Route.post('/fuel-summary/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
 
     Route.delete('/fuel-summary/:id/destroy', 'FuelUsageSummaryController.destroy').as('opr.fuel-summary.destroy').middleware('D')
+
+    // Purchasing Request Order
+    Route.get('/purchasing-request', 'PurchasingRequestController.index').as('opr.purchasing-request.index').middleware('R')
+
+    Route.post('/purchasing-request', 'PurchasingRequestController.store').as('opr.purchasing-request.store').middleware('C')
+
+    Route.get('/purchasing-request/list', 'PurchasingRequestController.list').as('opr.purchasing-request.list').middleware('R')
+
+    Route.get('/purchasing-request/create', 'PurchasingRequestController.create').as('opr.purchasing-request.create').middleware('C')
+
+    Route.get('/purchasing-request/items-create', 'PurchasingRequestController.itemCreate').as('opr.purchasing-request.itemCreate').middleware('C')
+
+    Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view').middleware('R')
+
 }).prefix('operation').namespace('operation').middleware(['MM'])
 
 // REPORT
@@ -571,6 +602,8 @@ Route.group(() => {
     Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
 
     Route.get('/site', 'AjaxSiteController.getSites').as('site.getSites')
+
+    Route.get('/site/:id', 'AjaxSiteController.getSiteByID').as('site.getSiteByID')
 
     Route.get('/pit', 'AjaxPitController.getPits').as('pit.getPits')
 
