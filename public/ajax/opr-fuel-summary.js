@@ -279,6 +279,13 @@ $(function(){
             async: true,
             url: uri,
             method: 'GET',
+            beforeSend: function() {
+                $('div#list-content').html(
+                    '<div class="col-xs-4 col-xs-offset-4">'+
+                        '<img src="../images/99297-loading-files.gif" alt="user" width="90%">'+
+                    '</div>'
+                )
+            },
             success: function(result){
                 $('content-module').css('display', 'none')
                 $('div#list-content').html(result).show()
