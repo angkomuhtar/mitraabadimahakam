@@ -71,7 +71,6 @@ class Utils {
     console.log('appId >> ', appID)
     console.log('restKey >> ', restKey)
 
-<<<<<<< HEAD
     _request(
       {
         method: 'POST',
@@ -128,35 +127,6 @@ class Utils {
     })
     await newEquipmentPerformance.save()
   }
-=======
-          _request(
-               {
-                    method: 'POST',
-                    uri: 'https://onesignal.com/api/v1/notifications',
-                    headers: {
-                         authorization: 'Basic ' + restKey,
-                         'content-type': 'application/json',
-                    },
-                    json: true,
-                    body: {
-                         app_id: appID,
-                         contents: { en: message },
-                         include_player_ids: Array.isArray(device)
-                              ? device
-                              : [device],
-                         data: data,
-                    },
-               },
-               function (error, response, body) {
-                    if (!body.errors) {
-                         console.log(body)
-                    } else {
-                         console.error('Error:', body.errors)
-                    }
-               }
-          )
-     }
-
      async GEN_KODE_PURCHASING_ORDER (site_id) {
           const PurchasingRequest = use("App/Models/MamPurchasingRequest")
           const MasSite = use("App/Models/MasSite")
@@ -198,7 +168,6 @@ class Utils {
           
           return kode
      }
->>>>>>> b2e2f20f6ca41bbb106fe87510a05c0df7dd5dbc
 }
 
 module.exports = new Utils()
