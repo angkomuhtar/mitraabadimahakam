@@ -30,21 +30,15 @@ class repFuelRatio {
                 enabled: true,
                 rotation: -90,
                 color: '#FFFFFF',
-                align: 'right',
-                format: '{point.y:.2f}', // one decimal
-                y: 0, // 10 pixels down from the top
+                // align: 'right',
+                format: '{point.y:.2f}', // two decimal
+                y: 5, // 10 pixels down from the top
                 style: {
-                    fontSize: '11px',
-                    fontFamily: 'Verdana, sans-serif'
+                    fontSize: '10px',
+                    fontFamily: 'Arial Narrow'
+                    // fontFamily: 'Verdana, sans-serif'
                 }
             }
-        })
-
-        result.push({
-            name: 'Budget',
-            type: 'spline',
-            color: 'red',
-            data: data.map(el => 0.85)
         })
 
         return {
@@ -78,6 +72,7 @@ class repFuelRatio {
                 }
             })
 
+            
             let xAxis = []
             let res = []
             for (const obj of data) {
@@ -115,17 +110,10 @@ class repFuelRatio {
                     }
                 }
             })
-            result = [...result, ...res]
-            result.push({
-                name: 'budget',
-                type: 'spline',
-                color: 'red',
-                data: data.map(el => 0.85),
-                
-            })
+
             return {
                 xAxis: xAxis,
-                series: result
+                series: res
             }
         }
 
@@ -222,18 +210,10 @@ class repFuelRatio {
                     }
                 }
             })
-            
-            let budget = [{
-                name: 'budget',
-                type: 'spline',
-                color: 'red',
-                data: xAxis.map(el => 0.85),
-                
-            }]
 
             return {
                 xAxis: xAxis,
-                series: [...result, ...budget]
+                series: result
             }
         }
 
@@ -265,7 +245,7 @@ class repFuelRatio {
 
             for (const val of pit) {
                 for (const elm of arrMonth) {
-                    
+
                     const sumOB = await MamFuelRatio.query().where( w => {
                         w.where('pit_id', val.id)
                         w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
@@ -315,17 +295,18 @@ class repFuelRatio {
                 }
             })
             
-            let budget = [{
-                name: 'budget',
-                type: 'spline',
-                color: 'red',
-                data: xAxis.map(el => 0.85),
+            // let budget = [{
+            //     name: 'budget',
+            //     type: 'spline',
+            //     color: 'red',
+            //     data: xAxis.map(el => 0.85),
                 
-            }]
+            // }]
             console.log(result);
             return {
                 xAxis: xAxis,
-                series: [...result, ...budget]
+                // series: [...result, ...budget]
+                series: result
             }
         }
     }

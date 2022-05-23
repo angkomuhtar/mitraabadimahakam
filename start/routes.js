@@ -216,7 +216,27 @@ Route.group(() => {
 
   Route.post('/subcont/:id/update', 'MasSubcontractorController.update').as('mas.subcont.update').middleware('U')
 
+<<<<<<< HEAD
   Route.post('/subcont/:id/delete', 'MasSubcontractorController.delete').as('mas.subcont.delete').middleware('D')
+=======
+    // Barang
+    Route.get('/barang', 'MasBarangController.index').as('mas.barang.index').middleware('R')
+
+    Route.post('/barang', 'MasBarangController.store').as('mas.barang.store').middleware('C')
+
+    Route.get('/barang/list', 'MasBarangController.list').as('mas.barang.list').middleware('R')
+
+    Route.get('/barang/create', 'MasBarangController.create').as('mas.barang.create').middleware('R')
+
+    Route.get('/barang/:id/show', 'MasBarangController.show').as('mas.barang.show').middleware('U')
+
+    Route.post('/barang/:id/update', 'MasBarangController.update').as('mas.barang.update').middleware('U')
+
+    Route.post('/barang/:id/delete', 'MasBarangController.delete').as('mas.barang.delete').middleware('D')
+
+    // Dokumentasi
+    Route.get('/doc-details', 'MasDocumentationDetailsController.index').as('mas.doc-details.index').middleware('R')
+>>>>>>> b2e2f20f6ca41bbb106fe87510a05c0df7dd5dbc
 
   // Supplier
   Route.get('/supplier', 'MasSupplierController.index').as('mas.supplier.index').middleware('R')
@@ -482,7 +502,13 @@ Route.group(() => {
 
   Route.post('/daily-refuel-unit/upload-file', 'DailyRefuelEquipmentController.uploadFile').as('opr.daily-refuel-unit.uploadFile').middleware('C')
 
+<<<<<<< HEAD
   Route.get('/daily-refuel-unit/create', 'DailyRefuelEquipmentController.create').as('opr.daily-refuel-unit.create').middleware('C')
+=======
+    Route.post('/fuel-summary/entry', 'FuelUsageSummaryController.storeEntry').as('opr.fuel-summary.storeEntry').middleware('C')
+
+    Route.post('/fuel-summary/uploadFile', 'FuelUsageSummaryController.uploadFile').as('opr.fuel-summary.uploadFile').middleware('C')
+>>>>>>> b2e2f20f6ca41bbb106fe87510a05c0df7dd5dbc
 
   Route.get('/daily-refuel-unit/:id/show', 'DailyRefuelEquipmentController.show').as('opr.daily-refuel-unit.show').middleware('U')
 
@@ -491,6 +517,7 @@ Route.group(() => {
   // Daily Issue
   Route.get('/daily-issue', 'DailyIssueController.index').as('opr.daily-issue.index').middleware('R')
 
+<<<<<<< HEAD
   Route.post('/daily-issue', 'DailyIssueController.store').as('opr.daily-issue.store').middleware('C')
 
   Route.get('/daily-issue/list', 'DailyIssueController.list').as('opr.daily-issue.list').middleware('R')
@@ -498,6 +525,41 @@ Route.group(() => {
   Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('C')
 
   Route.get('/daily-issue/:id/show', 'DailyIssueController.show').as('opr.daily-issue.show').middleware('U')
+=======
+    Route.post('/fuel-summary/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
+
+    Route.delete('/fuel-summary/:id/destroy', 'FuelUsageSummaryController.destroy').as('opr.fuel-summary.destroy').middleware('D')
+
+    // Purchasing Request Order
+    Route.get('/purchasing-request', 'PurchasingRequestController.index').as('opr.purchasing-request.index').middleware('R')
+
+    Route.post('/purchasing-request', 'PurchasingRequestController.store').as('opr.purchasing-request.store').middleware('C')
+
+    Route.get('/purchasing-request/list', 'PurchasingRequestController.list').as('opr.purchasing-request.list').middleware('R')
+
+    Route.get('/purchasing-request/create', 'PurchasingRequestController.create').as('opr.purchasing-request.create').middleware('C')
+
+    Route.get('/purchasing-request/items-create', 'PurchasingRequestController.itemCreate').as('opr.purchasing-request.itemCreate').middleware('C')
+
+    Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view').middleware('R')
+
+}).prefix('operation').namespace('operation').middleware(['MM'])
+
+// REPORT
+Route.group(() => {
+
+    Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
+    Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
+    Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
+    Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData-pdf').middleware('R')
+    Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData-xls').middleware('R')
+
+    Route.get('/fuel-ratio', 'FuelRatioController.index').as('rep.fuel-ratio.index').middleware('R')
+    Route.get('/fuel-ratio/filter', 'FuelRatioController.filter').as('rep.fuel-ratio.filter').middleware('R')
+    Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
+    Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData-pdf').middleware('R')
+    Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData-xls').middleware('R')
+>>>>>>> b2e2f20f6ca41bbb106fe87510a05c0df7dd5dbc
 
   Route.post('/daily-issue/:id/update', 'DailyIssueController.update').as('opr.daily-issue.update').middleware('U')
 
@@ -517,6 +579,10 @@ Route.group(() => {
   Route.post('/sop/store', 'SopController.store').as('opr.sop.store').middleware('C')
 
   Route.get('/sop/:id/show', 'SopController.show').as('opr.sop.show').middleware('U')
+  
+  Route.get('/site/:id', 'AjaxSiteController.getSiteByID').as('site.getSiteByID')
+
+  Route.get('/pit', 'AjaxPitController.getPits').as('pit.getPits')
 
   Route.post('/sop/:id/update', 'SopController.update').as('opr.sop.update').middleware('U')
 

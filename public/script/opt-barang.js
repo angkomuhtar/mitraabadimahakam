@@ -3,32 +3,8 @@ $(function(){
 
     $('select').select2()
 
-    $('body select.xselect2equipment').each(function(){
+    $('select[name="barang_id"]').each(function(){
         var values = $(this).data('check')
-        var elm = $(this)
-        elm.children().remove()
-        $.ajax({
-            async: true,
-            url: '/ajax/equipment?selected='+values,
-            method: 'GET',
-            success: function(result){
-                if(result.length > 0){
-                    setSelected(result, values)
-                    elm.html(result.map( v => '<option value="'+v.id+'" '+v.selected+'>' +v.kode+ ' | '+v.unit_model+'</option>'))
-                    initSelected(result, elm)
-                    elm.trigger('change');
-                }else{
-                    elm.html('<option value="" selected>Blum ada data...</option>')
-                }
-            },
-            error: function(err){
-                console.log(err);
-            }
-        })
-    })
-
-    $('select[name="equipment_id"]').each(function(){
-        var values = $(this).data('check') || $(this).val()
         var elm = $(this)
         elm.children().remove()
         $.ajax({

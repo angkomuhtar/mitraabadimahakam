@@ -14,6 +14,44 @@ class FuelUsageSummaryController {
     return view.render('operation.fuel-usage-summary.create')
   }
 
+  async show({ params, view }) {
+    const data = await FuelSummaryHelpers.SHOW(params)
+    return view.render('operation.fuel-usage-summary.show', {data: data})
+  }
+
+  async update ( { auth, params, request } ) {
+    const req = request.all()
+    const user = await userValidate(auth)
+    if (!user) {
+      return view.render('401')
+    }
+
+    if(!req.date){
+      return {
+        success: false,
+        message: 'Tanggal belum ditentukan...'
+      }
+    }
+
+    if(!req.site_id){
+      return {
+        success: false,
+        message: 'Site belum ditentukan...'
+      }
+    }
+
+    if(!req.pit_id){
+      return {
+        success: false,
+        message: 'PIT belum ditentukan...'
+      }
+    }
+    
+    const data = await FuelSummaryHelpers.UPDATE(params, req, user)
+
+    return data
+  }
+
   async uploadFile({ auth, request }) {
     const validateFile = {
       types: ['xls', 'xlsx'],
@@ -88,6 +126,38 @@ class FuelUsageSummaryController {
     }
   }
 
+  async storeEntry ( { auth, request } ) {
+    const req = request.all()
+    const user = await userValidate(auth)
+    if (!user) {
+      return view.render('401')
+    }
+
+    if(!req.date){
+      return {
+        success: false,
+        message: 'Tanggal belum ditentukan...'
+      }
+    }
+
+    if(!req.site_id){
+      return {
+        success: false,
+        message: 'Site belum ditentukan...'
+      }
+    }
+
+    if(!req.pit_id){
+      return {
+        success: false,
+        message: 'PIT belum ditentukan...'
+      }
+    }
+
+    const data = await FuelSummaryHelpers.STORE_ENTRY(req, user)
+    return data
+  }
+
   async list({ auth, request, view }) {
     const req = request.all()
     const user = await userValidate(auth)
@@ -108,6 +178,7 @@ class FuelUsageSummaryController {
     }
     return view.render('operation.fuel-usage-summary.list', { list: data })
   }
+  
 }
 
 module.exports = FuelUsageSummaryController

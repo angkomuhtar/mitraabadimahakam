@@ -18,39 +18,67 @@ $(function(){
         initDefault()
     })
 
-    $('body').on('click', 'button.bt-edit', function(e){
+    $('body').on('click', 'button.bt-edit-data', function(e){
         var id = $(this).data('id')
         initShow(id)
     })
 
-    $('body').on('click', 'button.bt-edit-data', function(e){
-        var id = $(this).data('id')
-        initShowDetails(id)
-    })
-
-    $('body').on('change', 'select#fitur_id', function(){
-        var values = $(this).val()
-        var desc = $(this).find('option[value="'+values+'"]').data('desc')
-        $('textarea[name="desc"]').val(desc)
-    })
-
-    $('body').on('click', 'a.btn-pagging', function(e){
+    $('body').on('click', 'a#btPreviousPage', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        var keyword = $('input#inpKeyworddoc').val()
-        var url = window.location.pathname+'/list?page='+page+'&keyword='+keyword
-        $.ajax({
-            async: true,
-            url: url,
-            method: 'GET',
-            success: function(result){
-                $('div#form-content-details').children().remove()
-                $('div#list-content').html(result).show()
-            },
-            error: function(err){
-                console.log(err)
-            }
-        })
+        var limit = $('body').find('input[name="limit-data"]').val()
+        page = page <= 1 ? 1 : page - 1
+        var limit = $('body').find('input[name="limit-data"]').val()
+        var start_date = $('input[name="start_date"]').val() && '&start_date='+$('input[name="start_date"]').val()
+        var end_date = $('input[name="end_date"]').val() && '&end_date='+$('input[name="end_date"]').val()
+        var site = $('select[name="site_id"]').val() && '&site_id='+$('select[name="site_id"]').val()
+        var pit = $('select[name="pit_id"]').val() && '&pit_id='+$('select[name="pit_id"]').val()
+        var uri = '/operation/fuel-summary/list?page='+page+'&limit='+limit+start_date+end_date+site+pit
+        initDefault(uri)
+    })
+
+    $('body').on('click', 'a#btNextPage', function(e){
+        e.preventDefault()
+        var page = $(this).data('page')
+        var last = $(this).data('last')
+        page = page >= last ? last : page + 1
+        var limit = $('body').find('input[name="limit-data"]').val()
+        var start_date = $('body').find('input[name="start_date"]').val() && '&start_date='+$('input[name="start_date"]').val()
+        var end_date = $('body').find('input[name="end_date"]').val() && '&end_date='+$('input[name="end_date"]').val()
+        var site = $('body').find('select[name="site_id"]').val() && '&site_id='+$('select[name="site_id"]').val()
+        var pit = $('body').find('select[name="pit_id"]').val() && '&pit_id='+$('select[name="pit_id"]').val()
+        var uri = '/operation/fuel-summary/list?page='+page+'&limit='+limit+start_date+end_date+site+pit
+        initDefault(uri)
+    })
+
+    $('body').on('click', 'button#btGoToPage', function(e){
+        e.preventDefault()
+        var page = $('body').find('input[name="inp-page"]').val()
+        var limit = $('body').find('input[name="limit-data"]').val()
+        var start_date = $('body').find('input[name="start_date"]').val() && '&start_date='+$('input[name="start_date"]').val()
+        var end_date = $('body').find('input[name="end_date"]').val() && '&end_date='+$('input[name="end_date"]').val()
+        var site = $('body').find('select[name="site_id"]').val() && '&site_id='+$('select[name="site_id"]').val()
+        var pit = $('body').find('select[name="pit_id"]').val() && '&pit_id='+$('select[name="pit_id"]').val()
+        var uri = '/operation/fuel-summary/list?page='+page+'&limit='+limit+start_date+end_date+site+pit
+        initDefault(uri)
+    })
+
+    $('body').on('click', '#btn-apply-filter', function(){
+        var limit = $('input[name="limit-data"]').val()
+        var start_date = $('input[name="start_date"]').val() && '&start_date='+$('input[name="start_date"]').val()
+        var end_date = $('input[name="end_date"]').val() && '&end_date='+$('input[name="end_date"]').val()
+        var site = $('select[name="site_id"]').val() && '&site_id='+$('select[name="site_id"]').val()
+        var pit = $('select[name="pit_id"]').val() && '&pit_id='+$('select[name="pit_id"]').val()
+        var uri = '/operation/fuel-summary/list?limit='+limit+start_date+end_date+site+pit
+        initDefault(uri)
+    })
+
+    $('body').on('click', '#btn-reset-filter', function(){
+        initDefault()
+        $('select[name="site_id"]').val('')
+        $('select[name="pit_id"]').val('')
+        $('input[name="start_date"]').val('')
+        $('input[name="end_date"]').val('')
     })
 
     // get the file data
@@ -87,12 +115,11 @@ $(function(){
 
     $('body').on('submit', 'form#fm-upload-fuel-summary', function(e) {
         e.preventDefault();
-
         const formData = new FormData(this);
 
         swal({
-            title: "Apakah anda yakin?",
-            text: "Pastikan Format yang anda upload sudah benar!",
+            title: "Apakah anda yakin akan melakukan upload data?",
+            text: "",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-warning",
@@ -105,7 +132,7 @@ $(function(){
                   $.ajax({
                       async: true,
                       headers: {'x-csrf-token': $('[name=_csrf]').val()},
-                      url: '/operation/fuel-summary/store',
+                      url: '/operation/fuel-summary',
                       method: 'POST',
                       data: formData,
                       dataType: 'json',
@@ -115,17 +142,25 @@ $(function(){
                       success: function(result){
                           console.log(result)
                           if(result.success){
-                              swal("Okey!", result.message, "success");
-                              $("body form#ffm-upload-sop").trigger("reset");
-                            //   window.location.reload()
+                            swal({
+                                title: "Okey! " + result.message,
+                                text: "Apakah anda akan kembali ke halaman \nLIST FUEL SUMMARY ?",
+                                type: "success",
+                                showCancelButton: true,
+                                confirmButtonClass: "btn-success",
+                                confirmButtonText: "Okey!",
+                                closeOnConfirm: false
+                              }, isExit => {
+                                if(isExit){
+                                    window.location.reload()
+                                }
+                              })
                           }else{
                               alert(result.message)
                           }
                       },
                       error: function(err){
-                          console.log('error upload >> ', JSON.stringify(err))
-                          const { message } = err.responseJSON
-                          swal("Opps,,,!", message, "warning")
+                          swal("Opps,,,!", err, "warning")
                       }
                   })
               }else{
@@ -135,12 +170,122 @@ $(function(){
 
     })
 
-    function initDefault(){
+    $('body').on('submit', 'form#fm-upload-fuel-summary-entry', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: '/operation/fuel-summary/entry',
+            method: 'POST',
+            data: formData,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                if(result.success){
+                  swal({
+                      title: "Okey! " + result.message,
+                      text: "Apakah anda akan kembali ke halaman \nLIST FUEL SUMMARY ?",
+                      type: "success",
+                      showCancelButton: true,
+                      confirmButtonClass: "btn-success",
+                      confirmButtonText: "Okey!",
+                      closeOnConfirm: false
+                    }, isExit => {
+                      if(isExit){
+                          window.location.reload()
+                      }
+                    })
+                }else{
+                    alert(result.message)
+                }
+            },
+            error: function(err){
+                swal("Opps,,,!", err, "warning")
+            }
+        })
+
+    })
+
+    $('body').on('submit', 'form#fm-update-fuel-summary', function(e) {
+        e.preventDefault();
+        var id = $(this).data('id')
+        const formData = new FormData(this);
+
+        swal({
+            title: "Apakah anda yakin akan melakukan perubahan data?",
+            text: "",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-warning",
+            confirmButtonText: "Okey!",
+            closeOnConfirm: false
+          },
+          function(isConfirm){
+            swal("Please wait.....")
+              if(isConfirm){
+                  $.ajax({
+                      async: true,
+                      headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                      url: '/operation/fuel-summary/'+id+'/update',
+                      method: 'POST',
+                      data: formData,
+                      dataType: 'json',
+                      processData: false,
+                      mimeType: "multipart/form-data",
+                      contentType: false,
+                      success: function(result){
+                          console.log(result)
+                          if(result.success){
+                            swal({
+                                title: "Okey! " + result.message,
+                                text: "Apakah anda akan kembali ke halaman \nLIST FUEL SUMMARY ?",
+                                type: "success",
+                                showCancelButton: true,
+                                confirmButtonClass: "btn-success",
+                                confirmButtonText: "Okey!",
+                                closeOnConfirm: false
+                              }, isExit => {
+                                if(isExit){
+                                    window.location.reload()
+                                }
+                              })
+                          }else{
+                              alert(result.message)
+                          }
+                      },
+                      error: function(err){
+                          console.log('====================================');
+                          console.log(err);
+                          console.log('====================================');
+                          const { message } = err.responseJSON
+                          swal("Opps,,,!", err, "warning")
+                      }
+                  })
+              }else{
+                swal("Okey!", 'you cancel upload data...', "success");
+              }
+        });
+
+    })
+
+    function initDefault(queryParams){
+        var uri = queryParams || '/operation/fuel-summary/list?limit='
         $('div.content-module').css('display', 'none')
         $.ajax({
             async: true,
-            url: '/operation/fuel-summary/list?limit=',
+            url: uri,
             method: 'GET',
+            beforeSend: function() {
+                $('div#list-content').html(
+                    '<div class="col-xs-4 col-xs-offset-4">'+
+                        '<img src="../images/99297-loading-files.gif" alt="user" width="90%">'+
+                    '</div>'
+                )
+            },
             success: function(result){
                 $('content-module').css('display', 'none')
                 $('div#list-content').html(result).show()
@@ -198,3 +343,5 @@ $(function(){
         })
     }
 })
+
+'2205171233001MDR007SPM'

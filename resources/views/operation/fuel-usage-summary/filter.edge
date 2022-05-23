@@ -1,0 +1,57 @@
+<div class="modal fade" id="openFilter" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="tgl">Mulai Tanggal</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                <input type="date" class="form-control input-sm" data-date="" name="start_date" id="start_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tgl">Hingga Tanggal</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                <input type="date" class="form-control input-sm" data-date="" name="end_date" id="end_date" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="tgl">Site</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">Project</div>
+                                <select class="form-control input-sm select2site" data-title="site" data-check id="site_id" name="site_id"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tgl">PIT</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-map-marker"></i></div>
+                                <select class="form-control input-sm select2pit" data-title="pit" data-check id="pit_id" name="pit_id"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-reset-filter" class="btn btn-default" data-dismiss="modal">Reset Filter</button>
+                <button type="button" id="btn-apply-filter" class="btn btn-primary" data-dismiss="modal">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+  

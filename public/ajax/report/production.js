@@ -405,7 +405,9 @@ $(function(){
                             fontFamily: 'Verdana, sans-serif',
                             color: '#FF5A79'
                         }
-                    }
+                    },
+                    // tickAmount: 5,
+                    tickInterval: 2000,
                 }
             ],
             tooltip: {

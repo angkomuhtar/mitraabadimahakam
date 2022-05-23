@@ -10,6 +10,12 @@ class AjaxSiteController {
         
         return list
     }
+    
+    async getSiteByID ( {params} ) {
+        let site = (await Sites.query().with('pit').where('id', params.id).last())?.toJSON()
+        site = {...site, pit: site.pit.filter(el => el.sts === 'Y')}
+        return site
+    }
 }
 
 module.exports = AjaxSiteController

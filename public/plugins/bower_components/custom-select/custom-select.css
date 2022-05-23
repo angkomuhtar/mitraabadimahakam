@@ -197,7 +197,7 @@ html[dir="rtl"] .select2-container .select2-choice > .select2-chosen {
 
     background-clip: padding-box;
 
-    background: #ccc;
+    background: #fff;
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #ccc), color-stop(0.6, #eee));
     background-image: -webkit-linear-gradient(center bottom, #ccc 0%, #eee 60%);
     background-image: -moz-linear-gradient(center bottom, #ccc 0%, #eee 60%);

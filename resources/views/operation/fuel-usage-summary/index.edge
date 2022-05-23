@@ -7,8 +7,12 @@
                 <h4 class="page-title">List Fuel Summary</h4> 
             </div>
         </div>
-        <!--<iframe src="https://docs.google.com/viewerng/viewer?url=http://infolab.stanford.edu/pub/papers/google.pdf&embedded=true" frameborder="0" height="500" width="100%"></iframe>-->
-        <div class="content-module" id="list-content" style="display:none;"></div>
+        @include('operation.fuel-usage-summary.filter')
+        <div class="content-module" id="list-content" style="display:none;">
+            <div class="col-xs-4 col-xs-offset-3">
+                <img src="../images/99297-loading-files.gif" alt="user" width="70%">
+            </div>
+        </div>
         <div class="content-module" id="form-content" style="display:none;"></div>
     </div>
 @endsection

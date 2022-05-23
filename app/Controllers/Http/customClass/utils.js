@@ -1,6 +1,7 @@
 const _request = require('request')
 const MasEquipment = use('App/Models/MasEquipment')
 const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
+const moment = require('moment')
 
 class Utils {
   async infinityCheck(num) {
@@ -70,6 +71,7 @@ class Utils {
     console.log('appId >> ', appID)
     console.log('restKey >> ', restKey)
 
+<<<<<<< HEAD
     _request(
       {
         method: 'POST',
@@ -126,6 +128,77 @@ class Utils {
     })
     await newEquipmentPerformance.save()
   }
+=======
+          _request(
+               {
+                    method: 'POST',
+                    uri: 'https://onesignal.com/api/v1/notifications',
+                    headers: {
+                         authorization: 'Basic ' + restKey,
+                         'content-type': 'application/json',
+                    },
+                    json: true,
+                    body: {
+                         app_id: appID,
+                         contents: { en: message },
+                         include_player_ids: Array.isArray(device)
+                              ? device
+                              : [device],
+                         data: data,
+                    },
+               },
+               function (error, response, body) {
+                    if (!body.errors) {
+                         console.log(body)
+                    } else {
+                         console.error('Error:', body.errors)
+                    }
+               }
+          )
+     }
+
+     async GEN_KODE_PURCHASING_ORDER (site_id) {
+          const PurchasingRequest = use("App/Models/MamPurchasingRequest")
+          const MasSite = use("App/Models/MasSite")
+
+          let purchasingRequest
+          let kode
+
+          const strPrefix = (teks) => {
+               if(teks){
+                    let str = (teks).substr(11, 5)
+                    let strToNum = parseInt(str) + 1
+                    let prefix = '0'.repeat( 5 - strToNum ) + strToNum
+                    return prefix
+               }else{
+                    return '00001'
+               }
+          }
+
+
+          if(!site_id){
+               purchasingRequest = await PurchasingRequest.query().where( w => {
+                    w.where('kode', 'like', '%HOA%')
+                    w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD HH:mm'))
+                    w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD HH:mm'))
+               }).orderBy('date', 'asc').last()
+
+               kode = 'PR' + moment().format('YYMMDD') + 'HOA' + strPrefix(purchasingRequest?.kode)
+
+          }else{
+               const site = await MasSite.query().where('id', site_id).last()
+               purchasingRequest = await PurchasingRequest.query().where( w => {
+                    w.where('site_id', site_id)
+                    w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD HH:mm'))
+                    w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD HH:mm'))
+               }).orderBy('date', 'asc').last()
+
+               kode = 'PR' + moment().format('YYMMDD') + site.kode + strPrefix(purchasingRequest?.kode)
+          }
+          
+          return kode
+     }
+>>>>>>> b2e2f20f6ca41bbb106fe87510a05c0df7dd5dbc
 }
 
 module.exports = new Utils()

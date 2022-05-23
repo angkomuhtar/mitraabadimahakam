@@ -1,0 +1,30 @@
+<div class="row" id="row-paginate">
+    <div class="col-xs-2 m-t-20 p-t-10">
+        Page {{list.page || 0}}/{{list.lastPage || 0}}
+        <span class="pull-right" style="color: #FFF">Total {{list.total || 0}} data</span>
+    </div>
+    <div class="col-xs-10">
+        <ul class="pager" style="display: flex;
+        justify-content: flex-end;
+        align-items: center;">
+            <li> 
+                <a href="#" id="btPreviousPage" data-page="{{list.page}}"><i class="fa fa-angle-left"></i> Previous</a> 
+            </li>
+            <li> 
+                <div style="margin: 0px 10px;; width: 150px">
+                    <div class="input-group"> 
+                        <input type="number" name="inp-page" class="form-control text-right" placeholder="Pages" value="{{list.page}}"> 
+                        <span class="input-group-btn">
+                            <button id="btGoToPage" type="button" class="btn waves-effect waves-light btn-inverse">
+                                GO
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </li>
+            <li> 
+                <a href="#" id="btNextPage" data-page="{{list.page}}" data-last="{{list.lastPage}}">Next <i class="fa fa-angle-right"></i></a> 
+            </li>
+        </ul>
+    </div>
+</div>

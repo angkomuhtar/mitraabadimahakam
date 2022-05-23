@@ -1,0 +1,132 @@
+{{ script('ajax/index') }}
+{{ style('plugins/bower_components/datatables/jquery.dataTables.min.css') }}
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="tab-pane active" id="profile">
+                        <div class="row">
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Location</strong>
+                                <br>
+                                @if(data.site)
+                                    <p class="text-muted">{{data.site.name}}</p>
+                                @else
+                                    <p class="text-muted">Head Offices Administration</p>
+                                @endif
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Kode Purchasing</strong>
+                                <br>
+                                <p class="text-muted">{{data.kode}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Priority Scale</strong>
+                                <br>
+                                @if(data.priority === 'URGENT')
+                                    <small class="label label-danger">
+                                        URGENT
+                                    </small>
+                                @endif
+                                @if(data.priority === 'NORMAL')
+                                    <small class="label label-warning">
+                                        NORMAL
+                                    </small>
+                                @endif
+                                @if(data.priority === 'STOCK')
+                                    <small class="label label-info">
+                                        STOCK
+                                    </small>
+                                @endif
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Created At</strong>
+                                <br>
+                                <i class="ti-calendar m-r-10"></i><small class="myDateTimeFormat" data-date="{{data.acceptAt}}"></small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Author</strong>
+                                <br>
+                                <p class="text-muted">{{data.author.nm_lengkap}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Department</strong>
+                                <br>
+                                <p class="text-muted">{{data.department}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Status</strong>
+                                <br>
+                                <p class="text-muted">{{data.status}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Accept</strong>
+                                <br>
+                                <p class="text-muted">-</p>
+                            </div>
+                        </div>
+                        <hr>
+                        @if(data.description)
+                            <h4 class="font-bold m-t-30">Description</h4>
+                            <p class="m-t-10">{{data.description}}</p>
+                        @endif
+                        <hr>
+                        <h4 class="font-bold m-t-30">List Items</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover dataTable" id="myTable">
+                                <thead style="border-bottom: 2px solid;">
+                                    <tr class="bg-light">
+                                        <th class="sl">ACT</th>
+                                        <th class="sl">Description</th>
+                                        <th class="sl">Manufacture</th>
+                                        <th class="sl">Uom</th>
+                                        <th class="sl">Part Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @each(item in data.items)
+                                        <tr>
+                                            <td>
+                                                <button type="button" 
+                                                    class="btn btn-success btn-circle select-item" 
+                                                    data-barangid="{{item.id}}" 
+                                                    data-partnumber="{{item.partnumber || ''}}" 
+                                                    data-parttype="{{item.parttype}}" 
+                                                    data-uom="{{item.uom}}" 
+                                                    data-description="{{item.descriptions}}">
+                                                    <i class="ti-check-box"></i> 
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <strong>{{item.descriptions}}</strong> <br>
+                                                <small>{{item.kode}}</small>
+                                            </td>
+                                            <td>
+                                                <strong>{{item.manufactur || 'Unset'}}</strong> <br>
+                                                <small>{{item.partnumber || ''}}</small>
+                                            </td>
+                                            <td>
+                                                <strong>{{item.qty}}</strong> <br>
+                                                <small>{{item.satuan}}</small>
+                                            </td>
+                                            <td>
+                                                <strong>{{item.partnumber || ''}}</strong> <br>
+                                                <small>{{item.parttype || ''}}</small>
+                                            </td>
+                                        </tr>
+                                    @endeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ script('plugins/bower_components/datatables/jquery.dataTables.min.js') }}
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>

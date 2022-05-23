@@ -177,6 +177,7 @@ $(function(){
                 url: '/ajax/sys-options?group='+group+'&selected='+selected,
                 method: 'GET',
                 success: function(data){
+                    console.log(data);
                     if(data.length > 0){
                         elm.children().remove()
                         const list = data.map(nod => '<option value="'+nod.nilai+'" '+nod.selected+'>'+nod.teks+'</option>')
@@ -285,15 +286,16 @@ $(function(){
     })
     
     $('body select.select2site').each(function(){
-        var selected = $(this).data('check')
+        var selected = $(this).data('check') || $(this).val()
         var elm = $(this)
         elm.children().remove()
         $.get('/ajax/site?selected='+selected, function(data){
             if(data.length > 0){
+                console.log('site selected :::', selected);
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                 elm.append(list)
-                console.log(list.filter(el => el.selected === 'selected').length);
-                if(list.filter(el => el.selected === 'selected').length === 0){
+                // console.log(list.filter(el => el.selected === 'selected').length);
+                if(!selected){
                     elm.prepend('<option value="" selected>Pilih</option>')
                 }else{
                     elm.prepend('<option value="">Pilih</option>')
@@ -305,14 +307,15 @@ $(function(){
     })
 
     $('body select.select2pit').each(function(){
-        var selected = $(this).data('check')
+        var selected = $(this).data('check') || $(this).val()
         var elm = $(this)
         elm.children().remove()
         $.get('/ajax/pit?selected='+selected, function(data){
             if(data.length > 0){
                 const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
                 elm.html(list)
-                if(list.filter(el => el.selected === 'selected').length === 0){
+                console.log('pit selected :::', selected);
+                if(!selected){
                     elm.prepend('<option value="" selected>Pilih</option>')
                 }else{
                     elm.prepend('<option value="">Pilih</option>')
