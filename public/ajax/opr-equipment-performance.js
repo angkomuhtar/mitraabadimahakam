@@ -18,15 +18,15 @@ $(function () {
     initDefault()
   })
 
-  $('body').on('click', 'button.bt-edit', function (e) {
+  $('body').on('click', 'button.bt-edit-data', function (e) {
     var id = $(this).data('id')
     initShow(id)
   })
 
-  $('body').on('click', 'button.bt-edit-data', function (e) {
-    var id = $(this).data('id')
-    initShowDetails(id)
-  })
+  // $('body').on('click', 'button.bt-edit-data', function (e) {
+  //   var id = $(this).data('id')
+  //   initShowDetails(id)
+  // })
 
   $('body').on('change', 'select#fitur_id', function () {
     var values = $(this).val()
@@ -35,67 +35,6 @@ $(function () {
       .data('desc')
     $('textarea[name="desc"]').val(desc)
   })
-
-  // $('body').on('submit', 'form#fm-doc', function(e){
-  //     e.preventDefault()
-  //     var data = new FormData(this)
-  //     $.ajax({
-  //         async: true,
-  //         url: '/operation/sop',
-  //         method: 'POST',
-  //         data: data,
-  //         dataType: 'json',
-  //         processData: false,
-  //         mimeType: "multipart/form-data",
-  //         contentType: false,
-  //         success: function(result){
-  //             console.log(result)
-  //             const { message } = result
-  //             if(result.success){
-  //                 swal("Okey,,,!", message, "success")
-  //                 initDefault()
-  //             }else{
-  //                 swal("Opps,,,!", message, "warning")
-  //             }
-  //         },
-  //         error: function(err){
-  //             console.log(err)
-  //             const { message } = err.responseJSON
-  //             swal("Opps,,,!", message, "warning")
-  //         }
-  //     })
-  // })
-
-  // $('body').on('submit', 'form#fm-doc-upd', function(e){
-  //     e.preventDefault()
-  //     var id = $(this).data('id')
-  //     var data = new FormData(this)
-  //     $.ajax({
-  //         async: true,
-  //         url: '/operation/sop/'+id+'/update',
-  //         method: 'POST',
-  //         data: data,
-  //         dataType: 'json',
-  //         processData: false,
-  //         mimeType: "multipart/form-data",
-  //         contentType: false,
-  //         success: function(result){
-  //             console.log(result)
-  //             const { message } = result
-  //             if(result.success){
-  //                 swal("Okey,,,!", message, "success")
-  //                 initDefault()
-  //             }else{
-  //                 swal("Opps,,,!", message, "warning")
-  //             }
-  //         },
-  //         error: function(err){
-  //             console.log(err)
-  //             const { message } = err.responseJSON
-  //             swal("Opps,,,!", message, "warning")
-  //         }
-  //     })
-  // })
 
   $('body').on('click', 'a.btn-pagging', function (e) {
     e.preventDefault()
@@ -117,28 +56,25 @@ $(function () {
   })
 
   $('body').on('change', 'select[name="sts_approve"]', function () {
-
     const value = $(this).val()
 
-    if(value === 'no') {
-        $('body').find('div#approved_date_div').addClass('hidden')
-        $('body').find('input[name="approved_date"]').removeAttr('required')
-        $('body').find('input[name="approved_date"]').val('')
+    if (value === 'no') {
+      $('body').find('div#approved_date_div').addClass('hidden')
+      $('body').find('input[name="approved_date"]').removeAttr('required')
+      $('body').find('input[name="approved_date"]').val('')
     } else {
-        $('body').find('div#approved_date_div').removeClass('hidden')
+      $('body').find('div#approved_date_div').removeClass('hidden')
     }
-
-
   })
   // get the file data
-  $('body').on('change', 'input[name="sop_file"]', function () {
+  $('body').on('change', 'input[name="daily_downtime_upload"]', function () {
     var data = new FormData()
 
-    data.append('sop_file', $(this)[0].files[0])
+    data.append('daily_downtime_upload', $(this)[0].files[0])
     $.ajax({
       async: true,
       headers: { 'x-csrf-token': $('[name=_csrf]').val() },
-      url: '/operation/sop/uploadFile',
+      url: '/operation/daily-downtime/uploadFile',
       method: 'POST',
       data: data,
       dataType: 'json',
@@ -150,7 +86,11 @@ $(function () {
       },
       success: function (result) {
         $('body').find('input[name="current_file_name"]').val(JSON.stringify(result.fileName, null, 2))
-        swal('Okey!', 'PDF SOP Berhasil dibaca ....', 'success')
+        $('body')
+          .find('select[name="sheet"]')
+          .html(result.title.map(s => '<option value="' + s + '"> Sheet [ ' + s + ' ]</option>'))
+        $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
+        swal('Okey!', 'Data Excel Berhasil dibaca ....', 'success')
       },
       error: function (err) {
         console.log(err)
@@ -160,7 +100,7 @@ $(function () {
     })
   })
 
-  $('body').on('submit', 'form#fm-upload-sop', function (e) {
+  $('body').on('submit', 'form#fm-submit-equipment-performance', function (e) {
     e.preventDefault()
 
     const formData = new FormData(this)
@@ -168,7 +108,7 @@ $(function () {
     swal(
       {
         title: 'Apakah anda yakin?',
-        text: 'Pastikan Format yang anda upload sudah benar!',
+        text: 'Pastikan Anda memilih bulan dengan benar!',
         type: 'warning',
         showCancelButton: true,
         confirmButtonClass: 'btn-warning',
@@ -181,7 +121,7 @@ $(function () {
           $.ajax({
             async: true,
             headers: { 'x-csrf-token': $('[name=_csrf]').val() },
-            url: '/operation/sop/store',
+            url: '/operation/equipment-performance',
             method: 'POST',
             data: formData,
             dataType: 'json',
@@ -192,7 +132,7 @@ $(function () {
               console.log(result)
               if (result.success) {
                 swal('Okey!', result.message, 'success')
-                $('body form#ffm-upload-sop').trigger('reset')
+                $('body form#fm-submit-equipment-performance').trigger('reset')
                 //   window.location.reload()
               } else {
                 alert(result.message)
@@ -215,11 +155,13 @@ $(function () {
     $('div.content-module').css('display', 'none')
     $.ajax({
       async: true,
-      url: '/operation/sop/list?limit=',
+      url: '/operation/equipment-performance/list?limit=',
       method: 'GET',
+      data: {
+        date: moment().format('YYYY-MM-DD'),
+      },
       success: function (result) {
         $('content-module').css('display', 'none')
-        getDepartmentNames()
         $('div#list-content').html(result).show()
       },
       error: function (err) {
@@ -228,26 +170,11 @@ $(function () {
     })
   }
 
-  function getDepartmentNames() {
-      $.ajax({
-          async : true,
-          url : '/ajax/department',
-          method : 'GET',
-          success : function(result) {
-            $('body').find('select[name="department"]').html(result.data.map(s => '<option value="'+s.teks+'"> '+s.teks+' </option>'))
-            $('body').find('select[name="department"]').prepend('<option value="" selected> Pilih </option>')
-          },
-          error : function(err) {
-              console.log('error while getting department data >> ', err);
-          }
-      })
-  }
-
   function initCreate() {
     // $('div.content-module').css('display', 'none')
     $.ajax({
       async: true,
-      url: '/operation/sop/create',
+      url: '/operation/equipment-performance/create',
       method: 'GET',
       success: function (result) {
         $('div#list-content').children().remove()
@@ -262,9 +189,10 @@ $(function () {
   function initShow(id) {
     $.ajax({
       async: true,
-      url: '/operation/sop/' + id + '/show',
+      url: '/operation/equipment-performance/' + id + '/show',
       method: 'GET',
       success: function (result) {
+        console.log('result >> ', result)
         $('div#list-content').children().remove()
         $('div#form-content').html(result).show()
       },

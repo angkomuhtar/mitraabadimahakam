@@ -23,7 +23,7 @@ const { Ignitor } = require('@adonisjs/ignitor')
 
 TOKEN_APP()
 async function TOKEN_APP(){
-  const hash = await GET_INFO(process.env.APP_TOKEN)
+  const hash = GET_INFO(process.env.APP_TOKEN).catch(err => console.log(err))
   new Ignitor(require('@adonisjs/fold'))
   .appRoot(hash ? __dirname:__filename)
   .fireHttpServer()
