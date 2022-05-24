@@ -156,7 +156,7 @@ class TimeSheetApiController {
               }
             })
             .orderBy([{ column: _filter?.order?.value, order: "desc" }])
-            .fetch();
+            .fetch()
 
           const dailyFleetIDs = [];
 
@@ -200,7 +200,7 @@ class TimeSheetApiController {
                   }
                 })
                 .orderBy([{ column: _filter.order.value, order: "desc" }])
-                .fetch();
+                .fetch()
             } else {
               dailyChecklist = await DailyChecklist.query()
                 .with("userCheck", (wh) => wh.with("profile"))
@@ -232,14 +232,14 @@ class TimeSheetApiController {
                   }
                 })
                 .orderBy([{ column: _filter.order.value, order: "desc" }])
-                .fetch();
+                .fetch()
             }
           } else {
             const dailyChecklistYstdAndToday = (
               await DailyChecklist.query()
                 .whereBetween("tgl", [prevDay, now])
                 .fetch()
-            ).toJSON();
+            ).toJSON()
 
             const tsIDs = [];
 
@@ -261,7 +261,7 @@ class TimeSheetApiController {
                   }
                 })
                 .fetch()
-            ).toJSON();
+            ).toJSON()
 
             const _tsIDsFromRefuelings = [];
 
@@ -320,7 +320,7 @@ class TimeSheetApiController {
                   wh.andWhere("tgl", "<=", now);
                 })
                 .orderBy([{ column: _filter.order.value, order: "desc" }])
-                .fetch();
+                .fetch()
             }
           }
         } else {
@@ -339,7 +339,7 @@ class TimeSheetApiController {
             })
             .whereBetween("tgl", [prevDay, now])
             .orderBy([{ column: "created_at", order: "desc" }])
-            .fetch();
+            .fetch()
         }
         durasi = await diagnoticTime.durasi(t0);
         response.status(200).json({
