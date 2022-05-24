@@ -85,7 +85,7 @@ $(function(){
             contentType: false,
             success: function(result){
                 console.log(result)
-                GEN_CHART(result.xAxis, result.series)
+                GEN_CHART(result.xAxis, result.series, result.drilldown)
                 body.find('div#box-chart').css('display', 'inline')
             },
             error: function(err){
@@ -168,7 +168,11 @@ $(function(){
         })
     }
 
-    function GEN_CHART (xAxis, series) {
+    function GEN_CHART (xAxis, series, drilldown) {
+        console.log('====================================');
+        console.log(series);
+        console.log(drilldown);
+        console.log('====================================');
 
         Highcharts.chart('container', {
             chart: {
@@ -210,13 +214,13 @@ $(function(){
                         dashStyle: 'shortdash',
                         width: 2,
                         label: {
-                            text: 'Budget Ratio'
+                            text: 'Budget'
                         }
                     }],
                     tickAmount: 5,
                     tickInterval: 0.2,
                     title: {
-                        text: 'FUEL RATIO',
+                        text: 'ACTUAL FUEL RATIO',
                         style: {
                             fontSize: '15px',
                             fontFamily: 'Verdana, sans-serif',
@@ -232,8 +236,19 @@ $(function(){
                 }
             },
             plotOptions: {
-                column: {
-                    stacking: 'normal'
+                series: {
+                    cursor: 'pointer',
+                    events: {
+                        click: function (event) {
+                            alert(
+                                this.x + ' clicked\n' + 
+                                'Alt: ' + event.altKey + '\n' +
+                                'Control: ' + event.ctrlKey + '\n' +
+                                'Meta: ' + event.metaKey + '\n' +
+                                'Shift: ' + event.shiftKey
+                            );
+                        }
+                    }
                 }
             },
             series: series

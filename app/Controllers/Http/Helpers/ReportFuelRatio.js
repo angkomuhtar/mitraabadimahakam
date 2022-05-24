@@ -96,24 +96,156 @@ class repFuelRatio {
                     type: req.typeChart,
                     color: color[i],
                     data: res[key].map(el => el.data),
+                    // data: res[key].map((el, i) => {
+                    //     return {
+                    //         y: el.data,
+                    //         name: res[key][i].name,
+                    //         drilldown: res[key][i].name,
+                    //     }
+                    // }),
                     dataLabels: {
                         enabled: true,
-                        rotation: -90,
-                        color: '#FFFFFF',
-                        align: 'right',
+                        align: 'top',
                         format: '{point.y:.2f}', // one decimal
-                        y: 0, // 10 pixels down from the top
                         style: {
                             fontSize: '11px',
-                            fontFamily: 'Verdana, sans-serif'
+                            fontFamily: 'sans-serif',
                         }
-                    }
+                    },
+                    pointPadding: 0.1,
+                    groupPadding: 0
                 }
             })
 
             return {
                 xAxis: xAxis,
-                series: res
+                series: res,
+                // drilldown: {
+                //     breadcrumbs: {
+                //         position: {
+                //             align: 'right'
+                //         }
+                //     },
+                //     series: [
+                //         {
+                //         type: req.typeChart,
+                //         name: "RPU",
+                //         id: "RPU",
+                //         data: [
+                //             [
+                //                 "v65.0",
+                //                 0.1
+                //             ],
+                //             [
+                //                 "v64.0",
+                //                 1.3
+                //             ],
+                //             [
+                //                 "v63.0",
+                //                 53.02
+                //             ],
+                //             [
+                //                 "v62.0",
+                //                 1.4
+                //             ],
+                //             [
+                //                 "v61.0",
+                //                 0.88
+                //             ],
+                //             [
+                //                 "v60.0",
+                //                 0.56
+                //             ],
+                //             [
+                //                 "v59.0",
+                //                 0.45
+                //             ],
+                //             [
+                //                 "v58.0",
+                //                 0.49
+                //             ],
+                //             [
+                //                 "v57.0",
+                //                 0.32
+                //             ],
+                //             [
+                //                 "v56.0",
+                //                 0.29
+                //             ]
+                //         ]
+                //     },
+                //     {
+                //         type: req.typeChart,
+                //         name: "KARIMATA",
+                //         id: "KARIMATA",
+                //         data: [
+                //             [
+                //                 "v58.0",
+                //                 1.02
+                //             ],
+                //             [
+                //                 "v57.0",
+                //                 7.36
+                //             ],
+                //             [
+                //                 "v56.0",
+                //                 0.35
+                //             ],
+                //             [
+                //                 "v55.0",
+                //                 0.11
+                //             ],
+                //             [
+                //                 "v54.0",
+                //                 0.1
+                //             ],
+                //             [
+                //                 "v52.0",
+                //                 0.95
+                //             ],
+                //             [
+                //                 "v51.0",
+                //                 0.15
+                //             ],
+                //             [
+                //                 "v50.0",
+                //                 0.1
+                //             ],
+                //             [
+                //                 "v48.0",
+                //                 0.31
+                //             ],
+                //             [
+                //                 "v47.0",
+                //                 0.12
+                //             ]
+                //         ]
+                //     },
+                //     {
+                //         type: req.typeChart,
+                //         name: "DERAWAN BARU",
+                //         id: "DERAWAN BARU",
+                //         data: [
+                //             [
+                //                 "v11.0",
+                //                 6.2
+                //             ],
+                //             [
+                //                 "v10.0",
+                //                 0.29
+                //             ],
+                //             [
+                //                 "v9.0",
+                //                 0.27
+                //             ],
+                //             [
+                //                 "v8.0",
+                //                 0.47
+                //             ]
+                //         ]
+                //     }
+                // ]
+                // }
             }
         }
 
@@ -198,16 +330,15 @@ class repFuelRatio {
                     data: result[key].map( el => parseFloat((el.data).toFixed(2))),
                     dataLabels: {
                         enabled: true,
-                        rotation: -90,
-                        color: '#FFFFFF',
-                        align: 'right',
+                        align: 'top',
                         format: '{point.y:.2f}', // one decimal
-                        y: 0, // 10 pixels down from the top
                         style: {
                             fontSize: '11px',
-                            fontFamily: 'Verdana, sans-serif'
+                            fontFamily: 'sans-serif',
                         }
-                    }
+                    },
+                    pointPadding: 0.1,
+                    groupPadding: 0
                 }
             })
 
@@ -282,16 +413,15 @@ class repFuelRatio {
                     data: result[key].map( el => parseFloat((el.data).toFixed(2))),
                     dataLabels: {
                         enabled: true,
-                        rotation: -90,
-                        color: '#FFFFFF',
-                        align: 'right',
+                        align: 'top',
                         format: '{point.y:.2f}', // one decimal
-                        y: 0, // 10 pixels down from the top
                         style: {
                             fontSize: '11px',
-                            fontFamily: 'Verdana, sans-serif'
+                            fontFamily: 'sans-serif',
                         }
-                    }
+                    },
+                    pointPadding: 0.1,
+                    groupPadding: 0
                 }
             })
             

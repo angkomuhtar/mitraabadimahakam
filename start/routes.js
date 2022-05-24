@@ -583,6 +583,9 @@ Route.group(() => {
     Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
     Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData-pdf').middleware('R')
     Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData-xls').middleware('R')
+    
+    Route.get('/heavy-equipment', 'HeavyEquipmentController.index').as('rep.heavy-equipment.index').middleware('R')
+    Route.get('/heavy-equipment/filter', 'HeavyEquipmentController.filter').as('rep.heavy-equipment.filter').middleware('R')
 
 }).prefix('report').namespace('report').middleware(['MM'])
 

@@ -27,6 +27,7 @@ class FuelRatioController {
             return data
         }else{
             const data = await ReportFuelRatioHelpers.PERIODE_WISE(req)
+            console.log(data);
             return data
         }
     }
