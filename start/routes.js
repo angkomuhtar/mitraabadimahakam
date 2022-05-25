@@ -528,56 +528,68 @@ Route.group(() => {
 
   Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view').middleware('R')
 
-    Route.get('/sop/:id/show', 'SopController.show').as('opr.sop.show').middleware('U')
+  // SOP Operational
 
-    Route.post('/sop/:id/update', 'SopController.update').as('opr.sop.update').middleware('U')
+  Route.get('/sop', 'SopController.index').as('opr.sop.index').middleware('R')
 
-    Route.delete('/sop/:id/destroy', 'SopController.destroy').as('opr.sop.destroy').middleware('D')
+  Route.post('/sop', 'SopController.store').as('opr.sop.store').middleware('R')
 
-    // Fuel Usage Summary
-    Route.get('/fuel-summary', 'FuelUsageSummaryController.index').as('opr.fuel-summary.index').middleware('R')
+  Route.get('/sop/list', 'SopController.list').as('opr.sop.list').middleware('R')
 
-    Route.post('/fuel-summary', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
+  Route.post('/sop/create', 'SopController.create').as('opr.sop.create').middleware('C')
 
-    Route.get('/fuel-summary/list', 'FuelUsageSummaryController.list').as('opr.fuel-summary.list').middleware('R')
+  Route.post('/sop/uploadFile', 'SopController.uploadFile').as('opr.sop.uploadFile').middleware('C')
 
-    Route.get('/fuel-summary/create', 'FuelUsageSummaryController.create').as('opr.fuel-summary.create').middleware('C')
+  Route.get('/sop/:id/show', 'SopController.show').as('opr.sop.show').middleware('U')
 
-    Route.post('/fuel-summary/entry', 'FuelUsageSummaryController.storeEntry').as('opr.fuel-summary.storeEntry').middleware('C')
+  Route.post('/sop/:id/update', 'SopController.update').as('opr.sop.update').middleware('U')
 
-    Route.post('/fuel-summary/uploadFile', 'FuelUsageSummaryController.uploadFile').as('opr.fuel-summary.uploadFile').middleware('C')
+  Route.delete('/sop/:id/destroy', 'SopController.destroy').as('opr.sop.destroy').middleware('D')
 
-    Route.post('/fuel-summary/store', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
+  // Fuel Usage Summary
+  Route.get('/fuel-summary', 'FuelUsageSummaryController.index').as('opr.fuel-summary.index').middleware('R')
 
-    Route.get('/fuel-summary/:id/show', 'FuelUsageSummaryController.show').as('opr.fuel-summary.show').middleware('U')
+  Route.post('/fuel-summary', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
 
-    Route.post('/fuel-sumamry/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
+  Route.get('/fuel-summary/list', 'FuelUsageSummaryController.list').as('opr.fuel-summary.list').middleware('R')
 
-    Route.delete('/fuel-summary/:id/destroy', 'FuelUsageSummaryController.destroy').as('opr.fuel-summary.destroy').middleware('D')
+  Route.get('/fuel-summary/create', 'FuelUsageSummaryController.create').as('opr.fuel-summary.create').middleware('C')
 
-    // Heavy Equipment / Downtime
-    Route.get('/daily-downtime', 'DailyDowntime.index').as('opr.daily-downtime.index').middleware('R')
+  Route.post('/fuel-summary/entry', 'FuelUsageSummaryController.storeEntry').as('opr.fuel-summary.storeEntry').middleware('C')
 
-    Route.post('/daily-downtime', 'DailyDowntime.store').as('opr.daily-downtime.store').middleware('C')
+  Route.post('/fuel-summary/uploadFile', 'FuelUsageSummaryController.uploadFile').as('opr.fuel-summary.uploadFile').middleware('C')
 
-    Route.get('/daily-downtime/list', 'DailyDowntime.list').as('opr.daily-downtime.list').middleware('R')
+  Route.post('/fuel-summary/store', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
 
-    Route.get('/daily-downtime/create', 'DailyDowntime.create').as('opr.daily-downtime.create').middleware('C')
+  Route.get('/fuel-summary/:id/show', 'FuelUsageSummaryController.show').as('opr.fuel-summary.show').middleware('U')
 
-    Route.post('/daily-downtime/uploadFile', 'DailyDowntime.uploadFile').as('opr.daily-downtime.uploadFile').middleware('C')
+  Route.post('/fuel-sumamry/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
 
-    // Heavy Equipment / Equipment Performance
-    Route.get('/equipment-performance', 'EquipmentPerformance.index').as('opr.equipment-performance.index').middleware('R')
+  Route.delete('/fuel-summary/:id/destroy', 'FuelUsageSummaryController.destroy').as('opr.fuel-summary.destroy').middleware('D')
 
-    Route.post('/equipment-performance', 'EquipmentPerformance.store').as('opr.equipment-performance.store').middleware('C')
+  // Heavy Equipment / Downtime
+  Route.get('/daily-downtime', 'DailyDowntime.index').as('opr.daily-downtime.index').middleware('R')
 
-    Route.get('/equipment-performance/list', 'EquipmentPerformance.list').as('opr.equipment-performance.list').middleware('R')
+  Route.post('/daily-downtime', 'DailyDowntime.store').as('opr.daily-downtime.store').middleware('C')
 
-    Route.get('/equipment-performance/create', 'EquipmentPerformance.create').as('opr.equipment-performance.create').middleware('C')
-    
-    Route.get('/equipment-performance/:id/show', 'EquipmentPerformance.show').as('opr.equipment-performance.show')
+  Route.get('/daily-downtime/list', 'DailyDowntime.list').as('opr.daily-downtime.list').middleware('R')
 
-    Route.get('/equipment-performance/:id/update', 'EquipmentPerformance.update').as('opr.equipment-performance.update')
+  Route.get('/daily-downtime/create', 'DailyDowntime.create').as('opr.daily-downtime.create').middleware('C')
+
+  Route.post('/daily-downtime/uploadFile', 'DailyDowntime.uploadFile').as('opr.daily-downtime.uploadFile').middleware('C')
+
+  // Heavy Equipment / Equipment Performance
+  Route.get('/equipment-performance', 'EquipmentPerformance.index').as('opr.equipment-performance.index').middleware('R')
+
+  Route.post('/equipment-performance', 'EquipmentPerformance.store').as('opr.equipment-performance.store').middleware('C')
+
+  Route.get('/equipment-performance/list', 'EquipmentPerformance.list').as('opr.equipment-performance.list').middleware('R')
+
+  Route.get('/equipment-performance/create', 'EquipmentPerformance.create').as('opr.equipment-performance.create').middleware('C')
+  
+  Route.get('/equipment-performance/:id/show', 'EquipmentPerformance.show').as('opr.equipment-performance.show')
+  
+  Route.get('/equipment-performance/:id/update', 'EquipmentPerformance.update').as('opr.equipment-performance.update')
 
 
 })
