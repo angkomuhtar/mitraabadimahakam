@@ -4,8 +4,8 @@ const EquipmentPerformanceHelpers = use('App/Controllers/Http/Helpers/MamEquipme
 const excelToJson = require('convert-excel-to-json')
 const moment = require('moment')
 const Helpers = use('Helpers')
-const MasEquipment = use('App/Models/MasEquipment');
-const EquipmentPerformance = use('App/Models/MamEquipmentPerformance');
+const MasEquipment = use('App/Models/MasEquipment')
+const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
 
 class DailyDowntime {
   async index({ view }) {
@@ -32,14 +32,14 @@ class DailyDowntime {
 
     const data = await EquipmentPerformanceHelpers.SHOW(params)
     return view.render('operation.equipment-performance.show', {
-         data: data
+      data: data,
     })
   }
 
   async store({ auth, request }) {
     const req = request.all()
 
-    const { month } = req
+    const { month, site_id } = req
 
     let user = null
 
@@ -61,7 +61,7 @@ class DailyDowntime {
     const equipments = (
       await MasEquipment.query()
         .where(wh => {
-          wh.whereIn('tipe', ['excavator', 'hauler truck', 'water truck'])
+          wh.whereIn('tipe', ['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer'])
           wh.where('aktif', 'Y')
         })
         .fetch()
@@ -79,19 +79,20 @@ class DailyDowntime {
     if (getData) {
       return {
         error: true,
-        message: 'Data already in the database !'
+        message: 'Data already in the database !',
       }
     }
 
     // process the data
     for (const equipment of equipmentIds) {
       const newEquipmentPerformance = new EquipmentPerformance()
-      const now = moment(month).format('DD MMM');
+      const now = moment(month).format('DD MMM')
       const to = moment(month).format('DD MMM')
 
       newEquipmentPerformance.fill({
         month: currentMonth,
-        period : `${now} - ${to}`,
+        site_id: site_id,
+        period: `${now} - ${to}`,
         equip_id: equipment,
         upload_by: user.id,
         mohh: getTotalHours,
@@ -104,8 +105,8 @@ class DailyDowntime {
     }
 
     return {
-      success :true,
-      message : 'Success creating monthly data equipment performance'
+      success: true,
+      message: 'Success creating monthly data equipment performance',
     }
   }
 }

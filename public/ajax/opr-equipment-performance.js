@@ -1,11 +1,13 @@
 $(function () {
   initDefault()
+  getAllSite()
 
   $('body').on('click', 'button#bt-back', function () {
     initDefault()
   })
 
   $('body').on('click', 'button#create-form', function () {
+    getAllSite()
     initCreate()
   })
 
@@ -57,7 +59,6 @@ $(function () {
 
   $('body').on('change', 'select[name="sts_approve"]', function () {
     const value = $(this).val()
-
     if (value === 'no') {
       $('body').find('div#approved_date_div').addClass('hidden')
       $('body').find('input[name="approved_date"]').removeAttr('required')
@@ -66,6 +67,7 @@ $(function () {
       $('body').find('div#approved_date_div').removeClass('hidden')
     }
   })
+
   // get the file data
   $('body').on('change', 'input[name="daily_downtime_upload"]', function () {
     var data = new FormData()
@@ -163,6 +165,23 @@ $(function () {
       success: function (result) {
         $('content-module').css('display', 'none')
         $('div#list-content').html(result).show()
+      },
+      error: function (err) {
+        console.log(err)
+      },
+    })
+  }
+
+  function getAllSite() {
+    $.ajax({
+      async: true,
+      url: '/master/site/all',
+      method: 'GET',
+      success: function (result) {
+        $('body')
+          .find('select[name="site_id"]')
+          .html(result.data.map(s => '<option value="' + s.id + '">' + s.name + '</option>'))
+        $('body').find('select[name="site_id"]').prepend('<option value="" selected> Pilih </option>')
       },
       error: function (err) {
         console.log(err)

@@ -106,7 +106,7 @@ class DailyDowntime {
       } catch (err) {
         return {
           success: false,
-          message: 'Failed when uploading daily downtime, please try again.',
+          message: 'Failed when uploading daily downtime, please try again. \n Reason : ' + err.message,
           reason: err.message,
         }
       }
