@@ -588,7 +588,7 @@ Route.group(() => {
   Route.get('/equipment-performance/create', 'EquipmentPerformance.create').as('opr.equipment-performance.create').middleware('C')
   
   Route.get('/equipment-performance/:id/show', 'EquipmentPerformance.show').as('opr.equipment-performance.show')
-  
+
   Route.get('/equipment-performance/:id/update', 'EquipmentPerformance.update').as('opr.equipment-performance.update')
 
 
@@ -600,19 +600,29 @@ Route.group(() => {
 // REPORT
 Route.group(() => {
     Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
+
     Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
+
     Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
+
     Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData').middleware('R')
+
     Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData').middleware('R')
 
     Route.get('/fuel-ratio', 'FuelRatioController.index').as('rep.fuel-ratio.index').middleware('R')
+
     Route.get('/fuel-ratio/filter', 'FuelRatioController.filter').as('rep.fuel-ratio.filter').middleware('R')
+
     Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
+
     Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData').middleware('R')
+
     Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData').middleware('R')
 
     Route.get('/heavy-equipment', 'HeavyEquipmentController.index').as('rep.heavy-equipment.index').middleware('R')
+
     Route.post('/heavy-equipment', 'HeavyEquipmentController.applyFilter').as('rep.heavy-equipment.applyFilter').middleware('R')
+    
     Route.get('/heavy-equipment/filter', 'HeavyEquipmentController.filter').as('rep.heavy-equipment.filter').middleware('R')
 })
   .prefix('report')
