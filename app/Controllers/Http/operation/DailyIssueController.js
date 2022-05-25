@@ -16,6 +16,7 @@ const NotificationsHelpers = use(
 
 class DailyIssueController {
      async index({ auth, view }) {
+          console.log('is this work now ?? ')
           return view.render('operation.daily-issue.index')
      }
 
