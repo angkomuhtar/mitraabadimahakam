@@ -1,7 +1,6 @@
 
     {{ script('ajax/index') }}
     <div class="container-fluid">
-        @include('operation.daily-ritase-ob.filter')
         <div class="row">
             <div class="col-md-12">
                 <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
@@ -23,8 +22,14 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-4">
+                                                    <label for="tgl">Site</label>
+                                                    <div class="form-group">
+                                                        <select class="form-control input-sm" name="site_id" id="site_id" required></select>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <small>*Note : MOHH Secara default adalah 24 jam x total hari dalam bulan</small>
+                                            <small>*Note : MOHH Secara default adalah 24 jam x total hari dalam satu bulan</small>
                                         </div>
                                         <div class="panel-footer">
                                             <div class="row">

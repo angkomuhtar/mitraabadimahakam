@@ -38,10 +38,9 @@ class MamEquipmentPerformance {
     const currentMonth = moment(month).startOf('month').format('YYYY-MM-DD')
 
     // get all production equipment
-    const equipments = (
-      await MasEquipment.query()
-        .where(wh => {
-          wh.whereIn('unit_model', [
+    //['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer']
+    /**
+     * [
             'VOLVO 480 D',
             'VOLVO EC950EL',
             'HITACHI ZX870LCH',
@@ -67,8 +66,13 @@ class MamEquipmentPerformance {
             'T50',
             'COMPACTOR CS11GC',
             'FUSO FN62',
-            'FM260 JD',
-          ])
+            'FM260 JD'
+          ]
+     */
+    const equipments = (
+      await MasEquipment.query()
+        .where(wh => {
+          wh.whereIn('tipe', ['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer'])
           wh.where('aktif', 'Y')
         })
         .fetch()
@@ -82,16 +86,19 @@ class MamEquipmentPerformance {
     const equipmentIds = equipments.map(v => v.id)
 
     // check wheter is data already in database
-    const getData = await EquipmentPerformance.query()
-      .where(wh => {
-        wh.where('month', currentMonth)
-        wh.whereIn('equip_id', equipmentIds)
-      })
-      .fetch()
+    const getData = (
+      await EquipmentPerformance.query()
+        .where(wh => {
+          wh.where('month', currentMonth)
+          wh.whereIn('equip_id', equipmentIds)
+        })
+        .fetch()
+    ).toJSON()
+
     if (getData && getData.length > 0) {
       return {
         success: false,
-        message: 'Data already in the database !',
+        message: 'Monthly Equipment Data already in the database !',
       }
     }
 
@@ -107,7 +114,7 @@ class MamEquipmentPerformance {
         equip_id: equipment,
         upload_by: user.id,
         mohh: getTotalHours,
-        target_downtime_monthly: getTotalHours * (1 - 0 / 100),
+        target_downtime_monthly: getTotalHours * (1 - 0 / 100)
       })
 
       await newEquipmentPerformance.save()

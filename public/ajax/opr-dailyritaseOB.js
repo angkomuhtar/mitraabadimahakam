@@ -586,7 +586,6 @@ $(function(){
                     }
                 })
         }
-        
     }
 
     function getHaulerByDailyFleet(){
@@ -620,9 +619,7 @@ $(function(){
                     }
                 })
             })
-        }
-        
-        
+        }        
     }
 
     function HightChart(){
