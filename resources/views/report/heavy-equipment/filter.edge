@@ -1,6 +1,4 @@
 {{ script('ajax/index') }}
-{{ script('ajax/report/production-filter') }}
-
 {{ script('plugins/bower_components/dom-to-image/src/dom-to-image') }}
 {{ script('plugins/bower_components/dom-to-image/dist/dom-to-image.min') }}
 {{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
@@ -11,7 +9,7 @@
             <div class="" id="content-list">
                 <div class="row">
                     <div class="col-md-12">
-                        <form class="form-horizontal" action="" id="filter-data">
+                        <form class="form-horizontal" action="#" id="filter-data">
                             <div class="panel panel-default m-b-0">
                                 <div class="panel-heading"><i class="ti-filter" style="margin-right: 10px;"></i> Filter Data</div>
                                 <div class="panel-wrapper collapse in">
@@ -29,22 +27,19 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group m-b-10" id="select-range-type" style="display:none">
-                                                <label for="" class="col-sm-4 control-label">Group By*</label>
-                                                <div class="col-sm-4">
-                                                    <div class="input-group">
+                                            <div class="form-group m-b-10" id="unit_model" style="display:none">
+                                                <label for="" class="col-sm-4 control-label">Equipment Model*</label>
+                                                <div class="col-sm-8">
+                                                    <div class="input-group" style="margin-bottom:10px">
                                                         <div class="input-group-addon">
-                                                            <i class="ti-infinite"></i>
+                                                            <i class="ti-direction-alt"></i>
                                                         </div>
-                                                        <select class="form-control select2range_type" name="range_type" id="range_type">
-                                                            <option value="">Pilih</option>
-                                                            <option value="pit">PIT Wise</option>
-                                                            <option value="periode">Periode Wise</option>
-                                                        </select>
+                                                        <select class="form-control inp-filter" name="unit_model" id="unit_model"></select>
                                                     </div>
+                                                    <span id="equipment-group" style="flex-wrap: wrap;display: flex;"></span>
                                                 </div>
                                             </div>
-                                            <div class="container-type m-b-10" id="box-select-pit" style="display:none"></div>
+                                            
                                             <div class="container-type" id="box-select-periode" style="display:none">
                                                 <div>
                                                     <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">Pilih Ranges</label>
@@ -67,7 +62,7 @@
                                                             </div>
                                                             <div>&nbsp;</div>
                                                             <div>
-                                                                <input type="radio" id="date" name="inp_ranges" value="date" checked>
+                                                                <input type="radio" id="date" name="inp_ranges" value="date">
                                                                 <label class="text-center" for="date">
                                                                     <i class="wi wi-day-cloudy-high" style="font-size: xxx-large;text-align: center;"></i>
                                                                     <h2 class="text-white">Daily</h2>
@@ -77,30 +72,80 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="container-type" id="box-duration" style="display:none">
-                                                <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">From</label>
-                                                    <div class="col-sm-3">
-                                                        <div class="input-group">
+
+                                            <div class="container-ranges" id="box-input-date" style="display:none">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">Start Date</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group" style="margin-bottom:10px">
                                                             <div class="input-group-addon">
-                                                                <i class="ti-control-skip-forward"></i>
+                                                                <i class="ti-direction-alt"></i>
                                                             </div>
-                                                            <input type="date" class="form-control inp-filter" name="start" id="start">
+                                                            <input type="date" class="form-control inp-filter" name="start_date" id="start_date">
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">To</label>
-                                                    <div class="col-sm-3">
-                                                        <div class="input-group">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">End Date</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group" style="margin-bottom:10px">
                                                             <div class="input-group-addon">
-                                                                <i class="ti-control-skip-backward"></i>
+                                                                <i class="ti-direction-alt"></i>
                                                             </div>
-                                                            <input type="date" class="form-control inp-filter" name="end" id="end">
+                                                            <input type="date" class="form-control inp-filter" name="end_date" id="end_date">
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="container-ranges" id="box-input-week" style="display:none">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">Start Week</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group" style="margin-bottom:10px">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-direction-alt"></i>
+                                                            </div>
+                                                            <input type="week" class="form-control inp-filter" name="start_week" id="start_week">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">End Week</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group" style="margin-bottom:10px">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-direction-alt"></i>
+                                                            </div>
+                                                            <input type="week" class="form-control inp-filter" name="end_week" id="end_week">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-ranges" id="box-input-month" style="display:none">
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">Start Month</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group" style="margin-bottom:10px">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-direction-alt"></i>
+                                                            </div>
+                                                            <input type="month" class="form-control inp-filter" name="start_month" id="start_month">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group m-b-10">
+                                                    <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">End Month</label>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group" style="margin-bottom:10px">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-direction-alt"></i>
+                                                            </div>
+                                                            <input type="month" class="form-control inp-filter" name="end_month" id="end_month">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
                                             <div class="container-type" id="box-type-chart">
                                                 <div class="form-group m-b-10">
                                                     <label for="" class="col-sm-4 control-label">Chart Type</label>
@@ -142,49 +187,83 @@
     </div>
 </div>
 
-<div id="box-chart" class="row" style="display:none">
-    <div class="white-box">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <div id="container" class="text-center"></div>
-                <div id="xxx" class="text-center"></div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="table-responsive">
+                <table class="table">
+                    <tr class="b-b">
+                        <td width="200" class="text-center" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">
+                            <img src="{{ assetsUrl('logo-bg-white.png')}}" alt="user" width="150" height="70"> <br>
+                            PT. MITRA ABADI MAHAKAM
+                        </td>
+                        <td class="text-center">
+                            <strong>EQUIPMENT MONTHLY PERFORMANCE</strong>
+                        </td>
+                        <td width="200" class="text-center" style="border: 1px solid #ddd;vertical-align: middle;">SITE/PROJECT</td>
+                    </tr>
+                    <tr class="b-b">
+                        <td id="unit_model" class="text-center">GROUP MODEL</td>
+                        <td id="site_nm" class="text-center" style="border: 1px solid #ddd;vertical-align: middle;"></td>
+                    </tr>
+                </table>
             </div>
-            <div class="panel-footer text-center">
-                <button type="button" class="btn btn-default waves-effect waves-light btn-sm pull-left" id="bt-back"> 
-                    <i class="fa fa-angle-left"></i> <span>Back</span>
-                </button>
-                <span class="mytooltip tooltip-effect-1">
-                    <span class="tooltip-item" style="background: none;">
-                        <button class="btn btn-success waves-effect waves-light" type="button" id="bt-generate-xls">
-                            <span class="btn-label">
-                                <i class="ti-download"></i>
-                            </span>
-                            XLS Files
-                        </button>
-                    </span> 
-                    <span class="tooltip-content clearfix">
-                        <img src="{{ assetsUrl('images/xls.png')}}" width="100">
-                        <span class="tooltip-text">
-                            Download data berformat EXCEL sesuai dengan filtering data yang telah di tentukan.
+            <div class="panel panel-default" style="display:block">
+                <div class="panel-body">
+                    <figure class="highcharts-figure">
+                        <div id="container"></div>
+                    </figure>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="container-duration" class="text-center">Top 10 Stop By Duration</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="container-event" class="text-center">Top 10 Stop By Event</div>
+                        </div>
+                        <div class="col-md-12">
+                            <div id="container-ratio" class="text-center">BreakDown Ratio</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer text-center">
+                    <button type="button" class="btn btn-default waves-effect waves-light btn-sm pull-left" id="bt-back"> 
+                        <i class="fa fa-angle-left"></i> <span>Back</span>
+                    </button>
+                    <span class="mytooltip tooltip-effect-1">
+                        <span class="tooltip-item" style="background: none;">
+                            <button class="btn btn-success waves-effect waves-light" type="button" id="bt-generate-xls">
+                                <span class="btn-label">
+                                    <i class="ti-download"></i>
+                                </span>
+                                XLS Files
+                            </button>
                         </span> 
+                        <span class="tooltip-content clearfix">
+                            <img src="{{ assetsUrl('images/xls.png')}}" width="100">
+                            <span class="tooltip-text">
+                                Download data berformat EXCEL sesuai dengan filtering data yang telah di tentukan.
+                            </span> 
+                        </span>
                     </span>
-                </span>
-                <span class="mytooltip tooltip-effect-1">
-                    <span class="tooltip-item" style="background: none;">
-                        <button class="btn btn-inverse waves-effect waves-light" type="button" id="bt-generate-pdf">
-                            <span class="btn-label">
-                                <i class="ti-download"></i>
-                            </span>
-                            PDF Files
-                        </button>
-                    </span> 
-                    <span class="tooltip-content clearfix">
-                      <img src="{{ assetsUrl('images/pdf.png')}}">
-                      <span class="tooltip-text">
-                        Download data berformat PDF sesuai dengan filtering data yang telah di tentukan.
-                      </span> 
+                    <span class="mytooltip tooltip-effect-1">
+                        <span class="tooltip-item" style="background: none;">
+                            <button class="btn btn-inverse waves-effect waves-light" type="button" id="bt-generate-pdf">
+                                <span class="btn-label">
+                                    <i class="ti-download"></i>
+                                </span>
+                                PDF Files
+                            </button>
+                        </span> 
+                        <span class="tooltip-content clearfix">
+                          <img src="{{ assetsUrl('images/pdf.png')}}">
+                          <span class="tooltip-text">
+                            Download data berformat PDF sesuai dengan filtering data yang telah di tentukan.
+                          </span> 
+                        </span>
                     </span>
-                </span>
+                </div>
             </div>
         </div>
     </div>
@@ -315,3 +394,10 @@
 } */
  
 </style>
+
+
+<script>
+    $(function(){
+        
+    })
+</script>
