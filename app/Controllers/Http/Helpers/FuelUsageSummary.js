@@ -13,18 +13,20 @@ class FuelSummaryHelpers {
     const fuelSummary = await FuelSummary.query()
       .with('site')
       .with('pit', wh => wh.with('site'))
-      .where( w => {
-        if(req.site_id){
+      .where(w => {
+        if (req.site_id) {
           w.where('site_id', req.site_id)
         }
-        if(req.pit_id){
+        if (req.pit_id) {
           w.where('pit_id', req.pit_id)
         }
-        if(req.start_date && req.end_date){
+        if (req.start_date && req.end_date) {
           w.where('date', '>=', req.start_date)
           w.where('date', '<=', req.end_date)
         }
-      }).orderBy([{column: 'date', order: 'asc'}]).paginate(halaman, limit)
+      })
+      .orderBy([{ column: 'date', order: 'asc' }])
+      .paginate(halaman, limit)
 
     return fuelSummary.toJSON()
   }
@@ -161,24 +163,40 @@ class FuelSummaryHelpers {
         })
         .first()
 
-      const newFuelSummary = new FuelSummary()
-      newFuelSummary.fill({
-        site_id: GET_PIT_DATA.site_id,
-        pit_id: GET_PIT_DATA.id,
-        date: value.date,
-        ob: value.ob,
-        coal_mt: value.coal_mt,
-        coal_bcm: value.coal_bcm,
-        fuel_used: value.fuel_cons,
-        fuel_ratio: value.fuel_ratio,
-        user_id: usr.id,
-      })
-      try {
-        await newFuelSummary.save()
-        console.log(`finished insert fuel ratio for date ${value.date} - ${pitName} into database \n`)
-      } catch (err) {
+      // check if data is existing
+      const checkData = await FuelSummary.query()
+        .where(w => {
+          w.where('site_id', GET_PIT_DATA.site_id)
+          w.where('pit_id', GET_PIT_DATA.id)
+          w.where('date', moment(date).format('YYYY-MM-DD'))
+        })
+        .last()
+
+      if (checkData) {
         return {
-          message: 'Failed when inserting fuel summary \n Reason : ' + err.message,
+          success: false,
+          message: `Data fuel tgl ${date} - PIT ${pitName} sudah ada di database!. \n Silahkan coba lagi`
+        }
+      } else {
+        const newFuelSummary = new FuelSummary()
+        newFuelSummary.fill({
+          site_id: GET_PIT_DATA.site_id,
+          pit_id: GET_PIT_DATA.id,
+          date: value.date,
+          ob: value.ob,
+          coal_mt: value.coal_mt,
+          coal_bcm: value.coal_bcm,
+          fuel_used: value.fuel_cons,
+          fuel_ratio: value.fuel_ratio,
+          user_id: usr.id
+        })
+        try {
+          await newFuelSummary.save()
+          console.log(`finished insert fuel ratio for date ${value.date} - ${pitName} into database \n`)
+        } catch (err) {
+          return {
+            message: 'Failed when inserting fuel summary \n Reason : ' + err.message,
+          }
         }
       }
     }
@@ -191,39 +209,40 @@ class FuelSummaryHelpers {
     }
   }
 
-  async SHOW (params) {
+  async SHOW(params) {
     const fuelSummary = (await FuelSummary.query().where('id', params.id).last()).toJSON()
     return fuelSummary
   }
 
-  async UPDATE (params, req, user) {
+  async UPDATE(params, req, user) {
     const trx = await db.beginTransaction()
     const startOfmonth = moment(req.date).startOf('month').format('YYYY-MM-DD')
-    let cum_production = parseFloat(req.ob) + (parseFloat(req.coal_mt) / 1.3)
+    let cum_production = parseFloat(req.ob) + parseFloat(req.coal_mt) / 1.3
     let cum_fuel = parseFloat(req.fuel_used)
 
-    console.log(req.date);
-    console.log((req.date) != startOfmonth);
+    console.log(req.date)
+    console.log(req.date != startOfmonth)
 
     /* Mencari data tanggal sebelum nya */
-    if(req.date != startOfmonth){
-      const prev = await FuelSummary.query().where(w => {
-        w.where('site_id', req.site_id)
-        w.where('pit_id', req.pit_id)
-        w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
-        w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
-      }).last()
+    if (req.date != startOfmonth) {
+      const prev = await FuelSummary.query()
+        .where(w => {
+          w.where('site_id', req.site_id)
+          w.where('pit_id', req.pit_id)
+          w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
+          w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
+        })
+        .last()
 
-      if(!prev){
+      if (!prev) {
         return {
           success: false,
-          message: 'Data tanggal sebelumnya tdk ditemukan...'
+          message: 'Data tanggal sebelumnya tdk ditemukan...',
         }
       }
 
-      cum_production = prev.cum_production + (parseFloat(req.ob) + (parseFloat(req.coal_mt) / 1.3))
+      cum_production = prev.cum_production + (parseFloat(req.ob) + parseFloat(req.coal_mt) / 1.3)
       cum_fuel = prev.cum_fuel_used + parseFloat(req.fuel_used)
-      
     }
 
     const fuelSummary = await FuelSummary.query().where('id', params.id).last()
@@ -235,70 +254,77 @@ class FuelSummaryHelpers {
       coal_mt: parseFloat(req.coal_mt),
       coal_bcm: parseFloat(req.coal_mt) / 1.3,
       fuel_used: parseFloat(req.fuel_used),
-      fuel_ratio: parseFloat(req.fuel_used) / ((parseFloat(req.ob)) + (parseFloat(req.coal_mt) / 1.3)),
+      fuel_ratio: parseFloat(req.fuel_used) / (parseFloat(req.ob) + parseFloat(req.coal_mt) / 1.3),
       cum_production: cum_production,
       cum_fuel_used: cum_fuel,
       cum_fuel_ratio: parseFloat(cum_fuel) / parseFloat(cum_production),
-      user_id: user.id
+      user_id: user.id,
     })
     try {
       await fuelSummary.save(trx)
     } catch (error) {
-      console.log(error);
+      console.log(error)
       await trx.rollback()
       return {
         success: false,
-        message: 'Failed update data...'
+        message: 'Failed update data...',
       }
     }
 
     const dataMonth = (
-      await FuelSummary.query().where(w => {
-        w.where('site_id', req.site_id)
-        w.where('pit_id', req.pit_id)
-        w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
-        w.where('date', '<=', moment(req.date).endOf('month').format('YYYY-MM-DD'))
-      }).fetch()
+      await FuelSummary.query()
+        .where(w => {
+          w.where('site_id', req.site_id)
+          w.where('pit_id', req.pit_id)
+          w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
+          w.where('date', '<=', moment(req.date).endOf('month').format('YYYY-MM-DD'))
+        })
+        .fetch()
     ).toJSON()
 
     for (const obj of dataMonth) {
-      const sumFuel = await FuelSummary.query().where( w => {
-        w.where('site_id', req.site_id)
-        w.where('pit_id', req.pit_id)
-        w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
-        w.where('date', '<=', moment(obj.date).format('YYYY-MM-DD'))
-      }).getSum('fuel_used')
+      const sumFuel = await FuelSummary.query()
+        .where(w => {
+          w.where('site_id', req.site_id)
+          w.where('pit_id', req.pit_id)
+          w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
+          w.where('date', '<=', moment(obj.date).format('YYYY-MM-DD'))
+        })
+        .getSum('fuel_used')
 
-      const sumProdOB = await FuelSummary.query().where( w => {
-        w.where('site_id', req.site_id)
-        w.where('pit_id', req.pit_id)
-        w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
-        w.where('date', '<=', moment(obj.date).format('YYYY-MM-DD'))
-      }).getSum('ob')
+      const sumProdOB = await FuelSummary.query()
+        .where(w => {
+          w.where('site_id', req.site_id)
+          w.where('pit_id', req.pit_id)
+          w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
+          w.where('date', '<=', moment(obj.date).format('YYYY-MM-DD'))
+        })
+        .getSum('ob')
 
-      const sumProdCoal = await FuelSummary.query().where( w => {
-        w.where('site_id', req.site_id)
-        w.where('pit_id', req.pit_id)
-        w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
-        w.where('date', '<=', moment(obj.date).format('YYYY-MM-DD'))
-      }).getSum('coal_bcm')
-
+      const sumProdCoal = await FuelSummary.query()
+        .where(w => {
+          w.where('site_id', req.site_id)
+          w.where('pit_id', req.pit_id)
+          w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
+          w.where('date', '<=', moment(obj.date).format('YYYY-MM-DD'))
+        })
+        .getSum('coal_bcm')
 
       const updateFuelSummary = await FuelSummary.query().where('id', obj.id).last()
 
       updateFuelSummary.merge({
         cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal),
         cum_fuel_used: sumFuel,
-        cum_fuel_ratio: parseFloat(sumFuel) / (parseFloat(sumProdOB) + parseFloat(sumProdCoal))
+        cum_fuel_ratio: parseFloat(sumFuel) / (parseFloat(sumProdOB) + parseFloat(sumProdCoal)),
       })
       try {
         await updateFuelSummary.save(trx)
       } catch (error) {
-        console.log(error);
+        console.log(error)
         await trx.rollback()
         return {
           success: false,
-          message: 'Failed update data dalam sebulan...'
+          message: 'Failed update data dalam sebulan...',
         }
       }
     }
@@ -306,45 +332,53 @@ class FuelSummaryHelpers {
     await trx.commit()
     return {
       success: true,
-      message: 'Success update data...'
+      message: 'Success update data...',
     }
   }
 
-  async STORE_ENTRY(req, user){
+  async STORE_ENTRY(req, user) {
     /* Check duplicated data */
-    const checkData = await FuelSummary.query().where( w => {
-      w.where('site_id', req.site_id)
-      w.where('pit_id', req.pit_id)
-      w.where('date', moment(req.date).format('YYYY-MM-DD'))
-    }).last()
+    const checkData = await FuelSummary.query()
+      .where(w => {
+        w.where('site_id', req.site_id)
+        w.where('pit_id', req.pit_id)
+        w.where('date', moment(req.date).format('YYYY-MM-DD'))
+      })
+      .last()
 
-    if(checkData){
+    if (checkData) {
       return {
         success: false,
-        message: 'Duplicated data entry...'
+        message: 'Duplicated data entry...',
       }
     }
 
-    const sumFuel = await FuelSummary.query().where( w => {
-      w.where('site_id', req.site_id)
-      w.where('pit_id', req.pit_id)
-      w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
-      w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
-    }).getSum('fuel_used')
+    const sumFuel = await FuelSummary.query()
+      .where(w => {
+        w.where('site_id', req.site_id)
+        w.where('pit_id', req.pit_id)
+        w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
+        w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
+      })
+      .getSum('fuel_used')
 
-    const sumProdOB = await FuelSummary.query().where( w => {
-      w.where('site_id', req.site_id)
-      w.where('pit_id', req.pit_id)
-      w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
-      w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
-    }).getSum('ob')
+    const sumProdOB = await FuelSummary.query()
+      .where(w => {
+        w.where('site_id', req.site_id)
+        w.where('pit_id', req.pit_id)
+        w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
+        w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
+      })
+      .getSum('ob')
 
-    const sumProdCoal = await FuelSummary.query().where( w => {
-      w.where('site_id', req.site_id)
-      w.where('pit_id', req.pit_id)
-      w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
-      w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
-    }).getSum('coal_bcm')
+    const sumProdCoal = await FuelSummary.query()
+      .where(w => {
+        w.where('site_id', req.site_id)
+        w.where('pit_id', req.pit_id)
+        w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
+        w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
+      })
+      .getSum('coal_bcm')
 
     const fuelSummary = new FuelSummary()
     fuelSummary.fill({
@@ -355,23 +389,23 @@ class FuelSummaryHelpers {
       coal_mt: parseFloat(req.coal_mt),
       coal_bcm: parseFloat(req.coal_mt) / 1.3,
       fuel_used: parseFloat(req.fuel_used),
-      fuel_ratio: parseFloat(req.fuel_used) / ((parseFloat(req.ob)) + (parseFloat(req.coal_mt) / 1.3)),
-      cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal) + (parseFloat(req.coal_mt) / 1.3),
+      fuel_ratio: parseFloat(req.fuel_used) / (parseFloat(req.ob) + parseFloat(req.coal_mt) / 1.3),
+      cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(req.coal_mt) / 1.3,
       cum_fuel_used: sumFuel + parseFloat(req.fuel_used),
-      cum_fuel_ratio: parseFloat(sumFuel + parseFloat(req.fuel_used)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + (parseFloat(req.coal_mt) / 1.3)),
-      user_id: user.id
+      cum_fuel_ratio: parseFloat(sumFuel + parseFloat(req.fuel_used)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(req.coal_mt) / 1.3),
+      user_id: user.id,
     })
     try {
       await fuelSummary.save()
       return {
         success: true,
-        message: 'Success update data...'
+        message: 'Success update data...',
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
       return {
         success: false,
-        message: 'Failed save data...'
+        message: 'Failed save data...',
       }
     }
   }
