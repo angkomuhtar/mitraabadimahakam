@@ -508,11 +508,11 @@ Route.group(() => {
   // Daily Issue
   Route.get('/daily-issue', 'DailyIssueController.index').as('opr.daily-issue.index').middleware('R')
 
+  Route.post('/daily-issue', 'DailyIssueController.store').as('opr.daily-issue.store').middleware('R')
+
   Route.get('/daily-issue/list', 'DailyIssueController.list').as('opr.daily-issue.list').middleware('R')
 
-  Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('R')
-
-  Route.get('/daily-issue/store', 'DailyIssueController.store').as('opr.daily-issue.store').middleware('R')
+  Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('R') 
 
   Route.post('/daily-issue/:id/update', 'DailyIssueController.update').as('opr.daily-issue.update').middleware('U')
 
@@ -546,10 +546,6 @@ Route.group(() => {
   Route.post('/sop/store', 'SopController.store').as('opr.sop.store').middleware('C')
 
   Route.get('/sop/:id/show', 'SopController.show').as('opr.sop.show').middleware('U')
-
-  Route.get('/site/:id', 'AjaxSiteController.getSiteByID').as('site.getSiteByID')
-
-  Route.get('/pit', 'AjaxPitController.getPits').as('pit.getPits')
 
   Route.post('/sop/:id/update', 'SopController.update').as('opr.sop.update').middleware('U')
 
@@ -640,6 +636,8 @@ Route.group(() => {
   Route.get('/department', 'AjaxOptionController.getDepartment').as('set.sys-options.getDepartment')
 
   Route.get('/site', 'AjaxSiteController.getSites').as('site.getSites')
+
+  Route.get('/site/:id', 'AjaxSiteController.getSiteByID').as('site.getSiteByID')
 
   Route.get('/pit', 'AjaxPitController.getPits').as('pit.getPits')
 
