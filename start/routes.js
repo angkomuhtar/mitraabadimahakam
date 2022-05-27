@@ -219,6 +219,7 @@ Route.group(() => {
   Route.post('/subcont/:id/update', 'MasSubcontractorController.update').as('mas.subcont.update').middleware('U')
 
   Route.post('/subcont/:id/delete', 'MasSubcontractorController.delete').as('mas.subcont.delete').middleware('D')
+
   // Barang
   Route.get('/barang', 'MasBarangController.index').as('mas.barang.index').middleware('R')
 
@@ -233,9 +234,6 @@ Route.group(() => {
   Route.post('/barang/:id/update', 'MasBarangController.update').as('mas.barang.update').middleware('U')
 
   Route.post('/barang/:id/delete', 'MasBarangController.delete').as('mas.barang.delete').middleware('D')
-
-  // Dokumentasi
-  Route.get('/doc-details', 'MasDocumentationDetailsController.index').as('mas.doc-details.index').middleware('R')
 
   // Supplier
   Route.get('/supplier', 'MasSupplierController.index').as('mas.supplier.index').middleware('R')
@@ -327,6 +325,7 @@ Route.group(() => {
 
 // OPERATION
 Route.group(() => {
+
   Route.get('/daily-activity', 'DailyActivityController.index').as('opr.daily-activity.index')
 
   Route.get('/daily-activity/list', 'DailyActivityController.list').as('opr.daily-activity.list')
@@ -350,29 +349,27 @@ Route.group(() => {
 
   Route.get('/daily-ritase-ob', 'DailyRitaseController.index').as('opr.daily-ritase-ob.index').middleware('R')
 
-  Route.get('/daily-ritase-ob/upload/backdate', 'DailyRitaseController.showBackDateUpload').as('opr.daily-ritase-ob.backDateUpload').middleware('R')
-
   Route.post('/daily-ritase-ob', 'DailyRitaseController.store').as('opr.daily-ritase-ob.store').middleware('C')
+  
+  Route.get('/daily-ritase-ob/upload/backdate', 'DailyRitaseController.showBackDateUpload').as('opr.daily-ritase-ob.backDateUpload').middleware('R')
 
   Route.post('/daily-ritase-ob/back-date-upload', 'DailyRitaseController.storeBackDate').as('opr.daily-ritase-ob.storeBackDate').middleware('C')
 
   Route.get('/daily-ritase-ob/list', 'DailyRitaseController.list').as('opr.daily-ritase-ob.list').middleware('R')
 
-  // Route.get('/daily-ritase-ob/graph', 'DailyRitaseController.graph').as('opr.daily-ritase-ob.graph').middleware('R')
-
   Route.get('/daily-ritase-ob/create', 'DailyRitaseController.create').as('opr.daily-ritase-ob.create').middleware('R')
 
   Route.get('/daily-ritase-ob/create/addItems', 'DailyRitaseController.addItems').as('opr.daily-ritase-ob.addItems').middleware('R')
 
-  Route.get('/daily-ritase-ob/haulers/default/:dailyfleet_id', 'DailyRitaseController.getDefaultHaulerByDailyFleet').as('opr.daily-ritase-ob.getHaulerByDailyFleet').middleware('R')
-
   Route.get('/daily-ritase-ob/:id/show', 'DailyRitaseController.show').as('opr.daily-ritase-ob.show').middleware('U')
-
+  
   Route.post('/daily-ritase-ob/:id/update', 'DailyRitaseController.update').as('opr.daily-ritase-ob.update').middleware('U')
-
+  
   Route.post('/daily-ritase-ob/:id/delete', 'DailyRitaseController.delete').as('opr.daily-ritase-ob.delete').middleware('D')
-
+  
   Route.post('/daily-ritase-ob/upload-file', 'DailyRitaseController.uploadFile').as('opr.daily-ritase-ob.uploadFile').middleware('C')
+  
+  Route.get('/daily-ritase-ob/haulers/default/:dailyfleet_id', 'DailyRitaseController.getDefaultHaulerByDailyFleet').as('opr.daily-ritase-ob.getHaulerByDailyFleet').middleware('R')
 
   Route.post('/daily-ritase-ob/upload-file/back-date', 'DailyRitaseController.uploadFileBackDate').as('opr.daily-ritase-ob.uploadFileBackDate').middleware('C')
 
@@ -531,19 +528,17 @@ Route.group(() => {
 
   Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view').middleware('R')
 
-
   // SOP Operational
+
   Route.get('/sop', 'SopController.index').as('opr.sop.index').middleware('R')
 
-  Route.post('/sop', 'SopController.store').as('opr.sop.store').middleware('C')
+  Route.post('/sop', 'SopController.store').as('opr.sop.store').middleware('R')
 
   Route.get('/sop/list', 'SopController.list').as('opr.sop.list').middleware('R')
 
-  Route.get('/sop/create', 'SopController.create').as('opr.sop.create').middleware('C')
+  Route.post('/sop/create', 'SopController.create').as('opr.sop.create').middleware('C')
 
   Route.post('/sop/uploadFile', 'SopController.uploadFile').as('opr.sop.uploadFile').middleware('C')
-
-  Route.post('/sop/store', 'SopController.store').as('opr.sop.store').middleware('C')
 
   Route.get('/sop/:id/show', 'SopController.show').as('opr.sop.show').middleware('U')
 
@@ -556,13 +551,13 @@ Route.group(() => {
 
   Route.post('/fuel-summary', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
 
-  Route.post('/fuel-summary/uploadFile', 'FuelUsageSummaryController.uploadFile').as('opr.fuel-summary.uploadFile').middleware('C')
-
-  Route.post('/fuel-summary/entry', 'FuelUsageSummaryController.storeEntry').as('opr.fuel-summary.storeEntry').middleware('C')
-
   Route.get('/fuel-summary/list', 'FuelUsageSummaryController.list').as('opr.fuel-summary.list').middleware('R')
 
   Route.get('/fuel-summary/create', 'FuelUsageSummaryController.create').as('opr.fuel-summary.create').middleware('C')
+
+  Route.post('/fuel-summary/entry', 'FuelUsageSummaryController.storeEntry').as('opr.fuel-summary.storeEntry').middleware('C')
+
+  Route.post('/fuel-summary/uploadFile', 'FuelUsageSummaryController.uploadFile').as('opr.fuel-summary.uploadFile').middleware('C')
 
   Route.post('/fuel-summary/store', 'FuelUsageSummaryController.store').as('opr.fuel-summary.store').middleware('C')
 
@@ -590,11 +585,12 @@ Route.group(() => {
 
   Route.get('/equipment-performance/list', 'EquipmentPerformance.list').as('opr.equipment-performance.list').middleware('R')
 
+  Route.get('/equipment-performance/create', 'EquipmentPerformance.create').as('opr.equipment-performance.create').middleware('C')
+  
   Route.get('/equipment-performance/:id/show', 'EquipmentPerformance.show').as('opr.equipment-performance.show')
 
   Route.get('/equipment-performance/:id/update', 'EquipmentPerformance.update').as('opr.equipment-performance.update')
 
-  Route.get('/equipment-performance/create', 'EquipmentPerformance.create').as('opr.equipment-performance.create').middleware('C')
 
 })
   .prefix('operation')
@@ -603,17 +599,31 @@ Route.group(() => {
 
 // REPORT
 Route.group(() => {
-  Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
-  Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
-  Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
-  Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData').middleware('R')
-  Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData').middleware('R')
+    Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
 
-  Route.get('/fuel-ratio', 'FuelRatioController.index').as('rep.fuel-ratio.index').middleware('R')
-  Route.get('/fuel-ratio/filter', 'FuelRatioController.filter').as('rep.fuel-ratio.filter').middleware('R')
-  Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
-  Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData').middleware('R')
-  Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData').middleware('R')
+    Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
+
+    Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
+
+    Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData').middleware('R')
+
+    Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData').middleware('R')
+
+    Route.get('/fuel-ratio', 'FuelRatioController.index').as('rep.fuel-ratio.index').middleware('R')
+
+    Route.get('/fuel-ratio/filter', 'FuelRatioController.filter').as('rep.fuel-ratio.filter').middleware('R')
+
+    Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
+
+    Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData').middleware('R')
+
+    Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData').middleware('R')
+
+    Route.get('/heavy-equipment', 'HeavyEquipmentController.index').as('rep.heavy-equipment.index').middleware('R')
+
+    Route.post('/heavy-equipment', 'HeavyEquipmentController.applyFilter').as('rep.heavy-equipment.applyFilter').middleware('R')
+    
+    Route.get('/heavy-equipment/filter', 'HeavyEquipmentController.filter').as('rep.heavy-equipment.filter').middleware('R')
 })
   .prefix('report')
   .namespace('report')
@@ -672,6 +682,8 @@ Route.group(() => {
   Route.get('/material', 'AjaxMaterialController.getMaterial').as('equipment.getMaterial')
 
   Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
+
+  Route.get('/equipment/model', 'AjaxEquipmentController.getEquipmentModel').as('equipment.getEquipmentModel')
 
   Route.get('/equipment/excavator', 'AjaxEquipmentController.getEquipmentExcavator').as('equipment.getEquipmentExcavator')
 
@@ -736,15 +748,6 @@ Route.group(() => {
 })
   .prefix('api')
   .namespace('api')
-
-// api weather disabled
-// Route.group(() => {
-
-//     Route.get('/', 'ApiWeatherController.getWeather')
-
-//     Route.get('/city', 'ApiWeatherController.getWeatherCity')
-
-// }).prefix('api/weather').namespace('api')
 
 Route.group(() => {
   Route.post('/error/add', 'SysErrorController.store')

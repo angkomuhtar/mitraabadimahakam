@@ -169,10 +169,6 @@ $(function(){
     }
 
     function GEN_CHART (xAxis, series, drilldown) {
-        console.log('====================================');
-        console.log(series);
-        console.log(drilldown);
-        console.log('====================================');
 
         Highcharts.chart('container', {
             chart: {

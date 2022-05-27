@@ -24,7 +24,7 @@ class FuelSummaryHelpers {
           w.where('date', '>=', req.start_date)
           w.where('date', '<=', req.end_date)
         }
-      }).paginate(halaman, limit)
+      }).orderBy([{column: 'date', order: 'asc'}]).paginate(halaman, limit)
 
     return fuelSummary.toJSON()
   }

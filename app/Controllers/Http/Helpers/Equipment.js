@@ -1,5 +1,6 @@
 "use strict";
 
+const _ = require('underscore')
 const MasEquipment = use("App/Models/MasEquipment");
 const DailyTimeSheet = use("App/Models/DailyChecklist");
 
@@ -41,6 +42,27 @@ class EquipmentList {
       .where({ aktif: "Y", tipe: "excavator" })
       .orderBy("urut", "asc")
       .fetch();
+    return data;
+  }
+
+  async MODELS(req) {
+    let data = (
+      await MasEquipment.query().where( w => {
+        w.where('aktif', 'Y')
+        if(req.site_id){
+          w.where('site_id', req.site_id)
+        }
+      }).fetch()
+    ).toJSON()
+
+    data = _.groupBy(data, 'unit_model')
+
+    data = Object.keys(data).map(key => {
+      return {
+        model: key,
+        items: data[key]
+      }
+    })
     return data;
   }
 
