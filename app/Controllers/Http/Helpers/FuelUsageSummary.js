@@ -163,6 +163,9 @@ class FuelSummaryHelpers {
         })
         .first()
 
+      const site_id = GET_PIT_DATA.site_id
+      const pit_id = GET_PIT_DATA.id
+
       // check if data is existing
       const checkData = await FuelSummary.query()
         .where(w => {
@@ -175,9 +178,37 @@ class FuelSummaryHelpers {
       if (checkData) {
         return {
           success: false,
-          message: `Data fuel tgl ${date} - PIT ${pitName} sudah ada di database!. \n Silahkan coba lagi`
+          message: `Data fuel tgl ${date} - PIT ${pitName} sudah ada di database!. \n Silahkan coba lagi`,
         }
       } else {
+
+        const sumFuel = await FuelSummary.query()
+          .where(w => {
+            w.where('site_id', site_id)
+            w.where('pit_id', pit_id)
+            w.where('date', '>=', moment(date).startOf('month').format('YYYY-MM-DD'))
+            w.where('date', '<=', moment(date).format('YYYY-MM-DD'))
+          })
+          .getSum('fuel_used')
+
+        const sumProdOB = await FuelSummary.query()
+          .where(w => {
+            w.where('site_id', site_id)
+            w.where('pit_id', pit_id)
+            w.where('date', '>=', moment(date).startOf('month').format('YYYY-MM-DD'))
+            w.where('date', '<=', moment(date).format('YYYY-MM-DD'))
+          })
+          .getSum('ob')
+
+        const sumProdCoal = await FuelSummary.query()
+          .where(w => {
+            w.where('site_id', site_id)
+            w.where('pit_id', pit_id)
+            w.where('date', '>=', moment(date).startOf('month').format('YYYY-MM-DD'))
+            w.where('date', '<=', moment(date).format('YYYY-MM-DD'))
+          })
+          .getSum('coal_bcm')
+
         const newFuelSummary = new FuelSummary()
         newFuelSummary.fill({
           site_id: GET_PIT_DATA.site_id,
@@ -188,7 +219,10 @@ class FuelSummaryHelpers {
           coal_bcm: value.coal_bcm,
           fuel_used: value.fuel_cons,
           fuel_ratio: value.fuel_ratio,
-          user_id: usr.id
+          user_id: usr.id,
+          cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3,
+          cum_fuel_used: sumFuel + parseFloat(value.fuel_cons),
+          cum_fuel_ratio: parseFloat(sumFuel + parseFloat(value.fuel_cons)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3),
         })
         try {
           await newFuelSummary.save()
