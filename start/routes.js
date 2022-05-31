@@ -505,11 +505,11 @@ Route.group(() => {
   // Daily Issue
   Route.get('/daily-issue', 'DailyIssueController.index').as('opr.daily-issue.index').middleware('R')
 
+  Route.post('/daily-issue', 'DailyIssueController.store').as('opr.daily-issue.store').middleware('R')
+
   Route.get('/daily-issue/list', 'DailyIssueController.list').as('opr.daily-issue.list').middleware('R')
 
-  Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('R')
-
-  Route.get('/daily-issue/store', 'DailyIssueController.store').as('opr.daily-issue.store').middleware('R')
+  Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('R') 
 
   Route.post('/daily-issue/:id/update', 'DailyIssueController.update').as('opr.daily-issue.update').middleware('U')
 

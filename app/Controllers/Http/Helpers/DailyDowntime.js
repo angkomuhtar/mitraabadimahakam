@@ -296,11 +296,7 @@ class DailyDowntime {
       if (equipment) {
         result = equipment.toJSON()
       } else {
-        // const { isSuccess, checkMsg } = await Utils.equipmentCheck(name, model)
-        // return {
-        //   success: isSuccess,
-        //   message: checkMsg,
-        // }
+       // do nothing
       }
       return result
     }
@@ -385,7 +381,6 @@ class DailyDowntime {
           await dailyChecklist.save()
           console.log(`---- finished inserting timesheet id ${dailyChecklist.id} ----`)
         } catch (err) {
-          console.log('error timesheet ?', err.message)
           return {
             success: false,
             message: 'Failed when inserting timesheet to tb.timesheet .\n Reason : ' + err.message,
@@ -422,7 +417,7 @@ class DailyDowntime {
               actual_eu: (USED_SMU / equipmentPerformance.mohh) * 100 || 0,
               actual_ua: (USED_SMU / (USED_SMU + standby_hours)) * 100 || 0,
               actual_ma: actual_ma * 100 || 0,
-              standby_hours: standby_hours,
+              standby_hours: standby_hours
             })
 
             await equipmentPerformance.save()
