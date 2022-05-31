@@ -172,7 +172,7 @@ $(function(){
 
         Highcharts.chart('container', {
             chart: {
-                zoomType: 'xy'
+                zoomType: 'xy',
             },
             title: {
                 text: 'Fuel Ratio'

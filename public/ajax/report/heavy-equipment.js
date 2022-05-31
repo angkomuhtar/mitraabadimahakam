@@ -4,11 +4,15 @@ $(function(){
 
     var arrModels = []
 
+    var siteName
+
+    var period
+
     console.log('ajax/report/production-filter.js');
 
     initFilter()
 
-    $('select.form-control').select2()
+    body.find('select.form-control').select2()
 
     body.on('change', 'select[name="site_id"]', function(){
         var values = $(this).val()
@@ -23,6 +27,7 @@ $(function(){
                 contentType: false,
                 success: function(result){
                     console.log(result);
+                    siteName = result.name
                     body.find('td#site_nm').html(result.name)
                     body.find('div[id="unit_model"]').css('display', 'block')
                     GET_MODELS(result.id)
@@ -54,10 +59,13 @@ $(function(){
     body.on('click', 'input[name="inp_ranges"]', function(){
         var values = $(this).val()
         console.log(values);
+        period = values
         body.find('div.container-ranges').css('display', 'none')
         body.find('div#box-input-'+values).css('display', 'block')
         body.find('div#box-apply-chart').css('display', 'block')
     })
+
+    
 
     body.on('submit', 'form#filter-data', function(e){
         e.preventDefault()
@@ -73,12 +81,99 @@ $(function(){
             contentType: false,
             success: function(result){
                 console.log(result);
-                GEN_CHART()
+                GEN_CHART(result)
+                $.ajax({
+                    async: true,
+                    url: '/report/heavy-equipment/table',
+                    method: 'POST',
+                    data: data,
+                    dataType: 'html',
+                    processData: false,
+                    mimeType: "multipart/form-data",
+                    contentType: false,
+                    success: function(res){
+                        body.find('div#box-table-kpi').html(res)
+                    }
+                })
+                body.find('span#byDataRatio-UnScheduled').html(result.byDataRatio?.filter(obj => obj.name==="Scheduled")[0].items.length)
+                body.find('span#byDataRatio-Scheduled').html(result.byDataRatio?.filter(obj => obj.name==="UnScheduled")[0].items.length)
+                body.find('div#box-chart').css('display', 'block')
+                body.find('div#box-table-kpi').slimScroll({
+                    height: '375px'
+                });
             },
             error: function(err){
                 console.log(err)
             }
         })
+    })
+
+    body.on('click', 'a#print-kpi', function(e){
+        e.preventDefault()
+        var fd = new FormData(document.querySelector('form'))
+        var promise1 = domtoimage.toBlob(document.getElementById('container'))
+        .then(function (blob) {
+            console.log(blob);
+            blob.fileName = 'chartKPI.png'
+            blob.extname = 'png'
+            blob.extname = 'png'
+            fd.append('kpi_chart', 'chartKPI.png');
+            fd.append('ImgKpi', blob);
+            return fd
+        });
+        var promise2 = domtoimage.toBlob(document.getElementById('box-container-ratio'))
+        .then(function (blob) {
+            console.log(blob);
+            blob.fileName = 'chartRatio.png'
+            blob.extname = 'png'
+            blob.extname = 'png'
+            fd.append('ratio_chart', 'chartRatio.png');
+            fd.append('ImgRatio', blob);
+            return fd
+        });
+        var promise3 = domtoimage.toBlob(document.getElementById('container-duration'))
+        .then(function (blob) {
+            console.log(blob);
+            blob.fileName = 'chartDuration.png'
+            blob.extname = 'png'
+            blob.extname = 'png'
+            fd.append('duration_chart', 'chartDuration.png');
+            fd.append('ImgDuration', blob);
+            return fd
+        });
+        var promise4 = domtoimage.toBlob(document.getElementById('container-event'))
+        .then(function (blob) {
+            console.log(blob);
+            blob.fileName = 'chartEvent.png'
+            blob.extname = 'png'
+            blob.extname = 'png'
+            fd.append('event_chart', 'chartEvent.png');
+            fd.append('ImgEvent', blob);
+            return fd
+        });
+        
+        Promise.all([promise1, promise2, promise3, promise4]).then((values) => {
+            console.log(values);
+            
+            $.ajax({
+                async: true,
+                url: '/report/heavy-equipment/gen-data-pdf',
+                method: 'POST',
+                data: fd,
+                dataType: 'json',
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                success: function(result){
+                    console.log(result)
+                    pdfMake.createPdf(result).open();
+                },
+                error: function(err){
+                    console.log(err)
+                }
+            })
+            console.log('okey....');
+        });
     })
 
     function GET_MODELS(site_id){
@@ -122,254 +217,222 @@ $(function(){
         })
     }
 
-    function GEN_CHART(){
-        Highcharts.chart('container', {
-            chart: {
-                zoomType: 'xy',
-                type: 'column'
-            },
-            title: {
-                text: 'Fuel Ratio'
-            },
-            subtitle: {
-                text: 'Project BBE'
-            },
-            xAxis: {
-                categories: [
-                    'Jan',
-                    'Feb',
-                    'Mar',
-                    'Apr',
-                    'May',
-                    'Jun',
-                    'Jul',
-                    'Aug',
-                    'Sep',
-                    'Oct',
-                    'Nov',
-                    'Dec'
-                ],
-                crosshair: true
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Rainfall (mm)'
-                }
-            },
-            tooltip: {
-                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                    '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-                footerFormat: '</table>',
-                shared: true,
-                useHTML: true
-            },
-            plotOptions: {
-                column: {
-                    pointPadding: 0.2,
-                    borderWidth: 0
-                }
-            },
-            series: [{
-                name: 'Tokyo',
-                data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+    function GEN_CHART(data){
         
-            }, {
-                name: 'New York',
-                data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
-        
-            }, {
-                name: 'London',
-                data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
-        
-            }, {
-                name: 'Berlin',
-                data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
-        
-            }]
+        body.on('keyup, change', 'input[name="alfa"]', function(){
+            PERFORMANCES_CHART ()
+            DURATION_EVENT()
+            COUNT_EVENT()
+        })
+    
+        body.on('keyup, change', 'input[name="beta"]', function(){
+            PERFORMANCES_CHART ()
+            DURATION_EVENT()
+            COUNT_EVENT()
         })
 
-        Highcharts.chart('container-duration', {
-            chart: {
-                type: 'bar'
-            },
-            title: {
-                text: 'Historic World Population by Region'
-            },
-            subtitle: {
-                text: 'Source: <a href="https://en.wikipedia.org/wiki/World_population">Wikipedia.org</a>'
-            },
-            xAxis: {
-                categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania'],
-                title: {
-                    text: null
-                }
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Population (millions)',
-                    align: 'high'
-                },
-                labels: {
-                    overflow: 'justify'
-                }
-            },
-            tooltip: {
-                valueSuffix: ' millions'
-            },
-            plotOptions: {
-                bar: {
-                    dataLabels: {
-                        enabled: true
-                    }
-                }
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'top',
-                x: -40,
-                y: 80,
-                floating: true,
-                borderWidth: 1,
-                backgroundColor:
-                    Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
-                shadow: true
-            },
-            credits: {
-                enabled: false
-            },
-            series: [{
-                name: 'Year 1800',
-                data: [107, 31, 635, 203, 2]
-            }, {
-                name: 'Year 1900',
-                data: [133, 156, 947, 408, 6]
-            }, {
-                name: 'Year 2000',
-                data: [814, 841, 3714, 727, 31]
-            }, {
-                name: 'Year 2016',
-                data: [1216, 1001, 4436, 738, 40]
-            }]
-        });
+        body.on('keyup, change', 'input[name="depth"]', function(){
+            PERFORMANCES_CHART ()
+            DURATION_EVENT()
+            COUNT_EVENT()
+        })
 
-        Highcharts.chart('container-event', {
-            chart: {
-                type: 'bar'
-            },
-            title: {
-                text: 'Historic World Population by Region'
-            },
-            subtitle: {
-                text: 'Source: <a href="https://en.wikipedia.org/wiki/World_population">Wikipedia.org</a>'
-            },
-            xAxis: {
-                categories: ['Africa', 'America', 'Asia', 'Europe', 'Oceania'],
-                title: {
-                    text: null
-                }
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: 'Population (millions)',
-                    align: 'high'
-                },
-                labels: {
-                    overflow: 'justify'
-                }
-            },
-            tooltip: {
-                valueSuffix: ' millions'
-            },
-            plotOptions: {
-                bar: {
-                    dataLabels: {
-                        enabled: true
-                    }
-                }
-            },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'top',
-                x: -40,
-                y: 80,
-                floating: true,
-                borderWidth: 1,
-                backgroundColor:
-                    Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF',
-                shadow: true
-            },
-            credits: {
-                enabled: false
-            },
-            series: [{
-                name: 'Year 1800',
-                data: [107, 31, 635, 203, 2]
-            }, {
-                name: 'Year 1900',
-                data: [133, 156, 947, 408, 6]
-            }, {
-                name: 'Year 2000',
-                data: [814, 841, 3714, 727, 31]
-            }, {
-                name: 'Year 2016',
-                data: [1216, 1001, 4436, 738, 40]
-            }]
-        });
+        PERFORMANCES_CHART ()
+        DURATION_EVENT()
+        COUNT_EVENT()
 
-        Highcharts.chart('container-ratio', {
-            chart: {
-                type: 'pie',
-                options3d: {
-                    enabled: true,
-                    alpha: 45,
-                    beta: 0
-                }
-            },
-            title: {
-                text: 'Browser market shares at a specific website, 2014'
-            },
-            accessibility: {
-                point: {
-                    valueSuffix: '%'
-                }
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    depth: 35,
-                    dataLabels: {
+        function PERFORMANCES_CHART () {
+            var alfaNum =  body.find('input[name="alfa"]').val()
+            var betaNum =  body.find('input[name="beta"]').val()
+            var depthNum =  body.find('input[name="depth"]').val()
+            var viewDistanceNum =  body.find('input[name="viewDistance"]').val()
+            Highcharts.chart('container', {
+                chart: {
+                    zoomType: 'xy',
+                    type: body.find('select[id="typeChart"]').val(),
+                    options3d: {
                         enabled: true,
-                        format: '{point.name}'
+                        alpha: parseInt(alfaNum) || 1,
+                        beta: parseInt(betaNum) || 370,
+                        depth: parseInt(depthNum) || 40,
+                        viewDistance: parseInt(viewDistanceNum) || 25
                     }
-                }
-            },
-            series: [{
-                type: 'pie',
-                name: 'Browser share',
-                data: [
-                    ['Firefox', 45.0],
-                    ['IE', 26.8],
-                    {
-                        name: 'Chrome',
-                        y: 12.8,
-                        sliced: true,
-                        selected: true
+                },
+                title: {
+                    text: 'GRAFIK KPI PERFORMANCES'
+                },
+                subtitle: {
+                    text: siteName
+                },
+                xAxis: {
+                    categories: data.byKPI.xAxis,
+                    crosshair: true
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Performance'
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y:.1f} %</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: data.byKPI.series.map(obj => {
+                    return {
+                        ...obj,
+                        data: obj.data.map(val => parseFloat(val?.toFixed(2) || 0))
+                    }
+                })
+            })
+        }
+
+        if(data.byDataRatio.length > 0){
+            Highcharts.chart('container-ratio', {
+                chart: {
+                    type: 'pie',
+                    options3d: {
+                        enabled: true,
+                        alpha: 45,
+                        beta: 0
+                    }
+                },
+                title: {
+                    text: 'Breakdown Ratio'
+                },
+                accessibility: {
+                    point: {
+                        valueSuffix: '%'
+                    }
+                },
+                tooltip: {
+                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        size: 200,
+                        center: ['50%', '20%'],
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        depth: 35,
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.name}'
+                        }
+                    }
+                },
+                series: data.byRatio
+            });
+        }else{
+            $('div#container-ratio').html('<h3><strong>Breakdown Ratio</strong></h3><p class="text-danger">Tidak ada data yang dapat ditampilkan...</p>')
+        }
+
+        function DURATION_EVENT(){
+            if(data.byDuration.xAxis.length > 0){
+                Highcharts.chart('container-duration', {
+                    chart: {
+                        type: 'bar'
                     },
-                    ['Safari', 8.5],
-                    ['Opera', 6.2],
-                    ['Others', 0.7]
-                ]
-            }]
-        });
+                    title: {
+                        text: 'Top 10 Stoppages By Duration'
+                    },
+                    xAxis: {
+                        categories: data.byDuration.xAxis,
+                        title: {
+                            text: null
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: 'Total Hours',
+                            align: 'high'
+                        },
+                        labels: {
+                            overflow: 'justify'
+                        }
+                    },
+                    tooltip: {
+                        valueSuffix: ' Hours'
+                    },
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                enabled: true
+                            }
+                        }
+                    },
+                    legend: {
+                        labelFormatter: function () {
+                            return `Total Duration By Periode ${period === 'date'?'dai':period}ly`
+                        }
+                    },
+                    series: data.byDuration.series
+                });
+            }else{
+                $('div#container-duration').html('<h3><strong>Top 10 Stoppages By Duration</strong></h3><p class="text-danger">Tidak ada data yang dapat ditampilkan...</p>')
+            }
+        }
+
+        function COUNT_EVENT(){
+            if(data.byEvents.xAxis.length > 0){
+                Highcharts.chart('container-event', {
+                    chart: {
+                        type: 'bar',
+                    },
+                    title: {
+                        text: 'Top 10 Stoppages By Event'
+                    },
+                    xAxis: {
+                        categories: data.byEvents.xAxis,
+                        title: {
+                            text: null
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        title: {
+                            text: 'Event Count',
+                            align: 'high'
+                        },
+                        labels: {
+                            overflow: 'justify'
+                        }
+                    },
+                    tooltip: {
+                        valueSuffix: ' events'
+                    },
+                    plotOptions: {
+                        bar: {
+                            dataLabels: {
+                                enabled: true
+                            }
+                        }
+                    },
+                    legend: {
+                        labelFormatter: function () {
+                            return `Total Event By Periode ${period === 'date'?'dai':period}ly`
+                        }
+                    },
+                    series: data.byEvents.series
+                });
+            }else{
+                $('div#container-event').html('<h3><strong>Top 10 Stoppages By Event</strong></h3><p class="text-danger">Tidak ada data yang dapat ditampilkan...</p>')
+            }
+        }
+
     }
 })
