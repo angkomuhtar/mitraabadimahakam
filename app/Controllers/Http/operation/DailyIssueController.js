@@ -16,7 +16,10 @@ const NotificationsHelpers = use(
 
 class DailyIssueController {
      async index({ auth, view }) {
-          console.log('is this work now ?? ')
+          const user = await userValidate(auth)
+          if(!user){
+               return
+          }
           return view.render('operation.daily-issue.index')
      }
 
@@ -253,3 +256,15 @@ class DailyIssueController {
 }
 
 module.exports = DailyIssueController
+
+async function userValidate(auth) {
+     let user
+     try {
+       user = await auth.getUser()
+       return user
+     } catch (error) {
+       console.log(error)
+       return null
+     }
+   }
+   

@@ -511,6 +511,8 @@ Route.group(() => {
 
   Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('R') 
 
+  Route.get('/daily-issue/:id/show', 'DailyIssueController.show').as('opr.daily-issue.show').middleware('R')
+
   Route.post('/daily-issue/:id/update', 'DailyIssueController.update').as('opr.daily-issue.update').middleware('U')
 
   Route.delete('/daily-issue/:id/destroy', 'DailyIssueController.destroy').as('opr.daily-issue.destroy').middleware('D')
