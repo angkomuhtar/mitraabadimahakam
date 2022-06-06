@@ -23,25 +23,25 @@
                             </div>
                             <div class="col-md-3 col-xs-6 b-r"> <strong>Priority Scale</strong>
                                 <br>
-                                @if(data.priority === 'URGENT')
+                                @if(data.priority === 'URGENT PRIORITY')
                                     <small class="label label-danger">
-                                        URGENT
+                                        {{data.priority}}
                                     </small>
                                 @endif
-                                @if(data.priority === 'NORMAL')
+                                @if(data.priority === 'NORMAL PRIORITY')
                                     <small class="label label-warning">
-                                        NORMAL
+                                        {{data.priority}}
                                     </small>
                                 @endif
-                                @if(data.priority === 'STOCK')
+                                @if(data.priority === 'LOW PRIORITY')
                                     <small class="label label-info">
-                                        STOCK
+                                        {{data.priority}}
                                     </small>
                                 @endif
                             </div>
                             <div class="col-md-3 col-xs-6"> <strong>Created At</strong>
                                 <br>
-                                <i class="ti-calendar m-r-10"></i><small class="myDateTimeFormat" data-date="{{data.acceptAt}}"></small>
+                                <i class="ti-calendar m-r-10"></i><small class="myDateTimeFormat" data-date="{{data.date}}"></small>
                             </div>
                         </div>
                         <hr>
@@ -60,7 +60,13 @@
                             </div>
                             <div class="col-md-3 col-xs-6"> <strong>Accept</strong>
                                 <br>
-                                <p class="text-muted">-</p>
+                                <p class="text-muted m-b-0">
+                                    {{data.mengetahui.nm_lengkap||''}}
+                                </p>
+                                @if(data.acceptAt)
+                                <span><i class="ti-calendar m-r-10"></i><small class="myDateTimeFormat" data-date="{{data.acceptAt}}"></small></span>
+                                  
+                                @endif
                             </div>
                         </div>
                         <hr>

@@ -1205,6 +1205,7 @@ class PDFReport {
     async PIT_FUEL_RATIO_PDF (req) {
         let result = []
         const site = await MasSite.query().where('id', req.site_id).last()
+        const pit = await MasPit.query().where('id', req.pit_id).last()
         const logoPath = Helpers.publicPath('logo.jpg')
         const logoAsBase64 = await Image64Helpers.GEN_BASE64(logoPath)
         const chartPath = Helpers.publicPath(req.imagePath)
@@ -1223,10 +1224,13 @@ class PDFReport {
         result.push([
             { text: 'Location', style: 'tableHeader_L' },
             { text: 'Periode', style: 'tableHeader_L' },
-            { text: 'OB (bcm)', style: 'tableHeader_R' },
-            { text: 'Coal (bcm)', style: 'tableHeader_R' },
+            { text: 'ACT.OB\n(bcm)', style: 'tableHeader_R' },
+            { text: 'ACT.Coal\n(bcm)', style: 'tableHeader_R' },
             { text: 'Fuel Used', style: 'tableHeader_R' },
-            { text: 'Ratio', style: 'tableHeader_R' }
+            { text: 'Ratio', style: 'tableHeader_R' },
+            { text: 'Cumulative\nProd', style: 'tableHeader_R' },
+            { text: 'Cumulative\nFuel', style: 'tableHeader_R' },
+            { text: 'Cumulative\nRatio', style: 'tableHeader_R' },
         ])
 
         /* BODY TABLE DATA */
@@ -1238,7 +1242,10 @@ class PDFReport {
                 {text: obj.ob, style: 'tableCell_R'},
                 {text: obj.coal_bcm, style: 'tableCell_R'},
                 {text: obj.fuel_used, style: 'tableCell_R'},
-                {text: obj.fuel_ratio, style: 'tableCell_R'}
+                {text: obj.fuel_ratio, style: 'tableCell_R'},
+                {text: obj.cum_production, style: 'tableCell_R'},
+                {text: obj.cum_fuel_used, style: 'tableCell_R'},
+                {text: obj.cum_fuel_ratio, style: 'tableCell_R'}
             ])
         }
 
@@ -1279,7 +1286,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: `: ${site.name}`
+                                                text: `: ${req.site_id && site.name}`
                                             }
                                         ]
                                     },
@@ -1293,7 +1300,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: ': All Pit'
+                                                text: `: ${req.pit_id ? pit.name: 'All Pit'}`
                                             }
                                         ]
                                     },
@@ -1312,7 +1319,7 @@ class PDFReport {
                 layout: 'headerLineOnly',
                 table: {
                     headerRows: 1,
-                    widths: ['auto', '*', 80, 80, 'auto', 80],
+                    widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                     body: result
                 }
             }

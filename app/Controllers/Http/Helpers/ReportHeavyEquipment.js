@@ -35,7 +35,9 @@ class repHeavyEquipment {
                 .andWhere( w => {
                     w.where('date', '>=', req.start_date)
                     w.where('date', '<=', req.end_date)
-                    w.where('site_id', req.site_id)
+                    if(req.site_id){
+                        w.where('site_id', req.site_id)
+                    }
                 })
                 .fetch()
             ).toJSON()
@@ -47,7 +49,7 @@ class repHeavyEquipment {
             }
         }
 
-        // console.log(data);
+        console.log('data :::', data);
 
 
         /* GENERATE DATA KPI */

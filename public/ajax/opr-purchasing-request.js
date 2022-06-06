@@ -60,7 +60,7 @@ $(function(){
         $(this).parents('tr').find('input[name="barang_id"]').val(id)
         $(this).parents('tr').find('input[name="nm_barang"]').val(description)
         $(this).parents('tr').find('input[name="partnumber"]').val(partnumber)
-        $(this).parents('tr').find('select[name="parttype"]').val(parttype).trigger('change')
+        $(this).parents('tr').find('input[name="parttype"]').val(parttype).trigger('change')
         $(this).parents('tr').find('div.modal').modal('hide')
     })
 

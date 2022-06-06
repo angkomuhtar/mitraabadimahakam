@@ -27,7 +27,7 @@ class mamPurchasingRequest {
             if (req.priority) {
                 w.where('priority', priority)
             }
-        }).paginate(halaman, limit)
+        }).orderBy([{column: 'date', order: 'desc'}, {column: 'kode', order: 'asc'}]).paginate(halaman, limit)
         return purchasingRequest.toJSON()
     }
     

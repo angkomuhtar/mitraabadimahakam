@@ -9,7 +9,9 @@ const MasSite = use("App/Models/MasSite")
 class repFuelRatio {
     async PIT_WISE (req) {
         /* GET DATA FUEL RATIO */
+        let color = ['#75A5E3', '#1873C8', '#014584']
         let result = []
+        let cumm = []
 
         const data = (
             await MamFuelRatio.query().where( w => {
@@ -20,6 +22,10 @@ class repFuelRatio {
             }).fetch()
         ).toJSON()
 
+        console.log('====================================');
+        console.log(data);
+        console.log('====================================');
+
         const xAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
         result.push({
             name: 'Fuel Ratio',
@@ -28,7 +34,7 @@ class repFuelRatio {
             data: data.map(el => el.fuel_ratio),
             dataLabels: {
                 enabled: true,
-                rotation: -90,
+                rotation: 0,
                 color: '#FFFFFF',
                 // align: 'right',
                 format: '{point.y:.2f}', // two decimal
@@ -41,9 +47,68 @@ class repFuelRatio {
             }
         })
 
+        const cummxAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
+        cumm = [
+            {
+                name: 'Cumm Fuel Ratio',
+                type: 'spline',
+                color: color[0],
+                yAxis: 1,
+                data: data.map(el => el.cum_fuel_ratio),
+                dataLabels: {
+                    enabled: true,
+                    rotation: 0,
+                    color: 'red',
+                    format: '{point.y:.2f}', // two decimal
+                    y: 5, // 10 pixels down from the top
+                    style: {
+                        fontSize: '10px',
+                        fontFamily: 'Arial Narrow'
+                    }
+                }
+            },
+            {
+                name: 'Cumm Fuel Used',
+                type: req.typeChart,
+                color: color[1],
+                data: data.map(el => el.cum_fuel_used),
+                dataLabels: {
+                    enabled: true,
+                    rotation: 0,
+                    color: 'green',
+                    format: '{point.y:.2f}', // two decimal
+                    y: 5, // 10 pixels down from the top
+                    style: {
+                        fontSize: '10px',
+                        fontFamily: 'Arial Narrow'
+                    }
+                }
+            },
+            {
+                name: 'Cumm Production',
+                type: req.typeChart,
+                yAxis: 0,
+                color: color[2],
+                data: data.map(el => el.cum_production),
+                dataLabels: {
+                    enabled: true,
+                    rotation: 0,
+                    color: '#FFFFFF',
+                    y: -15,
+                    format: '{point.y:.2f}', // two decimal
+                    style: {
+                        fontSize: '10px',
+                        fontFamily: 'Arial Narrow'
+                    }
+                }
+            },
+        ]
+
         return {
             xAxis: xAxis,
-            series: result
+            series: result,
+            cummxAxis: cummxAxis,
+            cummSeries: cumm
         }
     }
 
@@ -96,13 +161,6 @@ class repFuelRatio {
                     type: req.typeChart,
                     color: color[i],
                     data: res[key].map(el => el.data),
-                    // data: res[key].map((el, i) => {
-                    //     return {
-                    //         y: el.data,
-                    //         name: res[key][i].name,
-                    //         drilldown: res[key][i].name,
-                    //     }
-                    // }),
                     dataLabels: {
                         enabled: true,
                         align: 'top',
@@ -120,132 +178,6 @@ class repFuelRatio {
             return {
                 xAxis: xAxis,
                 series: res,
-                // drilldown: {
-                //     breadcrumbs: {
-                //         position: {
-                //             align: 'right'
-                //         }
-                //     },
-                //     series: [
-                //         {
-                //         type: req.typeChart,
-                //         name: "RPU",
-                //         id: "RPU",
-                //         data: [
-                //             [
-                //                 "v65.0",
-                //                 0.1
-                //             ],
-                //             [
-                //                 "v64.0",
-                //                 1.3
-                //             ],
-                //             [
-                //                 "v63.0",
-                //                 53.02
-                //             ],
-                //             [
-                //                 "v62.0",
-                //                 1.4
-                //             ],
-                //             [
-                //                 "v61.0",
-                //                 0.88
-                //             ],
-                //             [
-                //                 "v60.0",
-                //                 0.56
-                //             ],
-                //             [
-                //                 "v59.0",
-                //                 0.45
-                //             ],
-                //             [
-                //                 "v58.0",
-                //                 0.49
-                //             ],
-                //             [
-                //                 "v57.0",
-                //                 0.32
-                //             ],
-                //             [
-                //                 "v56.0",
-                //                 0.29
-                //             ]
-                //         ]
-                //     },
-                //     {
-                //         type: req.typeChart,
-                //         name: "KARIMATA",
-                //         id: "KARIMATA",
-                //         data: [
-                //             [
-                //                 "v58.0",
-                //                 1.02
-                //             ],
-                //             [
-                //                 "v57.0",
-                //                 7.36
-                //             ],
-                //             [
-                //                 "v56.0",
-                //                 0.35
-                //             ],
-                //             [
-                //                 "v55.0",
-                //                 0.11
-                //             ],
-                //             [
-                //                 "v54.0",
-                //                 0.1
-                //             ],
-                //             [
-                //                 "v52.0",
-                //                 0.95
-                //             ],
-                //             [
-                //                 "v51.0",
-                //                 0.15
-                //             ],
-                //             [
-                //                 "v50.0",
-                //                 0.1
-                //             ],
-                //             [
-                //                 "v48.0",
-                //                 0.31
-                //             ],
-                //             [
-                //                 "v47.0",
-                //                 0.12
-                //             ]
-                //         ]
-                //     },
-                //     {
-                //         type: req.typeChart,
-                //         name: "DERAWAN BARU",
-                //         id: "DERAWAN BARU",
-                //         data: [
-                //             [
-                //                 "v11.0",
-                //                 6.2
-                //             ],
-                //             [
-                //                 "v10.0",
-                //                 0.29
-                //             ],
-                //             [
-                //                 "v9.0",
-                //                 0.27
-                //             ],
-                //             [
-                //                 "v8.0",
-                //                 0.47
-                //             ]
-                //         ]
-                //     }
-                // ]
-                // }
             }
         }
 

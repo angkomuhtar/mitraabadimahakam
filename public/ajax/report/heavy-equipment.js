@@ -95,8 +95,12 @@ $(function(){
                         body.find('div#box-table-kpi').html(res)
                     }
                 })
-                body.find('span#byDataRatio-UnScheduled').html(result.byDataRatio?.filter(obj => obj.name==="Scheduled")[0].items.length)
-                body.find('span#byDataRatio-Scheduled').html(result.byDataRatio?.filter(obj => obj.name==="UnScheduled")[0].items.length)
+                result.byDataRatio.length > 0 && 
+                body.find('span#byDataRatio-UnScheduled').html(
+                    result.byDataRatio?.filter(obj => obj.name==="Scheduled")[0]?.items.length
+                )
+                result.byDataRatio.length > 0 &&
+                body.find('span#byDataRatio-Scheduled').html(result.byDataRatio?.filter(obj => obj.name==="UnScheduled")[0]?.items.length)
                 body.find('div#box-chart').css('display', 'block')
                 body.find('div#box-table-kpi').slimScroll({
                     height: '375px'
@@ -108,7 +112,7 @@ $(function(){
         })
     })
 
-    body.on('click', 'a#print-kpi', function(e){
+    body.on('click', 'button#bt-generate-pdf', function(e){
         e.preventDefault()
         var fd = new FormData(document.querySelector('form'))
         var promise1 = domtoimage.toBlob(document.getElementById('container'))
@@ -219,6 +223,12 @@ $(function(){
 
     function GEN_CHART(data){
         
+        body.on('change', 'select[name="dimensi"]', function(){
+            PERFORMANCES_CHART ()
+            DURATION_EVENT()
+            COUNT_EVENT()
+        })
+
         body.on('keyup, change', 'input[name="alfa"]', function(){
             PERFORMANCES_CHART ()
             DURATION_EVENT()
@@ -242,6 +252,7 @@ $(function(){
         COUNT_EVENT()
 
         function PERFORMANCES_CHART () {
+            var dimensi =  body.find('select[name="dimensi"]').val()
             var alfaNum =  body.find('input[name="alfa"]').val()
             var betaNum =  body.find('input[name="beta"]').val()
             var depthNum =  body.find('input[name="depth"]').val()
@@ -251,7 +262,7 @@ $(function(){
                     zoomType: 'xy',
                     type: body.find('select[id="typeChart"]').val(),
                     options3d: {
-                        enabled: true,
+                        enabled: dimensi != '3d' ? false:true,
                         alpha: parseInt(alfaNum) || 1,
                         beta: parseInt(betaNum) || 370,
                         depth: parseInt(depthNum) || 40,
