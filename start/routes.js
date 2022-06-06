@@ -565,7 +565,7 @@ Route.group(() => {
 
   Route.get('/fuel-summary/:id/show', 'FuelUsageSummaryController.show').as('opr.fuel-summary.show').middleware('U')
 
-  Route.post('/fuel-sumamry/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
+  Route.post('/fuel-summary/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
 
   Route.delete('/fuel-summary/:id/destroy', 'FuelUsageSummaryController.destroy').as('opr.fuel-summary.destroy').middleware('D')
 
