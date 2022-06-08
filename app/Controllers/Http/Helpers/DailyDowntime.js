@@ -91,7 +91,7 @@ class DailyDowntime {
         bd_status: value.M,
         component_group: value.N || null,
         downtime_code: value.O,
-        pic: value.P || null,
+        pic: value.P || null
       }
       data.push(obj)
 
@@ -126,7 +126,7 @@ class DailyDowntime {
         component_group: data.component_group || 'Kosong',
         downtime_status: data.downtime_code,
         person_in_charge: data.pic,
-        urut: count,
+        urut: count
       })
 
       try {
@@ -281,7 +281,7 @@ class DailyDowntime {
 
     const xlsx = excelToJson({
       sourceFile: filePath,
-      header: 1,
+      header: 1
     })
 
     const data = []
@@ -296,7 +296,11 @@ class DailyDowntime {
       if (equipment) {
         result = equipment.toJSON()
       } else {
-       // do nothing
+        // do nothing
+        return {
+          success: false,
+          message: `Equipment ${name} not found in the database!`
+        }
       }
       return result
     }
@@ -374,7 +378,7 @@ class DailyDowntime {
           end_smu: value.hm_end,
           used_smu: value.hm_total,
           tgl: reqDate,
-          approved_at: moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm:ss')
+          approved_at: moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
         })
 
         try {
@@ -384,13 +388,13 @@ class DailyDowntime {
           return {
             success: false,
             message: 'Failed when inserting timesheet to tb.timesheet .\n Reason : ' + err.message,
-            reason: err.message
+            reason: err.message,
           }
         }
 
         try {
           const SMU_BEGIN = (await GET_STARTING_HOUR_METER_EQUIPMENT(equipId)).begin_smu
-          const SMU_MTD = (await GET_MTD_HOUR_METER_EQUIPMENT(equipId)).end_smu
+          const SMU_MTD = (await GET_MTD_HOUR_METER_EQUIPMENT(equipId))?.end_smu
           const USED_SMU = SMU_MTD - SMU_BEGIN || 0
 
           /**
@@ -417,7 +421,7 @@ class DailyDowntime {
               actual_eu: (USED_SMU / equipmentPerformance.mohh) * 100 || 0,
               actual_ua: (USED_SMU / (USED_SMU + standby_hours)) * 100 || 0,
               actual_ma: actual_ma * 100 || 0,
-              standby_hours: standby_hours
+              standby_hours: standby_hours,
             })
 
             await equipmentPerformance.save()
