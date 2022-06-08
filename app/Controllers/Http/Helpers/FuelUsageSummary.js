@@ -181,7 +181,6 @@ class FuelSummaryHelpers {
           message: `Data fuel tgl ${date} - PIT ${pitName} sudah ada di database!. \n Silahkan coba lagi`,
         }
       } else {
-
         const sumFuel = await FuelSummary.query()
           .where(w => {
             w.where('site_id', site_id)
@@ -220,9 +219,9 @@ class FuelSummaryHelpers {
           fuel_used: value.fuel_cons,
           fuel_ratio: value.fuel_ratio,
           user_id: usr.id,
-          cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3,
-          cum_fuel_used: sumFuel + parseFloat(value.fuel_cons),
-          cum_fuel_ratio: parseFloat(sumFuel + parseFloat(value.fuel_cons)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3),
+          cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3 || 0,
+          cum_fuel_used: sumFuel + parseFloat(value.fuel_cons) || 0,
+          cum_fuel_ratio: parseFloat(sumFuel + parseFloat(value.fuel_cons)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3) || 0,
         })
         try {
           await newFuelSummary.save()
