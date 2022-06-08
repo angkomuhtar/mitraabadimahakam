@@ -28,6 +28,22 @@ class FuelSummaryHelpers {
       .orderBy([{ column: 'date', order: 'desc' }])
       .paginate(halaman, limit)
 
+      // try {
+        
+      //   const sumProdCoal = await FuelSummary.query()
+      //       .where(w => {
+      //         // w.where('site_id', site_id)
+      //         // w.where('pit_id', pit_id)
+      //         w.where('date', '>=', '2022-12-01')
+      //         w.where('date', '<=', '2022-12-31')
+      //       })
+      //       .getSum('coal_bcm')
+  
+      //       console.log('sumProdCoal :::', sumProdCoal || 0);
+      // } catch (error) {
+      //   console.log(error);
+      // }
+
     return fuelSummary.toJSON()
   }
 
@@ -188,7 +204,7 @@ class FuelSummaryHelpers {
             w.where('date', '>=', moment(date).startOf('month').format('YYYY-MM-DD'))
             w.where('date', '<=', moment(date).format('YYYY-MM-DD'))
           })
-          .getSum('fuel_used')
+          .getSum('fuel_used') || 0
 
         const sumProdOB = await FuelSummary.query()
           .where(w => {
@@ -197,7 +213,7 @@ class FuelSummaryHelpers {
             w.where('date', '>=', moment(date).startOf('month').format('YYYY-MM-DD'))
             w.where('date', '<=', moment(date).format('YYYY-MM-DD'))
           })
-          .getSum('ob')
+          .getSum('ob') || 0
 
         const sumProdCoal = await FuelSummary.query()
           .where(w => {
@@ -206,9 +222,10 @@ class FuelSummaryHelpers {
             w.where('date', '>=', moment(date).startOf('month').format('YYYY-MM-DD'))
             w.where('date', '<=', moment(date).format('YYYY-MM-DD'))
           })
-          .getSum('coal_bcm')
+          .getSum('coal_bcm') || 0
 
         const newFuelSummary = new FuelSummary()
+        var cumProd = (parseFloat(sumProdOB) + parseFloat(sumProdCoal))
         newFuelSummary.fill({
           site_id: GET_PIT_DATA.site_id,
           pit_id: GET_PIT_DATA.id,
@@ -219,7 +236,8 @@ class FuelSummaryHelpers {
           fuel_used: value.fuel_cons,
           fuel_ratio: value.fuel_ratio,
           user_id: usr.id,
-          cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3 || 0,
+          cum_production: cumProd === 0 ? (parseFloat(value.coal_bcm) + parseFloat(value.ob)) : (parseFloat(value.coal_bcm) + parseFloat(value.ob)) + (parseFloat(sumProdOB) + parseFloat(sumProdCoal)),
+          // cum_production: cumProd === 0 ? + (parseFloat(value.coal_mt) / 1.3) || 0,
           cum_fuel_used: sumFuel + parseFloat(value.fuel_cons) || 0,
           cum_fuel_ratio: parseFloat(sumFuel + parseFloat(value.fuel_cons)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3) || 0,
         })
