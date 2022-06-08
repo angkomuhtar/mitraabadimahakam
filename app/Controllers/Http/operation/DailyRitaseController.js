@@ -43,7 +43,7 @@ class DailyRitaseController {
       const dailyRitase = (await DailyRitaseHelpers.ALL(req)).toJSON()
       return view.render('operation.daily-ritase-ob.list', {
         list: dailyRitase,
-        limit: req.limit || 25,
+        limit: req.limit || 100,
       })
     } catch (error) {
       console.log(error)
@@ -164,7 +164,7 @@ class DailyRitaseController {
                                      <div class="form-group">
                                          <div class="input-group">
                                              <input type="text" class="form-control" name="qty">
-                                             <span class="input-group-addon">Ritase</span>
+                                             <span class="input-group-addon">Rit</span>
                                          </div>
                                      </div>
                                  </div>
@@ -758,8 +758,9 @@ class DailyRitaseController {
 
         const currentDailyFleetEquipIds = dailyFleetEquip.filter(v => v.equipment.tipe !== 'excavator').map(v => v.equipment.id)
         const ritaseHaulers = reqCollect.map(v => parseInt(v.hauler_id))
-        const newEquipment = _.difference(ritaseHaulers, currentDailyFleetEquipIds)
 
+        const newEquipment = _.difference(ritaseHaulers, currentDailyFleetEquipIds)
+        
         const GET_DATA_RITASE_HAULER = hauler_id => {
           let opr_id = null
           let check_in = null

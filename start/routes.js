@@ -511,6 +511,8 @@ Route.group(() => {
 
   Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('R') 
 
+  Route.get('/daily-issue/:id/show', 'DailyIssueController.show').as('opr.daily-issue.show').middleware('R')
+
   Route.post('/daily-issue/:id/update', 'DailyIssueController.update').as('opr.daily-issue.update').middleware('U')
 
   Route.delete('/daily-issue/:id/destroy', 'DailyIssueController.destroy').as('opr.daily-issue.destroy').middleware('D')
@@ -563,7 +565,7 @@ Route.group(() => {
 
   Route.get('/fuel-summary/:id/show', 'FuelUsageSummaryController.show').as('opr.fuel-summary.show').middleware('U')
 
-  Route.post('/fuel-sumamry/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
+  Route.post('/fuel-summary/:id/update', 'FuelUsageSummaryController.update').as('opr.fuel-summary.update').middleware('U')
 
   Route.delete('/fuel-summary/:id/destroy', 'FuelUsageSummaryController.destroy').as('opr.fuel-summary.destroy').middleware('D')
 
@@ -616,14 +618,18 @@ Route.group(() => {
     Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
 
     Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData').middleware('R')
-
+    
     Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData').middleware('R')
-
+    
     Route.get('/heavy-equipment', 'HeavyEquipmentController.index').as('rep.heavy-equipment.index').middleware('R')
-
+    
     Route.post('/heavy-equipment', 'HeavyEquipmentController.applyFilter').as('rep.heavy-equipment.applyFilter').middleware('R')
     
     Route.get('/heavy-equipment/filter', 'HeavyEquipmentController.filter').as('rep.heavy-equipment.filter').middleware('R')
+    
+    Route.post('/heavy-equipment/table', 'HeavyEquipmentController.kpiTable').as('rep.heavy-equipment.kpiTable').middleware('R')
+
+    Route.post('/heavy-equipment/gen-data-pdf', 'HeavyEquipmentController.genDataPDF').as('rep.heavy-equipment.showData').middleware('R')
 })
   .prefix('report')
   .namespace('report')
@@ -631,6 +637,7 @@ Route.group(() => {
 
 // AJAX
 Route.group(() => {
+
   Route.get('/sys-options', 'AjaxOptionController.index').as('set.sys-options.index')
 
   Route.get('/usr', 'AjaxUserAkseController.getOptionUsers').as('set.sys-options.getOptionUsers')

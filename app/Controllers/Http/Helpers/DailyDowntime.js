@@ -55,14 +55,19 @@ class DailyDowntime {
 
       if (equipment) {
         result = equipment.toJSON()
+        return result
       } else {
         // const { isSuccess, checkMsg } = await Utils.equipmentCheck(name, brand)
         // return {
         //   success: isSuccess,
         //   message: checkMsg
         // }
+        // return {
+        //   success: false,
+        //   message: `Equipment Unit ${name} tidak di temukan pada master equipment...`
+        // }
+        throw new Error (`Equipment Unit ${name} tidak di temukan pada master equipment...`)
       }
-      return result
     }
 
     // update into equipment performance master
@@ -325,9 +330,11 @@ class DailyDowntime {
     const GET_MTD_HOUR_METER_EQUIPMENT = async equipId => {
       const start = moment(reqDate).startOf('month').format('YYYY-MM-DD')
       const end = moment(reqDate).endOf('month').format('YYYY-MM-DD')
+      console.log('EQUIPMENT :::', equipId);
       const equipment = await DailyChecklist.query()
         .where(wh => {
-          wh.whereIn('tgl', [start, end])
+          wh.where('tgl', '>=', start)
+          wh.where('tgl', '<=', end)
           wh.where('unit_id', equipId)
         })
         .last()
@@ -365,7 +372,8 @@ class DailyDowntime {
 
       // now insert the data to daily timesheet
       for (const value of data) {
-        const equipId = (await GET_EQUIPMENT_DATA(value.equipType, value.equipModel, value.equipName)).id
+        const equipId = (await GET_EQUIPMENT_DATA(value.equipType, value.equipModel, value.equipName))?.id
+
         let dailyChecklist = new DailyChecklist()
         dailyChecklist.fill({
           user_chk: user.id,
@@ -382,7 +390,7 @@ class DailyDowntime {
         })
 
         try {
-          await dailyChecklist.save()
+          equipId && await dailyChecklist.save()
           console.log(`---- finished inserting timesheet id ${dailyChecklist.id} ----`)
         } catch (err) {
           return {
@@ -432,7 +440,7 @@ class DailyDowntime {
            * DAILY PERFORMANCE
            */
           const dailyEquipPerformance = await EquipmentPerformanceDetails.query()
-            .where(wh => {
+          .where(wh => {
               wh.where('date', reqDate)
               wh.where('equip_id', equipId)
             })

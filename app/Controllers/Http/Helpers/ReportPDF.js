@@ -1205,6 +1205,7 @@ class PDFReport {
     async PIT_FUEL_RATIO_PDF (req) {
         let result = []
         const site = await MasSite.query().where('id', req.site_id).last()
+        const pit = await MasPit.query().where('id', req.pit_id).last()
         const logoPath = Helpers.publicPath('logo.jpg')
         const logoAsBase64 = await Image64Helpers.GEN_BASE64(logoPath)
         const chartPath = Helpers.publicPath(req.imagePath)
@@ -1223,10 +1224,13 @@ class PDFReport {
         result.push([
             { text: 'Location', style: 'tableHeader_L' },
             { text: 'Periode', style: 'tableHeader_L' },
-            { text: 'OB (bcm)', style: 'tableHeader_R' },
-            { text: 'Coal (bcm)', style: 'tableHeader_R' },
+            { text: 'ACT.OB\n(bcm)', style: 'tableHeader_R' },
+            { text: 'ACT.Coal\n(bcm)', style: 'tableHeader_R' },
             { text: 'Fuel Used', style: 'tableHeader_R' },
-            { text: 'Ratio', style: 'tableHeader_R' }
+            { text: 'Ratio', style: 'tableHeader_R' },
+            { text: 'Cumulative\nProd', style: 'tableHeader_R' },
+            { text: 'Cumulative\nFuel', style: 'tableHeader_R' },
+            { text: 'Cumulative\nRatio', style: 'tableHeader_R' },
         ])
 
         /* BODY TABLE DATA */
@@ -1238,7 +1242,10 @@ class PDFReport {
                 {text: obj.ob, style: 'tableCell_R'},
                 {text: obj.coal_bcm, style: 'tableCell_R'},
                 {text: obj.fuel_used, style: 'tableCell_R'},
-                {text: obj.fuel_ratio, style: 'tableCell_R'}
+                {text: obj.fuel_ratio, style: 'tableCell_R'},
+                {text: obj.cum_production, style: 'tableCell_R'},
+                {text: obj.cum_fuel_used, style: 'tableCell_R'},
+                {text: obj.cum_fuel_ratio, style: 'tableCell_R'}
             ])
         }
 
@@ -1279,7 +1286,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: `: ${site.name}`
+                                                text: `: ${req.site_id && site.name}`
                                             }
                                         ]
                                     },
@@ -1293,7 +1300,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: ': All Pit'
+                                                text: `: ${req.pit_id ? pit.name: 'All Pit'}`
                                             }
                                         ]
                                     },
@@ -1312,7 +1319,7 @@ class PDFReport {
                 layout: 'headerLineOnly',
                 table: {
                     headerRows: 1,
-                    widths: ['auto', '*', 80, 80, 'auto', 80],
+                    widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                     body: result
                 }
             }
@@ -1846,6 +1853,145 @@ class PDFReport {
             content: PREP_DATA,
         }
 
+        return dd
+    }
+
+    async KPI_PERFORMANCES (req, data) {
+        const { byKPI, dataEvent } = data
+        const logoPath = Helpers.publicPath('logo.jpg')
+        const logoAsBase64 = await Image64Helpers.GEN_BASE64(logoPath)
+
+        const KPIPath = Helpers.publicPath(req.imageKPI)
+        const KPIAsBase64 = await Image64Helpers.GEN_BASE64(KPIPath)
+
+        const BDPath = Helpers.publicPath(req.imageRatio)
+        const BDAsBase64 = await Image64Helpers.GEN_BASE64(BDPath)
+
+        const DurationPath = Helpers.publicPath(req.imageDuration)
+        const DurationAsBase64 = await Image64Helpers.GEN_BASE64(DurationPath)
+
+        const EventPath = Helpers.publicPath(req.imageEvent)
+        const EventAsBase64 = await Image64Helpers.GEN_BASE64(EventPath)
+
+        console.log(req);
+        console.log(data);
+
+        /* FORMAT DATA KPI PERFORMANCES TO PDFMAKE */
+        let dataKPI = byKPI.dataTable.map(v => {
+            return [
+                {text: v.date},
+                {text: (v.actPA)?.toFixed(2), alignment:'center'},
+                {text: (v.budgetPA)?.toFixed(2), alignment:'center'},
+                {text: (v.actMTBS)?.toFixed(2), alignment:'center'},
+                {text: (v.actMTTR)?.toFixed(2), alignment:'center'},
+            ]
+        })
+        dataKPI.unshift([
+            {text: 'Periode', fillColor: '#41b3f98f'},
+            {text: 'Actual PA', alignment:'center', bold: true, fillColor: '#41b3f98f'},
+            {text: 'Budget PA', alignment:'center', fillColor: '#41b3f98f'},
+            {text: 'MTBS', alignment:'center', fillColor: '#41b3f98f'},
+            {text: 'MTTR', alignment:'center', fillColor: '#41b3f98f'}
+        ])
+
+        /* FORMAT DATA DOWNTIME EVENT TO PDFMAKE */
+        let dataTopEvent = dataEvent.map(v => {
+            return [
+                {text: (v.equipment?.kode || ''), bold: true},
+                {text: v.location+'\n'+v.problem_reported, alignment:'left', fontSize: 9},
+                {text: v.downtime_status},
+                {text: v.corrective_action, fontSize: 9},
+                {text: v.downtime_total},
+                {text: v.component_group},
+            ]
+        })
+
+        dataTopEvent.unshift([
+            {text: 'Equipment', bold: true, fillColor: '#41b3f98f'},
+            {text: 'Location', alignment:'left', bold: true, fillColor: '#41b3f98f'},
+            {text: 'Description', bold: true, fillColor: '#41b3f98f'},
+            {text: 'Action', bold: true, fillColor: '#41b3f98f'},
+            {text: 'Duration', bold: true, fillColor: '#41b3f98f'},
+            {text: 'Group', bold: true, fillColor: '#41b3f98f'},
+        ])
+
+        var dd = {
+            content: [
+                {text: 'printAt :'+ moment().format('llll'), fontSize: 7, alignment: 'right'},
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: [100, '*', 150],
+                        body: [
+                            [
+                                {
+                                    image: `${logoAsBase64}`,
+                                    fit: [80, 80],
+                                    rowSpan: 2
+                                },
+                                {text: 'EQUIPMENT PERFORMANCES', alignment:'center', bold: true},
+                                {text: 'Site Name', alignment:'center'}
+                            ],
+                            [
+                                {text: 'Logo'},
+                                {text: 'MODEL CMT96', alignment:'center', fontSize: 10},
+                                {text: 'Bukit Baiduri Energi', alignment:'center', fontSize: 10}
+                            ]
+                        ]
+                    }
+                },
+                {
+                    image: `${KPIAsBase64}`,
+                    fit: [515, 300]
+                },
+                {text: ' \n\n'},
+                {text: 'Data Collection details performances\n', bold: true},
+                {text: '\n'},
+                //table KPI
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: [100, '*', 100, 100, 100],
+                        body: dataKPI
+                    }
+                },
+                {text: ' \n\n'},
+                {text: 'Grafik Top Event\n', bold: true},
+                {text: '\n\n'},
+                {
+                    alignment: 'justify',
+                    columns: [
+                        {
+                            image: `${EventAsBase64}`,
+                            width: 250
+                        },
+                        {
+                            image: `${DurationAsBase64}`,
+                            width: 250
+                        },
+                        
+                    ]
+                },
+                {text: '\n\n'},
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: [100, 100, '*', 100, 50, 50],
+                        body: dataTopEvent
+                    }
+                },
+                {text: ' '},
+                {text: '\n\n'},
+                // {text: 'Grafik Breakdown Ratio\n', bold: true},
+                // {text: '\n\n'},
+                // {
+                //     image: `${BDAsBase64}`,
+                //     width: 250
+                // },
+                
+            ],
+            footer: function(currentPage, pageCount) { return currentPage.toString() + ' of ' + pageCount; }
+        }
         return dd
     }
 }

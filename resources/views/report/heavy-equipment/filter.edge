@@ -3,6 +3,9 @@
 {{ script('plugins/bower_components/dom-to-image/dist/dom-to-image.min') }}
 {{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
 {{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+
+{{ style('plugins/bower_components/ion-rangeslider/css/ion.rangeSlider') }}
+{{ style('plugins/bower_components/ion-rangeslider/css/ion.rangeSlider.skinSimple') }}
 <div class="row">
     <div class="col-md-12">
         <div class="white-box">
@@ -208,13 +211,62 @@
                     </tr>
                 </table>
             </div>
-            <div class="panel panel-default" style="display:block">
+            <div id="box-chart" class="panel panel-default" style="display:none">
                 <div class="panel-body">
-                    <figure class="highcharts-figure">
-                        <div id="container"></div>
-                    </figure>
-                </div>
-                <div class="panel-body">
+                    <div class="row">
+                        <figure class="highcharts-figure">
+                            <div id="container"></div>
+                        </figure>
+                        <div class="col-xs-4">
+                            <select class="form-control" name="dimensi" id="dimensi">
+                                <option value="3d"> Chart 3 Dimensi</option>
+                                <option value="2d">Chart 2 Dimensi</option>
+                            </select>
+                        </div>
+
+                        <div class="col-xs-2">
+                            <input type="number" name="alfa" class="form-control" placeholder="alpha values" value="1">
+                        </div>
+                        <div class="col-xs-2">
+                            <input type="number" name="beta" class="form-control" placeholder="beta values" value="370">
+                        </div>
+                        <div class="col-xs-2">
+                            <input type="number" name="depth" class="form-control" placeholder="depth values" value="40">
+                        </div>
+                        <div class="col-xs-2">
+                            <input type="number" name="viewDistance" class="form-control" placeholder="depth values" value="25">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <!--
+                        <div class="col-md-6">
+                            <div id="container-ratio" class="text-center">BreakDown Ratio</div>
+                        </div>-->
+                        <div class="col-md-6 col-sm-6 col-lg-6" id="box-container-ratio">
+                            <div id="container-ratio" class="text-center" style="height:250px">BreakDown Ratio</div>
+                            <div class="panel">
+                                <div class="panel-footer">
+                                    <p>
+                                        <strong class="m-b-0 m-t-0 font-medium">Scheduled</strong>
+                                        <span class="pull-right" id="byDataRatio-UnScheduled" style="font-size: 25px;font-weight: 100">0</span>
+                                    </p>
+                                    <hr>
+                                    <p>
+                                        <strong class="m-b-0 m-t-0 font-medium">Unscheduled</strong>
+                                        <span class="pull-right" id="byDataRatio-Scheduled" style="font-size: 25px;font-weight: 100">0</span>
+                                    </p>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="border: 1px solid #ddd;">
+                            <div id="box-table-kpi" class="table-responsive" style="margin-top: 10px;">
+                                &nbsp;
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
                     <div class="row">
                         <div class="col-md-6">
                             <div id="container-duration" class="text-center">Top 10 Stop By Duration</div>
@@ -222,39 +274,23 @@
                         <div class="col-md-6">
                             <div id="container-event" class="text-center">Top 10 Stop By Event</div>
                         </div>
-                        <div class="col-md-12">
-                            <div id="container-ratio" class="text-center">BreakDown Ratio</div>
-                        </div>
                     </div>
                 </div>
-                <div class="panel-footer text-center">
+                <div class="panel-footer text-right">
                     <button type="button" class="btn btn-default waves-effect waves-light btn-sm pull-left" id="bt-back"> 
                         <i class="fa fa-angle-left"></i> <span>Back</span>
                     </button>
                     <span class="mytooltip tooltip-effect-1">
                         <span class="tooltip-item" style="background: none;">
-                            <button class="btn btn-success waves-effect waves-light" type="button" id="bt-generate-xls">
-                                <span class="btn-label">
-                                    <i class="ti-download"></i>
-                                </span>
-                                XLS Files
-                            </button>
-                        </span> 
-                        <span class="tooltip-content clearfix">
-                            <img src="{{ assetsUrl('images/xls.png')}}" width="100">
-                            <span class="tooltip-text">
-                                Download data berformat EXCEL sesuai dengan filtering data yang telah di tentukan.
-                            </span> 
-                        </span>
-                    </span>
-                    <span class="mytooltip tooltip-effect-1">
-                        <span class="tooltip-item" style="background: none;">
-                            <button class="btn btn-inverse waves-effect waves-light" type="button" id="bt-generate-pdf">
-                                <span class="btn-label">
-                                    <i class="ti-download"></i>
-                                </span>
-                                PDF Files
-                            </button>
+                            <div class="btn-group m-r-10">
+                                <button class="btn btn-inverse waves-effect waves-light pull-left" type="button" id="bt-generate-pdf">
+                                    <span class="btn-label">
+                                        <i class="ti-download"></i>
+                                    </span>
+                                    PDF Files 
+                                    <span class="caret"></span>
+                                </button>
+                            </div>
                         </span> 
                         <span class="tooltip-content clearfix">
                           <img src="{{ assetsUrl('images/pdf.png')}}">
@@ -268,12 +304,19 @@
         </div>
     </div>
 </div>
+{{ script('js/jquery.slimscroll.js') }}
+<!-- Ion Range Slider -->
+{{ script('plugins/bower_components/ion-rangeslider/js/ion-rangeSlider/ion.rangeSlider.min') }}
+{{ script('plugins/bower_components/ion-rangeslider/js/ion-rangeSlider/ion.rangeSlider-init') }}
 <script>
     $(function(){
         $(".colorpicker").asColorPicker();
         $(".complex-colorpicker").asColorPicker({
             mode: 'complex'
         });
+
+        var range = $("#range_01").data().from
+        // console.log(range);
     })
 </script>
 <style>

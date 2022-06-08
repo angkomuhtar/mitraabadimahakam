@@ -56,20 +56,20 @@
                                         <i class="ti-alarm-clock m-r-10"></i><small class="myTimeFormat" data-date="{{item.date}}"></small>
                                     </td>
                                     <td>
-                                        <strong>{{item.department}}</strong>
-                                        @if(item.priority === 'URGENT')
-                                            <small class="label label-danger pull-right">
-                                                URGENT
+                                        <strong>{{item.department}}</strong> <br>
+                                        @if(item.priority === 'URGENT PRIORITY')
+                                            <small class="label label-danger">
+                                                {{item.priority}}
                                             </small>
                                         @endif
-                                        @if(item.priority === 'NORMAL')
-                                            <small class="label label-warning pull-right">
-                                                NORMAL
+                                        @if(item.priority === 'NORMAL PRIORITY')
+                                            <small class="label label-warning">
+                                                {{item.priority}}
                                             </small>
                                         @endif
-                                        @if(item.priority === 'STOCK')
-                                            <small class="label label-info pull-right">
-                                                STOCK
+                                        @if(item.priority === 'LOW PRIORITY')
+                                            <small class="label label-info">
+                                                {{item.priority}}
                                             </small>
                                         @endif
                                     </td>

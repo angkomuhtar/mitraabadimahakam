@@ -85,7 +85,10 @@ $(function(){
             contentType: false,
             success: function(result){
                 console.log(result)
-                GEN_CHART(result.xAxis, result.series, result.drilldown)
+                GEN_CHART_ACTUAL(result.xAxis, result.series)
+                if (result.cummxAxis) {
+                    GEN_CHART_CUM(result.cummxAxis, result.cummSeries)
+                }
                 body.find('div#box-chart').css('display', 'inline')
             },
             error: function(err){
@@ -98,7 +101,7 @@ $(function(){
     $('body').on('click', 'button#bt-generate-pdf', function(e){
         e.preventDefault()
 
-        domtoimage.toBlob(document.getElementById('container'))
+        domtoimage.toBlob(document.getElementById('print-area'))
         .then(function (blob) {
             console.log(blob);
             blob.fileName = 'chart.png'
@@ -168,14 +171,14 @@ $(function(){
         })
     }
 
-    function GEN_CHART (xAxis, series, drilldown) {
+    function GEN_CHART_ACTUAL (xAxis, series, cummxAxis, cummSeries) {
 
         Highcharts.chart('container', {
             chart: {
-                zoomType: 'xy'
+                zoomType: 'xy',
             },
             title: {
-                text: 'Fuel Ratio'
+                text: 'Actual Fuel Ratio'
             },
             subtitle: {
                 text: 'Project BBE'
@@ -245,6 +248,63 @@ $(function(){
                             );
                         }
                     }
+                }
+            },
+            series: series
+        });
+
+        
+    }
+
+    function GEN_CHART_CUM (xAxis, series) {
+        Highcharts.chart('cumm-container', {
+            chart: {
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Cummulative Fuel Ratio'
+            },
+            xAxis: [{
+                categories: xAxis,
+                crosshair: true
+            }],
+            yAxis: [
+                { // Secondary yAxis
+                    title: {
+                        text: 'Tot.Production',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    labels: {
+                        format: '{value} bcm',
+                        style: {
+                            color: Highcharts.getOptions().colors[0]
+                        }
+                    },
+                    opposite: true
+                },
+                { // Primary yAxis
+                title: {
+                    text: 'CUMM RATIO',
+                    tickAmount: 5,
+                    tickInterval: 0.2,
+                    style: {
+                        color: Highcharts.getOptions().colors[1]
+                    }
+                }
+            }],
+            tooltip: {
+                shared: true
+            },
+            plotOptions: {
+                column: {
+                    dataLabels: {
+                        enabled: true,
+                        format: '{value}',
+                    },
+                    pointPadding: 0.2,
+                    borderWidth: 0
                 }
             },
             series: series

@@ -118,7 +118,9 @@ $(function(){
 
 
     $('body').on('click', 'button.bt-edit-data', function(e){
+        e.preventDefault()
         var id = $(this).data('id')
+        // console.log('/operation/daily-issue/'+id+'/show');
         $.ajax({
             async: true,
             url: '/operation/daily-issue/'+id+'/show',

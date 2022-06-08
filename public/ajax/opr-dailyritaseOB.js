@@ -4,7 +4,7 @@ $(function(){
     getHaulerByDailyFleet()
     function initDeafult(lim, url){
         $('div.content-module').css('display', 'none')
-        var limit = lim || 25
+        var limit = lim || 250
         $('div#list-content').html('<h4 style="text-align: center;">Please wait,,, System still loading data</h4>').show()
         $.ajax({
             async: true,
@@ -574,6 +574,7 @@ $(function(){
                     url: '/operation/daily-ritase-ob/haulers/default/'+id,
                     method: 'GET',
                     success: function(result){
+                        // console.log(result);
                         for(const txt of result.data) {
                             $('tbody#item-details').append(txt)
                             $('body').find('tbody > tr.advance-table-row').each(function(i, e){
@@ -589,12 +590,12 @@ $(function(){
     }
 
     function getHaulerByDailyFleet(){
-        console.log('does this running >> ')
+        // console.log('does this running >> ')
         var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
         if(isUploadFile) {
             $('body').on('change','select.select2dailyfleet', function(e) {
                 const id = $(this).attr('data-check') || $('select.select2dailyfleet').find(':selected').val()
-                console.log('id >> ', id)
+                // console.log('id >> ', id)
                 $.ajax({
                     async: true,
                     url: '/operation/daily-ritase-ob/haulers/default/'+id,

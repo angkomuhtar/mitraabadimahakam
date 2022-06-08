@@ -142,7 +142,7 @@ class DailyRitaseCoalController {
         const shift = await MasShift.query().where('kode', obj.F).last()
         const exca = await MasEquipment.query().where('kode', obj.C.replace(' ', '')).last()
 
-        console.log('pit >> ', pit)
+        console.log('exca >> ', exca)
         console.log('seam >> ', obj.I)
 
         const seam = await MasSeam.query()
@@ -151,6 +151,7 @@ class DailyRitaseCoalController {
             w.where('kode', obj.I)
           })
           .last()
+
         const fleet = await MasFleet.query()
           .where(w => {
             w.where('pit_id', pit.id)
@@ -158,11 +159,19 @@ class DailyRitaseCoalController {
             w.where('status', 'Y')
           })
           .last()
+
         if (!dt_subcon) {
           return {
             success: false,
             data: null,
             message: 'Dump Truck ' + obj.D + ' tidak di temukan...',
+          }
+        }
+        if (!exca) {
+          return {
+            success: false,
+            data: null,
+            message: 'Equipment unit ' + obj.C + ' tidak di temukan...',
           }
         }
         if (!pit) {
@@ -187,6 +196,8 @@ class DailyRitaseCoalController {
           }
         }
 
+        // console.log('....', exca.id);
+
         /* CREATE OR USED DAILY FLEET */
         let dailyFleetEquip = await DailyFleetEquip.query()
           .where(w => {
@@ -195,6 +206,8 @@ class DailyRitaseCoalController {
             w.where('datetime', '<=', moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm'))
           })
           .last()
+
+        console.log(dailyFleetEquip);
 
         if (!dailyFleetEquip) {
           dailyFleet = new DailyFleet()
