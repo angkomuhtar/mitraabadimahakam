@@ -111,7 +111,7 @@ class FuelSummaryHelpers {
           coal_bcm: value.coal_bcm,
           fuel_used: value.fuel_cons,
           fuel_ratio: value.fuel_ratio,
-          user_id: usr.id,
+          user_id: usr.id
         })
         try {
           await newFuelSummary.save()
@@ -178,7 +178,7 @@ class FuelSummaryHelpers {
       if (checkData) {
         return {
           success: false,
-          message: `Data fuel tgl ${date} - PIT ${pitName} sudah ada di database!. \n Silahkan coba lagi`,
+          message: `Data fuel tgl ${date} - PIT ${pitName} sudah ada di database!. \n Silahkan coba lagi`
         }
       } else {
         const sumFuel = await FuelSummary.query()
@@ -221,7 +221,7 @@ class FuelSummaryHelpers {
           user_id: usr.id,
           cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3 || 0,
           cum_fuel_used: sumFuel + parseFloat(value.fuel_cons) || 0,
-          cum_fuel_ratio: parseFloat(sumFuel + parseFloat(value.fuel_cons)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3) || 0,
+          cum_fuel_ratio: parseFloat(sumFuel + parseFloat(value.fuel_cons)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(value.coal_mt) / 1.3) || 0
         })
         try {
           await newFuelSummary.save()
