@@ -196,7 +196,6 @@ class DailyRitaseCoalController {
           }
         }
 
-        // console.log('....', exca.id);
 
         /* CREATE OR USED DAILY FLEET */
         let dailyFleetEquip = await DailyFleetEquip.query()
