@@ -105,7 +105,7 @@ class RitaseCoal {
 
     const xlsx = excelToJson({
       sourceFile: filePath,
-      header: 1,
+      header: 1
     })
 
     var t0 = performance.now()
@@ -146,7 +146,7 @@ class RitaseCoal {
           netto: parseFloat(value.O) || 0,
           divider: moment(value.F).format('YYYY-MM-DD') + ' ' + value.D + ' ' + value.K + ' ' + value.L,
           totalRitase: value.Q || 1,
-          sheetIndex: sheetIndexs,
+          sheetIndex: sheetIndexs
         }
 
         originalData.push(obj)
