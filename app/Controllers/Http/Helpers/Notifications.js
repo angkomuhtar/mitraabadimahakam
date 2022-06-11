@@ -28,6 +28,7 @@ class Notifications {
           }
      }
      async sendNotifications(req, date, result, checkerName) {
+          // console.log('RESULT ::::', result);
           const owner = (
                await User.query()
                     .whereIn('user_tipe', ['owner', 'manager'])
