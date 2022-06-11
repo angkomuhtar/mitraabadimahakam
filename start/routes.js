@@ -350,6 +350,8 @@ Route.group(() => {
   Route.get('/daily-ritase-ob', 'DailyRitaseController.index').as('opr.daily-ritase-ob.index').middleware('R')
 
   Route.post('/daily-ritase-ob', 'DailyRitaseController.store').as('opr.daily-ritase-ob.store').middleware('C')
+
+  Route.post('/daily-ritase-ob/upload/excel', 'DailyRitaseController.storeUploadExcel').as('opr.daily-ritase-ob.storeUploadExcel').middleware('C')
   
   Route.get('/daily-ritase-ob/upload/backdate', 'DailyRitaseController.showBackDateUpload').as('opr.daily-ritase-ob.backDateUpload').middleware('R')
 

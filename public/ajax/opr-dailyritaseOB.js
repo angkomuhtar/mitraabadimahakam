@@ -164,6 +164,7 @@ $(function(){
         const checker = $('body').find('select#checker_id').val();
         const spv = $('body').find('select#spv_id').val();
         const sheet = $('body').find('select#sheet').val();
+        const dataJson = $('body').find('textarea[name="dataJson"]').val();
 
        
 
@@ -203,10 +204,10 @@ $(function(){
                 }
             })
         }else{
-
+            console.log('UPLOAD :::', dataJson);
             data = new FormData()
 
-            data.append('date', date);
+            data.append('date', $('body').find('input[name="date"]').val());
             data.append('current_file_name', currentFileName);
             data.append('dailyfleet_id', dailyfleet);
             data.append('exca_id', exca);
@@ -215,6 +216,7 @@ $(function(){
             data.append('checker_id', checker);
             data.append('spv_id', spv);
             data.append('sheet', sheet);
+            data.append('dataJson', JSON.stringify(dataJson));
 
             swal({
                 title: "Apakah anda yakin?",
@@ -231,7 +233,7 @@ $(function(){
                       $.ajax({
                           async: true,
                           headers: {'x-csrf-token': $('[name=_csrf]').val()},
-                          url: '/operation/daily-ritase-ob',
+                          url: '/operation/daily-ritase-ob/upload/excel',
                           method: 'POST',
                           data: data,
                           dataType: 'json',
@@ -246,10 +248,12 @@ $(function(){
                                   window.location.reload()
                               }else{
                                   alert(result.message)
+                                  $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
                               }
                           },
                           error: function(err){
                               console.log(err)
+                              $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
                               const { message } = err.responseJSON
                               swal("Opps,,,!", message, "warning")
                           }
@@ -574,7 +578,7 @@ $(function(){
                     url: '/operation/daily-ritase-ob/haulers/default/'+id,
                     method: 'GET',
                     success: function(result){
-                        // console.log(result);
+                        console.log(result);
                         for(const txt of result.data) {
                             $('tbody#item-details').append(txt)
                             $('body').find('tbody > tr.advance-table-row').each(function(i, e){
