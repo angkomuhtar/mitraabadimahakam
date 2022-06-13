@@ -360,20 +360,20 @@ class DailyRitaseController {
             }
   
             /* FUNC TO SENDING NOTIFICATIONS */
-            let notifData = (await DailyRitase.query()
-              .with('ritase_details')
-              .with('material_details')
-              .where('id', dailyRitase.id).last())?.toJSON()
-              
-              try {
-                await NotificationsHelpers.sendNotifications({...req, exca_id: exca_unit.id}, req.date, notifData.ritase_details, xuser.nm_lengkap)
-              } catch (error) {
-                console.log(error);
-                return {
-                  success: false,
-                  message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
-                }
-              }
+            // let notifData = (await DailyRitase.query()
+            //   .with('ritase_details')
+            //   .with('material_details')
+            //   .where('id', dailyRitase.id).last())?.toJSON()
+
+            // try {
+            //   await NotificationsHelpers.sendNotifications({...req, exca_id: exca_unit.id}, req.date, notifData.ritase_details, xuser.nm_lengkap)
+            // } catch (error) {
+            //   console.log(error);
+            //   return {
+            //     success: false,
+            //     message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
+            //   }
+            // }
           } catch (error) {
             console.log(error);
             // await trx.rollback()
@@ -421,19 +421,19 @@ class DailyRitaseController {
             await dailyRitase.save()
   
             /* FUNC TO SENDING NOTIFICATIONS */
-            let notifData = await DailyRitase.query()
-              .with('ritase_details')
-              .with('material_details')
-              .where('id', dailyRitase.id).last()
-              try {
-                await NotificationsHelpers.sendNotifications(req, req.date, notifData, xuser.nm_lengkap)
-              } catch (error) {
-                console.log(error);
-                return {
-                  success: false,
-                  message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
-                }
-              }
+            // let notifData = await DailyRitase.query()
+            //   .with('ritase_details')
+            //   .with('material_details')
+            //   .where('id', dailyRitase.id).last()
+            // try {
+            //   await NotificationsHelpers.sendNotifications(req, req.date, notifData, xuser.nm_lengkap)
+            // } catch (error) {
+            //   console.log(error);
+            //   return {
+            //     success: false,
+            //     message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
+            //   }
+            // }
   
             /* FILL DAILY RITASE DETAILS OB */
             for (const val of obj.items) {
@@ -520,19 +520,19 @@ class DailyRitaseController {
             await dailyRitase.save()
   
             /* FUNC TO SENDING NOTIFICATIONS */
-            let notifData = await DailyRitase.query()
-              .with('ritase_details')
-              .with('material_details')
-              .where('id', dailyRitase.id).last()
-              try {
-                await NotificationsHelpers.sendNotifications(req, req.date, notifData, xuser.nm_lengkap)
-              } catch (error) {
-                console.log(error);
-                return {
-                  success: false,
-                  message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
-                }
-              }
+            // let notifData = await DailyRitase.query()
+            //   .with('ritase_details')
+            //   .with('material_details')
+            //   .where('id', dailyRitase.id).last()
+            //   try {
+            //     await NotificationsHelpers.sendNotifications(req, req.date, notifData, xuser.nm_lengkap)
+            //   } catch (error) {
+            //     console.log(error);
+            //     return {
+            //       success: false,
+            //       message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
+            //     }
+            //   }
   
             /* FILL DAILY RITASE DETAILS OB */
             for (const val of obj.items) {
@@ -619,23 +619,23 @@ class DailyRitaseController {
             await dailyRitase.save()
   
             /* FUNC TO SENDING NOTIFICATIONS */
-            let notifData = (
-              await DailyRitase.query()
-              .with('ritase_details')
-              .with('material_details')
-              .where('id', dailyRitase.id).last()
-              )?.toJSON()
+            // let notifData = (
+            //   await DailyRitase.query()
+            //   .with('ritase_details')
+            //   .with('material_details')
+            //   .where('id', dailyRitase.id).last()
+            //   )?.toJSON()
 
               
-              try {
-                await NotificationsHelpers.sendNotifications(req, req.date, notifData.ritase_details, xuser.nm_lengkap)
-              } catch (error) {
-                console.log(error);
-                return {
-                  success: false,
-                  message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
-                }
-              }
+            // try {
+            //   await NotificationsHelpers.sendNotifications(req, req.date, notifData.ritase_details, xuser.nm_lengkap)
+            // } catch (error) {
+            //   console.log(error);
+            //   return {
+            //     success: false,
+            //     message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
+            //   }
+            // }
   
             /* FILL DAILY RITASE DETAILS OB */
             for (const val of obj.items) {
