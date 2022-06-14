@@ -265,7 +265,7 @@ class DailyRitaseController {
       if (!val.H) {
         return {
           success: false,
-          message: 'Waktu belum di pada hauler ' + val.B + ' tentukan...\n\nPeriksa kembali file excel yang anda upload.',
+          message: 'Waktu operational pada hauler ' + val.B + ' belum tentukan...\n\nPeriksa kembali file excel yang anda upload.',
         }
       }
     }

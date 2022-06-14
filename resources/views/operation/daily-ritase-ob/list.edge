@@ -30,7 +30,6 @@
                                 <th class="sl text-center" width="20">ACT</th>
                                 <th class="sl" width="150">PIT Name</th>
                                 <th class="sl" width="150">Fleet Name</th>
-                                <th class="sl" width="150">Work Shift</th>
                                 <th class="sl">Description</th>
                                 <th class="sl" width="100">Date</th>
                                 <th class="sl text-right" width="100">Distance</th>
@@ -51,16 +50,16 @@
                                     <td class="single-line">
                                         <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.pit.id}}" data-search="pit">
                                             <span class="text-mute">{{item.daily_fleet.pit.name}} </span>
-                                        </a>
+                                        </a><br>
+                                        <small>
+                                            <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.shift.id}}" data-search="shift">
+                                                <span class="text-info">{{item.daily_fleet.shift.name}} </span>
+                                            </a>
+                                        </small>
                                     </td>
                                     <td class="single-line">
                                         <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.fleet.id}}" data-search="fleet">
                                             <span>{{item.daily_fleet.fleet.name}} </span>
-                                        </a>
-                                    </td>
-                                    <td class="">
-                                        <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.shift.id}}" data-search="shift">
-                                            <span class="text-info">{{item.daily_fleet.shift.name}} </span>
                                         </a>
                                     </td>
                                     <td class="single-line">
@@ -68,8 +67,8 @@
                                         <span>{{item.material_details.name}}</span>
                                     </td>
                                     <td class="myDateFormat" data-date="{{item.date}}">{{item.date}}</td>
-                                    <td class="text-right">{{item.distance}} Meter</td>
-                                    <td class="text-right">{{item.tot_ritase}} Ritase</td>
+                                    <td class="text-right">{{item.distance}} Mtr</td>
+                                    <td class="text-right">{{item.tot_ritase}} Rit</td>
                                     <td class="text-center">
                                         <button type="button" class="btn btn-default btn-circle" data-toggle="modal" data-target="#{{item.id}}">
                                             <i class="ti-control-shuffle"></i> 
@@ -145,7 +144,7 @@
                         </tbody>
                     </table>
                 </div>
-                @include('_component.pagination')
+                @include('_component.simple-pagination')
             </div>
         </div>
     </div>

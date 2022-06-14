@@ -2,13 +2,14 @@ $(function(){
     initDeafult()
     HightChart()
     getHaulerByDailyFleet()
-    function initDeafult(lim, url){
+    function initDeafult(lim, url, page){
         $('div.content-module').css('display', 'none')
-        var limit = lim || 250
+        var limit = lim || 100
+        var page = page || 1
         $('div#list-content').html('<h4 style="text-align: center;">Please wait,,, System still loading data</h4>').show()
         $.ajax({
             async: true,
-            url: url || '/operation/daily-ritase-ob/list?limit='+limit,
+            url: url || '/operation/daily-ritase-ob/list?limit='+limit+'&page='+page,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -36,7 +37,8 @@ $(function(){
 
     $('body').on('click', '#reset-filter', function(){
         var limit = $('input[name="limit"]').val()
-        initDeafult(limit)
+        var url = '/operation/daily-ritase-ob/list?limit='+limit+'&page=1'
+        initDeafult(limit, url)
     })
 
     $('body').on('click', 'button#create-form', function (e) {
@@ -111,12 +113,12 @@ $(function(){
         window.location.reload()
     })
 
-    $('body').on('click', '#bt-search-keyword', function(e){
-        e.preventDefault()
-        var limit = $('#limit').val()
-        console.log(limit);
-        initDeafult(limit)
-    })
+    // $('body').on('click', '#bt-search-keyword', function(e){
+    //     e.preventDefault()
+    //     var limit = $('#limit').val()
+    //     console.log(limit);
+    //     initDeafult(limit)
+    // })
 
     /* show ritase */
     $('body').on('click', 'button.bt-edit-data', function(e){
@@ -421,10 +423,26 @@ $(function(){
         })
     })
 
-    $('body').on('click', 'a.btn-pagging', function(e){
+    // $('body').on('click', 'a.btn-pagging', function(e){
+    //     e.preventDefault()
+    //     var page = $(this).data('page')
+    //     var limit = $('#limit').val()
+    //     var jarak = $('input[name="distance"]').val() && '&distance=' + $('input[name="distance"]').val()
+    //     var begin_date = $('input[name="mulai_tanggal"]').val() && '&begin_date=' + $('input[name="mulai_tanggal"]').val()
+    //     var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
+    //     var fleet_id = $('select[name="fleet_id"]').val() && '&fleet_id=' + $('select[name="fleet_id').val()
+    //     var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
+    //     var material = $('select[name="material"]').val()  && '&material=' + $('select[name="material"]').val()
+    //     var exca_id = $('select[name="exca_id"]').val()  && '&exca_id=' + $('select[name="exca_id"]').val()
+    //     var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}${material}${exca_id}`
+    //     initDeafult(limit, url)
+    // })
+
+    $('body').on('click', 'a#btPreviousPage', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        var limit = $('#limit').val()
+        var limit = $('body').find('input[id="limit"]').val()
+        page = page <= 1 ? 1 : page - 1
         var jarak = $('input[name="distance"]').val() && '&distance=' + $('input[name="distance"]').val()
         var begin_date = $('input[name="mulai_tanggal"]').val() && '&begin_date=' + $('input[name="mulai_tanggal"]').val()
         var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
@@ -433,7 +451,47 @@ $(function(){
         var material = $('select[name="material"]').val()  && '&material=' + $('select[name="material"]').val()
         var exca_id = $('select[name="exca_id"]').val()  && '&exca_id=' + $('select[name="exca_id"]').val()
         var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}${material}${exca_id}`
-        initDeafult(limit, url)
+        console.log(page);
+        initDeafult(limit, url, page)
+        // $.get('/operation/daily-ritase-ob/list?page='+page+'&limit='+limit, function(data){
+        //     $('div#list-content').children().remove()
+        //     $('div#list-content').html(data)
+        // })
+    })
+
+    $('body').on('click', 'a#btNextPage', function(e){
+        e.preventDefault()
+        var page = $(this).data('page')
+        var last = $(this).data('last')
+        var limit = $('body').find('input[id="limit"]').val()
+        page = page >= last ? last : page + 1
+        console.log(page);
+        var jarak = $('input[name="distance"]').val() && '&distance=' + $('input[name="distance"]').val()
+        var begin_date = $('input[name="mulai_tanggal"]').val() && '&begin_date=' + $('input[name="mulai_tanggal"]').val()
+        var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
+        var fleet_id = $('select[name="fleet_id"]').val() && '&fleet_id=' + $('select[name="fleet_id').val()
+        var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
+        var material = $('select[name="material"]').val()  && '&material=' + $('select[name="material"]').val()
+        var exca_id = $('select[name="exca_id"]').val()  && '&exca_id=' + $('select[name="exca_id"]').val()
+        var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}${material}${exca_id}`
+        console.log(page);
+        initDeafult(limit, url, page)
+    })
+
+    $('body').on('click', 'button#btGoToPage', function(e){
+        e.preventDefault()
+        var page = $('body').find('input[name="inp-page"]').val()
+        var limit = $('body').find('input[id="limit"]').val()
+        var jarak = $('input[name="distance"]').val() && '&distance=' + $('input[name="distance"]').val()
+        var begin_date = $('input[name="mulai_tanggal"]').val() && '&begin_date=' + $('input[name="mulai_tanggal"]').val()
+        var end_date = $('input[name="hingga_tanggal"]').val() && '&end_date=' + $('input[name="hingga_tanggal"]').val()
+        var fleet_id = $('select[name="fleet_id"]').val() && '&fleet_id=' + $('select[name="fleet_id').val()
+        var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
+        var material = $('select[name="material"]').val()  && '&material=' + $('select[name="material"]').val()
+        var exca_id = $('select[name="exca_id"]').val()  && '&exca_id=' + $('select[name="exca_id"]').val()
+        var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${jarak}${begin_date}${end_date}${fleet_id}${shift_id}${material}${exca_id}`
+        console.log(page);
+        initDeafult(limit, url, page)
     })
 
     // BACK DATE UPLOAD

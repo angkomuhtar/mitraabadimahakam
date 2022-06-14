@@ -41,7 +41,7 @@ class Ritase {
         arrFilter = fleet.toJSON().map(item => item.id)
       }
 
-      console.log(req)
+      console.log('REQ HELPERS :::', req)
 
       dailyRitase = await DailyRitase.query()
         .with('material_details')
