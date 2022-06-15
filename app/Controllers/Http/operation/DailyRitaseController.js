@@ -297,6 +297,7 @@ class DailyRitaseController {
         }
       })
 
+      console.log('MATERIAL OB ::', GRP_OB);
       for (const obj of GRP_OB) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -391,6 +392,7 @@ class DailyRitaseController {
         }
       })
 
+      console.log('MATERIAL SOIL ::', GRP_SO);
       for (const obj of GRP_SO) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -406,7 +408,7 @@ class DailyRitaseController {
           material: 12,
           distance: req.distance,
           tot_ritase: obj.items.reduce((a, b) => {
-            return a + parseInt(b.material_ob)
+            return a + parseInt(b.material_soil)
           }, 0),
           date: req.date,
           user_id: xuser.id,
@@ -485,6 +487,7 @@ class DailyRitaseController {
         }
       })
 
+      console.log('MATERIAL LUMPUR ::', GRP_MD);
       for (const obj of GRP_MD) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -500,7 +503,7 @@ class DailyRitaseController {
           material: 12,
           distance: req.distance,
           tot_ritase: obj.items.reduce((a, b) => {
-            return a + parseInt(b.material_ob)
+            return a + parseInt(b.material_lumpur)
           }, 0),
           date: req.date,
           user_id: xuser.id,
@@ -579,7 +582,7 @@ class DailyRitaseController {
       })
 
       // console.log(JSON.stringify(GRP_OB, null, 2));
-
+      console.log('MATERIAL BLASTING ::', GRP_BM);
       for (const obj of GRP_BM) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -595,7 +598,7 @@ class DailyRitaseController {
           material: 12,
           distance: req.distance,
           tot_ritase: obj.items.reduce((a, b) => {
-            return a + parseInt(b.material_ob)
+            return a + parseInt(b.material_blasting)
           }, 0),
           date: req.date,
           user_id: xuser.id,
