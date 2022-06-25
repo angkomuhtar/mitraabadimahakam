@@ -85,9 +85,9 @@ $(function(){
             contentType: false,
             success: function(result){
                 console.log(result)
-                GEN_CHART_ACTUAL(result.xAxis, result.series)
+                GEN_CHART_ACTUAL(result.xAxis, result.series, result.site, result.pit)
                 if (result.cummxAxis) {
-                    GEN_CHART_CUM(result.cummxAxis, result.cummSeries)
+                    GEN_CHART_CUM(result.cummxAxis, result.cummSeries, result.site, result.pit)
                 }
                 body.find('div#box-chart').css('display', 'inline')
             },
@@ -171,17 +171,17 @@ $(function(){
         })
     }
 
-    function GEN_CHART_ACTUAL (xAxis, series, cummxAxis, cummSeries) {
+    function GEN_CHART_ACTUAL (xAxis, series, site, pit) {
 
         Highcharts.chart('container', {
             chart: {
                 zoomType: 'xy',
             },
             title: {
-                text: 'Actual Fuel Ratio'
+                text: 'Actual Fuel Ratio (' + site.kode + ')'
             },
             subtitle: {
-                text: 'Project BBE'
+                text: pit ? pit.name : 'ALL PIT On Site'
             },
             xAxis: [{
                 categories: xAxis,
@@ -201,11 +201,11 @@ $(function(){
                     lineWidth: 1,
                     labels: {
                         format: '{value}',
-                        style: {
-                            fontSize: '11px',
-                            fontFamily: 'Verdana, sans-serif',
-                            color: '#000'
-                        }
+                        // style: {
+                        //     fontSize: '11px',
+                        //     fontFamily: 'Verdana, sans-serif',
+                        //     color: '#000'
+                        // }
                     },
                     plotLines: [{
                         value: 0.85,

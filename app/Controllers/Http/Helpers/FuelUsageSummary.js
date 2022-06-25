@@ -225,6 +225,7 @@ class FuelSummaryHelpers {
           .getSum('coal_bcm') || 0
 
         const newFuelSummary = new FuelSummary()
+        var valProd = parseFloat(value.ob) + parseFloat(value.coal_bcm)
         var cumProd = (parseFloat(sumProdOB) + parseFloat(sumProdCoal))
         newFuelSummary.fill({
           site_id: GET_PIT_DATA.site_id,
@@ -234,7 +235,7 @@ class FuelSummaryHelpers {
           coal_mt: value.coal_mt,
           coal_bcm: value.coal_bcm,
           fuel_used: value.fuel_cons,
-          fuel_ratio: value.fuel_ratio,
+          fuel_ratio: valProd > 0 ? value.fuel_ratio : 0,
           user_id: usr.id,
           cum_production: cumProd === 0 ? (parseFloat(value.coal_bcm) + parseFloat(value.ob)) : (parseFloat(value.coal_bcm) + parseFloat(value.ob)) + (parseFloat(sumProdOB) + parseFloat(sumProdCoal)),
           // cum_production: cumProd === 0 ? + (parseFloat(value.coal_mt) / 1.3) || 0,
@@ -297,6 +298,9 @@ class FuelSummaryHelpers {
     }
 
     const fuelSummary = await FuelSummary.query().where('id', params.id).last()
+    var valProd = parseFloat(req.ob) + (parseFloat(req.coal_mt) / 1.3)
+    var fuel_ratio = parseFloat(req.fuel_used) / (parseFloat(req.ob) + parseFloat(req.coal_mt) / 1.3)
+    
     fuelSummary.merge({
       site_id: req.site_id,
       pit_id: req.pit_id,
@@ -305,7 +309,7 @@ class FuelSummaryHelpers {
       coal_mt: parseFloat(req.coal_mt),
       coal_bcm: parseFloat(req.coal_mt) / 1.3,
       fuel_used: parseFloat(req.fuel_used),
-      fuel_ratio: parseFloat(req.fuel_used) / (parseFloat(req.ob) + parseFloat(req.coal_mt) / 1.3),
+      fuel_ratio: valProd > 0 ? fuel_ratio : 0,
       cum_production: cum_production,
       cum_fuel_used: cum_fuel,
       cum_fuel_ratio: parseFloat(cum_fuel) / parseFloat(cum_production),

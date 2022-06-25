@@ -12,8 +12,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <form class="form-horizontal" action="" id="filter-data">
+                            @include('report.fuel-ratio.color-picker')
                             <div class="panel panel-default m-b-0">
-                                <div class="panel-heading"><i class="ti-filter" style="margin-right: 10px;"></i> Filter Data</div>
+                                <div class="panel-heading">
+                                    <i class="ti-filter" style="margin-right: 10px;"></i> Filter Data
+                                    <span class="pull-right">
+                                        <button type="button" class="btn btn-outline btn-default" data-toggle="modal" data-target="#myModal">
+                                            <i class="ti-settings"></i> Color Picker
+                                        </button>
+                                    </span>
+                                </div>
                                 <div class="panel-wrapper collapse in">
                                     <div class="panel-body">
                                         {{ csrfField() }}

@@ -18,8 +18,6 @@ class repPoduction {
     async MW_MONTHLY (req) {
         console.log('startMonth', req);
         let result = []
-        // let startMonth = req.month_begin ? moment(req.month_begin).startOf('month').format('YYYY-MM-DD') : moment().startOf('year').format('YYYY-MM-DD')
-        // let endMonth = req.month_end ? moment(req.month_end).endOf('month').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD')
         let data
         try {
             data = (
@@ -49,12 +47,13 @@ class repPoduction {
                 }
             })
 
+            let color = req.colorGraph
             estimate = _.groupBy(estimate, 'nm_pit')
             estimate = Object.keys(estimate).map(key => {
                 return {
                     nm_pit: `Target (${key})`,
                     type: 'column',
-                    color: '#75A5E3',
+                    color: color[0],
                     items: estimate[key]
                 }
             })
@@ -72,7 +71,7 @@ class repPoduction {
                 return {
                     nm_pit: `Actual (${key})`,
                     type: req.typeChart,
-                    color: '#015CB1',
+                    color: color[1],
                     items: actual[key]
                 }
             })
@@ -90,7 +89,7 @@ class repPoduction {
                 return {
                     nm_pit: `Trands`,
                     type: 'spline',
-                    color: '#F16767',
+                    color: color[2],
                     items: trand[key]
                 }
             })
@@ -108,6 +107,7 @@ class repPoduction {
     }
 
     async MW_WEEKLY (req) {
+        let color = req.colorGraph
         let result = []
         var x = moment(req.week_begin).week()
         var y = moment(req.week_end).week()
@@ -184,7 +184,7 @@ class repPoduction {
         tmpTarget = Object.keys(tmpTarget).map(key => {
             return {
                 nm_pit: key,
-                color: "#75A5E3",
+                color: color[3],
                 type: req.typeChart,
                 items: tmpTarget[key]
             }
@@ -193,7 +193,7 @@ class repPoduction {
         tmpActual = Object.keys(tmpActual).map(key => {
             return {
                 nm_pit: key,
-                color: "#015CB1",
+                color: color[4],
                 type: req.typeChart,
                 items: tmpActual[key]
             }
@@ -202,7 +202,7 @@ class repPoduction {
         tmpTrands = Object.keys(tmpTrands).map(key => {
             return {
                 nm_pit: key,
-                color: "#F16767",
+                color: color[5],
                 type: 'spline',
                 items: tmpTrands[key]
             }
@@ -216,7 +216,7 @@ class repPoduction {
 
     async MW_DAILY (req) {
         let result = []
-
+        let color = req.colorGraph
         req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
 
         let planDaily 
@@ -281,7 +281,7 @@ class repPoduction {
         arrTarget = Object.keys(arrTarget).map(key => {
             return {
                 nm_pit: key,
-                color: "#75A5E3",
+                color: color[0],
                 type: req.typeChart,
                 items: arrTarget[key]
             }
@@ -290,7 +290,7 @@ class repPoduction {
         arrActual = Object.keys(arrActual).map(key => {
             return {
                 nm_pit: key,
-                color: "#015CB1",
+                color: color[1],
                 type: req.typeChart,
                 items: arrActual[key]
             }
@@ -299,7 +299,7 @@ class repPoduction {
         arrDiff = Object.keys(arrDiff).map(key => {
             return {
                 nm_pit: key,
-                color: "#C4C4C4",
+                color: color[2],
                 type: req.typeChart,
                 items: arrDiff[key]
             }
@@ -308,7 +308,7 @@ class repPoduction {
         arrTrands = Object.keys(arrTrands).map(key => {
             return {
                 nm_pit: key,
-                color: "#F16767",
+                color: color[3],
                 type: 'spline',
                 items: arrTrands[key]
             }
@@ -323,6 +323,7 @@ class repPoduction {
     }
 
     async MW_SHIFTLY (req) {
+        let color = req.colorGraph
         req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
         let result = []
         let planDaily = (await DailyPlan.query().where( w => {
@@ -383,7 +384,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 stack: 'target',
-                // color: "#75A5E3",
+                color: color[3],
                 type: req.typeChart,
                 items: arrTarget[key]
             }
@@ -393,7 +394,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 stack: 'actual',
-                // color: "#015CB1",
+                color: color[4],
                 type: req.typeChart,
                 items: arrActual[key]
             }
@@ -403,7 +404,7 @@ class repPoduction {
             return {
                 nm_pit: key,
                 stack: 'trands',
-                color: "red",
+                color: color[5],
                 type: 'spline',
                 items: arrTrands[key]
             }
@@ -421,6 +422,7 @@ class repPoduction {
 
     async MW_HOURLY (req) {
         let result = []
+        let color = req.colorGraph
         req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
 
         var getHoursArray = function(start, end) {
@@ -512,17 +514,17 @@ class repPoduction {
         })
         
         let resultx = [
-            {name: 'Target', type: req.typeChart, stack: 'tgt', color: '#015CB1', items: result.map(el => {
+            {name: 'Target', type: req.typeChart, stack: 'tgt', color: color[0], items: result.map(el => {
                 return {
                     volume: el.target
                 }
             })},
-            {name: 'Actual', type: req.typeChart, stack: 'act', color: '#75A5E3', items: result.map(el => {
+            {name: 'Actual', type: req.typeChart, stack: 'act', color: color[1], items: result.map(el => {
                 return {
                     volume: el.sum_volume
                 }
             })},
-            {name: 'Trands', type: 'spline', stack: 'act', color: 'red', items: result.map(el => {
+            {name: 'Trands', type: 'spline', stack: 'act', color: color[2], items: result.map(el => {
                 return {
                     volume: el.sum_volume
                 }
@@ -560,7 +562,7 @@ class repPoduction {
 
         
 
-        let color = ['#75A5E3', '#1873C8', '#014584']
+        let color = req.colorGraph
         result = _.groupBy(data, 'nm_pit')
         result = Object.keys(result).map((key, i) => {
             return {
@@ -652,7 +654,7 @@ class repPoduction {
             }
         }
 
-        let color = ['#75A5E3', '#1873C8', '#014584']
+        let color = req.colorGraph
         result = _.groupBy(result, 'nm_pit')
         result = Object.keys(result).map((key, i) => {
             // console.log(i);
@@ -715,7 +717,7 @@ class repPoduction {
             })
         }
 
-        let color = ['#75A5E3', '#1873C8', '#014584']
+        let color = req.colorGraph
         result = _.groupBy(result, 'nm_pit')
         result = Object.keys(result).map((key, i) => {
             return {
@@ -908,7 +910,7 @@ class repPoduction {
             xAxis.push("Pukul " + str)
         }
 
-        let color = ['#75A5E3', '#1873C8', '#014584']
+        let color = req.colorGraph
         for (const [i, obj] of data.entries()) {
             
             var arrData = [];
