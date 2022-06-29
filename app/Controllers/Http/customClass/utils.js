@@ -11,7 +11,6 @@ class Utils {
   }
   async uniqueArr(arr, key1, key2, key3, key4) {
     const newArr = arr.filter((v, i, a) => a.findIndex(t => t[key1] === v[key1] && t[key2] === v[key2] && t[key3] === v[key3]) === i)
-
     return newArr
   }
   async equipmentTypeCheck(type) {
@@ -83,7 +82,7 @@ class Utils {
           app_id: appID,
           contents: { en: message },
           include_player_ids: Array.isArray(device) ? device : [device],
-          data: data,
+          data: data
         },
       },
       function (error, response, body) {

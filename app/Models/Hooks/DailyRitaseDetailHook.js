@@ -89,22 +89,30 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
 
   /** check whether this is a OHT or SFI */
   const regTest = /SFI/i;
+  const regTest2 = /MDT/i;
   const equipmentName = hauler.kode;
   const checkIfSFIType = regTest.test(equipmentName);
+  const checkMDTType = regTest2.test(equipmentName)
 
-  // if (checkIfSFIType) {
-  //   dailyPlan.merge({
-  //     actual: parseFloat(dailyPlan.actual) + parseFloat(hauler.qty_capacity),
-  //   })
-  // }
+  if (checkIfSFIType) {
+    dailyPlan.merge({
+      actual: parseFloat(dailyPlan.actual) + parseFloat(hauler.qty_capacity),
+    })
+  }
+ 
+  // because mdt can only handle 9tonnes
+  if(checkMDTType) {
+    dailyPlan.merge({
+      actual: parseFloat(dailyPlan.actual) + 9,
+    })
+  }
 
-
-  //   dailyPlan.merge({
-  //     actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol),
-  //   });
+    dailyPlan.merge({
+      actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol)
+    })
   
   
-  // await dailyPlan.save();
+  await dailyPlan.save();
 };
 
 DailyRitaseDetailHook.afterDeleteData = async (dailyritasedetail) => {

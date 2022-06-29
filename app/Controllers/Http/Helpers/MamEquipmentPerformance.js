@@ -72,7 +72,7 @@ class MamEquipmentPerformance {
     const equipments = (
       await MasEquipment.query()
         .where(wh => {
-          wh.whereIn('tipe', ['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer'])
+          wh.whereIn('tipe', ['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer', 'compaq', 'oth'])
           wh.where('aktif', 'Y')
         })
         .fetch()

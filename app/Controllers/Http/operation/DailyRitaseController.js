@@ -1091,7 +1091,7 @@ class DailyRitaseController {
     const reqFile = request.file('back-date-upload', validateFile)
     let aliasName
     if (reqFile) {
-      aliasName = `${reqFile.clientName}-${moment().format('DDMMYYHHmmss')}.${reqFile.extname}`
+      aliasName = `${reqFile.clientName}-${moment().format('DDMMYYHHmm')}.${reqFile.extname}`
 
       await reqFile.move(Helpers.publicPath(`/upload/`), {
         name: aliasName,
@@ -1119,7 +1119,7 @@ class DailyRitaseController {
         title: arr,
         data: convertJSON,
         // fileName: aliasName,
-        fileName: reqFile.clientName + '-' + moment().format('DDMMYYHHmmss') + '.' + reqFile.extname,
+        fileName: reqFile.clientName + '-' + moment().format('DDMMYYHHmm') + '.' + reqFile.extname,
       }
     } else {
       return {
@@ -1139,7 +1139,6 @@ class DailyRitaseController {
     let aliasName
     if (reqFile) {
       aliasName = `detail-ritase-ob-${moment().format('DDMMYYHHmmss')}.${reqFile.extname}`
-
       await reqFile.move(Helpers.publicPath(`/upload/`), {
         name: aliasName,
         overwrite: true,
@@ -1179,6 +1178,7 @@ class DailyRitaseController {
     const req = request.all()
     let xuser
 
+
     var t0 = performance.now()
     let durasi
 
@@ -1203,7 +1203,6 @@ class DailyRitaseController {
       } else if (req.sheet && req.sheet === 'COAL') {
         data = await DailyRitaseCoalHelpers.GET_MONTH_EXCEL_DATA_PRODUCTION(filePath, req, xuser)
 
-        console.log('coal working >> ')
         await NotificationsHelpers.sendBasicNotification(fileName)
       } else if (req.sheet && req.sheet.includes('PR')) {
         data = await InventoryHelpers.GET_MONTH_EXCEL_DATA_PURCHASE_REQUEST_INVENTORY(filePath, req, xuser)

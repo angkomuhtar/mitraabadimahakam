@@ -475,7 +475,7 @@ class Ritase {
                 mud: x.AH || 0,
                 coal: x.AI || 0,
                 pit: x.BG,
-                distance: x.BH
+                distance: x.BH,
               }
               data.push(obj)
             }
@@ -840,7 +840,7 @@ class Ritase {
     const monthLength = moment(req.date).daysInMonth()
     const endIndex = xlsx[sampleSheet].findIndex(v => !v.F)
 
-    const sheetData = xlsx[sampleSheet].slice(1, endIndex)
+    const sheetData = xlsx[sampleSheet].slice(1)
     const daysArr = Array.from({ length: monthLength }).map((v, i) => {
       return moment(req.date).startOf('month').add(i, 'day').format('YYYY-MM-DD')
     })
@@ -851,26 +851,30 @@ class Ritase {
     let originalDataIDs = []
 
     for (const value of sheetData) {
-      sheetIndexs += 1
-      const obj = {
-        date: moment(value.A).add(1, 'day').format('YYYY-MM-DD'),
-        shift: value.B,
-        exca: value.E,
-        pitName: value.H,
-        material: value.R === 14 ? 'Lumpur' : value.J,
-        hauler: value.M,
-        distance: value.P,
-        totalRitase: value.Q,
-        bucketCapacity: value.R,
-        bcmRtiase: value.S,
-        bcmAccumulate: value.U,
-        sheetIndex: sheetIndexs,
+      if (value.E && value.M && value.S) {
+        sheetIndexs += 1
+        const obj = {
+          date: moment(value.A).add(1, 'day').format('YYYY-MM-DD'),
+          shift: value.B,
+          exca: value.E,
+          pitName: value.H,
+          material: value.R === 14 ? 'Lumpur' : value.J,
+          hauler: value.M,
+          distance: value.P,
+          totalRitase: value.Q,
+          bucketCapacity: value.R,
+          bcmRtiase: value.S,
+          bcmAccumulate: value.U,
+          sheetIndex: sheetIndexs,
+        }
+        sheetIndexLog += `${sheetIndexs} \n \n`
+        originalData.push(obj)
+        originalDataIDs.push(sheetIndexs)
+        data.push(obj)
       }
-      sheetIndexLog += `${sheetIndexs} \n \n`
-      originalData.push(obj)
-      originalDataIDs.push(sheetIndexs)
-      data.push(obj)
     }
+
+    console.log('data >> ', data)
 
     const daysData = []
     for (const day of daysArr) {
@@ -1058,8 +1062,9 @@ class Ritase {
 
         const dailyFleet = new DailyFleet()
 
-        let PIT_NAME = data.pitName.split(' ')[1]
+        let PIT_NAME = data.pitName.toUpperCase()
 
+        console.log('PIT NAME >> ', PIT_NAME)
         if (PIT_NAME === 'DERAWAN') {
           PIT_NAME = 'DERAWAN BARU'
         }
@@ -1071,7 +1076,7 @@ class Ritase {
 
         // DEFINE THE DAILY FLEET DATA
         dailyFleet.fill({
-          fleet_id: PIT_NAME === 'RPU' ? 23 : PIT_NAME === 'DERAWAN BARU' ? 21 : 22,
+          fleet_id: PIT_NAME === 'RPU' ? 23 : PIT_NAME === 'DERAWAN BARU' ? 21 : PIT_NAME === 'RIDWAN' ? 27 : PIT_NAME === 'ANDI MANGKONA' ? 28 : 29,
           pit_id: GET_PIT_ID,
           shift_id: GET_SHIFT_ID,
           activity_id: 11, // loading OB
@@ -1235,10 +1240,10 @@ class Ritase {
           }
 
           // 20 is ADT bcm max capacity
-          totalBCM.push(GET_MATERIAL_DATA.vol * parseInt(hauler.totalRitase))
+          totalBCM.push(9 * parseInt(hauler.totalRitase))
           console.log(
             `---- Finished creating data for ${data.date} - ${EXCA_NAME} - ${data.shift} - ${HAULER_NAME} - ${PIT_NAME} - ${GET_MATERIAL_DATA.name} - ${countRitase} RIT  ${
-              GET_MATERIAL_DATA.vol * parseInt(hauler.totalRitase)
+              9 * parseInt(hauler.totalRitase)
             } BCM ---- `
           )
         }
@@ -1449,7 +1454,7 @@ class Ritase {
 
             const dailyFleet = new DailyFleet()
 
-            let PIT_NAME = data.pitName.split(' ')[1]
+            let PIT_NAME = data.pitName.toUpperCase()
 
             if (PIT_NAME === 'DERAWAN') {
               PIT_NAME = 'DERAWAN BARU'
@@ -1457,12 +1462,17 @@ class Ritase {
 
             const GET_PIT_ID = (await MasPit.query().where('name', PIT_NAME).first())?.id
             const GET_SHIFT_ID = (await MasShift.query().where('kode', data.shift).first())?.id
-
+            const GET_FLEET_ID = await MasFleet.query()
+              .where(wh => {
+                wh.where('pit_id', GET_PIT_ID)
+                wh.where('tipe', 'OB')
+              })
+              .last()
             const GET_MATERIAL_DATA = await MasMaterial.query().where('name', data.material).first()
 
             // DEFINE THE DAILY FLEET DATA
             dailyFleet.fill({
-              fleet_id: PIT_NAME === 'RPU' ? 23 : PIT_NAME === 'DERAWAN BARU' ? 21 : 22,
+              fleet_id: PIT_NAME === 'RPU' ? 23 : PIT_NAME === 'DERAWAN BARU' ? 21 : PIT_NAME === 'RIDWAN' ? 27 : PIT_NAME === 'ANDI MANGKONA' ? 28 : 29,
               pit_id: GET_PIT_ID,
               shift_id: GET_SHIFT_ID,
               activity_id: 11, // loading OB
@@ -1550,7 +1560,7 @@ class Ritase {
                   received_hm: 1.0,
                   dealer_id: null,
                   created_by: 2,
-                  img_uri: 'http://offices.mitraabadimahakam.id/images/equipments/dump_truck.jpg'
+                  img_uri: 'http://offices.mitraabadimahakam.id/images/equipments/dump_truck.jpg',
                 }
 
                 masEquipment.fill(TEMP_EXCA)
@@ -1617,7 +1627,7 @@ class Ritase {
 
     const ARRAY_PIT = (await MasPit.query().whereIn('id', [1, 2, 6]).fetch())?.toJSON()
 
-    let resultPit = [] 
+    let resultPit = []
 
     for (const pitName of ARRAY_PIT) {
       const obj = {
