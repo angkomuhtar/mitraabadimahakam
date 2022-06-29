@@ -1,3 +1,4 @@
+
 {{ script('ajax/index') }}
 {{ script('ajax/report/production-filter') }}
 
@@ -5,6 +6,7 @@
 {{ script('plugins/bower_components/dom-to-image/dist/dom-to-image.min') }}
 {{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
 {{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+
 <div class="row">
     <div class="col-md-12">
         <div class="white-box">
@@ -13,7 +15,67 @@
                     <div class="col-md-12">
                         <form class="form-horizontal" action="" id="filter-data">
                             <div class="panel panel-default m-b-0">
-                                <div class="panel-heading"><i class="ti-filter" style="margin-right: 10px;"></i> Filter Data</div>
+                                <div class="panel-heading">
+                                    <i class="ti-filter" style="margin-right: 10px;"></i> Filter Data
+                                    <span class="pull-right">
+                                        
+                                    </span>
+                                </div>
+                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title" id="myModalLabel">Color Picker</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row" id="row-bar">
+                                                    <div class="col-md-3 m-r-20">
+                                                        <div class="example">
+                                                            <label id="txt-label-color1" for="color1">Color Graph 1</label>
+                                                            <input type="text" name="colorGraph" id="color1" class="colorpicker form-control" value="#7ab2fa" /> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 m-r-20">
+                                                        <div class="example">
+                                                            <label id="txt-label-color2" for="color2">Color Graph 2</label>
+                                                            <input type="text" name="colorGraph" id="color2" class="colorpicker form-control" value="#1074f7" /> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="example">
+                                                            <label id="txt-label-color3" for="color3">Color Graph 3</label>
+                                                            <input type="text" name="colorGraph" id="color3" class="colorpicker form-control" value="#0451b6" /> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row m-t-30">
+                                                    <div class="col-md-3 m-r-20">
+                                                        <div class="example">
+                                                            <label id="txt-label-color4" for="color4">Custom 1</label>
+                                                            <input type="text" name="colorGraph" id="color4" class="colorpicker form-control" value="#fa7a82" /> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 m-r-20">
+                                                        <div class="example">
+                                                            <label id="txt-label-color5" for="color5">Custom 2</label>
+                                                            <input type="text" name="colorGraph" id="color5" class="colorpicker form-control" value="#fa1524" /> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="example">
+                                                            <label id="txt-label-color6" for="color6">Custom 3</label>
+                                                            <input type="text" name="colorGraph" id="color6" class="colorpicker form-control" value="#a40510" /> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="panel-wrapper collapse in">
                                     <div class="panel-body">
                                         {{ csrfField() }}
@@ -197,13 +259,23 @@
                                             <div class="container-type" id="box-apply-chart" style="display:none">
                                                 <div class="form-group m-t-20">
                                                     <label for="" class="col-sm-4 control-label">&nbsp;</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-8">
+                                                        <button class="btn btn-info waves-effect waves-light" type="submit"> 
+                                                            <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline btn-default pull-right" data-toggle="modal" data-target="#myModal">
+                                                            <i class="ti-settings"></i> Color Picker
+                                                        </button>
+                                                        
+                                                    </div>
+                                                    <!--
+                                                    <div class="col-sm-3" style="padding-left:0px">
                                                         <div class="input-group">
-                                                            <button class="btn btn-info waves-effect waves-light" type="submit"> 
-                                                                <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
+                                                            <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#myModal">
+                                                                <i class="ti-settings"></i> Color Picker
                                                             </button>
                                                         </div>
-                                                    </div>
+                                                    </div>-->
                                                 </div>
                                             </div>
                                         </div>
@@ -265,3 +337,14 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Colorpicker
+    $(".colorpicker").asColorPicker();
+    $(".complex-colorpicker").asColorPicker({
+        mode: 'complex'
+    });
+    $(".gradient-colorpicker").asColorPicker({
+        mode: 'gradient'
+    });
+</script>

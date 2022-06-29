@@ -8,10 +8,14 @@ const MasSite = use("App/Models/MasSite")
 
 class repFuelRatio {
     async PIT_WISE (req) {
+        console.log(req);
         /* GET DATA FUEL RATIO */
-        let color = ['#75A5E3', '#1873C8', '#014584']
+        let color = req.colorGraph
         let result = []
         let cumm = []
+
+        const site = await MasSite.query().where('id', req.site_id).last()
+        const pit = await MasPit.query().where('id', req.pit_id).last()
 
         const data = (
             await MamFuelRatio.query().where( w => {
@@ -19,40 +23,55 @@ class repFuelRatio {
                 w.where('pit_id', req.pit_id)
                 w.where('date', '>=', req.start)
                 w.where('date', '<=', req.end)
-            }).fetch()
+            }).orderBy('date').fetch()
         ).toJSON()
 
-        console.log('====================================');
-        console.log(data);
-        console.log('====================================');
 
         const xAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
         result.push({
             name: 'Fuel Ratio',
             type: req.typeChart,
-            color: '#015CB1',
+            color: color[0],
             data: data.map(el => el.fuel_ratio),
             dataLabels: {
                 enabled: true,
-                rotation: 0,
-                color: '#FFFFFF',
-                // align: 'right',
-                format: '{point.y:.2f}', // two decimal
-                y: 5, // 10 pixels down from the top
-                style: {
-                    fontSize: '10px',
-                    fontFamily: 'Arial Narrow'
-                    // fontFamily: 'Verdana, sans-serif'
-                }
+                // color: '#FFFFFF',
+                format: '{point.y:.2f}'
             }
         })
 
         const cummxAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
         cumm = [
+            
+            {
+                name: 'Cumm Fuel Used',
+                type: req.typeChart,
+                color: color[0],
+                data: data.map(el => el.cum_fuel_used),
+                dataLabels: {
+                    enabled: true,
+                    rotation: 0,
+                    color: 'green',
+                    format: '{point.y:.2f}', // two decimal
+                    y: 5
+                }
+            },
+            {
+                name: 'Cumm Production',
+                type: req.typeChart,
+                yAxis: 0,
+                color: color[1],
+                data: data.map(el => el.cum_production),
+                dataLabels: {
+                    enabled: true,
+                    y: -15,
+                    format: '{point.y:.2f}'
+                }
+            },
             {
                 name: 'Cumm Fuel Ratio',
                 type: 'spline',
-                color: color[0],
+                color: 'red',
                 yAxis: 1,
                 data: data.map(el => el.cum_fuel_ratio),
                 dataLabels: {
@@ -60,51 +79,14 @@ class repFuelRatio {
                     rotation: 0,
                     color: 'red',
                     format: '{point.y:.2f}', // two decimal
-                    y: 5, // 10 pixels down from the top
-                    style: {
-                        fontSize: '10px',
-                        fontFamily: 'Arial Narrow'
-                    }
+                    y: 5
                 }
-            },
-            {
-                name: 'Cumm Fuel Used',
-                type: req.typeChart,
-                color: color[1],
-                data: data.map(el => el.cum_fuel_used),
-                dataLabels: {
-                    enabled: true,
-                    rotation: 0,
-                    color: 'green',
-                    format: '{point.y:.2f}', // two decimal
-                    y: 5, // 10 pixels down from the top
-                    style: {
-                        fontSize: '10px',
-                        fontFamily: 'Arial Narrow'
-                    }
-                }
-            },
-            {
-                name: 'Cumm Production',
-                type: req.typeChart,
-                yAxis: 0,
-                color: color[2],
-                data: data.map(el => el.cum_production),
-                dataLabels: {
-                    enabled: true,
-                    rotation: 0,
-                    color: '#FFFFFF',
-                    y: -15,
-                    format: '{point.y:.2f}', // two decimal
-                    style: {
-                        fontSize: '10px',
-                        fontFamily: 'Arial Narrow'
-                    }
-                }
-            },
+            }
         ]
 
         return {
+            site: site,
+            pit: pit,
             xAxis: xAxis,
             series: result,
             cummxAxis: cummxAxis,
@@ -114,6 +96,10 @@ class repFuelRatio {
 
     async PERIODE_WISE (req) {
         let result = []
+
+        let color = req.colorGraph
+        const site = await MasSite.query().where('id', req.site_id).last()
+
         /* GET DATA FUEL RATIO */
         if(req.inp_ranges === 'date'){
             let data = (
@@ -121,7 +107,7 @@ class repFuelRatio {
                     w.where('site_id', req.site_id)
                     w.where('date', '>=', req.start)
                     w.where('date', '<=', req.end)
-                }).fetch()
+                }).orderBy('date').fetch()
             ).toJSON()
 
             data = _.groupBy(data, 'date')
@@ -152,7 +138,7 @@ class repFuelRatio {
                 }
             }
 
-            let color = ['#75A5E3', '#1873C8', '#014584']
+            
             res = _.groupBy(res, 'name')
             res = Object.keys(res).map((key, i) => {
                 return {
@@ -176,6 +162,7 @@ class repFuelRatio {
             })
 
             return {
+                site: site,
                 xAxis: xAxis,
                 series: res,
             }
@@ -251,7 +238,7 @@ class repFuelRatio {
                 }
             }
 
-            let color = ['#75A5E3', '#1873C8', '#014584']
+            // let color = req.colorGraph
             result = _.groupBy(result, 'name')
             result = Object.keys(result).map((key, i) => {
                 return {
@@ -275,6 +262,7 @@ class repFuelRatio {
             })
 
             return {
+                site: site,
                 xAxis: xAxis,
                 series: result
             }
@@ -334,7 +322,7 @@ class repFuelRatio {
                 }
             }
             
-            let color = ['#75A5E3', '#1873C8', '#014584']
+            // let color = req.colorGraph
             result = _.groupBy(result, 'name')
             result = Object.keys(result).map((key, i) => {
                 return {
@@ -366,6 +354,7 @@ class repFuelRatio {
             // }]
             console.log(result);
             return {
+                site: site,
                 xAxis: xAxis,
                 // series: [...result, ...budget]
                 series: result

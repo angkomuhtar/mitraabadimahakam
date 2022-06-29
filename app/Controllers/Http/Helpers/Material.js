@@ -11,12 +11,15 @@ class Material {
     if (req.keyword) {
       masMaterial = await MasMaterial.query()
         .where((w) => {
+          if(req.aktif){
+            w.where('aktif', 'Y')
+          }
           w.where("name", "like", `%${req.keyword}%`);
           orWhere("kode", "like", `%${req.keyword}%`);
         })
         .paginate(halaman, limit);
     } else {
-      masMaterial = await MasMaterial.query().paginate(halaman, limit);
+      masMaterial = await MasMaterial.query().where('aktif', 'Y').paginate(halaman, limit);
     }
 
     return masMaterial;

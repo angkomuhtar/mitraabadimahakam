@@ -209,12 +209,12 @@ class DailyRitaseController {
       console.log(error)
     }
 
-    console.log(req)
+    // console.log(req)
     var pathData = Helpers.publicPath(`/upload/`)
     const convertJSON = excelToJson({
       sourceFile: `${pathData}${req.current_file_name.replace(/["|']+/g, '')}`,
       header: {
-        rows: 3,
+        rows: 2,
       },
       sheets: [req.sheet],
     })
@@ -265,7 +265,7 @@ class DailyRitaseController {
       if (!val.H) {
         return {
           success: false,
-          message: 'Waktu belum di pada hauler ' + val.B + ' tentukan...\n\nPeriksa kembali file excel yang anda upload.',
+          message: 'Waktu operational pada hauler ' + val.B + ' belum tentukan...\n\nPeriksa kembali file excel yang anda upload.',
         }
       }
     }
@@ -297,6 +297,7 @@ class DailyRitaseController {
         }
       })
 
+      console.log('MATERIAL OB ::', GRP_OB);
       for (const obj of GRP_OB) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -332,8 +333,8 @@ class DailyRitaseController {
               })
               .last()
 
-            var len = val.material_ob
-            for (let i = 0; i < len; i++) {
+            var lenOB = val.material_ob
+            for (let i = 0; i < lenOB; i++) {
               const ritaseDetails = new DailyRitaseDetail()
               ritaseDetails.fill({
                 dailyritase_id: dailyRitase.id,
@@ -360,25 +361,15 @@ class DailyRitaseController {
             }
           }
 
-          /* FUNC TO SENDING NOTIFICATIONS */
-          let notifData = (await DailyRitase.query().with('ritase_details').with('material_details').where('id', dailyRitase.id).last())?.toJSON()
-
-          try {
-            /** NOTIF V2 */
-            const notifParams = {
-              headings: 'Daily Ritase OB ',
-              subtitle: `Exca : ${exca_unit.kode}`,
-              message: `ini ritase Exca : ${exca_unit.kode}`,
-            }
-
-            await NotificationsHelpers.sendNotif_v2(notifParams, [])
-          } catch (error) {
-            console.log(error)
-            return {
-              success: false,
-              message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...',
-            }
+          /** NOTIF V2 */
+          const notifParams = {
+            headings: 'Daily Ritase OB ',
+            subtitle: `Exca : ${exca_unit.kode}`,
+            message: `Material Over Burden`,
           }
+
+          await NotificationsHelpers.sendNotif_v2(notifParams, ['administrator'])
+
         } catch (error) {
           console.log(error)
           // await trx.rollback()
@@ -401,6 +392,7 @@ class DailyRitaseController {
         }
       })
 
+      console.log('MATERIAL SOIL ::', GRP_SO);
       for (const obj of GRP_SO) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -416,7 +408,7 @@ class DailyRitaseController {
           material: 12,
           distance: req.distance,
           tot_ritase: obj.items.reduce((a, b) => {
-            return a + parseInt(b.material_ob)
+            return a + parseInt(b.material_soil)
           }, 0),
           date: req.date,
           user_id: xuser.id,
@@ -426,71 +418,52 @@ class DailyRitaseController {
         try {
           await dailyRitase.save()
 
-          /* FUNC TO SENDING NOTIFICATIONS */
-          let notifData = await DailyRitase.query().with('ritase_details').with('material_details').where('id', dailyRitase.id).last()
-          try {
-            await dailyRitase.save()
+          for (const val of obj.items) {
+            const hauler_unit = await MasEquipment.query().where('kode', val.kd_hauler).last()
+            const oprUnit = await MasEmployee.query()
+              .where(w => {
+                w.where('fullname', 'like', `%${val.opr_name}%`)
+                w.where('is_operator', 'Y')
+              })
+              .last()
 
-            /* FUNC TO SENDING NOTIFICATIONS */
-            // let notifData = await DailyRitase.query()
-            //   .with('ritase_details')
-            //   .with('material_details')
-            //   .where('id', dailyRitase.id).last()
-            // try {
-            //   await NotificationsHelpers.sendNotifications(req, req.date, notifData, xuser.nm_lengkap)
-            // } catch (error) {
-            //   console.log(error);
-            //   return {
-            //     success: false,
-            //     message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
-            //   }
-            // }
+            var lenSOIL = val.material_soil
+            for (let i = 0; i < lenSOIL; i++) {
+              const ritaseDetails = new DailyRitaseDetail()
+              ritaseDetails.fill({
+                dailyritase_id: dailyRitase.id,
+                checker_id: req.checker_id,
+                spv_id: req.spv_id,
+                hauler_id: hauler_unit.id,
+                opr_id: oprUnit.id,
+                check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
+                urut: i + 1,
+                duration: 0,
+                satuan: 'menit',
+              })
 
-            /* FILL DAILY RITASE DETAILS OB */
-            for (const val of obj.items) {
-              const hauler_unit = await MasEquipment.query().where('kode', val.kd_hauler).last()
-              const oprUnit = await MasEmployee.query()
-                .where(w => {
-                  w.where('fullname', 'like', `%${val.opr_name}%`)
-                  w.where('is_operator', 'Y')
-                })
-                .last()
-
-              var len = val.material_ob
-              for (let i = 0; i < len; i++) {
-                const ritaseDetails = new DailyRitaseDetail()
-                ritaseDetails.fill({
-                  dailyritase_id: dailyRitase.id,
-                  checker_id: req.checker_id,
-                  spv_id: req.spv_id,
-                  hauler_id: hauler_unit.id,
-                  opr_id: oprUnit.id,
-                  check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
-                  urut: i + 1,
-                  duration: 0,
-                  satuan: 'menit',
-                })
-
-                try {
-                  await ritaseDetails.save()
-                } catch (error) {
-                  console.log(error)
-                  // await trx.rollback()
-                  return {
-                    success: false,
-                    message: 'ERR save daily ritase details, \nerrcode: ' + JSON.stringify(error),
-                  }
+              try {
+                await ritaseDetails.save()
+              } catch (error) {
+                console.log(error)
+                // await trx.rollback()
+                return {
+                  success: false,
+                  message: 'ERR save daily ritase details, \nerrcode: ' + JSON.stringify(error),
                 }
               }
             }
-          } catch (error) {
-            console.log(error)
-            // await trx.rollback()
-            return {
-              success: false,
-              message: 'ERR save daily ritase, \nerrcode: ' + JSON.stringify(error),
-            }
           }
+
+          /** NOTIF V2 */
+          const notifParams = {
+            headings: 'Daily Ritase OB ',
+            subtitle: `Exca : ${exca_unit.kode}`,
+            message: `Material Soil`,
+          }
+
+          await NotificationsHelpers.sendNotif_v2(notifParams, ['administrator'])
+
         } catch (error) {
           console.log(error)
           // await trx.rollback()
@@ -500,6 +473,7 @@ class DailyRitaseController {
           }
         }
       }
+      
     }
 
     /* GROUPING BY EXCAVATOR FOR DAILY RITASE DATA LUMPUR */
@@ -513,6 +487,7 @@ class DailyRitaseController {
         }
       })
 
+      console.log('MATERIAL LUMPUR ::', GRP_MD);
       for (const obj of GRP_MD) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -528,7 +503,7 @@ class DailyRitaseController {
           material: 12,
           distance: req.distance,
           tot_ritase: obj.items.reduce((a, b) => {
-            return a + parseInt(b.material_ob)
+            return a + parseInt(b.material_lumpur)
           }, 0),
           date: req.date,
           user_id: xuser.id,
@@ -538,71 +513,52 @@ class DailyRitaseController {
         try {
           await dailyRitase.save()
 
-          /* FUNC TO SENDING NOTIFICATIONS */
-          let notifData = await DailyRitase.query().with('ritase_details').with('material_details').where('id', dailyRitase.id).last()
-          try {
-            await dailyRitase.save()
+          for (const val of obj.items) {
+            const hauler_unit = await MasEquipment.query().where('kode', val.kd_hauler).last()
+            const oprUnit = await MasEmployee.query()
+              .where(w => {
+                w.where('fullname', 'like', `%${val.opr_name}%`)
+                w.where('is_operator', 'Y')
+              })
+              .last()
 
-            /* FUNC TO SENDING NOTIFICATIONS */
-            // let notifData = await DailyRitase.query()
-            //   .with('ritase_details')
-            //   .with('material_details')
-            //   .where('id', dailyRitase.id).last()
-            //   try {
-            //     await NotificationsHelpers.sendNotifications(req, req.date, notifData, xuser.nm_lengkap)
-            //   } catch (error) {
-            //     console.log(error);
-            //     return {
-            //       success: false,
-            //       message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
-            //     }
-            //   }
+            var lenMD = val.material_lumpur
+            for (let i = 0; i < lenMD; i++) {
+              const ritaseDetails = new DailyRitaseDetail()
+              ritaseDetails.fill({
+                dailyritase_id: dailyRitase.id,
+                checker_id: req.checker_id,
+                spv_id: req.spv_id,
+                hauler_id: hauler_unit.id,
+                opr_id: oprUnit.id,
+                check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
+                urut: i + 1,
+                duration: 0,
+                satuan: 'menit',
+              })
 
-            /* FILL DAILY RITASE DETAILS OB */
-            for (const val of obj.items) {
-              const hauler_unit = await MasEquipment.query().where('kode', val.kd_hauler).last()
-              const oprUnit = await MasEmployee.query()
-                .where(w => {
-                  w.where('fullname', 'like', `%${val.opr_name}%`)
-                  w.where('is_operator', 'Y')
-                })
-                .last()
-
-              var len = val.material_ob
-              for (let i = 0; i < len; i++) {
-                const ritaseDetails = new DailyRitaseDetail()
-                ritaseDetails.fill({
-                  dailyritase_id: dailyRitase.id,
-                  checker_id: req.checker_id,
-                  spv_id: req.spv_id,
-                  hauler_id: hauler_unit.id,
-                  opr_id: oprUnit.id,
-                  check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
-                  urut: i + 1,
-                  duration: 0,
-                  satuan: 'menit',
-                })
-
-                try {
-                  await ritaseDetails.save()
-                } catch (error) {
-                  console.log(error)
-                  // await trx.rollback()
-                  return {
-                    success: false,
-                    message: 'ERR save daily ritase details, \nerrcode: ' + JSON.stringify(error),
-                  }
+              try {
+                await ritaseDetails.save()
+              } catch (error) {
+                console.log(error)
+                // await trx.rollback()
+                return {
+                  success: false,
+                  message: 'ERR save daily ritase details, \nerrcode: ' + JSON.stringify(error),
                 }
               }
             }
-          } catch (error) {
-            console.log(error)
-            // await trx.rollback()
-            return {
-              success: false,
-              message: 'ERR save daily ritase, \nerrcode: ' + JSON.stringify(error),
-            }
           }
+
+          /** NOTIF V2 */
+          const notifParams = {
+            headings: 'Daily Ritase OB ',
+            subtitle: `Exca : ${exca_unit.kode}`,
+            message: `Material Lumpur`,
+          }
+
+          await NotificationsHelpers.sendNotif_v2(notifParams, ['administrator'])
+          
         } catch (error) {
           console.log(error)
           // await trx.rollback()
@@ -626,7 +582,7 @@ class DailyRitaseController {
       })
 
       // console.log(JSON.stringify(GRP_OB, null, 2));
-
+      console.log('MATERIAL BLASTING ::', GRP_BM);
       for (const obj of GRP_BM) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -642,7 +598,7 @@ class DailyRitaseController {
           material: 12,
           distance: req.distance,
           tot_ritase: obj.items.reduce((a, b) => {
-            return a + parseInt(b.material_ob)
+            return a + parseInt(b.material_blasting)
           }, 0),
           date: req.date,
           user_id: xuser.id,
@@ -652,75 +608,54 @@ class DailyRitaseController {
         try {
           await dailyRitase.save()
 
-          /* FUNC TO SENDING NOTIFICATIONS */
-          let notifData = (await DailyRitase.query().with('ritase_details').with('material_details').where('id', dailyRitase.id).last())?.toJSON()
+          console.log('Total Blasting ::', obj.items.reduce((a, b) => {return a + b.material_blasting}, 0));
+          console.log(obj);
+          for (const val of obj.items) {
+            const hauler_unit = await MasEquipment.query().where('kode', val.kd_hauler).last()
+            const oprUnit = await MasEmployee.query()
+              .where(w => {
+                w.where('fullname', 'like', `%${val.opr_name}%`)
+                w.where('is_operator', 'Y')
+              })
+              .last()
 
-          try {
-            await dailyRitase.save()
+            var lenBM = val.material_blasting
+            for (let i = 0; i < lenBM; i++) {
+              const ritaseDetails = new DailyRitaseDetail()
+              ritaseDetails.fill({
+                dailyritase_id: dailyRitase.id,
+                checker_id: req.checker_id,
+                spv_id: req.spv_id,
+                hauler_id: hauler_unit.id,
+                opr_id: oprUnit.id,
+                check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
+                urut: i + 1,
+                duration: 0,
+                satuan: 'menit',
+              })
 
-            /* FUNC TO SENDING NOTIFICATIONS */
-            // let notifData = (
-            //   await DailyRitase.query()
-            //   .with('ritase_details')
-            //   .with('material_details')
-            //   .where('id', dailyRitase.id).last()
-            //   )?.toJSON()
-
-            // try {
-            //   await NotificationsHelpers.sendNotifications(req, req.date, notifData.ritase_details, xuser.nm_lengkap)
-            // } catch (error) {
-            //   console.log(error);
-            //   return {
-            //     success: false,
-            //     message: 'Berhasil menyimpan data namun gagal mengirim notifikasi...'
-            //   }
-            // }
-
-            /* FILL DAILY RITASE DETAILS OB */
-            for (const val of obj.items) {
-              const hauler_unit = await MasEquipment.query().where('kode', val.kd_hauler).last()
-              const oprUnit = await MasEmployee.query()
-                .where(w => {
-                  w.where('fullname', 'like', `%${val.opr_name}%`)
-                  w.where('is_operator', 'Y')
-                })
-                .last()
-
-              var len = val.material_ob
-              for (let i = 0; i < len; i++) {
-                const ritaseDetails = new DailyRitaseDetail()
-                ritaseDetails.fill({
-                  dailyritase_id: dailyRitase.id,
-                  checker_id: req.checker_id,
-                  spv_id: req.spv_id,
-                  hauler_id: hauler_unit.id,
-                  opr_id: oprUnit.id,
-                  check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
-                  urut: i + 1,
-                  duration: 0,
-                  satuan: 'menit',
-                })
-
-                try {
-                  await ritaseDetails.save()
-                } catch (error) {
-                  console.log(error)
-                  // await trx.rollback()
-                  return {
-                    success: false,
-                    message: 'ERR save daily ritase details, \nerrcode: ' + JSON.stringify(error),
-                  }
+              try {
+                await ritaseDetails.save()
+              } catch (error) {
+                console.log(error)
+                // await trx.rollback()
+                return {
+                  success: false,
+                  message: 'ERR save daily ritase details, \nerrcode: ' + JSON.stringify(error),
                 }
               }
             }
-          } catch (error) {
-            console.log(error)
-            // await trx.rollback()
-            return {
-              success: false,
-              message: 'ERR save daily ritase, \nerrcode: ' + JSON.stringify(error),
-            }
           }
+
+          /** NOTIF V2 */
+          const notifParams = {
+            headings: 'Daily Ritase OB ',
+            subtitle: `Exca : ${exca_unit.kode}`,
+            message: `Material Blasting`
+          }
+
+          await NotificationsHelpers.sendNotif_v2(notifParams, ['administrator'])
+
         } catch (error) {
           console.log(error)
           // await trx.rollback()
@@ -736,350 +671,6 @@ class DailyRitaseController {
       success: true,
       message: 'Berhasil menyimpan data...',
     }
-
-    //  const validateFile = {
-    //       types: ['xls', 'xlsx'],
-    //       size: '2mb',
-    //       types: 'application',
-    //  }
-
-    //  const uploadData = request.file(
-    //       'detail-ritase-ob',
-    //       validateFile
-    //  )
-
-    //  let aliasName
-
-    //  if (uploadData) {
-    //       aliasName = `detail-ritase-ob-${moment().format(
-    //            'DDMMYYHHmmss'
-    //       )}.${uploadData.extname}`
-
-    //       await uploadData.move(Helpers.publicPath(`/upload/`), {
-    //            name: aliasName,
-    //            overwrite: true,
-    //       })
-
-    //       await uploadData
-
-    //       if (!uploadData.moved()) {
-    //            return uploadData.error()
-    //       }
-
-    //       var pathData = Helpers.publicPath(`/upload/`)
-
-    //       const convertJSON = excelToJson({
-    //            sourceFile: `${pathData}${aliasName}`,
-    //            header: {
-    //                 rows: 1,
-    //            },
-    //            sheets: ['FORM'],
-    //       })
-
-    //       const data = convertJSON.FORM.filter(
-    //            cell => cell.A != '#N/A'
-    //       )
-
-    //       try {
-    //            const dailyRitase = new DailyRitase()
-    //            dailyRitase.fill({
-    //                 dailyfleet_id: req.dailyfleet_id,
-    //                 exca_id: req.exca_id,
-    //                 material: req.material,
-    //                 distance: req.distance,
-    //                 date: req.date,
-    //            })
-
-    //            await dailyRitase.save()
-
-    //            var date = moment(req.date).format('YYYY-MM-DD')
-    //            for (const item of data) {
-    //                 var clock = moment(item.E).format('HH:mm')
-    //                 const ritaseDetail = new DailyRitaseDetail()
-    //                 ritaseDetail.fill({
-    //                      dailyritase_id: dailyRitase.id,
-    //                      checker_id: req.checker_id,
-    //                      spv_id: req.spv_id,
-    //                      hauler_id: item.A,
-    //                      opr_id:
-    //                           item.D != '#N/A' ? item.D : null,
-    //                      check_in: date + ' ' + clock,
-    //                 })
-    //                 await ritaseDetail.save()
-    //            }
-
-    //            let result = (
-    //                 await DailyRitaseDetail.query()
-    //                      .with('daily_ritase', wh => {
-    //                           wh.with('material_details')
-    //                      })
-    //                      .with('checker', wh => {
-    //                           wh.with('profile')
-    //                      })
-    //                      .with('spv', wh => {
-    //                           wh.with('profile')
-    //                      })
-    //                      .where('dailyritase_id', dailyRitase.id)
-    //                      .fetch()
-    //            ).toJSON()
-
-    //            const checkerName =
-    //                 result && result.length > 0
-    //                      ? `${result[0].checker.profile.nm_depan} ${result[0].checker.profile.nm_belakang}`
-    //                      : 'No Name'
-    //            /** after being uploaded, then throw a notif to the company's owner */
-    //            await NotificationsHelpers.sendNotifications(
-    //                 req,
-    //                 date,
-    //                 result,
-    //                 checkerName
-    //            )
-
-    //            return {
-    //                 success: true,
-    //                 data: result,
-    //                 message:
-    //                      'data berhasil di upload ' +
-    //                      result.length +
-    //                      ' items...',
-    //            }
-    //       } catch (error) {
-    //            console.log(error)
-    //            return {
-    //                 success: false,
-    //                 message: error,
-    //            }
-    //       }
-    //  } else {
-    //       const reqx = request.only([
-    //            'date',
-    //            'dailyfleet_id',
-    //            'exca_id',
-    //            'material',
-    //            'distance',
-    //            'checker_id',
-    //            'spv_id',
-    //       ])
-    //       const reqCollect = request.collect([
-    //            'hauler_id',
-    //            'opr_id',
-    //            'check_in',
-    //            'qty',
-    //       ])
-
-    //       try {
-    //            let xDailyRitase = null
-
-    //            let prepData = reqCollect.map(el => {
-    //                 return {
-    //                      ...el,
-    //                      checker_id: xuser.id,
-    //                      spv_id: reqx.spv_id,
-    //                 }
-    //            })
-
-    //            const checkIfExist = await DailyRitase.query()
-    //                 .where(wh => {
-    //                      wh.where('date', reqx.date)
-    //                      wh.andWhere('exca_id', reqx.exca_id)
-    //                      wh.andWhere('distance', reqx.distance)
-    //                      wh.andWhere('material', reqx.material)
-    //                      wh.andWhere(
-    //                           'dailyfleet_id',
-    //                           reqx.dailyfleet_id
-    //                      )
-    //                 })
-    //                 .last()
-
-    //            if (checkIfExist) {
-    //                 xDailyRitase = checkIfExist
-    //            } else {
-    //                 xDailyRitase = new DailyRitase()
-
-    //                 xDailyRitase.fill({
-    //                      dailyfleet_id: reqx.dailyfleet_id,
-    //                      exca_id: reqx.exca_id,
-    //                      material: reqx.material,
-    //                      distance: reqx.distance,
-    //                      date: reqx.date,
-    //                 })
-
-    //                 await xDailyRitase.save()
-    //            }
-    //            for (const obj of prepData) {
-    //                 if (parseInt(obj.qty) > 0) {
-    //                      for (
-    //                           let i = 0;
-    //                           i < parseInt(obj.qty);
-    //                           i++
-    //                      ) {
-    //                           const xRitaseDetail =
-    //                                new DailyRitaseDetail()
-    //                           xRitaseDetail.fill({
-    //                                hauler_id: obj.hauler_id,
-    //                                opr_id: obj.opr_id,
-    //                                check_in:
-    //                                     moment(reqx.date).format(
-    //                                          'YYYY-MM-DD'
-    //                                     ) +
-    //                                     ' ' +
-    //                                     obj.check_in,
-    //                                checker_id: obj.checker_id,
-    //                                spv_id: obj.spv_id,
-    //                                dailyritase_id:
-    //                                     xDailyRitase.id,
-    //                           })
-    //                           await xRitaseDetail.save()
-    //                      }
-    //                 }
-    //            }
-
-    //            let xresult = null
-
-    //            if (checkIfExist) {
-    //                 console.log('is exist ? yes')
-    //                 xresult = (
-    //                      await DailyRitaseDetail.query()
-    //                           .with('daily_ritase', wh => {
-    //                                wh.with('material_details')
-    //                           })
-    //                           .with('checker', wh => {
-    //                                wh.with('profile')
-    //                           })
-    //                           .with('spv', wh => {
-    //                                wh.with('profile')
-    //                           })
-    //                           .where(
-    //                                'dailyritase_id',
-    //                                checkIfExist?.id
-    //                           )
-    //                           .fetch()
-    //                 ).toJSON()
-    //            } else {
-    //                 console.log('is exist ? no, lets create one')
-    //                 xresult = (
-    //                      await DailyRitaseDetail.query()
-    //                           .with('daily_ritase', wh => {
-    //                                wh.with('material_details')
-    //                           })
-    //                           .with('checker', wh => {
-    //                                wh.with('profile')
-    //                           })
-    //                           .with('spv', wh => {
-    //                                wh.with('profile')
-    //                           })
-    //                           .where(
-    //                                'dailyritase_id',
-    //                                xDailyRitase.id
-    //                           )
-    //                           .fetch()
-    //                 ).toJSON()
-    //            }
-
-    //            /** after being uploaded, then throw a notif to the company's owner */
-    //            const userRec = (
-    //                 await User.query()
-    //                      .whereIn('user_tipe', [
-    //                           'owner',
-    //                           'administrator',
-    //                           'manager',
-    //                      ])
-    //                      .fetch()
-    //            ).toJSON()
-
-    //            for (const obj of userRec) {
-    //                 const userDevices = (
-    //                      await UserDevice.query()
-    //                           .where('user_id', obj.id)
-    //                           .fetch()
-    //                 ).toJSON()
-
-    //                 if (userDevices) {
-    //                      const xhours = reqCollect[0].check_in
-
-    //                      const xexcaName = (
-    //                           await MasEquipment.query()
-    //                                .where('id', reqx.exca_id)
-    //                                .first()
-    //                      ).toJSON().kode
-
-    //                      const xpitName = (
-    //                           await DailyFleet.query()
-    //                                .with('pit')
-    //                                .where(
-    //                                     'id',
-    //                                     reqx.dailyfleet_id
-    //                                )
-    //                                .first()
-    //                      ).toJSON().pit.name
-
-    //                      const xmaterialName = (
-    //                           await MasMaterial.query()
-    //                                .where('id', reqx.material)
-    //                                .first()
-    //                      ).toJSON().name
-
-    //                      const xstart = moment(
-    //                           `${reqx.date} ${xhours}`
-    //                      )
-    //                           .startOf('hour')
-    //                           .format('HH:mm')
-    //                      const xend = moment(
-    //                           `${reqx.date} ${xhours}`
-    //                      )
-    //                           .endOf('hour')
-    //                           .format('HH:mm')
-
-    //                      const checkerName =
-    //                           xresult && xresult.length > 0
-    //                                ? `${xresult[0].checker.profile.nm_depan} ${xresult[0].checker.profile.nm_belakang}`
-    //                                : 'No Name'
-    //                      const totalBCM =
-    //                           xresult.reduce(
-    //                                (a, b) =>
-    //                                     a +
-    //                                     b.daily_ritase
-    //                                          .material_details
-    //                                          .vol,
-    //                                0
-    //                           ) || 0
-    //                      let msg = `Hourly Report OB ${xstart} - ${xend} | ${moment(
-    //                           reqx.date
-    //                      ).format('DD MMM')}
-    //  ${xpitName} - ${xexcaName} - ${xmaterialName}
-    //   BCM : ${await numberFormatter(String(totalBCM))}
-    //   Author : ${checkerName}
-    //  `
-
-    //                      const _dat = {}
-
-    //                      for (const x of userDevices) {
-    //                           await sendMessage(
-    //                                x.playerId,
-    //                                msg,
-    //                                _dat,
-    //                                x.platform
-    //                           )
-    //                      }
-    //                 }
-    //            }
-
-    //            return {
-    //                 success: true,
-    //                 data: xresult,
-    //                 message:
-    //                      'data berhasil di simpan ' +
-    //                      xresult.length +
-    //                      ' items...',
-    //            }
-    //       } catch (error) {
-    //            console.log(error)
-    //            return {
-    //                 success: false,
-    //                 message: error,
-    //            }
-    //       }
-    //  }
   }
 
   async uploadFileBackDate({ auth, request }) {

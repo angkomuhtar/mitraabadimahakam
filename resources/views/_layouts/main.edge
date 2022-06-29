@@ -11,8 +11,11 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <title>Mitra Abadi Mahakam</title>
     {{--  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />  --}}
+   
     
+    {{ style('plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker') }}
     
+
     <!-- Bootstrap Core CSS -->
     {{ style('bootstrap/dist/css/bootstrap.min') }}
     <!-- Menu CSS -->
@@ -81,7 +84,7 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!--<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script> -->
+    <!--<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script> 
 
     <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
     <script>
@@ -91,7 +94,7 @@
             appId: "b677f7c0-6042-4cfe-a99a-a7034ae6d4b3",
             });
         });
-    </script>
+    </script> -->
     
 </head>
 
@@ -281,7 +284,15 @@
     <!-- switcher -->
     {{ script('plugins/bower_components/jquery.switcher/dist/switcher.min') }}
 
-    
+    <!-- Color Picker Plugin JavaScript
+    <script src="../plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
+    <script src="../plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
+    <script src="../plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+    Date Picker Plugin JavaScript -->
+
+    {{ script('plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor') }}
+    {{ script('plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asGradient') }}
+    {{ script('plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min') }}
 
     
     

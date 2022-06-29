@@ -3,6 +3,7 @@
 // const si = require('systeminformation');
 const Helpers = use('Helpers')
 const moment = require("moment")
+const MasSite = use("App/Models/MasSite")
 const MasPit = use("App/Models/MasPit")
 const MasShift = use("App/Models/MasShift")
 const ReportOBHelpers = use("App/Controllers/Http/Helpers/ReportOB")
@@ -28,12 +29,23 @@ class ProductionReportController {
 
     async applyFilter ( { request } ) {
         const req = request.all()
-        console.log('====================================');
-        console.log(req);
-        console.log('====================================');
+        console.log('REQUEST ::::', req);
+
+        let site = null
+        let pit = null
+        if(req.site_id){
+            site = (await MasSite.query().where('id', req.site_id).last()).toJSON()
+        }
+        if(req.pit_id){
+            pit = (await MasPit.query().where('id', req.pit_id).last()).toJSON()
+        }
+
+
         if(req.range_type === 'MW'){
             const monthlyWise = await MONTHLY_WISE(req)
             return {
+                site: site,
+                pit: pit,
                 data: monthlyWise.data,
                 x_Axis: monthlyWise.xAxis,
                 group: 'MW',
@@ -43,7 +55,8 @@ class ProductionReportController {
         if(req.range_type === 'PW'){
             const periodWise = await PERIODE_WISE(req)
             return {
-                site: periodWise.site_nm || 'BBE',
+                site: site,
+                pit: pit,
                 data: periodWise.data,
                 x_Axis: periodWise.xAxis,
                 group: 'PW',
@@ -95,55 +108,6 @@ class ProductionReportController {
         //     return dataCOAL
         // }
     }
-
-    // async dataGraphOB ( { request } ) {
-    //     const req = request.all()
-    //     console.log(req);
-    //     let pit
-    //     let shift
-    //     if(req.pit_id){
-    //         pit = await MasPit.query().where('id', req.pit_id).last()
-    //     }
-    //     if(req.shift_id){
-    //         shift = await MasShift.query().where('id', req.shift_id).last()
-    //     }
-
-    //     const data = await ReportOBHelpers.SHOW(req)
-    //     // console.log('XXXXX', JSON.stringify(data, null, 2));
-        
-    //     return {
-    //         success: true,
-    //         chartType: req.graphType,
-    //         filterType: req.filterType,
-    //         data: data,
-    //         pit: pit?.name || 'ALL PIT LOCATIONS',
-    //         shift: shift?.name || 'ALL SHIFT SCHEDULES',
-    //         periode: {
-    //             start: req.start_date || moment().startOf('month').format('YYYY-MM-DD'),
-    //             end: req.end_date || moment().format('YYYY-MM-DD')
-    //         }
-    //     }
-    // }
-
-    // async viewGraphOB ( { auth, view, request } ) {
-    //     const req = request.all()
-    //     const user = await userValidate(auth)
-    //     if(!user){
-    //         return view.render('401')
-    //     }
-    //     // const data = await ReportOBHelpers.SHOW(req)
-    //     return view.render('report.ob.graph-content')
-    // }
-
-    // async viewTableOB ( { auth, view, request } ) {
-    //     const req = request.all()
-    //     const user = await userValidate(auth)
-    //     if(!user){
-    //         return view.render('401')
-    //     }
-    //     const data = await ReportOBHelpers.SHOW(req)
-    //     return view.render('report.ob.table', {list: data})
-    // }
 }
 
 module.exports = ProductionReportController

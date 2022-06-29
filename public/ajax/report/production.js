@@ -59,7 +59,7 @@ $(function(){
                 url: '/ajax/pit-by-site?site_id='+site_id,
                 method: 'GET',
                 success: function(result){
-                    console.log(result);
+                    // console.log(result);
                     body.find('div#select-pit').html(result)
                     body.find('div.container-type').css('display', 'none')
                     body.find('select[name="filterType"]').val('DATE')
@@ -329,6 +329,8 @@ $(function(){
 
     function showChart_MW(result){
 
+        let site = result.site
+        let pit = result.pit
         let xAxis = result.x_Axis
         let series = result.data.map( el => {
             return {
@@ -340,12 +342,13 @@ $(function(){
             }
         })
         console.log(series);
-        BAR_CHART_MW(xAxis, series)
+        BAR_CHART_MW(xAxis, series, site, pit)
     }
 
     function showChart_PW(result){
         console.log(result);
         let site = result.site
+        let pit = result.pit
         let xAxis = result.x_Axis
         let series = result.data.map( el => {
             return {
@@ -357,20 +360,20 @@ $(function(){
             }
         })
 
-        BAR_CHART_PW(xAxis, series, site)
+        BAR_CHART_PW(xAxis, series, site, pit)
     }
 
-    function BAR_CHART_MW (arrDate, series) {
+    function BAR_CHART_MW (arrDate, series, site, pit) {
 
         Highcharts.chart('container', {
             chart: {
                 zoomType: 'xy'
             },
             title: {
-                text: 'Production By Truck Count'
+                text: 'Production Graph ' + site.name
             },
             subtitle: {
-                text: 'Project BBE'
+                text: `${pit.name}`
             },
             xAxis: [{
                 categories: arrDate,
@@ -446,10 +449,10 @@ $(function(){
                 zoomType: 'xy'
             },
             title: {
-                text: 'Production By Truck Count'
+                text: 'Production Graph ' + site.name
             },
             subtitle: {
-                text: 'Project '+ site
+                text: 'All Pit '
             },
             xAxis: [{
                 categories: xAxis,
