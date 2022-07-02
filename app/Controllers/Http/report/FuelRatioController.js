@@ -20,14 +20,14 @@ class FuelRatioController {
 
     async applyFilter ( { request } ) {
         const req = request.all()
-        console.log(req);
+        // console.log(req);
         if(req.range_type === 'pit'){
             const data = await ReportFuelRatioHelpers.PIT_WISE(req)
-            console.log(data);
+            // console.log(data);
             return data
         }else{
             const data = await ReportFuelRatioHelpers.PERIODE_WISE(req)
-            console.log(data);
+            // console.log(data);
             return data
         }
     }
