@@ -415,7 +415,7 @@ class FuelSummaryHelpers {
         w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
         w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
       })
-      .getSum('fuel_used')
+      .getSum('fuel_used') || 0
 
     const sumProdOB = await FuelSummary.query()
       .where(w => {
@@ -424,7 +424,7 @@ class FuelSummaryHelpers {
         w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
         w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
       })
-      .getSum('ob')
+      .getSum('ob') || 0
 
     const sumProdCoal = await FuelSummary.query()
       .where(w => {
@@ -433,7 +433,7 @@ class FuelSummaryHelpers {
         w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
         w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
       })
-      .getSum('coal_bcm')
+      .getSum('coal_bcm') || 0
 
     const fuelSummary = new FuelSummary()
     fuelSummary.fill({
