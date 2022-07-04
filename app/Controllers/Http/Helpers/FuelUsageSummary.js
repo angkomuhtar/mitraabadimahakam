@@ -438,9 +438,6 @@ class FuelSummaryHelpers {
     let cumCurrentFuel = parseFloat(sumFuel + parseFloat(req.fuel_used))
     let cumCurrentProd = (parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(req.ob)) + (parseFloat(req.coal_mt) > 0 ? parseFloat(req.coal_mt) : 0)
 
-    console.log(cumCurrentFuel);
-    console.log(cumCurrentProd);
-    console.log(cumCurrentFuel / cumCurrentProd);
 
     const fuelSummary = new FuelSummary()
     fuelSummary.fill({

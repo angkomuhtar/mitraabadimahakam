@@ -5,6 +5,7 @@ $(function(){
     var body = $('body')
 
     initFilter()
+    
     $('body').on('click', 'button#bt-back', function(){
         window.location = window.location
     })
@@ -70,6 +71,38 @@ $(function(){
         body.find('div#box-apply-chart').css('display', 'inline')
     })
 
+    $('body').on('hidden.bs.modal', '#myModal', function (e) {
+        e.preventDefault()
+        const form = document.getElementById('filter-data');
+        var data = new FormData(form)
+        data.append('filter', 'true')
+        $.ajax({
+            async: true,
+            url: '/report/fuel-ratio/apply-filter',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                GEN_CHART_ACTUAL(result.xAxis, result.series, result.site, result.pit)
+                if (result.cummxAxis) {
+                    GEN_CHART_CUM(result.cummxAxis, result.cummSeries, result.site, result.pit)
+                }else{
+                    body.find('div#cumm-container').html('')
+                }
+                body.find('div#box-chart').css('display', 'inline')
+            },
+            error: function(err){
+                console.log(err)
+                body.find('div#box-chart').css('display', 'none')
+            }
+        })
+    })
+
+
     $('body').on('submit', 'form#filter-data', function(e){
         e.preventDefault()
         var data = new FormData(this)
@@ -88,6 +121,8 @@ $(function(){
                 GEN_CHART_ACTUAL(result.xAxis, result.series, result.site, result.pit)
                 if (result.cummxAxis) {
                     GEN_CHART_CUM(result.cummxAxis, result.cummSeries, result.site, result.pit)
+                }else{
+                    body.find('div#cumm-container').html('')
                 }
                 body.find('div#box-chart').css('display', 'inline')
             },

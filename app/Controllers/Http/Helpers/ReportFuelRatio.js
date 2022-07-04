@@ -304,13 +304,37 @@ class repFuelRatio {
                 }
             }
             
+            /* CUMMULATIVE WEEKLY DATA */
+            let cummWeek = []
+            for (const elm of arrDate) {
+                const sumCummOB = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', _.first(elm.items))
+                    w.where('date', '<=', _.last(elm.items))
+                }).getSum('ob') || 0
+                
+                const sumCummCoal = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', _.first(elm.items))
+                    w.where('date', '<=', _.last(elm.items))
+                }).getSum('coal_bcm') || 0
+
+                const sumCummFuel = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', _.first(elm.items))
+                    w.where('date', '<=', _.last(elm.items))
+                }).getSum('fuel_used') || 0
+
+                cummWeek.push({
+                    cumProduction: sumCummOB + sumCummCoal,
+                    cumFuelUsed: sumCummFuel,
+                    data: (sumCummOB + sumCummCoal) / sumCummFuel || 0
+                });
+            }
             cumm = [
                 
                 {
                     name: 'Cumm Fuel Used',
                     type: req.typeChart,
                     color: color[0],
-                    data: result.map(el => el.cumFuelUsed),
+                    data: cummWeek.map(el => el.cumFuelUsed),
                     dataLabels: {
                         enabled: true,
                         rotation: 0,
@@ -324,7 +348,7 @@ class repFuelRatio {
                     type: req.typeChart,
                     yAxis: 0,
                     color: color[1],
-                    data: result.map(el => parseFloat((el.cumProduction).toFixed('2'))),
+                    data: cummWeek.map(el => parseFloat((el.cumProduction).toFixed('2'))),
                     dataLabels: {
                         enabled: true,
                         y: -15,
@@ -336,7 +360,7 @@ class repFuelRatio {
                     type: 'spline',
                     color: 'red',
                     yAxis: 1,
-                    data: result.map(el => parseFloat((el.data).toFixed('2'))),
+                    data: cummWeek.map(el => parseFloat((el.data).toFixed('2'))),
                     dataLabels: {
                         enabled: true,
                         rotation: 0,
@@ -346,7 +370,7 @@ class repFuelRatio {
                     }
                 }
             ]
-            
+            console.log(result);
             // let color = req.colorGraph
             result = _.groupBy(result, 'name')
             result = Object.keys(result).map((key, i) => {
@@ -373,7 +397,9 @@ class repFuelRatio {
             return {
                 site: site,
                 xAxis: xAxis,
-                series: result
+                series: result,
+                cummxAxis: xAxis,
+                cummSeries: cumm
             }
         }
 
@@ -432,7 +458,76 @@ class repFuelRatio {
                     });
                 }
             }
-            
+
+            /* CUMMULATIVE MONTHLY DATA */
+            let cummMonth = []
+            for (const elm of arrMonth) {
+                const sumCummOB = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                    w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                }).getSum('ob') || 0
+    
+                const sumCummCoal = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                    w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                }).getSum('coal_bcm') || 0
+    
+                const sumCummFuel = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                    w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                }).getSum('fuel_used') || 0
+
+                cummMonth.push({
+                    cumProduction: sumCummOB + sumCummCoal,
+                    cumFuelUsed: sumCummFuel,
+                    data: (sumCummOB + sumCummCoal) / sumCummFuel || 0
+                });
+            }
+
+            cumm = [
+                
+                {
+                    name: 'Cumm Fuel Used',
+                    type: req.typeChart,
+                    color: color[0],
+                    data: cummMonth.map(el => el.cumFuelUsed),
+                    dataLabels: {
+                        enabled: true,
+                        rotation: 0,
+                        color: 'green',
+                        format: '{point.y:.2f}', // two decimal
+                        y: 5
+                    }
+                },
+                {
+                    name: 'Cumm Production',
+                    type: req.typeChart,
+                    yAxis: 0,
+                    color: color[1],
+                    data: cummMonth.map(el => parseFloat((el.cumProduction).toFixed('2'))),
+                    dataLabels: {
+                        enabled: true,
+                        y: -15,
+                        format: '{point.y:.2f}'
+                    }
+                },
+                {
+                    name: 'Cumm Fuel Ratio',
+                    type: 'spline',
+                    color: 'red',
+                    yAxis: 1,
+                    data: cummMonth.map(el => parseFloat((el.data).toFixed('2'))),
+                    dataLabels: {
+                        enabled: true,
+                        rotation: 0,
+                        color: 'red',
+                        format: '{point.y:.2f}', // two decimal
+                        y: 5
+                    }
+                }
+            ]
+
+            console.log(cumm);
             // let color = req.colorGraph
             result = _.groupBy(result, 'name')
             result = Object.keys(result).map((key, i) => {
@@ -456,19 +551,12 @@ class repFuelRatio {
                 }
             })
             
-            // let budget = [{
-            //     name: 'budget',
-            //     type: 'spline',
-            //     color: 'red',
-            //     data: xAxis.map(el => 0.85),
-                
-            // }]
-            console.log(result);
             return {
                 site: site,
                 xAxis: xAxis,
-                // series: [...result, ...budget]
-                series: result
+                series: result,
+                cummxAxis: xAxis,
+                cummSeries: cumm
             }
         }
     }
