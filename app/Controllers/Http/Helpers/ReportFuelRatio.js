@@ -233,7 +233,6 @@ class repFuelRatio {
         }
 
         if(req.inp_ranges === 'week'){
-            console.log('WEEKLY ....');
 
             let result = []
             
@@ -370,7 +369,6 @@ class repFuelRatio {
                     }
                 }
             ]
-            console.log(result);
             // let color = req.colorGraph
             result = _.groupBy(result, 'name')
             result = Object.keys(result).map((key, i) => {
