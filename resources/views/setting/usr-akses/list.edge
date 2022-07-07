@@ -18,42 +18,57 @@
                                 <div class="white-box">
                                     <div class="table-responsive">
                                         <table class="table table-hover">
-                                            <tbody>
-                                                <tr>
-                                                    <td>Module Name</td>
-                                                    <td>canCreate</td>
-                                                    <td>canRead</td>
-                                                    <td>canUpdate</td>
-                                                    <td>canDelete</td>
+                                            <thead>
+                                                <tr class="bg-inverse">
+                                                    <td class="text-white">Module Name</td>
+                                                    <td class="text-center text-white">canCreate</td>
+                                                    <td class="text-center text-white">canRead</td>
+                                                    <td class="text-center text-white">canUpdate</td>
+                                                    <td class="text-center text-white">canDelete</td>
                                                 </tr>
+
+                                            </thead>
+                                            <tbody>
                                                 @each(val in item.items)
                                                     <tr>
                                                         <td>{{val.name}}</td>
-                                                        <td>
+                                                        <td class="text-center">
                                                             @each(obj in val.items)
                                                                 @if(obj.method === 'C')
-                                                                C
+                                                                <div class="checkbox checkbox-success">
+                                                                    <input id="checkbox1" type="checkbox" checked>
+                                                                    <label for="checkbox1">Create Data</label>
+                                                                </div>
                                                                 @endif
                                                             @endeach
                                                         </td>
-                                                        <td>
+                                                        <td class="text-center">
                                                             @each(obj in val.items)
                                                                 @if(obj.method === 'R')
-                                                                R
+                                                                <div class="checkbox checkbox-info">
+                                                                    <input id="checkbox1" type="checkbox" checked>
+                                                                    <label for="checkbox1">View Data</label>
+                                                                </div>
                                                                 @endif
                                                             @endeach
                                                         </td>
-                                                        <td>
+                                                        <td class="text-center">
                                                             @each(obj in val.items)
                                                                 @if(obj.method === 'U')
-                                                                U
+                                                                <div class="checkbox checkbox-warning">
+                                                                    <input id="checkbox1" type="checkbox" checked>
+                                                                    <label for="checkbox1">Update Data</label>
+                                                                </div>
                                                                 @endif
                                                             @endeach
                                                         </td>
-                                                        <td>
+                                                        <td class="text-center">
                                                             @each(obj in val.items)
                                                                 @if(obj.method === 'D')
-                                                                D
+                                                                <div class="checkbox checkbox-danger">
+                                                                    <input id="checkbox1" type="checkbox" checked>
+                                                                    <label for="checkbox1">Delete Data</label>
+                                                                </div>
                                                                 @endif
                                                             @endeach
                                                         </td>
