@@ -312,6 +312,8 @@ Route.group(() => {
 
   Route.get('/usr-akses/list', 'SysUserAkseController.list').as('set.usr-akses.list')
 
+  Route.delete('/usr-akses', 'SysUserAkseController.destroy').as('set.usr-akses.destroy')
+
   // User Menu
   Route.get('/usr-menu', 'SysMenuController.index').as('set.usr-menu.index').middleware('R')
 
@@ -651,6 +653,8 @@ Route.group(() => {
   Route.get('/spv', 'AjaxUserAkseController.getOptionForeman').as('set.sys-options.getOptionForeman')
 
   Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
+
+  Route.get('/usr-sysmodule', 'AjaxUserAkseController.getSysModule').as('set.sys-options.getSysModule')
 
   Route.get('/department', 'AjaxOptionController.getDepartment').as('set.sys-options.getDepartment')
 

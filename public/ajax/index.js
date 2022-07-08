@@ -712,6 +712,25 @@ $(function(){
         })
     })
 
+    /* Option Module  */
+    // $('body select.select2Module').each(function(){
+    //     var selected = $(this).data('check')
+    //     var elm = $(this)
+    //     elm.children().remove()
+    //     $.ajax({
+    //         async: true,
+    //         url: '/ajax/usr-sysmodul?selected='+selected,
+    //         method: 'GET',
+    //         success: function(data){
+    //             console.log('MODULE ::::', data);
+                
+    //         },
+    //         error: function(err){
+    //             console.log(err);
+    //         }
+    //     })
+    // })
+
     $('body select.select2platform').each(function(){
         var selected = $(this).data('check')
         var elm = $(this)

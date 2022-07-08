@@ -12,6 +12,13 @@ class AjaxUserAkseController {
         return data
     }
 
+    async getSysModule ({ request }) {
+        const req = request.all()
+        const data = (await SysModule.query().orderBy('method', 'asc').fetch()).toJSON()
+        console.log(data)
+        return data
+    }
+
     async getOptionUsers ({ request }) {
         const req = request.all()
         let data = (await VUser.query().where({status: 'Y'}).fetch()).toJSON()

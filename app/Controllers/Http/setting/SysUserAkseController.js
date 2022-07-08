@@ -12,8 +12,11 @@ const SysModule = use("App/Models/SysModule")
 class SysUserAkseController {
     async index ({ auth, request, view }) {
         let option = (await Options.query().where({group: "user-tipe"}).fetch()).toJSON()
-        let sysmodule = (await SysModule.query().orderBy('method', 'asc').fetch()).toJSON()
-        return view.render('setting.usr-akses.index', {usertipe: option, listmodule: sysmodule})
+        const modules = await GetSysModules()
+        return view.render('setting.usr-akses.index', {
+            usertipe: option,
+            module: modules
+        })
     }
 
     async list ({ auth, request, view }) {
@@ -67,33 +70,141 @@ class SysUserAkseController {
 
     async store ({ auth, request }) {
         const usr = await auth.getUser()
-        const req = request.only(['user_tipe'])
-        const reqCol = request.collect(['mod_id'])
-        const data = reqCol.map(el => {
-            return {
-                ...el,
-                user_tipe: req.user_tipe
-            }
-        })
-        try {
-            if(req.user_tipe != null){
-                await Db.table('sys_users_groups').where({user_tipe: req.user_tipe}).delete()
-                await Db.from('sys_users_groups').insert(data)
-                new Loggerx(request.url(), request.all(), usr, request.method(), true).tempData()
+        const req = request.all()
+        req.createCb = req.createCb ? 'C':null
+        req.readCb = req.readCb ? 'R':null
+        req.updateCb = req.updateCb ? 'U':null
+        req.deleteCb = req.deleteCb ? 'D':null
+        
+        console.log(req);
+
+        // Create Access Data
+        const sysModuleCreate = await SysModule.query().where( w => {
+            w.where('method', req.createCb)
+            w.where('name', req.nm_module)
+            w.where('aktif', 'Y')
+        }).last()
+
+        if(sysModuleCreate){
+            const userGroup = await Db.table('sys_users_groups').where({
+                mod_id: sysModuleCreate.id,
+                user_tipe: req.user_tipe,
+            }).first() || null
+            
+            if(userGroup){
                 return {
-                    success: true,
-                    message: 'Success Grant User Privilege'
+                    success: false,
+                    message: 'User '+ req.user_tipe +' telah memiliki akses create data...'
                 }
-            }
-        } catch (error) {
-            console.log(error)
-            new Loggerx(request.url(), request.all(), usr, request.method(), error).tempData()
-            return {
-                success: false,
-                message: 'Failed Grant User Privilege'
+            }else{
+                await Db.insert({mod_id: sysModuleCreate.id, user_tipe: req.user_tipe}).into('sys_users_groups')
             }
         }
+
+        // Create Read Data
+        const sysModuleRead = await SysModule.query().where( w => {
+            w.where('method', req.readCb)
+            w.where('name', req.nm_module)
+            w.where('aktif', 'Y')
+        }).last()
+
+        if(sysModuleRead){
+            const userGroup = await Db.table('sys_users_groups').where({
+                mod_id: sysModuleRead.id,
+                user_tipe: req.user_tipe,
+            }).first() || null
+            
+            if(userGroup){
+                return {
+                    success: false,
+                    message: 'User '+ req.user_tipe +' telah memiliki akses create data...'
+                }
+            }else{
+                await Db.insert({mod_id: sysModuleRead.id, user_tipe: req.user_tipe}).into('sys_users_groups')
+            }
+        }
+
+        // Create Update Data
+        const sysModuleUpdate = await SysModule.query().where( w => {
+            w.where('method', req.updateCb)
+            w.where('name', req.nm_module)
+            w.where('aktif', 'Y')
+        }).last()
+
+        if(sysModuleUpdate){
+            const userGroup = await Db.table('sys_users_groups').where({
+                mod_id: sysModuleUpdate.id,
+                user_tipe: req.user_tipe,
+            }).first() || null
+            
+            if(userGroup){
+                return {
+                    success: false,
+                    message: 'User '+ req.user_tipe +' telah memiliki akses Update data...'
+                }
+            }else{
+                await Db.insert({mod_id: sysModuleUpdate.id, user_tipe: req.user_tipe}).into('sys_users_groups')
+            }
+        }
+
+        // Create Delete Data
+        const sysModuleDelete = await SysModule.query().where( w => {
+            w.where('method', req.deleteCb)
+            w.where('name', req.nm_module)
+            w.where('aktif', 'Y')
+        }).last()
+
+        if(sysModuleDelete){
+            const userGroup = await Db.table('sys_users_groups').where({
+                mod_id: sysModuleDelete.id,
+                user_tipe: req.user_tipe,
+            }).first() || null
+            
+            if(userGroup){
+                return {
+                    success: false,
+                    message: 'User '+ req.user_tipe +' telah memiliki akses Update data...'
+                }
+            }else{
+                await Db.insert({mod_id: sysModuleDelete.id, user_tipe: req.user_tipe}).into('sys_users_groups')
+            }
+        }
+
+        return {
+            success: true,
+            message: 'User '+ req.user_tipe +' berhasil diberikan akses...'
+        }
     }
+
+    async destroy ( { request } ) {
+        const req = request.all()
+        console.log(req);
+        const sysModule = (await SysModule.query().where('name', req.nm_modul).fetch()).toJSON()
+
+        for (const obj of sysModule) {
+            await Db.table('sys_users_groups').where({user_tipe: req.usertipe, mod_id: obj.id}).delete()
+        }
+        return {
+            success: true,
+            message: 'User '+ req.usertipe +' berhasil hilangkan aksesnya...'
+        }
+    }
+
 }
 
 module.exports = SysUserAkseController
+
+
+async function GetSysModules(){
+    let sysmodule = (await SysModule.query().orderBy('method', 'asc').fetch()).toJSON()
+    sysmodule = _.groupBy(sysmodule, 'name')
+    sysmodule = Object.keys(sysmodule).map(key => {
+        return {
+            name: key,
+            title: key.toLocaleUpperCase(),
+            items: sysmodule[key]
+        }
+    })
+    // console.log(sysmodule);
+    return sysmodule
+}
