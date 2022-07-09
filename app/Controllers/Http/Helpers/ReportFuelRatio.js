@@ -50,10 +50,8 @@ class repFuelRatio {
                 data: data.map(el => el.cum_fuel_used),
                 dataLabels: {
                     enabled: true,
-                    rotation: 0,
-                    color: 'green',
-                    format: '{point.y:.2f}', // two decimal
-                    y: 5
+                    y: 5,
+                    format: '{point.y:.2f}'
                 }
             },
             {
@@ -76,10 +74,8 @@ class repFuelRatio {
                 data: data.map(el => el.cum_fuel_ratio),
                 dataLabels: {
                     enabled: true,
-                    rotation: 0,
-                    color: 'red',
-                    format: '{point.y:.2f}', // two decimal
-                    y: 5
+                    y: 5,
+                    format: '{point.y:.2f}'
                 }
             }
         ]
@@ -148,10 +144,8 @@ class repFuelRatio {
                     data: cummulative.map(el => el.cumFuelUsed),
                     dataLabels: {
                         enabled: true,
-                        rotation: 0,
-                        color: 'green',
-                        format: '{point.y:.2f}', // two decimal
-                        y: 5
+                        y: 5,
+                        format: '{point.y:.2f}'
                     }
                 },
                 {
@@ -174,10 +168,8 @@ class repFuelRatio {
                     data: cummulative.map(el => parseFloat((el.cumFuelRatio).toFixed(2))),
                     dataLabels: {
                         enabled: true,
-                        rotation: 0,
-                        color: 'red',
-                        format: '{point.y:.2f}', // two decimal
-                        y: 5
+                        y: 5,
+                        format: '{point.y:.2f}'
                     }
                 }
             ]
@@ -336,10 +328,8 @@ class repFuelRatio {
                     data: cummWeek.map(el => el.cumFuelUsed),
                     dataLabels: {
                         enabled: true,
-                        rotation: 0,
-                        color: 'green',
-                        format: '{point.y:.2f}', // two decimal
-                        y: 5
+                        y: 5,
+                        format: '{point.y:.2f}'
                     }
                 },
                 {
@@ -362,10 +352,8 @@ class repFuelRatio {
                     data: cummWeek.map(el => parseFloat((el.data).toFixed('2'))),
                     dataLabels: {
                         enabled: true,
-                        rotation: 0,
-                        color: 'red',
-                        format: '{point.y:.2f}', // two decimal
-                        y: 5
+                        y: 5,
+                        format: '{point.y:.2f}'
                     }
                 }
             ]
@@ -491,10 +479,8 @@ class repFuelRatio {
                     data: cummMonth.map(el => el.cumFuelUsed),
                     dataLabels: {
                         enabled: true,
-                        rotation: 0,
-                        color: 'green',
-                        format: '{point.y:.2f}', // two decimal
-                        y: 5
+                        y: 5,
+                        format: '{point.y:.2f}'
                     }
                 },
                 {
@@ -517,10 +503,8 @@ class repFuelRatio {
                     data: cummMonth.map(el => parseFloat((el.data).toFixed('2'))),
                     dataLabels: {
                         enabled: true,
-                        rotation: 0,
-                        color: 'red',
-                        format: '{point.y:.2f}', // two decimal
-                        y: 5
+                        y: 5,
+                        format: '{point.y:.2f}'
                     }
                 }
             ]
