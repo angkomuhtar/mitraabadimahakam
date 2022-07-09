@@ -157,6 +157,36 @@ $(function(){
         }
     })
 
+    $('body').on('hidden.bs.modal', '#myModal', function (e) {
+        e.preventDefault()
+        const form = document.getElementById('filter-data');
+        var data = new FormData(form)
+        data.append('filter', 'true')
+        $.ajax({
+            async: true,
+            url: '/report/production/apply-filter',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                if(result.group === 'MW'){
+                    showChart_MW(result)
+                }else{
+                    showChart_PW(result)
+                }
+                body.find('div#box-chart').css('display', 'inline')
+            },
+            error: function(err){
+                console.log(err)
+                body.find('div#box-chart').css('display', 'none')
+            }
+        })
+    })
+
     $('body').on('submit', 'form#filter-data', function(e){
         e.preventDefault()
         var data = new FormData(this)
