@@ -30,6 +30,7 @@ class MasEquipmentController {
     let data1
     if (req.keyword != '') {
       data = await Equipment.query()
+        .with('site')
         .where(whe => {
           whe.where('kode', 'like', `%${req.keyword}%`)
           whe.orWhere('tipe', 'like', `%${req.keyword}%`)
@@ -42,7 +43,7 @@ class MasEquipmentController {
         .andWhere('aktif', 'Y')
         .paginate(halaman, limit)
     } else {
-      data = await Equipment.query().where('aktif', 'Y').paginate(halaman, limit)
+      data = await Equipment.query().with('site').where('aktif', 'Y').paginate(halaman, limit)
       data1 = await Equipment.query().where('aktif', 'Y').fetch()
     }
     const dataUnit = await equipUnit()
@@ -63,6 +64,7 @@ class MasEquipmentController {
     console.log(errUnit.length)
     console.log('*log data equipment*')
 
+    console.log(data.toJSON());
     return view.render('master.equipment.list', {
       limit: limit,
       search: req.keyword,
@@ -72,6 +74,7 @@ class MasEquipmentController {
 
   async store({ auth, request, response }) {
     const equip = request.only([
+      'site_id',
       'kode',
       'tipe',
       'brand',
@@ -157,6 +160,7 @@ class MasEquipmentController {
     const usr = await auth.getUser()
     const { id } = params
     const req = request.only([
+      'site_id',
       'kode',
       'tipe',
       'brand',

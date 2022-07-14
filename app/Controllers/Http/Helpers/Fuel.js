@@ -79,12 +79,14 @@ class Fuels {
     // OPERATOR REFUEL EQUIPMENT UNIT
 
     async LIST_REFUEL_UNIT (req) {
-        console.log(req);
+        req.equip_id = req.equip_id || null
         const limit = req.limit || 100
         const halaman = req.page === undefined ? 1 : parseInt(req.page)
         let data = []
+        
+        console.log(req);
         try {
-            if(req.keyword){
+            if(req.begin && req.keyword){
                 data = await DailyRefueling
                     .query()
                     .with('timesheet', ts => {

@@ -312,6 +312,8 @@ Route.group(() => {
 
   Route.get('/usr-akses/list', 'SysUserAkseController.list').as('set.usr-akses.list')
 
+  Route.delete('/usr-akses', 'SysUserAkseController.destroy').as('set.usr-akses.destroy')
+
   // User Menu
   Route.get('/usr-menu', 'SysMenuController.index').as('set.usr-menu.index').middleware('R')
 
@@ -498,6 +500,8 @@ Route.group(() => {
 
   Route.get('/daily-refuel-unit/list', 'DailyRefuelEquipmentController.list').as('opr.daily-refuel-unit.list').middleware('R')
 
+  Route.get('/daily-refuel-unit/create', 'DailyRefuelEquipmentController.create').as('opr.daily-refuel-unit.create').middleware('C')
+
   Route.post('/daily-refuel-unit/upload-file', 'DailyRefuelEquipmentController.uploadFile').as('opr.daily-refuel-unit.uploadFile').middleware('C')
 
   Route.get('/daily-refuel-unit/:id/show', 'DailyRefuelEquipmentController.show').as('opr.daily-refuel-unit.show').middleware('U')
@@ -651,6 +655,8 @@ Route.group(() => {
   Route.get('/spv', 'AjaxUserAkseController.getOptionForeman').as('set.sys-options.getOptionForeman')
 
   Route.get('/usr-module', 'AjaxUserAkseController.getUserModule').as('set.sys-options.getUserModule')
+
+  Route.get('/usr-sysmodule', 'AjaxUserAkseController.getSysModule').as('set.sys-options.getSysModule')
 
   Route.get('/department', 'AjaxOptionController.getDepartment').as('set.sys-options.getDepartment')
 
@@ -1161,6 +1167,29 @@ Route.group(() => {
 })
   .prefix('api/notifications')
   .namespace('api')
+
+
+/* START API VERSION 2.0 */
+
+Route.group(() => {
+  Route.post('/shift/morning', 'NotificationController.morningShiftNotification')
+  Route.post('/shift/night', 'NotificationController.nightShiftNotification')
+
+  Route.post('/user/device-id/update', 'NotificationController.storeUserDevice')
+  Route.post('/', 'NotificationController.index')
+})
+  .prefix('api/v2/notifications')
+  .namespace('api')
+
+// REPORT PRODUCTIONS OVER BURDEN & COAL
+Route.group(() => {
+  Route.get('/productions', 'ReportProductionController.index')
+})
+  .prefix('api/v2')
+  .namespace('api/v2')
+
+/* END API VERSION 2.0 */
+
 
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
 

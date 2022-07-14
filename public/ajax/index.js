@@ -290,19 +290,8 @@ $(function(){
         var elm = $(this)
         elm.children().remove()
         $.get('/ajax/site?selected='+selected, function(data){
-            if(data.length > 0){
-                console.log('site selected :::', selected);
-                const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
-                elm.append(list)
-                // console.log(list.filter(el => el.selected === 'selected').length);
-                if(!selected){
-                    elm.prepend('<option value="" selected>Pilih</option>')
-                }else{
-                    elm.prepend('<option value="">Pilih</option>')
-                }
-            }else{
-                elm.prepend('<option value="">Belum ada data pilihan...</option>')
-            }
+            let list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
+            elm.append(list)
         })
     })
 
@@ -711,6 +700,25 @@ $(function(){
             }
         })
     })
+
+    /* Option Module  */
+    // $('body select.select2Module').each(function(){
+    //     var selected = $(this).data('check')
+    //     var elm = $(this)
+    //     elm.children().remove()
+    //     $.ajax({
+    //         async: true,
+    //         url: '/ajax/usr-sysmodul?selected='+selected,
+    //         method: 'GET',
+    //         success: function(data){
+    //             console.log('MODULE ::::', data);
+                
+    //         },
+    //         error: function(err){
+    //             console.log(err);
+    //         }
+    //     })
+    // })
 
     $('body select.select2platform').each(function(){
         var selected = $(this).data('check')

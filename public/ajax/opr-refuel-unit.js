@@ -26,17 +26,17 @@ $(function(){
         initDeafult()
     })
 
-    $('body').on('keyup', 'input#inpKeywordFuelDist', function(e){
-        var value = $(this).val()
-        if(e.keyCode === 13){
-            ajaxSearch(value)
-        }
-    })
+    // $('body').on('keyup', 'input#inpKeywordFuelDist', function(e){
+    //     var value = $(this).val()
+    //     if(e.keyCode === 13){
+    //         ajaxSearch(value)
+    //     }
+    // })
 
-    $('body').on('click', 'button#bt-search-keyword', function(){
-        var value = $('input#inpKeywordFuelDist').val()
-        ajaxSearch(value)
-    })
+    // $('body').on('click', 'button#bt-search-keyword', function(){
+    //     var value = $('input#inpKeywordFuelDist').val()
+    //     ajaxSearch(value)
+    // })
 
     $('body').on('keyup', 'input[name="fm_awal"]', function(){
         var elm = $(this)
@@ -57,6 +57,54 @@ $(function(){
         $(this).parents('div#filtermodal').find('input.form-control, select.form-control').val('')
         $(this).parents('div#filtermodal').find('select.select2x').val(null).trigger('change')
         initDeafult()
+    })
+
+    $('body').on('click', 'a#btPreviousPage', function(e){
+        e.preventDefault()
+        var page = $(this).data('page')
+        var limit = $('body').find('input[id="limit"]').val()
+        page = page <= 1 ? 1 : page - 1
+        var fuel_truck = $('select[name="fuel_truck"]').val() && '&fuel_truck=' + $('select[name="fuel_truck"]').val()
+        var begin = $('input[name="mulai_tanggal"]').val() && '&begin=' + $('input[name="mulai_tanggal"]').val()
+        var end = $('input[name="hingga_tanggal"]').val() && '&end=' + $('input[name="hingga_tanggal"]').val()
+        var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
+        var equip_id = $('select[name="equip_id"]').val() && '&equip_id=' + $('select[name="equip_id').val()
+        var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${fuel_truck}${begin}${end}${shift_id}${equip_id}`
+        console.log(page);
+        initDeafult(limit, url, page)
+        // $.get('/operation/daily-ritase-ob/list?page='+page+'&limit='+limit, function(data){
+        //     $('div#list-content').children().remove()
+        //     $('div#list-content').html(data)
+        // })
+    })
+
+    $('body').on('click', 'a#btNextPage', function(e){
+        e.preventDefault()
+        var page = $(this).data('page')
+        var last = $(this).data('last')
+        var limit = $('body').find('input[id="limit"]').val()
+        page = page >= last ? last : page + 1
+        var fuel_truck = $('select[name="fuel_truck"]').val() && '&fuel_truck=' + $('select[name="fuel_truck"]').val()
+        var begin = $('input[name="mulai_tanggal"]').val() && '&begin=' + $('input[name="mulai_tanggal"]').val()
+        var end = $('input[name="hingga_tanggal"]').val() && '&end=' + $('input[name="hingga_tanggal"]').val()
+        var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
+        var equip_id = $('select[name="equip_id"]').val() && '&equip_id=' + $('select[name="equip_id').val()
+        var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${fuel_truck}${begin}${end}${shift_id}${equip_id}`
+        console.log(page);
+        initDeafult(limit, url, page)
+    })
+
+    $('body').on('click', 'button#btGoToPage', function(e){
+        e.preventDefault()
+        var page = $('body').find('input[name="inp-page"]').val()
+        var limit = $('body').find('input[id="limit"]').val()
+        var fuel_truck = $('select[name="fuel_truck"]').val() && '&fuel_truck=' + $('select[name="fuel_truck"]').val()
+        var begin = $('input[name="mulai_tanggal"]').val() && '&begin=' + $('input[name="mulai_tanggal"]').val()
+        var end = $('input[name="hingga_tanggal"]').val() && '&end=' + $('input[name="hingga_tanggal"]').val()
+        var shift_id = $('select[name="shift_id"]').val()  && '&shift_id=' + $('select[name="shift_id"]').val()
+        var equip_id = $('select[name="equip_id"]').val() && '&equip_id=' + $('select[name="equip_id').val()
+        var url = `${window.location.pathname}/list?keyword=true&page=${page}&limit=${limit}${fuel_truck}${begin}${end}${shift_id}${equip_id}`
+        initDeafult(limit, url, page)
     })
 
     $('body').on('click', 'button#apply-filter', function(e){
@@ -255,21 +303,24 @@ $(function(){
           });
     })
 
-    $('body').on('click', 'a.btn-pagging', function(e){
-        e.preventDefault()
-        var page = $(this).data('page')
-        $.get('/operation/daily-refuel-unit/list?page='+page+'&keyword=', function(data){
-            console.log(data);
-            $('div#list-content').children().remove()
-            $('div#list-content').html(data)
-        })
-    })
+    // $('body').on('click', 'a.btn-pagging', function(e){
+    //     e.preventDefault()
+    //     var page = $(this).data('page')
+    //     $.get('/operation/daily-refuel-unit/list?page='+page+'&keyword=', function(data){
+    //         console.log(data);
+    //         $('div#list-content').children().remove()
+    //         $('div#list-content').html(data)
+    //     })
+    // })
 
-    function initDeafult(limit){
+    function initDeafult(lim, url, page){
         $('div.content-module').css('display', 'none')
+        var limit = lim || 100
+        var page = page || 1
+        $('div#list-content').html('<h4 style="text-align: center;">Please wait,,, System still loading data</h4>').show()
         $.ajax({
             async: true,
-            url: '/operation/daily-refuel-unit/list?keyword=',
+            url: url ||'/operation/daily-refuel-unit/list?limit='+limit+'&page='+page,
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -287,6 +338,7 @@ $(function(){
             url: '/operation/daily-refuel-unit/create',
             method: 'GET',
             success: function(htm){
+                console.log(htm);
                 $('div.content-module').css('display', 'none')
                 $('div#form-create').show().html(htm)
             },
@@ -301,19 +353,19 @@ $(function(){
         $('div#form-show').show()
     }
 
-    function ajaxSearch(value){
-        console.log('keyword :::', value);
-        $.ajax({
-            async: true,
-            url: '/operation/fuel-dist/list?keyword='+value,
-            method: 'GET',
-            success: function(result){
-                $('div#list-content').children().remove()
-                $('div#list-content').html(result).show()
-            },
-            error: function(err){
-                console.log(err);
-            }
-        })
-    }
+    // function ajaxSearch(value){
+    //     console.log('keyword :::', value);
+    //     $.ajax({
+    //         async: true,
+    //         url: '/operation/fuel-dist/list?keyword='+value,
+    //         method: 'GET',
+    //         success: function(result){
+    //             $('div#list-content').children().remove()
+    //             $('div#list-content').html(result).show()
+    //         },
+    //         error: function(err){
+    //             console.log(err);
+    //         }
+    //     })
+    // }
 })

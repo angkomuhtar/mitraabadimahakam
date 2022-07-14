@@ -1,14 +1,32 @@
 'use strict'
 
+const DB = use('Database')
 const moment = require("moment")
 const _ = require('underscore')
 const MamFuelRatio = use("App/Models/MamFuelRatio")
+const DailyRitase = use("App/Models/DailyRitase")
 const MasPit = use("App/Models/MasPit")
 const MasSite = use("App/Models/MasSite")
 
 class repFuelRatio {
     async PIT_WISE (req) {
         console.log(req);
+
+        const avgDistance = await DailyRitase.query().where( w => {
+            w.where('site_id', req.site_id)
+            w.where('pit_id', req.pit_id)
+            w.where('date', '>=', req.start)
+            w.where('date', '<=', req.end)
+        }).getAvg('distance')
+
+
+        const { ratio, distances } = await DB.from('mam_fuel_ratios_config').where( w => {
+            w.where('distances', '>=', avgDistance)
+            w.where('distances', '<=', (avgDistance + 200))
+        }).last()
+
+        console.log(ratio, distances);
+
         /* GET DATA FUEL RATIO */
         let color = req.colorGraph
         let result = []
@@ -40,6 +58,20 @@ class repFuelRatio {
             }
         })
 
+        result.push({
+            name: 'Budget Ratio',
+            type: 'spline',
+            color: 'red',
+            data: data.map(el => ratio),
+            dashStyle: 'shortdot',
+            width: 0.1,
+            dataLabels: {
+                enabled: false,
+                // color: '#FFFFFF',
+                format: '{point.y:.2f}%'
+            }
+        })
+
         const cummxAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
         cumm = [
             
@@ -50,10 +82,8 @@ class repFuelRatio {
                 data: data.map(el => el.cum_fuel_used),
                 dataLabels: {
                     enabled: true,
-                    rotation: 0,
-                    color: 'green',
-                    format: '{point.y:.2f}', // two decimal
-                    y: 5
+                    y: 5,
+                    format: '{point.y:.2f}'
                 }
             },
             {
@@ -76,10 +106,8 @@ class repFuelRatio {
                 data: data.map(el => el.cum_fuel_ratio),
                 dataLabels: {
                     enabled: true,
-                    rotation: 0,
-                    color: 'red',
-                    format: '{point.y:.2f}', // two decimal
-                    y: 5
+                    y: 5,
+                    format: '{point.y:.2f}'
                 }
             }
         ]
@@ -88,6 +116,7 @@ class repFuelRatio {
             site: site,
             pit: pit,
             xAxis: xAxis,
+            staticRatio: ratio,
             series: result,
             cummxAxis: cummxAxis,
             cummSeries: cumm
@@ -96,9 +125,25 @@ class repFuelRatio {
 
     async PERIODE_WISE (req) {
         let result = []
-
+        let cummulative = []
+        let cummxAxis = []
+        let cumm = []
         let color = req.colorGraph
         const site = await MasSite.query().where('id', req.site_id).last()
+
+        const avgDistance = await DailyRitase.query().where( w => {
+            
+            w.where('date', '>=', req.start)
+            w.where('date', '<=', req.end)
+        }).getAvg('distance')
+
+
+        const { ratio, distances } = await DB.from('mam_fuel_ratios_config').where( w => {
+            w.where('distances', '>=', avgDistance)
+            w.where('distances', '<=', (avgDistance + 200))
+        }).last()
+
+        console.log(ratio, distances);
 
         /* GET DATA FUEL RATIO */
         if(req.inp_ranges === 'date'){
@@ -117,13 +162,66 @@ class repFuelRatio {
                     items: data[key].map(el => {
                         return {
                             pit_id: el.pit_id,
-                            fuel_ratio: el.fuel_ratio
+                            fuel_ratio: el.fuel_ratio,
+                            cumProduction: el.cum_production,
+                            cumFuelUsed: el.cum_fuel_used
                         }
                     })
                 }
             })
 
-            
+            cummulative = data.map(obj => {
+                var cumProduction = obj.items.reduce((a, b) => { return a + b.cumProduction }, 0)
+                var cumFuelUsed = obj.items.reduce((a, b) => { return a + b.cumFuelUsed }, 0)
+                return {
+                    date: obj.date,
+                    cumProduction: cumProduction,
+                    cumFuelUsed: cumFuelUsed,
+                    cumFuelRatio: cumProduction > 0 ? (cumProduction / cumFuelUsed) : 0
+                }
+            })
+
+            cummxAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
+            cumm = [
+                
+                {
+                    name: 'Cumm Fuel Used',
+                    type: req.typeChart,
+                    color: color[0],
+                    data: cummulative.map(el => el.cumFuelUsed),
+                    dataLabels: {
+                        enabled: true,
+                        y: 5,
+                        format: '{point.y:.2f}'
+                    }
+                },
+                {
+                    name: 'Cumm Production',
+                    type: req.typeChart,
+                    yAxis: 0,
+                    color: color[1],
+                    data: cummulative.map(el => parseFloat((el.cumProduction).toFixed('2'))),
+                    dataLabels: {
+                        enabled: true,
+                        y: -15,
+                        format: '{point.y:.2f}'
+                    }
+                },
+                {
+                    name: 'Cumm Fuel Ratio',
+                    type: 'spline',
+                    color: 'red',
+                    yAxis: 1,
+                    data: cummulative.map(el => parseFloat((el.cumFuelRatio).toFixed(2))),
+                    dataLabels: {
+                        enabled: true,
+                        y: 5,
+                        format: '{point.y:.2f}'
+                    }
+                }
+            ]
+
+
             let xAxis = []
             let res = []
             for (const obj of data) {
@@ -137,6 +235,7 @@ class repFuelRatio {
                     
                 }
             }
+            
 
             
             res = _.groupBy(res, 'name')
@@ -161,15 +260,31 @@ class repFuelRatio {
                 }
             })
 
+            res.push({
+                name: 'Budget Ratio',
+                type: 'spline',
+                color: 'red',
+                data: data.map(el => ratio),
+                dashStyle: 'shortdot',
+                width: 0.1,
+                dataLabels: {
+                    enabled: false,
+                    // color: '#FFFFFF',
+                    format: '{point.y:.2f}%'
+                }
+            })
+            
+
             return {
                 site: site,
                 xAxis: xAxis,
                 series: res,
+                cummxAxis: cummxAxis,
+                cummSeries: cumm
             }
         }
 
         if(req.inp_ranges === 'week'){
-            console.log('WEEKLY ....');
 
             let result = []
             
@@ -201,7 +316,6 @@ class repFuelRatio {
             }
 
             let xAxis = arrDate.map(el => el.date)
-            console.log(arrDate);
             /* GET LIST PIT */
             const pit = (
                 await MasPit.query().where( w => {
@@ -217,27 +331,92 @@ class repFuelRatio {
                         w.where('pit_id', val.id)
                         w.where('date', '>=', _.first(elm.items))
                         w.where('date', '<=', _.last(elm.items))
-                    }).getSum('ob')
-
+                    }).getSum('ob') || 0
+                    
                     const sumCoal = await MamFuelRatio.query().where( w => {
                         w.where('pit_id', val.id)
                         w.where('date', '>=', _.first(elm.items))
                         w.where('date', '<=', _.last(elm.items))
-                    }).getSum('coal_bcm')
+                    }).getSum('coal_bcm') || 0
 
                     const sumFuel = await MamFuelRatio.query().where( w => {
                         w.where('pit_id', val.id)
                         w.where('date', '>=', _.first(elm.items))
                         w.where('date', '<=', _.last(elm.items))
-                    }).getSum('fuel_used')
+                    }).getSum('fuel_used') || 0
 
                     result.push({
                         name: val.name,
-                        data: (sumOB + sumCoal) / sumFuel
+                        cumProduction: sumOB + sumCoal,
+                        cumFuelUsed: sumFuel,
+                        // cumFuelRatio: cumProduction > 0 ? (cumProduction / cumFuelUsed) : 0,
+                        data: parseFloat(((sumOB + sumCoal) / sumFuel).toFixed(2)) || 0
                     });
                 }
             }
+            
+            /* CUMMULATIVE WEEKLY DATA */
+            let cummWeek = []
+            for (const elm of arrDate) {
+                const sumCummOB = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', _.first(elm.items))
+                    w.where('date', '<=', _.last(elm.items))
+                }).getSum('ob') || 0
+                
+                const sumCummCoal = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', _.first(elm.items))
+                    w.where('date', '<=', _.last(elm.items))
+                }).getSum('coal_bcm') || 0
 
+                const sumCummFuel = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', _.first(elm.items))
+                    w.where('date', '<=', _.last(elm.items))
+                }).getSum('fuel_used') || 0
+
+                cummWeek.push({
+                    cumProduction: sumCummOB + sumCummCoal,
+                    cumFuelUsed: sumCummFuel,
+                    data: (sumCummOB + sumCummCoal) / sumCummFuel || 0
+                });
+            }
+            cumm = [
+                
+                {
+                    name: 'Cumm Fuel Used',
+                    type: req.typeChart,
+                    color: color[0],
+                    data: cummWeek.map(el => el.cumFuelUsed),
+                    dataLabels: {
+                        enabled: true,
+                        y: 5,
+                        format: '{point.y:.2f}'
+                    }
+                },
+                {
+                    name: 'Cumm Production',
+                    type: req.typeChart,
+                    yAxis: 0,
+                    color: color[1],
+                    data: cummWeek.map(el => parseFloat((el.cumProduction).toFixed('2'))),
+                    dataLabels: {
+                        enabled: true,
+                        y: -15,
+                        format: '{point.y:.2f}'
+                    }
+                },
+                {
+                    name: 'Cumm Fuel Ratio',
+                    type: 'spline',
+                    color: 'red',
+                    yAxis: 1,
+                    data: cummWeek.map(el => parseFloat((el.data).toFixed('2'))),
+                    dataLabels: {
+                        enabled: true,
+                        y: 5,
+                        format: '{point.y:.2f}'
+                    }
+                }
+            ]
             // let color = req.colorGraph
             result = _.groupBy(result, 'name')
             result = Object.keys(result).map((key, i) => {
@@ -260,11 +439,13 @@ class repFuelRatio {
                     groupPadding: 0
                 }
             })
-
+            
             return {
                 site: site,
                 xAxis: xAxis,
-                series: result
+                series: result,
+                cummxAxis: xAxis,
+                cummSeries: cumm
             }
         }
 
@@ -317,11 +498,78 @@ class repFuelRatio {
 
                     result.push({
                         name: val.name,
+                        cumProduction: sumOB + sumCoal,
+                        cumFuelUsed: sumFuel,
                         data: (sumOB + sumCoal) / sumFuel || 0
                     });
                 }
             }
-            
+
+            /* CUMMULATIVE MONTHLY DATA */
+            let cummMonth = []
+            for (const elm of arrMonth) {
+                const sumCummOB = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                    w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                }).getSum('ob') || 0
+    
+                const sumCummCoal = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                    w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                }).getSum('coal_bcm') || 0
+    
+                const sumCummFuel = await MamFuelRatio.query().where( w => {
+                    w.where('date', '>=', moment(elm).startOf('month').format('YYYY-MM-DD'))
+                    w.where('date', '<=', moment(elm).endOf('month').format('YYYY-MM-DD'))
+                }).getSum('fuel_used') || 0
+
+                cummMonth.push({
+                    cumProduction: sumCummOB + sumCummCoal,
+                    cumFuelUsed: sumCummFuel,
+                    data: (sumCummOB + sumCummCoal) / sumCummFuel || 0
+                });
+            }
+
+            cumm = [
+                
+                {
+                    name: 'Cumm Fuel Used',
+                    type: req.typeChart,
+                    color: color[0],
+                    data: cummMonth.map(el => el.cumFuelUsed),
+                    dataLabels: {
+                        enabled: true,
+                        y: 5,
+                        format: '{point.y:.2f}'
+                    }
+                },
+                {
+                    name: 'Cumm Production',
+                    type: req.typeChart,
+                    yAxis: 0,
+                    color: color[1],
+                    data: cummMonth.map(el => parseFloat((el.cumProduction).toFixed('2'))),
+                    dataLabels: {
+                        enabled: true,
+                        y: -15,
+                        format: '{point.y:.2f}'
+                    }
+                },
+                {
+                    name: 'Cumm Fuel Ratio',
+                    type: 'spline',
+                    color: 'red',
+                    yAxis: 1,
+                    data: cummMonth.map(el => parseFloat((el.data).toFixed('2'))),
+                    dataLabels: {
+                        enabled: true,
+                        y: 5,
+                        format: '{point.y:.2f}'
+                    }
+                }
+            ]
+
+            console.log(cumm);
             // let color = req.colorGraph
             result = _.groupBy(result, 'name')
             result = Object.keys(result).map((key, i) => {
@@ -345,19 +593,12 @@ class repFuelRatio {
                 }
             })
             
-            // let budget = [{
-            //     name: 'budget',
-            //     type: 'spline',
-            //     color: 'red',
-            //     data: xAxis.map(el => 0.85),
-                
-            // }]
-            console.log(result);
             return {
                 site: site,
                 xAxis: xAxis,
-                // series: [...result, ...budget]
-                series: result
+                series: result,
+                cummxAxis: xAxis,
+                cummSeries: cumm
             }
         }
     }

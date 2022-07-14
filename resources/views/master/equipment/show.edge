@@ -1,3 +1,4 @@
+{{ script('ajax/index') }}
 {{ script('ajax/mst-equipment-show') }}
 <div class="row">
     <div class="col-md-12">
@@ -11,6 +12,17 @@
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <label for="">Site Project</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-map-marker"></i></div>
+                                                    <select class="form-control input-sm select2site" name="site_id" data-check="{{list.site_id}}"></select> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">

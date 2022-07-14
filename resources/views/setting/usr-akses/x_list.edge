@@ -1,0 +1,55 @@
+
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-warning waves-effect waves-light" id="create-form"> 
+            <i class="fa fa-plus m-r-5"></i> <span>Add Akses Data</span>
+        </button>
+        <div class="panel-group" id="exampleAccordionDefault" aria-multiselectable="true" role="tablist" style="margin-top: 10px;">
+            @each(item in data)
+                <div class="panel">
+                    <div class="panel-heading" id="Heading{{item.id}}" role="tab"> 
+                        <a class="panel-title collapsed" data-toggle="collapse" href="#{{item.nilai}}" data-parent="#exampleAccordionDefault" aria-expanded="false" aria-controls="{{item.nilai}}"> 
+                            {{item.nilai}}
+                        </a> 
+                    </div>
+                    <div class="panel-collapse collapse" id="{{item.nilai}}" aria-labelledby="Heading{{item.id}}" role="tabpanel" aria-expanded="false" style="height: 0px;">
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">#</th>
+                                            <th>Nama Module</th>
+                                            <th>Descriptions</th>
+                                            <th>Method</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @each(item in item.details)
+                                            <tr>
+                                                <td align="center">{{$loop.index + 1}}</td>
+                                                <td>{{item.nm_module}}</td>
+                                                <td>{{item.descriptions}}</td>
+                                                <td>
+                                                    @if(item.method === 'C')
+                                                        <span class="text-success">can Create</span>
+                                                    @elseif(item.method === 'R')
+                                                        <span class="text-info">can Read</span>
+                                                    @elseif(item.method === 'U')
+                                                        <span class="text-warning">can Update</span>
+                                                    @else
+                                                        <span class="text-danger">can Delete</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endeach
+        </div>
+    </div>
+</div>

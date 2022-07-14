@@ -65,9 +65,6 @@ class PDFReport {
     }
 
     async MONTHLY_OB_PDF (req, grafikPath) {
-        console.log('monthly====================================');
-        console.log(req);
-        console.log('====================================');
 
         if(req.pit_id === 'undefined' || req.pit_id === 'null'){
             req.pit_id = null

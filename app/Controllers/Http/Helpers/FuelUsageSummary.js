@@ -415,7 +415,7 @@ class FuelSummaryHelpers {
         w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
         w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
       })
-      .getSum('fuel_used')
+      .getSum('fuel_used') || 0
 
     const sumProdOB = await FuelSummary.query()
       .where(w => {
@@ -424,7 +424,7 @@ class FuelSummaryHelpers {
         w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
         w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
       })
-      .getSum('ob')
+      .getSum('ob') || 0
 
     const sumProdCoal = await FuelSummary.query()
       .where(w => {
@@ -433,7 +433,11 @@ class FuelSummaryHelpers {
         w.where('date', '>=', moment(req.date).startOf('month').format('YYYY-MM-DD'))
         w.where('date', '<=', moment(req.date).format('YYYY-MM-DD'))
       })
-      .getSum('coal_bcm')
+      .getSum('coal_bcm') || 0
+
+    let cumCurrentFuel = parseFloat(sumFuel + parseFloat(req.fuel_used))
+    let cumCurrentProd = (parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(req.ob)) + (parseFloat(req.coal_mt) > 0 ? parseFloat(req.coal_mt) : 0)
+
 
     const fuelSummary = new FuelSummary()
     fuelSummary.fill({
@@ -445,9 +449,9 @@ class FuelSummaryHelpers {
       coal_bcm: parseFloat(req.coal_mt) / 1.3,
       fuel_used: parseFloat(req.fuel_used),
       fuel_ratio: parseFloat(req.fuel_used) / (parseFloat(req.ob) + parseFloat(req.coal_mt) / 1.3),
-      cum_production: parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(req.coal_mt) / 1.3,
-      cum_fuel_used: sumFuel + parseFloat(req.fuel_used),
-      cum_fuel_ratio: parseFloat(sumFuel + parseFloat(req.fuel_used)) / parseFloat(parseFloat(sumProdOB) + parseFloat(sumProdCoal) + parseFloat(req.coal_mt) / 1.3),
+      cum_production: cumCurrentProd,
+      cum_fuel_used: cumCurrentFuel,
+      cum_fuel_ratio: cumCurrentFuel / cumCurrentProd,
       user_id: user.id,
     })
     try {

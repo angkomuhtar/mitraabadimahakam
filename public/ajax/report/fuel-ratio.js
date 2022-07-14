@@ -5,6 +5,7 @@ $(function(){
     var body = $('body')
 
     initFilter()
+    
     $('body').on('click', 'button#bt-back', function(){
         window.location = window.location
     })
@@ -70,9 +71,10 @@ $(function(){
         body.find('div#box-apply-chart').css('display', 'inline')
     })
 
-    $('body').on('submit', 'form#filter-data', function(e){
+    $('body').on('hidden.bs.modal', '#myModal', function (e) {
         e.preventDefault()
-        var data = new FormData(this)
+        const form = document.getElementById('filter-data');
+        var data = new FormData(form)
         data.append('filter', 'true')
         $.ajax({
             async: true,
@@ -88,6 +90,39 @@ $(function(){
                 GEN_CHART_ACTUAL(result.xAxis, result.series, result.site, result.pit)
                 if (result.cummxAxis) {
                     GEN_CHART_CUM(result.cummxAxis, result.cummSeries, result.site, result.pit)
+                }else{
+                    body.find('div#cumm-container').html('')
+                }
+                body.find('div#box-chart').css('display', 'inline')
+            },
+            error: function(err){
+                console.log(err)
+                body.find('div#box-chart').css('display', 'none')
+            }
+        })
+    })
+
+
+    $('body').on('submit', 'form#filter-data', function(e){
+        e.preventDefault()
+        var data = new FormData(this)
+        data.append('filter', 'true')
+        $.ajax({
+            async: true,
+            url: '/report/fuel-ratio/apply-filter',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                GEN_CHART_ACTUAL(result.xAxis, result.series, result.site, result.pit, result.staticRatio)
+                if (result.cummxAxis) {
+                    GEN_CHART_CUM(result.cummxAxis, result.cummSeries, result.site, result.pit)
+                }else{
+                    body.find('div#cumm-container').html('')
                 }
                 body.find('div#box-chart').css('display', 'inline')
             },
@@ -171,7 +206,7 @@ $(function(){
         })
     }
 
-    function GEN_CHART_ACTUAL (xAxis, series, site, pit) {
+    function GEN_CHART_ACTUAL (xAxis, series, site, pit, staticRatio) {
 
         Highcharts.chart('container', {
             chart: {
@@ -201,25 +236,28 @@ $(function(){
                     lineWidth: 1,
                     labels: {
                         format: '{value}',
-                        // style: {
-                        //     fontSize: '11px',
-                        //     fontFamily: 'Verdana, sans-serif',
-                        //     color: '#000'
-                        // }
                     },
                     plotLines: [{
-                        value: 0.85,
+                        value: (staticRatio)?.toFixed(2),
                         color: 'red',
                         dashStyle: 'shortdash',
-                        width: 2,
-                        label: {
-                            text: 'Budget'
-                        }
+                        // width: 2,
+                        // label: {
+                        //     text: 'Budget \n'+(staticRatio)?.toFixed(2)+'%',
+                        //     x: -40,
+                        //     align: 'right',
+                        //     position: 'right',
+                        //     style: {
+                        //         fontWeight: 'bold',
+                        //         color: 'red'
+                        //     }
+                        // }
                     }],
                     tickAmount: 5,
                     tickInterval: 0.2,
                     title: {
                         text: 'ACTUAL FUEL RATIO',
+                        x: -15,
                         style: {
                             fontSize: '15px',
                             fontFamily: 'Verdana, sans-serif',

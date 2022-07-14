@@ -1,5 +1,6 @@
 'use strict'
 
+const version = '1.0'
 const Hash = use('Hash')
 const { performance } = require('perf_hooks')
 const UserApiController = require('./UserApiController')
@@ -20,6 +21,7 @@ class AuthApiController {
             durasi = await diagnoticTime.durasi(t0)
             return response.status(201).json({
                 diagnostic: {
+                    ver: version,
                     times: durasi, 
                     error: false,
                 },
@@ -31,6 +33,7 @@ class AuthApiController {
             durasi = await diagnoticTime.durasi(t0)
             return response.status(404).json({
                 diagnostic: {
+                    ver: version,
                     times: durasi, 
                     error: true,
                     message: error.message
