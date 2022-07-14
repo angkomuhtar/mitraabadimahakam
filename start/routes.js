@@ -1168,6 +1168,29 @@ Route.group(() => {
   .prefix('api/notifications')
   .namespace('api')
 
+
+/* START API VERSION 2.0 */
+
+Route.group(() => {
+  Route.post('/shift/morning', 'NotificationController.morningShiftNotification')
+  Route.post('/shift/night', 'NotificationController.nightShiftNotification')
+
+  Route.post('/user/device-id/update', 'NotificationController.storeUserDevice')
+  Route.post('/', 'NotificationController.index')
+})
+  .prefix('api/v2/notifications')
+  .namespace('api')
+
+// REPORT PRODUCTIONS OVER BURDEN & COAL
+Route.group(() => {
+  Route.get('/productions', 'ReportProductionController.index')
+})
+  .prefix('api/v2')
+  .namespace('api/v2')
+
+/* END API VERSION 2.0 */
+
+
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
 
 Route.get('/mobileapps', 'MobileappsDocumentController.index').namespace('documentation')

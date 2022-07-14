@@ -16,7 +16,7 @@ const VRitaseCoalPerjam = use("App/Models/VRitaseCoalPerjam")
 
 class repPoduction {
     async MW_MONTHLY (req) {
-        console.log('startMonth', req);
+        // console.log('startMonth', req);
         let result = []
         let data
         try {
@@ -107,11 +107,12 @@ class repPoduction {
     }
 
     async MW_WEEKLY (req) {
+        // console.log('HELPERS :::', req);
         let color = req.colorGraph
         let result = []
         var x = moment(req.week_begin).week()
         var y = moment(req.week_end).week()
-        // console.log(x, y);
+        
 
         let arrDate = []
         for (let i = x - 1; i < y; i++) {
@@ -140,15 +141,17 @@ class repPoduction {
             })
         }
 
-        let xAxis = arrDate.map(el => el.date)
+        let xAxis = _.rest(arrDate.map(el => el.date))
+        
 
         let tmpActual = []
         let tmpTarget = []
         let tmpTrands = []
 
         req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
+        
+        for (const obj of _.rest(arrDate)) {
 
-        for (const obj of arrDate) {
             let planActual = await DailyPlan.query().where( w => {
                 if(req.production_type){
                     w.where('tipe', req.production_type)
@@ -156,7 +159,7 @@ class repPoduction {
                 w.where('site_id', req.site_id)
                 w.where('current_date', '>=', _.first(obj.items))
                 w.where('current_date', '<=', _.last(obj.items))
-            }).select('actual').getSum('actual')
+            }).select('actual').getSum('actual') || 0
 
             let planTarget = await DailyPlan.query().where( w => {
                 if(req.production_type){
@@ -164,7 +167,9 @@ class repPoduction {
                 }
                 w.where('current_date', '>=', _.first(obj.items))
                 w.where('current_date', '<=', _.last(obj.items))
-            }).select('estimate').getSum('estimate')
+            }).select('estimate').getSum('estimate') || 0
+
+            
 
             tmpTarget.push({
                 nm_pit: `Target ${obj.nm_pit}`,
@@ -236,6 +241,7 @@ class repPoduction {
 
 
         let xAxis = planDaily.map(el => moment(el.current_date).format('DD-MM-YYYY'))
+        let short_xAxist = planDaily.map(el => moment(el.current_date).format('DD/MM'))
 
         let arrTarget = []
         let arrActual = []
@@ -314,10 +320,11 @@ class repPoduction {
             }
         })
 
-        console.log(arrDiff);
+        console.log(arrActual);
 
         return {
             xAxis: xAxis,
+            short_xAxist: short_xAxist,
             data: [...arrTarget, ...arrActual, ...arrDiff, ...arrTrands]
         }
     }

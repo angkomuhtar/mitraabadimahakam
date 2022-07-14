@@ -1,14 +1,32 @@
 'use strict'
 
+const DB = use('Database')
 const moment = require("moment")
 const _ = require('underscore')
 const MamFuelRatio = use("App/Models/MamFuelRatio")
+const DailyRitase = use("App/Models/DailyRitase")
 const MasPit = use("App/Models/MasPit")
 const MasSite = use("App/Models/MasSite")
 
 class repFuelRatio {
     async PIT_WISE (req) {
         console.log(req);
+
+        const avgDistance = await DailyRitase.query().where( w => {
+            w.where('site_id', req.site_id)
+            w.where('pit_id', req.pit_id)
+            w.where('date', '>=', req.start)
+            w.where('date', '<=', req.end)
+        }).getAvg('distance')
+
+
+        const { ratio, distances } = await DB.from('mam_fuel_ratios_config').where( w => {
+            w.where('distances', '>=', avgDistance)
+            w.where('distances', '<=', (avgDistance + 200))
+        }).last()
+
+        console.log(ratio, distances);
+
         /* GET DATA FUEL RATIO */
         let color = req.colorGraph
         let result = []
@@ -37,6 +55,20 @@ class repFuelRatio {
                 enabled: true,
                 // color: '#FFFFFF',
                 format: '{point.y:.2f}'
+            }
+        })
+
+        result.push({
+            name: 'Budget Ratio',
+            type: 'spline',
+            color: 'red',
+            data: data.map(el => ratio),
+            dashStyle: 'shortdot',
+            width: 0.1,
+            dataLabels: {
+                enabled: false,
+                // color: '#FFFFFF',
+                format: '{point.y:.2f}%'
             }
         })
 
@@ -84,6 +116,7 @@ class repFuelRatio {
             site: site,
             pit: pit,
             xAxis: xAxis,
+            staticRatio: ratio,
             series: result,
             cummxAxis: cummxAxis,
             cummSeries: cumm
@@ -97,6 +130,20 @@ class repFuelRatio {
         let cumm = []
         let color = req.colorGraph
         const site = await MasSite.query().where('id', req.site_id).last()
+
+        const avgDistance = await DailyRitase.query().where( w => {
+            
+            w.where('date', '>=', req.start)
+            w.where('date', '<=', req.end)
+        }).getAvg('distance')
+
+
+        const { ratio, distances } = await DB.from('mam_fuel_ratios_config').where( w => {
+            w.where('distances', '>=', avgDistance)
+            w.where('distances', '<=', (avgDistance + 200))
+        }).last()
+
+        console.log(ratio, distances);
 
         /* GET DATA FUEL RATIO */
         if(req.inp_ranges === 'date'){
@@ -213,6 +260,19 @@ class repFuelRatio {
                 }
             })
 
+            res.push({
+                name: 'Budget Ratio',
+                type: 'spline',
+                color: 'red',
+                data: data.map(el => ratio),
+                dashStyle: 'shortdot',
+                width: 0.1,
+                dataLabels: {
+                    enabled: false,
+                    // color: '#FFFFFF',
+                    format: '{point.y:.2f}%'
+                }
+            })
             
 
             return {
