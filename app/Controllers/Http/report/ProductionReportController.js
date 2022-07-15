@@ -205,29 +205,29 @@ async function GEN_PDF_OB (req, img) {
     }
 }
 
-async function GEN_PDF_COAL (req) {
+async function GEN_PDF_COAL (req, grafikPath) {
     if(req.filterType === 'MONTHLY'){
-        const data = await ReportPDFHelpers.MONTHLY_COAL_PDF(req)
+        const data = await ReportPDFHelpers.MONTHLY_COAL_PDF(req, grafikPath)
         return data
     }
 
     if(req.filterType === 'WEEKLY'){
-        const data = await ReportPDFHelpers.WEEKLY_COAL_PDF(req)
+        const data = await ReportPDFHelpers.WEEKLY_COAL_PDF(req, grafikPath)
         return data
     }
 
     if(req.filterType === 'DATE'){
-        const data = await ReportPDFHelpers.DAILY_COAL_PDF(req)
+        const data = await ReportPDFHelpers.DAILY_COAL_PDF(req, grafikPath)
         return data
     }
 
     if(req.filterType === 'SHIFT'){
-        const data = await ReportPDFHelpers.SHIFTLY_COAL_PDF(req)
+        const data = await ReportPDFHelpers.SHIFTLY_COAL_PDF(req, grafikPath)
         return data
     }
 
     if(req.filterType === 'HOURLY'){
-        const data = await ReportPDFHelpers.HOURLY_COAL_PDF(req)
+        const data = await ReportPDFHelpers.HOURLY_COAL_PDF(req, grafikPath)
         return data
     }
 }

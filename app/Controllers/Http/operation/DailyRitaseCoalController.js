@@ -60,11 +60,12 @@ class DailyRitaseCoalController {
     var req = request.all()
     const validateFile = {
       types: ['xls', 'xlsx'],
-      size: '2mb',
+      // size: '5mb',
       types: 'application',
     }
 
     const uploadData = request.file('uploadfiles', validateFile)
+
 
     if (uploadData) {
       aliasName = req.model === 'radioroom' ? `upload-radioroom-${moment().format('DDMMYYHHmmss')}.${uploadData.extname}` : `upload-jetty-${moment().format('DDMMYYHHmmss')}.${uploadData.extname}`
@@ -133,137 +134,136 @@ class DailyRitaseCoalController {
       let dataRadioRoom = []
       let dailyFleet = null
       for (const obj of selectSheet.details) {
-        // console.log(obj);
-        var datez = moment(req.date).format('YYYY-MM-DD')
-        var datetime = moment(datez + ' ' + obj.B.replace('.', ':')).format('YYYY-MM-DD HH:mm')
-        console.log('req date >> ', datetime)
-        const dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
-        const pit = (await MasPit.query().with('site').where('kode', obj.G).andWhere('sts', 'Y').last()).toJSON()
-        const shift = await MasShift.query().where('kode', obj.F).last()
-        const exca = await MasEquipment.query().where('kode', obj.C.replace(' ', '')).last()
 
-        console.log('exca >> ', exca)
-        console.log('seam >> ', obj.I)
-
-        const seam = await MasSeam.query()
-          .where(w => {
-            w.where('pit_id', pit.id)
-            w.where('kode', obj.I)
-          })
-          .last()
-
-        const fleet = await MasFleet.query()
-          .where(w => {
-            w.where('pit_id', pit.id)
-            w.where('tipe', 'CO')
-            w.where('status', 'Y')
-          })
-          .last()
-
-        if (!dt_subcon) {
-          return {
-            success: false,
-            data: null,
-            message: 'Dump Truck ' + obj.D + ' tidak di temukan...',
-          }
-        }
-        if (!exca) {
-          return {
-            success: false,
-            data: null,
-            message: 'Equipment unit ' + obj.C + ' tidak di temukan...',
-          }
-        }
-        if (!pit) {
-          return {
-            success: false,
-            data: null,
-            message: 'Data PIT ' + obj.G + ' tidak di temukan...',
-          }
-        }
-        if (!fleet) {
-          return {
-            success: false,
-            data: null,
-            message: 'Data fleet tidak di temukan...',
-          }
-        }
-        if (!seam) {
-          return {
-            success: false,
-            data: null,
-            message: 'Data seam tidak di temukan...',
-          }
-        }
-
-
-        /* CREATE OR USED DAILY FLEET */
-        let dailyFleetEquip = await DailyFleetEquip.query()
-          .where(w => {
-            w.where('equip_id', exca.id)
-            w.where('datetime', '>=', moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm'))
-            w.where('datetime', '<=', moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm'))
-          })
-          .last()
-
-        console.log(dailyFleetEquip);
-
-        if (!dailyFleetEquip) {
-          dailyFleet = new DailyFleet()
-          dailyFleet.fill({
-            fleet_id: fleet.id,
-            pit_id: pit.id,
-            activity_id: 8,
-            date: req.date,
-            shift_id: shift.id,
-            user_id: usr.id,
-            tipe: 'MF',
-          })
-          try {
-            await dailyFleet.save()
-          } catch (error) {
-            console.log(error)
-          }
-
-          dailyFleetEquip = new DailyFleetEquip()
-          dailyFleetEquip.fill({
-            dailyfleet_id: dailyFleet.id,
-            equip_id: exca.id,
-            datetime: moment(req.date).format('YYYY-MM-DD HH:mm'),
-          })
-          try {
-            await dailyFleetEquip.save()
-          } catch (error) {
-            console.log(error)
-          }
-        } else {
-          dailyFleet = await DailyFleet.query()
+        // JIKA UNIT EXCAVATOR TERISI
+        if(obj.C){
+          let datetime = moment(req.date).startOf('days').add(obj.B, 'h').format('YYYY-MM-DD HH:mm')
+          const dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
+          const pit = (await MasPit.query().with('site').where('kode', obj.G).andWhere('sts', 'Y').last()).toJSON()
+          const shift = await MasShift.query().where('kode', obj.F).last()
+          const exca = await MasEquipment.query().where('kode', obj.C.replace(' ', '')).last()
+  
+  
+          const seam = await MasSeam.query()
             .where(w => {
               w.where('pit_id', pit.id)
-              w.where('activity_id', 8)
-              w.where('shift_id', shift.id)
-              w.where('date', moment(req.date).format('YYYY-MM-DD'))
+              w.where('kode', obj.I)
             })
             .last()
+  
+          const fleet = await MasFleet.query()
+            .where(w => {
+              w.where('pit_id', pit.id)
+              w.where('tipe', 'CO')
+              w.where('status', 'Y')
+            })
+            .last()
+  
+          if (!dt_subcon) {
+            return {
+              success: false,
+              data: null,
+              message: 'Dump Truck ' + obj.D + ' tidak di temukan...',
+            }
+          }
+          if (!exca) {
+            return {
+              success: false,
+              data: null,
+              message: 'Equipment unit ' + obj.C + ' tidak di temukan...',
+            }
+          }
+          if (!pit) {
+            return {
+              success: false,
+              data: null,
+              message: 'Data PIT ' + obj.G + ' tidak di temukan...',
+            }
+          }
+          if (!fleet) {
+            return {
+              success: false,
+              data: null,
+              message: 'Data fleet tidak di temukan...',
+            }
+          }
+          if (!seam) {
+            return {
+              success: false,
+              data: null,
+              message: 'Data seam tidak di temukan...',
+            }
+          }
+  
+  
+          /* CREATE OR USED DAILY FLEET */
+          let dailyFleetEquip = await DailyFleetEquip.query()
+            .where(w => {
+              w.where('equip_id', exca.id)
+              w.where('datetime', '>=', moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm'))
+              w.where('datetime', '<=', moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm'))
+            })
+            .last()
+  
+          // console.log(dailyFleetEquip);
+  
+          if (!dailyFleetEquip) {
+            dailyFleet = new DailyFleet()
+            dailyFleet.fill({
+              fleet_id: fleet.id,
+              pit_id: pit.id,
+              activity_id: 8,
+              date: req.date,
+              shift_id: shift.id,
+              user_id: usr.id,
+              tipe: 'MF',
+            })
+            try {
+              await dailyFleet.save()
+            } catch (error) {
+              console.log(error)
+            }
+  
+            dailyFleetEquip = new DailyFleetEquip()
+            dailyFleetEquip.fill({
+              dailyfleet_id: dailyFleet.id,
+              equip_id: exca.id,
+              datetime: moment(req.date).format('YYYY-MM-DD HH:mm'),
+            })
+            try {
+              await dailyFleetEquip.save()
+            } catch (error) {
+              console.log(error)
+            }
+          } else {
+            dailyFleet = await DailyFleet.query()
+              .where(w => {
+                w.where('pit_id', pit.id)
+                w.where('activity_id', 8)
+                w.where('shift_id', shift.id)
+                w.where('date', moment(req.date).format('YYYY-MM-DD'))
+              })
+              .last()
+          }
+  
+          /* CREATE DAILY RITASE COAL */
+          dataRadioRoom.push({
+            checkout_pit: datetime,
+            subcondt_id: dt_subcon.id,
+            dailyfleet_id: dailyFleet.id,
+            pit_id: pit.id,
+            site_id: pit.site.id,
+            exca_id: exca.id,
+            shift_id: shift.id,
+            distance: pit.jarak_jetty,
+            volume: parseFloat(obj.E),
+            kupon: obj.H || null,
+            seam_id: seam.id,
+            stockpile: obj.K,
+            coal_tipe: obj.L,
+            datetime: datetime,
+          })
         }
-
-        /* CREATE DAILY RITASE COAL */
-        dataRadioRoom.push({
-          checkout_pit: datetime,
-          subcondt_id: dt_subcon.id,
-          dailyfleet_id: dailyFleet.id,
-          pit_id: pit.id,
-          site_id: pit.site.id,
-          exca_id: exca.id,
-          shift_id: shift.id,
-          distance: pit.jarak_jetty,
-          volume: parseFloat(obj.E),
-          kupon: obj.H || null,
-          seam_id: seam.id,
-          stockpile: obj.K,
-          coal_tipe: obj.L,
-          datetime: datetime,
-        })
       }
 
       dataRadioRoom = _.groupBy(dataRadioRoom, 'dailyfleet_id')

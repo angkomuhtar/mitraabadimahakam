@@ -1198,6 +1198,11 @@ class PDFReport {
         return dd
     }
 
+    /* PDF MONTHLY COAL REPORT */
+    async MONTHLY_COAL_PDF(req, img){
+        console.log(req);
+    }
+
     /* PDF FUEL RATIO BY PIT */
     async PIT_FUEL_RATIO_PDF (req) {
         let result = []
