@@ -130,6 +130,7 @@ class DailyRitaseCoalController {
       return obj.nm_sheet === req.nm_sheet
     })
 
+    let datetime
     if (req.model === 'radioroom') {
       let dataRadioRoom = []
       let dailyFleet = null
@@ -137,7 +138,7 @@ class DailyRitaseCoalController {
 
         // JIKA UNIT EXCAVATOR TERISI
         if(obj.C){
-          let datetime = moment(req.date).startOf('days').add(obj.B, 'h').format('YYYY-MM-DD HH:mm')
+          datetime = moment(req.date).startOf('days').add(obj.B, 'h').format('YYYY-MM-DD HH:mm')
           const dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
           const pit = (await MasPit.query().with('site').where('kode', obj.G).andWhere('sts', 'Y').last()).toJSON()
           const shift = await MasShift.query().where('kode', obj.F).last()
@@ -310,7 +311,7 @@ class DailyRitaseCoalController {
             tw_netto: tot_volum,
             coal_rit: obj.items.length,
             checker_id: usr.id,
-            date: req.date,
+            date: datetime,
           })
         } else {
           dailyRitaseCoal.merge({
