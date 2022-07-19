@@ -6,7 +6,7 @@ const moment = require('moment')
 const Helpers = use('Helpers')
 const fs = require('fs')
 
-class DailyDowntime {
+class DailyDowntimeController {
   async index({ view }) {
     return view.render('operation.daily-downtime-equipment.index')
   }
@@ -146,7 +146,7 @@ class DailyDowntime {
   }
 }
 
-module.exports = DailyDowntime
+module.exports = DailyDowntimeController
 
 async function userValidate(auth) {
   let user
