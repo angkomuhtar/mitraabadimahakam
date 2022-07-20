@@ -327,7 +327,6 @@ Route.group(() => {
 
 // OPERATION
 Route.group(() => {
-
   Route.get('/daily-activity', 'DailyActivityController.index').as('opr.daily-activity.index')
 
   Route.get('/daily-activity/list', 'DailyActivityController.list').as('opr.daily-activity.list')
@@ -354,7 +353,7 @@ Route.group(() => {
   Route.post('/daily-ritase-ob', 'DailyRitaseController.store').as('opr.daily-ritase-ob.store').middleware('C')
 
   Route.post('/daily-ritase-ob/upload/excel', 'DailyRitaseController.storeUploadExcel').as('opr.daily-ritase-ob.storeUploadExcel').middleware('C')
-  
+
   Route.get('/daily-ritase-ob/upload/backdate', 'DailyRitaseController.showBackDateUpload').as('opr.daily-ritase-ob.backDateUpload').middleware('R')
 
   Route.post('/daily-ritase-ob/back-date-upload', 'DailyRitaseController.storeBackDate').as('opr.daily-ritase-ob.storeBackDate').middleware('C')
@@ -366,13 +365,13 @@ Route.group(() => {
   Route.get('/daily-ritase-ob/create/addItems', 'DailyRitaseController.addItems').as('opr.daily-ritase-ob.addItems').middleware('R')
 
   Route.get('/daily-ritase-ob/:id/show', 'DailyRitaseController.show').as('opr.daily-ritase-ob.show').middleware('U')
-  
+
   Route.post('/daily-ritase-ob/:id/update', 'DailyRitaseController.update').as('opr.daily-ritase-ob.update').middleware('U')
-  
+
   Route.post('/daily-ritase-ob/:id/delete', 'DailyRitaseController.delete').as('opr.daily-ritase-ob.delete').middleware('D')
-  
+
   Route.post('/daily-ritase-ob/upload-file', 'DailyRitaseController.uploadFile').as('opr.daily-ritase-ob.uploadFile').middleware('C')
-  
+
   Route.get('/daily-ritase-ob/haulers/default/:dailyfleet_id', 'DailyRitaseController.getDefaultHaulerByDailyFleet').as('opr.daily-ritase-ob.getHaulerByDailyFleet').middleware('R')
 
   Route.post('/daily-ritase-ob/upload-file/back-date', 'DailyRitaseController.uploadFileBackDate').as('opr.daily-ritase-ob.uploadFileBackDate').middleware('C')
@@ -515,7 +514,7 @@ Route.group(() => {
 
   Route.get('/daily-issue/list', 'DailyIssueController.list').as('opr.daily-issue.list').middleware('R')
 
-  Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('R') 
+  Route.get('/daily-issue/create', 'DailyIssueController.create').as('opr.daily-issue.create').middleware('R')
 
   Route.get('/daily-issue/:id/show', 'DailyIssueController.show').as('opr.daily-issue.show').middleware('R')
 
@@ -594,12 +593,10 @@ Route.group(() => {
   Route.get('/equipment-performance/list', 'EquipmentPerformance.list').as('opr.equipment-performance.list').middleware('R')
 
   Route.get('/equipment-performance/create', 'EquipmentPerformance.create').as('opr.equipment-performance.create').middleware('C')
-  
+
   Route.get('/equipment-performance/:id/show', 'EquipmentPerformance.show').as('opr.equipment-performance.show')
 
   Route.get('/equipment-performance/:id/update', 'EquipmentPerformance.update').as('opr.equipment-performance.update')
-
-
 })
   .prefix('operation')
   .namespace('operation')
@@ -607,35 +604,35 @@ Route.group(() => {
 
 // REPORT
 Route.group(() => {
-    Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
+  Route.get('/production', 'ProductionReportController.index').as('rep.production.index').middleware('R')
 
-    Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
+  Route.get('/production/filter', 'ProductionReportController.filterForm').as('rep.production.filter').middleware('R')
 
-    Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
+  Route.post('/production/apply-filter', 'ProductionReportController.applyFilter').as('rep.production.applyFilter').middleware('R')
 
-    Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData').middleware('R')
+  Route.post('/production/gen-data-pdf', 'ProductionReportController.genDataPDF').as('rep.production.showData').middleware('R')
 
-    Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData').middleware('R')
+  Route.post('/production/gen-data-xls', 'ProductionReportController.genDataXLS').as('rep.production.showData').middleware('R')
 
-    Route.get('/fuel-ratio', 'FuelRatioController.index').as('rep.fuel-ratio.index').middleware('R')
+  Route.get('/fuel-ratio', 'FuelRatioController.index').as('rep.fuel-ratio.index').middleware('R')
 
-    Route.get('/fuel-ratio/filter', 'FuelRatioController.filter').as('rep.fuel-ratio.filter').middleware('R')
+  Route.get('/fuel-ratio/filter', 'FuelRatioController.filter').as('rep.fuel-ratio.filter').middleware('R')
 
-    Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
+  Route.post('/fuel-ratio/apply-filter', 'FuelRatioController.applyFilter').as('rep.production.applyFilter').middleware('R')
 
-    Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData').middleware('R')
-    
-    Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData').middleware('R')
-    
-    Route.get('/heavy-equipment', 'HeavyEquipmentController.index').as('rep.heavy-equipment.index').middleware('R')
-    
-    Route.post('/heavy-equipment', 'HeavyEquipmentController.applyFilter').as('rep.heavy-equipment.applyFilter').middleware('R')
-    
-    Route.get('/heavy-equipment/filter', 'HeavyEquipmentController.filter').as('rep.heavy-equipment.filter').middleware('R')
-    
-    Route.post('/heavy-equipment/table', 'HeavyEquipmentController.kpiTable').as('rep.heavy-equipment.kpiTable').middleware('R')
+  Route.post('/fuel-ratio/gen-data-pdf', 'FuelRatioController.genDataPDF').as('rep.production.showData').middleware('R')
 
-    Route.post('/heavy-equipment/gen-data-pdf', 'HeavyEquipmentController.genDataPDF').as('rep.heavy-equipment.showData').middleware('R')
+  Route.post('/fuel-ratio/gen-data-xls', 'FuelRatioController.genDataXLS').as('rep.production.showData').middleware('R')
+
+  Route.get('/heavy-equipment', 'HeavyEquipmentController.index').as('rep.heavy-equipment.index').middleware('R')
+
+  Route.post('/heavy-equipment', 'HeavyEquipmentController.applyFilter').as('rep.heavy-equipment.applyFilter').middleware('R')
+
+  Route.get('/heavy-equipment/filter', 'HeavyEquipmentController.filter').as('rep.heavy-equipment.filter').middleware('R')
+
+  Route.post('/heavy-equipment/table', 'HeavyEquipmentController.kpiTable').as('rep.heavy-equipment.kpiTable').middleware('R')
+
+  Route.post('/heavy-equipment/gen-data-pdf', 'HeavyEquipmentController.genDataPDF').as('rep.heavy-equipment.showData').middleware('R')
 })
   .prefix('report')
   .namespace('report')
@@ -643,7 +640,6 @@ Route.group(() => {
 
 // AJAX
 Route.group(() => {
-
   Route.get('/sys-options', 'AjaxOptionController.index').as('set.sys-options.index')
 
   Route.get('/usr', 'AjaxUserAkseController.getOptionUsers').as('set.sys-options.getOptionUsers')
@@ -852,6 +848,16 @@ Route.group(() => {
   Route.post('/:id/update', 'PitApiController.update')
 })
   .prefix('api/pit')
+  .namespace('api')
+
+Route.group(() => {
+  Route.get('/', 'SiteApiController.index')
+  
+  Route.get('/:id/show', 'SiteApiController.show')
+  
+  Route.post('/:id/update', 'SiteApiController.update')
+})
+  .prefix('api/site')
   .namespace('api')
 
 Route.group(() => {
@@ -1168,7 +1174,6 @@ Route.group(() => {
   .prefix('api/notifications')
   .namespace('api')
 
-
 /* START API VERSION 2.0 */
 
 Route.group(() => {
@@ -1189,7 +1194,6 @@ Route.group(() => {
   .namespace('api/v2')
 
 /* END API VERSION 2.0 */
-
 
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
 
