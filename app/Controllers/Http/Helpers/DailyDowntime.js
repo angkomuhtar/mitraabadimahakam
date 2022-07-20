@@ -53,15 +53,20 @@ class DailyDowntime {
     const daysInMonth = moment(currentMonth).daysInMonth()
     const getTotalHours = daysInMonth * 24
 
-    // for (const obj of sheetData) {
-    //   const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
-    //   if(!validEquipment){
-    //     return {
-    //       success: false,
-    //       message: 'Equipment Unit ' + obj.B + ' tidak ditemukan dalam master equipment...'
-    //     }
-    //   }
-    // }
+    let arrMissEquipment = []
+    for (const obj of sheetData) {
+      const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
+      if(!validEquipment){
+        arrMissEquipment.push(obj.B)
+      }
+    }
+
+    if(arrMissEquipment.length > 0){
+      return {
+        success: false,
+        message: 'Equipment ini tdk di temukan pada master\n'+JSON.stringify(arrMissEquipment)
+      }
+    }
 
 
     // methods

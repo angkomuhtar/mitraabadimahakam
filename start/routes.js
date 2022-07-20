@@ -1183,9 +1183,17 @@ Route.group(() => {
 
 // REPORT PRODUCTIONS OVER BURDEN & COAL
 Route.group(() => {
-  Route.get('/productions', 'ReportProductionController.index')
+  Route.get('/', 'ReportProductionController.index')
 })
-  .prefix('api/v2')
+  .prefix('api/v2/productions')
+  .namespace('api/v2')
+
+// REPORT ISSUES
+Route.group(() => {
+  Route.get('/', 'ReportIssueController.index')
+  Route.get('/today', 'ReportIssueController.today')
+})
+  .prefix('api/v2/issues')
   .namespace('api/v2')
 
 /* END API VERSION 2.0 */

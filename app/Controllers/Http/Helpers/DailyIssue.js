@@ -79,6 +79,22 @@ class dailyIssue {
           return data
      }
 
+     async SHOW_TODAY(){
+          const data = await Issue.
+          query().
+          with('user').
+          with('dailyevent', w => w.with('event')).
+          with('unit').
+          where( w => {
+               w.where('report_at', '>=', moment().startOf('day').format('YYYY-MM-DD HH:mm'))
+               w.where('report_at', '<=', moment().endOf('day').format('YYYY-MM-DD HH:mm'))
+          }).
+          orderBy('report_at', 'desc').
+          fetch()
+
+          return data.toJSON()
+     }
+
      async SHOW_BY_DATE(params) {
           const shifts = (await MasShift.query().fetch()).toJSON()
           const date = moment(params.date).format('YYYY-MM-DD')
