@@ -982,36 +982,3 @@ class repPoduction {
     }
 }
 module.exports = new repPoduction()
-
-// [
-//     {
-//       name: "DAY SHIFT",
-//       stack: "DERAWAN BARU",
-//       data: [6468, 8074]
-//     },
-//     {
-//       name: "NIGHT SHIFT",
-//       stack: "DERAWAN BARU",
-//       data: [6270, 4378]
-//     },
-//     {
-//       name: "DAY SHIFT",
-//       stack: "KARIMATA",
-//       data: [10560, 10472]
-//     },
-//     {
-//       name: "NIGHT SHIFT",
-//       stack: "KARIMATA",
-//       data: [11770, 10890]
-//     },
-//     {
-//       name: "DAY SHIFT",
-//       stack: "RPU",
-//       data: [12540, 13266]
-//     },
-//     {
-//       name: "NIGHT SHIFT",
-//       stack: "RPU",
-//       data: [10142, 9680]
-//     }
-// ]

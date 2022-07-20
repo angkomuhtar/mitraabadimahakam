@@ -5,6 +5,9 @@ const Sites = use("App/Models/MasSite")
 class AjaxSiteController {
     async getSites ({request}) {
         const req = request.all()
+        console.log('====================================');
+        console.log(req);
+        console.log('====================================');
         let data = (await Sites.query().where({status: 'Y'}).fetch()).toJSON()
         if(req.selected){
             data = data.map(el => el.id === parseInt(req.selected) ? {...el, selected: 'selected'} : {...el, selected: ''})

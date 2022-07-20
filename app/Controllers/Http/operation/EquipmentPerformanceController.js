@@ -7,7 +7,7 @@ const Helpers = use('Helpers')
 const MasEquipment = use('App/Models/MasEquipment')
 const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
 
-class DailyDowntime {
+class EquipmentPerformanceController {
   async index({ view }) {
     return view.render('operation.equipment-performance.index')
   }
@@ -111,7 +111,7 @@ class DailyDowntime {
   }
 }
 
-module.exports = DailyDowntime
+module.exports = EquipmentPerformanceController
 
 async function userValidate(auth) {
   let user

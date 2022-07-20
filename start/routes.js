@@ -575,28 +575,30 @@ Route.group(() => {
   Route.delete('/fuel-summary/:id/destroy', 'FuelUsageSummaryController.destroy').as('opr.fuel-summary.destroy').middleware('D')
 
   // Heavy Equipment / Downtime
-  Route.get('/daily-downtime', 'DailyDowntime.index').as('opr.daily-downtime.index').middleware('R')
+  Route.get('/daily-downtime', 'DailyDowntimeController.index').as('opr.daily-downtime.index').middleware('R')
 
-  Route.post('/daily-downtime', 'DailyDowntime.store').as('opr.daily-downtime.store').middleware('C')
+  Route.post('/daily-downtime', 'DailyDowntimeController.store').as('opr.daily-downtime.store').middleware('C')
 
-  Route.get('/daily-downtime/list', 'DailyDowntime.list').as('opr.daily-downtime.list').middleware('R')
+  Route.get('/daily-downtime/list', 'DailyDowntimeController.list').as('opr.daily-downtime.list').middleware('R')
 
-  Route.get('/daily-downtime/create', 'DailyDowntime.create').as('opr.daily-downtime.create').middleware('C')
+  Route.get('/daily-downtime/create', 'DailyDowntimeController.create').as('opr.daily-downtime.create').middleware('C')
 
-  Route.post('/daily-downtime/uploadFile', 'DailyDowntime.uploadFile').as('opr.daily-downtime.uploadFile').middleware('C')
+  Route.post('/daily-downtime/uploadFile', 'DailyDowntimeController.uploadFile').as('opr.daily-downtime.uploadFile').middleware('C')
 
   // Heavy Equipment / Equipment Performance
-  Route.get('/equipment-performance', 'EquipmentPerformance.index').as('opr.equipment-performance.index').middleware('R')
+  Route.get('/equipment-performance', 'EquipmentPerformanceController.index').as('opr.equipment-performance.index').middleware('R')
 
-  Route.post('/equipment-performance', 'EquipmentPerformance.store').as('opr.equipment-performance.store').middleware('C')
+  Route.post('/equipment-performance', 'EquipmentPerformanceController.store').as('opr.equipment-performance.store').middleware('C')
 
-  Route.get('/equipment-performance/list', 'EquipmentPerformance.list').as('opr.equipment-performance.list').middleware('R')
+  Route.get('/equipment-performance/list', 'EquipmentPerformanceController.list').as('opr.equipment-performance.list').middleware('R')
 
-  Route.get('/equipment-performance/create', 'EquipmentPerformance.create').as('opr.equipment-performance.create').middleware('C')
+  Route.get('/equipment-performance/create', 'EquipmentPerformanceController.create').as('opr.equipment-performance.create').middleware('C')
+  
+  Route.get('/equipment-performance/:id/show', 'EquipmentPerformanceController.show').as('opr.equipment-performance.show')
 
-  Route.get('/equipment-performance/:id/show', 'EquipmentPerformance.show').as('opr.equipment-performance.show')
+  Route.get('/equipment-performance/:id/update', 'EquipmentPerformanceController.update').as('opr.equipment-performance.update')
 
-  Route.get('/equipment-performance/:id/update', 'EquipmentPerformance.update').as('opr.equipment-performance.update')
+
 })
   .prefix('operation')
   .namespace('operation')
@@ -1188,9 +1190,17 @@ Route.group(() => {
 
 // REPORT PRODUCTIONS OVER BURDEN & COAL
 Route.group(() => {
-  Route.get('/productions', 'ReportProductionController.index')
+  Route.get('/', 'ReportProductionController.index')
 })
-  .prefix('api/v2')
+  .prefix('api/v2/productions')
+  .namespace('api/v2')
+
+// REPORT ISSUES
+Route.group(() => {
+  Route.get('/', 'ReportIssueController.index')
+  Route.get('/today', 'ReportIssueController.today')
+})
+  .prefix('api/v2/issues')
   .namespace('api/v2')
 
 /* END API VERSION 2.0 */

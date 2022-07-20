@@ -40,15 +40,34 @@ class DailyDowntime {
     const sampleSheet = req.sheet || 'DAILY ACTIVITY'
     const xlsx = excelToJson({
       sourceFile: filePath,
-      header: 1,
+      header: {
+        rows: 6
+      },
     })
 
+    
     const data = []
     const currentMonth = moment(req.date).startOf('month').format('YYYY-MM-DD')
     const selectedDate = moment(req.date).format('YYYY-MM-DD')
-    const sheetData = xlsx[sampleSheet].slice(5)
+    const sheetData = xlsx[sampleSheet]
     const daysInMonth = moment(currentMonth).daysInMonth()
     const getTotalHours = daysInMonth * 24
+
+    let arrMissEquipment = []
+    for (const obj of sheetData) {
+      const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
+      if(!validEquipment){
+        arrMissEquipment.push(obj.B)
+      }
+    }
+
+    if(arrMissEquipment.length > 0){
+      return {
+        success: false,
+        message: 'Equipment ini tdk di temukan pada master\n'+JSON.stringify(arrMissEquipment)
+      }
+    }
+
 
     // methods
     const GET_EQUIPMENT_DATA = async (tipe, brand, name) => {
@@ -60,15 +79,6 @@ class DailyDowntime {
           result = equipment.toJSON()
           return result
         } else {
-          // const { isSuccess, checkMsg } = await Utils.equipmentCheck(name, brand)
-          // return {
-          //   success: isSuccess,
-          //   message: checkMsg
-          // }
-          // return {
-          //   success: false,
-          //   message: `Equipment Unit ${name} tidak di temukan pada master equipment...`
-          // }
           throw new Error(`Equipment Unit ${name} tidak di temukan pada master equipment...`)
         }
       }
@@ -80,8 +90,12 @@ class DailyDowntime {
       // await EquipmentPerformanceDetailsHelpers.ADD(selectedDate, user)
 
       for (const value of sheetData) {
+        console.log(value);
         let hour_start = String(value.J).split(' ')[4] || '00:00:00'
         let hour_finish = String(value.K).split(' ')[4] || '00:00:00'
+        console.log(String(value.J).split(' ')[4]);
+        console.log(String(value.K).split(' ')[4]);
+        console.log('-----------------------');
         const eqName = value.B && value.B.indexOf(' ') === -1 ? value.B.split(' ')[0] : value.B
         const date = moment(value.I).add(1, 'day').format('YYYY-MM-DD')
         const bd_start = moment(`${date} ${hour_start}`).add(3, 'minute').format('YYYY-MM-DD HH:mm:ss')
@@ -311,6 +325,7 @@ class DailyDowntime {
    */
   async uploadProcessHourMeter(req, filePath, user) {
     let trx = await db.beginTransaction()
+    
 
     const sheet = req.sheet || 'DATABASE'
 
@@ -319,15 +334,18 @@ class DailyDowntime {
       header: 1,
     })
 
+    
+
     const data = []
     const sheetData = xlsx[sheet].slice(2)
     const reqDate = moment(req.date).format('YYYY-MM-DD')
+
 
     // methods
     const GET_EQUIPMENT_DATA = async (tipe, model, name) => {
       let result = null
       if (name) {
-        const equipment = await MasEquipment.query(trx).where('kode', name).last()
+        const equipment = await MasEquipment.query().where('kode', name).last()
         if (equipment) {
           result = equipment.toJSON()
           return result
