@@ -8,6 +8,7 @@ const MasSite = use("App/Models/MasSite")
 const { performance } = require('perf_hooks')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 
+const ReportPDFHelpers = use("App/Controllers/Http/Helpers/ReportPDF")
 const ReportPoductionHelpers = use("App/Controllers/Http/Helpers/ReportPoduction")
 
 class ReportProductionController {
@@ -170,10 +171,6 @@ class ReportProductionController {
         const pit = await MasPit.query().where('id', req.pit_id).last()
         const site = await MasSite.query().where('id', req.site_id).last()
 
-        console.log('====================================');
-        console.log(req);
-        console.log('====================================');
-
         /* PRODUCTION MONTHLY */
         if(req.ranges === 'MONTHLY'){
             req.month_begin = moment(req.start_date)
@@ -279,7 +276,7 @@ class ReportProductionController {
 
             try {
                 let result = await ReportPoductionHelpers.MW_DAILY(req)
-                
+
                 let resp = []
                 for (let i = 0; i < result.xAxis.length; i++) {
                     var diff = (parseFloat(result.data[1].items[i].volume)) - (parseFloat(result.data[0].items[i].volume))
@@ -305,6 +302,132 @@ class ReportProductionController {
                     data: {
                         site: site.name,
                         data: resp
+                    },
+                });
+            } catch (error) {
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(403).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: true,
+                        message: error,
+                    },
+                    data: [],
+                });
+            }
+        }
+    }
+
+    async pdf ( { auth, request, response } ) {
+        let durasi
+        var t0 = performance.now()
+        var req = request.all()
+
+        
+        const user = await userValidate(auth)
+        if(!user){
+            return response.status(403).json({
+                diagnostic: {
+                    ver: version,
+                    error: true,
+                    message: 'not authorized...'
+                }
+            })
+        }
+
+        req.range_type = req.group === 'PIT' ? 'MW':'PW'
+        req.production_type = req.tipe
+        req.colorGraph = [ '#7ab2fa', '#1074f7', '#0451b6', '#fa7a82', '#fa1524', '#a40510' ]
+
+        const pit = await MasPit.query().where('id', req.pit_id).last()
+        const site = await MasSite.query().where('id', req.site_id).last()
+        // var img = '/img-notfound.png'
+
+        
+        /* PRODUCTION MONTHLY */
+        if(req.ranges === 'MONTHLY'){
+            req.month_begin = moment(req.start_date)
+            req.month_end = moment(req.end_date)
+            try {
+                const data = await ReportPDFHelpers.MONTHLY_OB_PDF(req, null)
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(200).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: false,
+                    },
+                    data: {
+                        site: site.name,
+                        data: data
+                    },
+                });
+            } catch (error) {
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(403).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: true,
+                        message: error,
+                    },
+                    data: [],
+                });
+            }
+        }
+
+        /* PRODUCTION WEEKLY */
+        if(req.ranges === 'WEEKLY'){
+
+            req.week_begin = moment(req.start_date).format('YYYY-MM-DD')
+            req.week_end = moment(req.end_date).format('YYYY-MM-DD')
+
+            try {
+                const data = await ReportPDFHelpers.WEEKLY_OB_PDF(req, null)
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(200).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: false,
+                    },
+                    data: {
+                        site: site.name,
+                        data: data
+                    },
+                });
+            } catch (error) {
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(403).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: true,
+                        message: error,
+                    },
+                    data: [],
+                });
+            }
+        }
+
+        /* PRODUCTION DAILY */
+        if(req.ranges === 'DAILY'){
+            req.start_date = moment(req.start_date).format('YYYY-MM-DD')
+            req.end_date = moment(req.end_date).format('YYYY-MM-DD')
+
+            try {
+                const data = await ReportPDFHelpers.DAILY_OB_PDF(req, null)
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(200).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: false,
+                    },
+                    data: {
+                        site: site.name,
+                        data: data
                     },
                 });
             } catch (error) {

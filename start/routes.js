@@ -1191,6 +1191,7 @@ Route.group(() => {
 // REPORT PRODUCTIONS OVER BURDEN & COAL
 Route.group(() => {
   Route.get('/', 'ReportProductionController.index')
+  Route.get('/pdf', 'ReportProductionController.pdf')
   Route.get('/list', 'ReportProductionController.list')
 })
   .prefix('api/v2/productions')

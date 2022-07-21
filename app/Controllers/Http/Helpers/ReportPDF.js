@@ -153,8 +153,10 @@ class PDFReport {
         const site = await MasSite.query().where('id', req.site_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
         const logoAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
-        const chartPath = Helpers.publicPath(grafikPath)
-        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+        const chartPath = grafikPath ? Helpers.publicPath(grafikPath):null
+        const chartAsBase64 = chartPath ? await Image64Helpers.GEN_BASE64(chartPath):null
+
+        let objImages = grafikPath ? {image: chartAsBase64, width: 500}: {text: ''}
         const dataTitle = [
             {
                 columns: [
@@ -218,7 +220,8 @@ class PDFReport {
                 ]
             },
             {text: '\n'},
-            {image: chartAsBase64, width: 500},
+            objImages,
+            // {image: chartAsBase64, width: grafikPath ? 500 : 0},
             {text: '\n'},
             {
                 style: 'tableExample',
@@ -350,9 +353,10 @@ class PDFReport {
         const pit = await MasPit.query().where('id', req.pit_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
         const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
-        const chartPath = Helpers.publicPath(grafikPath)
-        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
-        // console.log(data);
+        const chartPath = grafikPath ? Helpers.publicPath(grafikPath):null
+        const chartAsBase64 = chartPath ? await Image64Helpers.GEN_BASE64(chartPath):null
+
+        let objImages = grafikPath ? {image: chartAsBase64, width: 500}: {text: ''}
 
         let result = []
         result.push([
@@ -475,7 +479,7 @@ class PDFReport {
                 ]
             },
             {text: '\n'},
-            {image: chartAsBase64, width: 500},
+            objImages,
             {text: '\n'},
             {
                 style: 'tableExample',
@@ -609,8 +613,10 @@ class PDFReport {
         const pit = await MasPit.query().where('id', req.pit_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
         const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
-        const chartPath = Helpers.publicPath(grafikPath)
-        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+        const chartPath = grafikPath ? Helpers.publicPath(grafikPath):null
+        const chartAsBase64 = chartPath ? await Image64Helpers.GEN_BASE64(chartPath):null
+
+        let objImages = grafikPath ? {image: chartAsBase64, width: 500}: {text: ''}
         const dataTitle = [
             {
                 columns: [
@@ -674,7 +680,7 @@ class PDFReport {
                 ]
             },
             {text: '\n'},
-            {image: chartAsBase64, width: 500},
+            objImages,
             {text: '\n'},
             {
                 style: 'tableExample',
@@ -871,8 +877,10 @@ class PDFReport {
         const pit = await MasPit.query().where('id', req.pit_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
         const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
-        const chartPath = Helpers.publicPath(grafikPath)
-        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+        const chartPath = grafikPath ? Helpers.publicPath(grafikPath):null
+        const chartAsBase64 = chartPath ? await Image64Helpers.GEN_BASE64(chartPath):null
+
+        let objImages = grafikPath ? {image: chartAsBase64, width: 500}: {text: ''}
         const dataTitle = [
             {
                 columns: [
@@ -936,7 +944,7 @@ class PDFReport {
                 ]
             },
             {text: '\n'},
-            {image: chartAsBase64, width: 500},
+            objImages,
             {text: '\n'},
             {
                 style: 'tableExample',
@@ -1083,8 +1091,10 @@ class PDFReport {
         const pit = await MasPit.query().where('id', req.pit_id).last()
         const imgPath = Helpers.publicPath('logo.jpg')
         const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
-        const chartPath = Helpers.publicPath(grafikPath)
-        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+        const chartPath = grafikPath ? Helpers.publicPath(grafikPath):null
+        const chartAsBase64 = chartPath ? await Image64Helpers.GEN_BASE64(chartPath):null
+
+        let objImages = grafikPath ? {image: chartAsBase64, width: 500}: {text: ''}
         const dataTitle = [
             {
                 columns: [
@@ -1148,7 +1158,7 @@ class PDFReport {
                 ]
             },
             {text: '\n'},
-            {image: chartAsBase64, width: 500},
+            objImages,
             {text: '\n'},
             {
                 style: 'tableExample',
