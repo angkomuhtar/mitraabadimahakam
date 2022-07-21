@@ -233,7 +233,7 @@ class ReportProductionController {
                     resp.push({
                         periode: result.xAxis[i],
                         location: pit.name,
-                        kode: pit.kode,
+                        location: pit.name,
                         target: result.data[0].items[i].volume,
                         actual: result.data[1].items[i].volume,
                         diff: diff,
@@ -275,22 +275,14 @@ class ReportProductionController {
 
             try {
                 let result = await ReportPoductionHelpers.MW_DAILY(req)
-
-                let resp = []
-                for (let i = 0; i < result.xAxis.length; i++) {
-                    var diff = (parseFloat(result.data[1].items[i].volume)) - (parseFloat(result.data[0].items[i].volume))
-                    resp.push({
-                        periode: result.xAxis[i],
-                        location: pit.name,
-                        kode: pit.kode,
-                        target: result.data[0].items[i].volume,
-                        actual: result.data[1].items[i].volume,
-                        diff: diff,
-                        status: diff >= 0 ? 'over target':'low target'
-                    })
-                    
-                }
-
+                const { short_xAxist, data } = result
+    
+                let resp = data[1].items?.map((obj, i) => {
+                    return {
+                        x: short_xAxist[i],
+                        y: obj.volume
+                    }
+                })
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(200).json({
                     diagnostic: {
@@ -298,12 +290,8 @@ class ReportProductionController {
                         times: durasi,
                         error: false,
                     },
-                    data: {
-                        site: site.name,
-                        data: resp
-                    },
+                    data: resp,
                 });
-                
             } catch (error) {
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(403).json({

@@ -224,6 +224,7 @@ class DailyDowntime {
         console.log('daily total >> ', breakdown_hours_total)
 
         newEquipmentPerformance.fill({
+          site_id: req.site_id,
           budget_pa: getLastBudgetPA?.budget_pa || 0,
           equip_id: eq.id,
           target_downtime_monthly: 24 * (1 - 0 / 100), // daily,
@@ -454,7 +455,7 @@ class DailyDowntime {
             equipId && (await dailyChecklist.save(trx))
             console.log(`---- finished inserting timesheet id ${dailyChecklist.id} ----`)
           } catch (err) {
-            // if 
+            // if
             await trx.rollback()
             return {
               success: false,
