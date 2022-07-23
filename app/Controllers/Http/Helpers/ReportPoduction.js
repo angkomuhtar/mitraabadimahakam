@@ -37,7 +37,7 @@ class repPoduction {
                 }).orderBy('month').fetch()
             ).toJSON()
 
-            let xAxis = data.map(el => moment(el.month).format('MMM YYYY'))
+            let xAxis = data.map(el => moment(el.month).format('MMM YY'))
 
             let estimate  = data.map( el => {
                 return {
