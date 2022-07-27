@@ -11,6 +11,11 @@ const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 const ReportPDFHelpers = use("App/Controllers/Http/Helpers/ReportPDF")
 const ReportPoductionHelpers = use("App/Controllers/Http/Helpers/ReportPoduction")
 
+var pdfMake = require('pdfmake/build/pdfmake.js');
+var pdfFonts = require('pdfmake/build/vfs_fonts.js');
+const { async } = require('crypto-random-string')
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 class ReportProductionController {
     async index ( { auth, request, response } ) {
         let durasi
@@ -131,6 +136,49 @@ class ReportProductionController {
                         error: false,
                     },
                     data: resp,
+                });
+            } catch (error) {
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(403).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: true,
+                        message: error,
+                    },
+                    data: [],
+                });
+            }
+        }
+
+        /* PRODUCTION HOURLY */
+        if(req.ranges === 'HOURLY'){
+            req.start_date = moment(req.start_date).format('YYYY-MM-DD HH:mm')
+            req.end_date = moment(req.end_date).format('YYYY-MM-DD HH:mm')
+            console.log(req.start_date, req.end_date);
+            try {
+                let result = await ReportPoductionHelpers.MW_HOURLY(req)
+
+                const { xAxis, data } = result
+    
+                let resp = data[1].items?.map((obj, i) => {
+                    return {
+                        x: xAxis[i],
+                        y: obj.volume
+                    }
+                })
+
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(200).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: false,
+                    },
+                    data: {
+                        // site: site.name,
+                        data: resp
+                    },
                 });
             } catch (error) {
                 durasi = await diagnoticTime.durasi(t0);
@@ -317,6 +365,53 @@ class ReportProductionController {
                 });
             }
         }
+
+        if(req.ranges === 'HOURLY'){
+            req.start_date = moment(req.start_date).format('YYYY-MM-DD HH:mm')
+            req.end_date = moment(req.end_date).format('YYYY-MM-DD HH:mm')
+            console.log(req.start_date, req.end_date);
+            try {
+                let result = await ReportPoductionHelpers.MW_HOURLY(req)
+                console.log(result);
+                let resp = []
+                for (let i = 0; i < result.xAxis.length; i++) {
+                    var diff = (parseFloat(result.data[1].items[i].volume)) - (parseFloat(result.data[0].items[i]))
+                    resp.push({
+                        periode: result.xAxis[i],
+                        location: pit.name,
+                        target: result.data[0].items[i],
+                        actual: result.data[1].items[i].volume,
+                        diff: diff,
+                        status: diff >= 0 ? 'over target':'low target'
+                    })
+                    
+                }
+
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(200).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: false,
+                    },
+                    data: {
+                        site: site.name,
+                        data: resp
+                    },
+                });
+            } catch (error) {
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(403).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: true,
+                        message: error,
+                    },
+                    data: [],
+                });
+            }
+        }
     }
 
     async pdf ( { auth, request, response } ) {
@@ -416,8 +511,21 @@ class ReportProductionController {
             req.start_date = moment(req.start_date).format('YYYY-MM-DD')
             req.end_date = moment(req.end_date).format('YYYY-MM-DD')
 
+            
+
             try {
                 const data = await ReportPDFHelpers.DAILY_OB_PDF(req, null)
+                const pdfDocGenerator = pdfMake.createPdf(data);
+                
+
+                async function BUILD_PDF(){
+                    return new Promise((resolve, reject) => {
+                        pdfDocGenerator.getDataUrl((dataUrl) => {
+                            resolve(dataUrl)
+                        });
+                    })
+                }
+                const pdfData = await BUILD_PDF()
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(200).json({
                     diagnostic: {
@@ -427,7 +535,7 @@ class ReportProductionController {
                     },
                     data: {
                         site: site.name,
-                        data: data
+                        data: pdfData
                     },
                 });
             } catch (error) {

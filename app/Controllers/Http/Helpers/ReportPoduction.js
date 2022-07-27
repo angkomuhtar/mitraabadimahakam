@@ -11,6 +11,7 @@ const MasPit = use("App/Models/MasPit")
 const MasSite = use("App/Models/MasSite")
 const MasShift = use("App/Models/MasShift")
 const MasMaterial = use("App/Models/MasMaterial")
+const MasEquipment = use("App/Models/MasEquipment")
 const VRitaseObPerjam = use("App/Models/VRitaseObPerjam")
 const VRitaseCoalPerjam = use("App/Models/VRitaseCoalPerjam")
 
@@ -442,14 +443,16 @@ class repPoduction {
             return arr;
         }
 
-        let startHour = moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm')
-        let endHour = moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm')
+        let startHour = moment(req.start_date).format('YYYY-MM-DD HH:mm')
+        let endHour = moment(req.end_date).format('YYYY-MM-DD HH:mm')
         var arrHours = getHoursArray(startHour, endHour)
+
         
         let arrRitaseId = (await DailyRitase.query().where( w => {
             w.where('pit_id', req.pit_id)
-            w.where('date', req.date)
+            w.where('date', moment(req.start_date).format('YYYY-MM-DD'))
         }).fetch()).toJSON().map(el => el.id)
+        
         
 
         let data = []
@@ -458,86 +461,93 @@ class repPoduction {
                 let dailyRitaseDetail = (
                     await DailyRitaseDetail.query().with('daily_ritase').where( w => {
                         w.where('dailyritase_id', val)
-                        w.where('check_in', '>=', obj)
+                        w.where('check_in', '>=', moment(obj).startOf('hour').format('YYYY-MM-DD HH:mm'))
                         w.where('check_in', '<=', moment(obj).endOf('hour').format('YYYY-MM-DD HH:mm'))
                     }).fetch()).toJSON() || []
-
-                dailyRitaseDetail = dailyRitaseDetail.map( el => {
-                    return {
-                        hour: moment(obj).format('HH'),
-                        hauler_id: el.hauler_id,
-                        site_id: el.daily_ritase.site_id,
-                        pit_id: el.daily_ritase.pit_id,
-                        material: el.daily_ritase.material
-                    }
-                })
-                if (dailyRitaseDetail.length > 0) {
-                    data.push(dailyRitaseDetail)
+                        
+                    for (const el of dailyRitaseDetail) {
+                        const equipment = await MasEquipment.query().where('id', el.hauler_id).last()
+                        const material = await MasMaterial.query().where('id', el.daily_ritase.material).last()
+                        var volume = equipment.tipe === 'hauler truck' ? material.vol : equipment.qty_capacity
+                        data.push({
+                            hour: moment(obj).format('HH'),
+                            hauler_id: el.hauler_id,
+                            site_id: el.daily_ritase.site_id,
+                            pit_id: el.daily_ritase.pit_id,
+                            material: el.daily_ritase.material,
+                            volume: volume || 0
+                        })
                 }
             }
         }
-
+        
         let joinData = _.flatten(data)
-        
-        
-        
-        let grouping = []
-        for (const obj of joinData) {
-            const material = await MasMaterial.query().where('id', obj.material).last()
-            grouping.push({
-                ...obj,
-                vol: parseFloat(material.vol)
-            })
-        }
-        grouping = _.groupBy(grouping, 'hour')
-        grouping = Object.keys(grouping).map(key => {
+        joinData = _.groupBy(joinData, 'hour')
+        joinData = Object.keys(joinData).map(key => {
             return {
                 jamx: 'Pukul ' + key,
-                sum_volume: parseFloat(grouping[key][0].vol) * parseFloat(grouping[key].length),
-                items: grouping[key]
+                // sum_volume: parseFloat(joinData[key][0].vol) * parseFloat(joinData[key].length),
+                sum_volume: joinData[key].reduce((a, b) => { return a + b.volume }, 0),
+                items: joinData[key]
             }
         })
+        joinData = _.sortBy(joinData, 'jamx')
+                
+        let xAxis = joinData.map(el => el.jamx)
         
-        grouping = _.sortBy(grouping, 'date')
-
-        let xAxis = grouping.map(el => el.jamx)
-
+        
 
         /** GET TARGET PERJAM **/
         const dailyPlan = await DailyPlan.query().where( w => {
             w.where('tipe', req.production_type)
-            w.where('current_date', req.date)
+            w.where('current_date', moment(req.start_date).format('YYYY-MM-DD'))
             w.where('pit_id', req.pit_id)
         }).last()
+        
+        let target = parseFloat((dailyPlan.toJSON().estimate / 22)?.toFixed(2))
 
-        let target = dailyPlan.toJSON().estimate / 22
-
-        result = grouping.map(el => {
+        result = joinData.map(el => {
             return {
                 ...el,
                 name: el.jamx,
                 target: target
             }
         })
-        
-        let resultx = [
-            {name: 'Target', type: req.typeChart, stack: 'tgt', color: color[0], items: result.map(el => {
-                return {
-                    volume: el.target
-                }
-            })},
-            {name: 'Actual', type: req.typeChart, stack: 'act', color: color[1], items: result.map(el => {
-                return {
-                    volume: el.sum_volume
-                }
-            })},
-            {name: 'Trands', type: 'spline', stack: 'act', color: color[2], items: result.map(el => {
-                return {
-                    volume: el.sum_volume
-                }
-            })}
-        ]
 
+        
+        // console.log('zzzz', result.data);
+        let resultx = [
+            {
+                name: 'Target', 
+                type: req.typeChart, 
+                stack: 'tgt', 
+                color: color[0], 
+                items: xAxis.map(el => target)
+            },
+            {
+                name: 'Actual', 
+                type: req.typeChart, 
+                stack: 'act', 
+                color: color[1], 
+                items: result.map(el => {
+                    return {
+                        volume: el.sum_volume
+                    }
+                })
+            },
+            {
+                name: 'Trands', 
+                type: 'spline', 
+                stack: 'act', 
+                color: color[2], 
+                items: result.map(el => {
+                    return {
+                        volume: el.sum_volume
+                    }
+                })
+            }
+        ]
+        // console.log('xxx', resultx);
         return {
             xAxis: xAxis,
             data: resultx
