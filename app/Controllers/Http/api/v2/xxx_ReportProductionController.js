@@ -13,6 +13,7 @@ const ReportPoductionHelpers = use("App/Controllers/Http/Helpers/ReportPoduction
 
 var pdfMake = require('pdfmake/build/pdfmake.js');
 var pdfFonts = require('pdfmake/build/vfs_fonts.js');
+const { async } = require('crypto-random-string')
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 class ReportProductionController {
