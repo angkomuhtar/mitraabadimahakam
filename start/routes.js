@@ -593,12 +593,10 @@ Route.group(() => {
   Route.get('/equipment-performance/list', 'EquipmentPerformanceController.list').as('opr.equipment-performance.list').middleware('R')
 
   Route.get('/equipment-performance/create', 'EquipmentPerformanceController.create').as('opr.equipment-performance.create').middleware('C')
-  
+
   Route.get('/equipment-performance/:id/show', 'EquipmentPerformanceController.show').as('opr.equipment-performance.show')
 
   Route.get('/equipment-performance/:id/update', 'EquipmentPerformanceController.update').as('opr.equipment-performance.update')
-
-
 })
   .prefix('operation')
   .namespace('operation')
@@ -854,9 +852,9 @@ Route.group(() => {
 
 Route.group(() => {
   Route.get('/', 'SiteApiController.index')
-  
+
   Route.get('/:id/show', 'SiteApiController.show')
-  
+
   Route.post('/:id/update', 'SiteApiController.update')
 })
   .prefix('api/site')

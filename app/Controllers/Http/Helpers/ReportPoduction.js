@@ -240,7 +240,7 @@ class repPoduction {
         }
 
 
-        let xAxis = planDaily.map(el => moment(el.current_date).format('DD-MM-YYYY'))
+        let xAxis = planDaily.map(el => moment(el.current_date).format('DD/MM/YY'))
         let short_xAxist = planDaily.map(el => moment(el.current_date).format('DD/MM'))
 
         let arrTarget = []
@@ -254,7 +254,7 @@ class repPoduction {
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
                 nm_pit: `Target ${pit.name}`,
-                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                current_date: moment(el.current_date).format('DD/MM/YY'),
                 volume: el.estimate
             })
             arrActual.push({
@@ -262,7 +262,7 @@ class repPoduction {
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
                 nm_pit: `Actual ${pit.name}`,
-                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                current_date: moment(el.current_date).format('DD/MM/YY'),
                 volume: el.actual
             })
             arrTrands.push({
@@ -270,7 +270,7 @@ class repPoduction {
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
                 nm_pit: `Trands ${pit.name}`,
-                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                current_date: moment(el.current_date).format('DD/MM/YY'),
                 volume: el.actual
             })
             arrDiff.push({
@@ -278,7 +278,7 @@ class repPoduction {
                 pit_id: el.pit_id,
                 kd_pit: pit.kode,
                 nm_pit: `Diff ${pit.name}`,
-                current_date: moment(el.current_date).format('DD-MM-YYYY'),
+                current_date: moment(el.current_date).format('DD/MM/YY'),
                 volume: parseFloat(el.actual) - parseFloat(el.estimate)
             })
         }
