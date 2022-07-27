@@ -168,7 +168,6 @@ class repPoduction {
                 w.where('current_date', '>=', _.first(obj.items))
                 w.where('current_date', '<=', _.last(obj.items))
             }).select('estimate').getSum('estimate') || 0
-
             
 
             tmpTarget.push({
