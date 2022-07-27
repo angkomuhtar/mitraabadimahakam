@@ -1,6 +1,7 @@
 'use strict'
 
 const Helpers = use('Helpers')
+const _ = require('underscore')
 const moment = require("moment")
 const ReportPDFHelpers = use("App/Controllers/Http/Helpers/ReportPDF")
 const ReportXLSHelpers = use("App/Controllers/Http/Helpers/ReportXLS")
@@ -49,7 +50,8 @@ class HeavyEquipmentController {
             data = await ReportHeavyEquipment.MONTHLY(req)
         }
 
-        return view.render('report.heavy-equipment.tableKPI', {list: data.byKPI.dataTable})
+        let dataTable = _.sortBy(data.byKPI.dataTable, 'date')
+        return view.render('report.heavy-equipment.tableKPI', {list: dataTable})
     }
 
     async genDataPDF ( { request } ) {
