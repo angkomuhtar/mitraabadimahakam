@@ -445,6 +445,9 @@ class ReportProductionController {
             req.month_end = moment(req.end_date)
             try {
                 const data = await ReportPDFHelpers.MONTHLY_OB_PDF(req, null)
+                const pdfDocGenerator = pdfMake.createPdf(data);
+                
+                const pdfData = await BUILD_PDF(pdfDocGenerator)
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(200).json({
                     diagnostic: {
@@ -454,7 +457,7 @@ class ReportProductionController {
                     },
                     data: {
                         site: site.name,
-                        data: data
+                        data: pdfData
                     },
                 });
             } catch (error) {
@@ -479,6 +482,9 @@ class ReportProductionController {
 
             try {
                 const data = await ReportPDFHelpers.WEEKLY_OB_PDF(req, null)
+                const pdfDocGenerator = pdfMake.createPdf(data);
+                
+                const pdfData = await BUILD_PDF(pdfDocGenerator)
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(200).json({
                     diagnostic: {
@@ -488,7 +494,7 @@ class ReportProductionController {
                     },
                     data: {
                         site: site.name,
-                        data: data
+                        data: pdfData
                     },
                 });
             } catch (error) {
@@ -515,17 +521,8 @@ class ReportProductionController {
             try {
                 const data = await ReportPDFHelpers.DAILY_OB_PDF(req, null)
                 const pdfDocGenerator = pdfMake.createPdf(data);
-                
 
-                async function BUILD_PDF(){
-                    return new Promise((resolve, reject) => {
-                        pdfDocGenerator.getDataUrl((dataUrl) => {
-                            // console.log(dataUrl);
-                            resolve(dataUrl)
-                        });
-                    })
-                }
-                const pdfData = await BUILD_PDF()
+                const pdfData = await BUILD_PDF(pdfDocGenerator)
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(200).json({
                     diagnostic: {
@@ -565,4 +562,13 @@ async function userValidate(auth){
         console.log(error);
         return null
     }
+}
+
+async function BUILD_PDF(pdfDocGen){
+  return new Promise((resolve, reject) => {
+    pdfDocGen.getDataUrl((dataUrl) => {
+          // console.log(dataUrl);
+          resolve(dataUrl)
+      });
+  })
 }

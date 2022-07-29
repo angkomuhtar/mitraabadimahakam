@@ -133,7 +133,7 @@ class DailyRitaseCoalController {
     let datetime
     if (req.model === 'radioroom') {
       let dataRadioRoom = []
-      let dailyFleet = null
+      let dailyFleet
       for (const obj of selectSheet.details) {
 
         // JIKA UNIT EXCAVATOR TERISI
@@ -206,7 +206,16 @@ class DailyRitaseCoalController {
             })
             .last()
   
-          // console.log(dailyFleetEquip);
+            console.log('dailyFleetEquip :::', {
+              fleet_id: fleet.id,
+              pit_id: pit.id,
+              activity_id: 8,
+              date: req.date,
+              shift_id: shift.id,
+              user_id: usr.id,
+              tipe: 'MF',
+            });
+          
   
           if (!dailyFleetEquip) {
             dailyFleet = new DailyFleet()
@@ -221,6 +230,7 @@ class DailyRitaseCoalController {
             })
             try {
               await dailyFleet.save()
+              
             } catch (error) {
               console.log(error)
             }
@@ -245,6 +255,15 @@ class DailyRitaseCoalController {
                 w.where('date', moment(req.date).format('YYYY-MM-DD'))
               })
               .last()
+          }
+
+          
+
+          if(!dailyFleet){
+            return {
+              success: false,
+              message: 'Gagal membuat daily fleet...'
+            }
           }
   
           /* CREATE DAILY RITASE COAL */
