@@ -1195,6 +1195,15 @@ Route.group(() => {
   .prefix('api/v2/productions')
   .namespace('api/v2')
 
+// REPORT FUEL RATIO
+Route.group(() => {
+  Route.get('/', 'ReportFuelRatioController.index')
+  Route.get('/pdf', 'ReportFuelRatioController.pdf')
+  Route.get('/list', 'ReportFuelRatioController.list')
+})
+  .prefix('api/v2/fuel-ratio')
+  .namespace('api/v2')
+
 // REPORT ISSUES
 Route.group(() => {
   Route.get('/', 'ReportIssueController.index')

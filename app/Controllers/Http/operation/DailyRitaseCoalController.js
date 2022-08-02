@@ -105,7 +105,7 @@ class DailyRitaseCoalController {
     let dailyFleet
     let dailyRitaseCoal
     const req = request.all()
-    const trx = await db.beginTransaction()
+    // const trx = await db.beginTransaction()
 
     try {
       usr = await auth.getUser()
@@ -138,7 +138,7 @@ class DailyRitaseCoalController {
 
         // JIKA UNIT EXCAVATOR TERISI
         if(obj.C){
-          datetime = moment(req.date).startOf('days').add(obj.B, 'h').format('YYYY-MM-DD HH:mm')
+          datetime = moment(req.date).hour(obj.B).format('YYYY-MM-DD HH:mm')
           const dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
           const pit = (await MasPit.query().with('site').where('kode', obj.G).andWhere('sts', 'Y').last()).toJSON()
           const shift = await MasShift.query().where('kode', obj.F).last()
@@ -192,10 +192,9 @@ class DailyRitaseCoalController {
             return {
               success: false,
               data: null,
-              message: 'Data seam tidak di temukan...',
+              message: 'Data seam ' + obj.I + ' tidak di temukan...',
             }
           }
-  
   
           /* CREATE OR USED DAILY FLEET */
           let dailyFleetEquip = await DailyFleetEquip.query()
@@ -205,7 +204,6 @@ class DailyRitaseCoalController {
               w.where('datetime', '<=', moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm'))
             }).last()
 
-          console.log('check daily fleet equipment', dailyFleetEquip?.toJSON());
   
           if (!dailyFleetEquip) {
 
@@ -258,8 +256,7 @@ class DailyRitaseCoalController {
                 // w.where('activity_id', 8)
                 // w.where('shift_id', shift.id)
                 // w.where('date', moment(req.date).format('YYYY-MM-DD'))
-              })
-              .last()
+              }).last()
           }
 
 
@@ -329,7 +326,7 @@ class DailyRitaseCoalController {
             exca_id: obj.items[0].exca_id,
             shift_id: dailyfleet.shift_id,
             distance: pit.jarak_jetty,
-            block: 'XX',
+            block: obj.J || 'XX',
             sum_vol: tot_volum,
             tw_netto: tot_volum,
             coal_rit: obj.items.length,
@@ -428,6 +425,7 @@ class DailyRitaseCoalController {
         message: 'success save ritase coal...',
       }
     } else {
+      /* UPLOAD DATA JETTY */
       let genData = selectSheet.details
         .filter(item => item.O > 0 && moment(item.F).add(1, 'minutes').format('YYYY-MM-DD') === req.date)
         .map(item => {
