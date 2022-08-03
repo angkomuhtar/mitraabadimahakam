@@ -1000,13 +1000,23 @@ class PDFReport {
         let resultx = []
         let result = []
         let data 
+        
         try {
             data = (
                 await VRitaseObPerjam.query().where( w => {
                     if(req.site_id){
                         w.where('site_id', req.site_id)
                     }
-                    w.where('tglx', req.date)
+                    if(req.group === 'PIT'){
+                        w.where('pit_id', req.pit_id)
+                    }
+                    if(req.date){
+                        w.where('tglx', req.date)
+                    }
+                    if(req.start_date && req.end_date){
+                        w.where('check_in', '>=', moment(req.start_date).startOf('hour').format('YYYY-MM-DD HH:mm'))
+                        w.where('check_in', '<=', moment(req.end_date).startOf('hour').format('YYYY-MM-DD HH:mm'))
+                    }
                 }).fetch()
             ).toJSON()
         } catch (error) {
@@ -1020,7 +1030,8 @@ class PDFReport {
                 items: data[key]
             }
         })
-
+        
+        
         // let color = ['#75A5E3', '#1873C8', '#014584']
         for (const [i, obj] of data.entries()) {
             
@@ -1038,29 +1049,46 @@ class PDFReport {
               return res;
             }, {});
 
-            for (let i = 0; i < 24; i++) {
-                var str = '0'.repeat(2 - `${i}`.length) + i
-                if(!arrData.map(el => el.jamx).includes(str)){
-                    arrData.push({
-                        jamx: str,
-                        nm_pit: pit.name,
-                        vol: 0
-                    })
+            
+            if(req.start_date && req.end_date){
+                var initTime = parseInt(moment(req.start_date).format('H'))
+                var endTime = parseInt(moment(req.end_date).format('H'))
+                for (let i = initTime; i <= endTime; i++) {
+                    var str = '0'.repeat(2 - `${i}`.length) + i
+                    if(!arrData.map(el => el.jamx).includes(str)){
+                        arrData.push({
+                            jamx: str,
+                            nm_pit: pit.name,
+                            vol: 0
+                        })
+                    }
                 }
             }
 
+            if(req.date){
+                for (let i = 0; i < 24; i++) {
+                    var str = '0'.repeat(2 - `${i}`.length) + i
+                    if(!arrData.map(el => el.jamx).includes(str)){
+                        arrData.push({
+                            jamx: str,
+                            nm_pit: pit.name,
+                            vol: 0
+                        })
+                    }
+                }
+            }
+
+            
             arrData = _.sortBy(arrData, 'jamx');
             arrData = arrData.map(el => {
                 return {
                     pukul: el.jamx + ':00',
-                    date: moment(req.date).format('DD MMM YYYY'),
+                    date: req.date ? moment(req.date).format('DD MMM YYYY'):moment(req.start_date).format('DD MMM YYYY'),
                     nm_pit: pit.name,
                     actual: el.vol
                 }
             })
-
-            // console.log(obj);
-            console.log(arrData);
+            
             resultx.push({
                 pit_id: obj.pit_id,
                 pit_nm: pit.name,
@@ -1068,7 +1096,7 @@ class PDFReport {
                 items: arrData
             })
         }
-        
+        console.log('DATA :::', arrData);
         result.push([
             { text: 'Location', style: 'tableHeader_L' },
             { text: 'Date', style: 'tableHeader_L' },
@@ -1080,15 +1108,19 @@ class PDFReport {
             for (const val of obj.items) {
                 result.push([
                     {text: val.nm_pit, style: 'tableCell_L'},
-                    {text: moment(val.date).format('DD-MM-YYYY'), style: 'tableCell_L'},
+                    {text: moment(val.date || req.start_date).format('DD MMMM YYYY'), style: 'tableCell_L'},
                     {text: val.pukul, style: 'tableCell_L'},
                     {text: val.actual, style: 'tableCell_R'},
                 ])
             }
         }
 
+        
         const site = await MasSite.query().where('id', req.site_id).last()
-        const pit = await MasPit.query().where('id', req.pit_id).last()
+        let pit = null
+        if(req.group === 'PIT'){
+            pit = await MasPit.query().where('id', req.pit_id).last()
+        }
         const imgPath = Helpers.publicPath('logo.jpg')
         const imageAsBase64 = await Image64Helpers.GEN_BASE64(imgPath)
         const chartPath = grafikPath ? Helpers.publicPath(grafikPath):null
@@ -1118,7 +1150,7 @@ class PDFReport {
                                             },
                                             {
                                                 style: 'subtitle',
-                                                text: `: ${moment(req.date).format('DD MMMM YYYY')}`
+                                                text: `: ${moment(req.date || req.start_date).format('DD MMMM YYYY')}`
                                             }
                                         ]
                                     },
