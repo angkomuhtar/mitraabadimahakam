@@ -105,7 +105,7 @@ class DailyRitaseCoalController {
     let dailyFleet
     let dailyRitaseCoal
     const req = request.all()
-    const trx = await db.beginTransaction()
+    // const trx = await db.beginTransaction()
 
     try {
       usr = await auth.getUser()
@@ -138,7 +138,7 @@ class DailyRitaseCoalController {
 
         // JIKA UNIT EXCAVATOR TERISI
         if(obj.C){
-          datetime = moment(req.date).startOf('days').add(obj.B, 'h').format('YYYY-MM-DD HH:mm')
+          datetime = moment(req.date).hour(obj.B).format('YYYY-MM-DD HH:mm')
           const dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
           const pit = (await MasPit.query().with('site').where('kode', obj.G).andWhere('sts', 'Y').last()).toJSON()
           const shift = await MasShift.query().where('kode', obj.F).last()
@@ -192,10 +192,9 @@ class DailyRitaseCoalController {
             return {
               success: false,
               data: null,
-              message: 'Data seam tidak di temukan...',
+              message: 'Data seam ' + obj.I + ' tidak di temukan...',
             }
           }
-  
   
           /* CREATE OR USED DAILY FLEET */
           let dailyFleetEquip = await DailyFleetEquip.query()
@@ -203,21 +202,12 @@ class DailyRitaseCoalController {
               w.where('equip_id', exca.id)
               w.where('datetime', '>=', moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm'))
               w.where('datetime', '<=', moment(req.date).endOf('day').format('YYYY-MM-DD HH:mm'))
-            })
-            .last()
-  
-            console.log('dailyFleetEquip :::', {
-              fleet_id: fleet.id,
-              pit_id: pit.id,
-              activity_id: 8,
-              date: req.date,
-              shift_id: shift.id,
-              user_id: usr.id,
-              tipe: 'MF',
-            });
-          
+            }).last()
+
   
           if (!dailyFleetEquip) {
+
+            /*CREATED DAILY FEET*/
             dailyFleet = new DailyFleet()
             dailyFleet.fill({
               fleet_id: fleet.id,
@@ -228,36 +218,47 @@ class DailyRitaseCoalController {
               user_id: usr.id,
               tipe: 'MF',
             })
+
             try {
               await dailyFleet.save()
               
+              try {
+                /* CREATED DAILY FLEET EQUIPMENT */
+                dailyFleetEquip = new DailyFleetEquip()
+                dailyFleetEquip.fill({
+                  dailyfleet_id: dailyFleet.id,
+                  equip_id: exca.id,
+                  datetime: moment(req.date).format('YYYY-MM-DD HH:mm'),
+                })
+                await dailyFleetEquip.save()
+              } catch (error) {
+                console.log(error)
+                return {
+                  success: false,
+                  message: 'Failed created daily fleet...\n'+JSON.stringify(error)
+                }
+              }
             } catch (error) {
               console.log(error)
+              return {
+                success: false,
+                message: 'Failed created daily fleet...\n'+JSON.stringify(error)
+              }
             }
   
-            dailyFleetEquip = new DailyFleetEquip()
-            dailyFleetEquip.fill({
-              dailyfleet_id: dailyFleet.id,
-              equip_id: exca.id,
-              datetime: moment(req.date).format('YYYY-MM-DD HH:mm'),
-            })
-            try {
-              await dailyFleetEquip.save()
-            } catch (error) {
-              console.log(error)
-            }
+            
           } else {
             dailyFleet = await DailyFleet.query()
               .where(w => {
-                w.where('pit_id', pit.id)
-                w.where('activity_id', 8)
-                w.where('shift_id', shift.id)
-                w.where('date', moment(req.date).format('YYYY-MM-DD'))
-              })
-              .last()
+                w.where('id', dailyFleetEquip.dailyfleet_id)
+                
+                // w.where('pit_id', pit.id)
+                // w.where('activity_id', 8)
+                // w.where('shift_id', shift.id)
+                // w.where('date', moment(req.date).format('YYYY-MM-DD'))
+              }).last()
           }
 
-          
 
           if(!dailyFleet){
             return {
@@ -268,7 +269,7 @@ class DailyRitaseCoalController {
   
           /* CREATE DAILY RITASE COAL */
           dataRadioRoom.push({
-            checkout_pit: datetime,
+            checkout_pit: moment(req.date).hour(obj.B).format('YYYY-MM-DD HH:mm'),
             subcondt_id: dt_subcon.id,
             dailyfleet_id: dailyFleet.id,
             pit_id: pit.id,
@@ -281,7 +282,7 @@ class DailyRitaseCoalController {
             seam_id: seam.id,
             stockpile: obj.K,
             coal_tipe: obj.L,
-            datetime: datetime,
+            datetime: moment(req.date).hour(obj.B).format('YYYY-MM-DD HH:mm'),
           })
         }
       }
@@ -325,7 +326,7 @@ class DailyRitaseCoalController {
             exca_id: obj.items[0].exca_id,
             shift_id: dailyfleet.shift_id,
             distance: pit.jarak_jetty,
-            block: 'XX',
+            block: obj.J || 'XX',
             sum_vol: tot_volum,
             tw_netto: tot_volum,
             coal_rit: obj.items.length,
@@ -358,10 +359,13 @@ class DailyRitaseCoalController {
           .where(w => {
             w.where('pit_id', dailyRitaseCoal.pit_id)
             w.where('tipe', 'COAL')
-            w.where('current_date', moment(obj.datetime).format('YYYY-MM-DD'))
-          })
-          .last()
+            w.where('current_date', moment(req.date).format('YYYY-MM-DD'))
+          }).last()
 
+        console.log('pit_id', dailyRitaseCoal.pit_id);
+        console.log('current_date', moment(req.date).format('YYYY-MM-DD'));
+        console.log('coalPlan', coalPlan?.toJSON());
+        
         if (!coalPlan) {
           return {
             success: false,
@@ -415,12 +419,13 @@ class DailyRitaseCoalController {
           }
         }
       }
-      await trx.commit()
+      // await trx.commit()
       return {
         success: true,
         message: 'success save ritase coal...',
       }
     } else {
+      /* UPLOAD DATA JETTY */
       let genData = selectSheet.details
         .filter(item => item.O > 0 && moment(item.F).add(1, 'minutes').format('YYYY-MM-DD') === req.date)
         .map(item => {

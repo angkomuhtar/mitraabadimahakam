@@ -18,6 +18,7 @@ const UserDevice = use('App/Models/UserDevice')
 const User = use('App/Models/User')
 const MasEquipment = use('App/Models/MasEquipment')
 const DailyFleet = use('App/Models/DailyFleet')
+const DailyPlan = use('App/Models/DailyPlan')
 const MasMaterial = use('App/Models/MasMaterial')
 const NotificationsHelpers = use('App/Controllers/Http/Helpers/Notifications')
 const EmployeeHelpers = use('App/Controllers/Http/Helpers/Employee')
@@ -209,7 +210,6 @@ class DailyRitaseController {
       console.log(error)
     }
 
-    // console.log(req)
     var pathData = Helpers.publicPath(`/upload/`)
     const convertJSON = excelToJson({
       sourceFile: `${pathData}${req.current_file_name.replace(/["|']+/g, '')}`,
@@ -219,10 +219,24 @@ class DailyRitaseController {
       sheets: [req.sheet],
     })
 
-    // console.log(convertJSON[req.sheet]);
 
     let dataSheet = convertJSON[req.sheet]
-    console.log(req)
+
+    /* CHECK DAILY PLAN */
+    const fleetDaily = await DailyFleet.query().where('id', req.dailyfleet_id).last()
+    
+    const isDailyPlan = await DailyPlan.query().where( w => {
+      w.where('pit_id', fleetDaily.pit_id)
+      w.where('current_date', req.date)
+      w.where('tipe', 'OB')
+    }).last()
+
+    if(!isDailyPlan){
+      return {
+        success: false,
+        message: 'Data Target Plan tanggal : '+req.date+' & IDPit: '+fleetDaily.pit_id+'\ntidak ditemukan...\n\n\nSilahkan Hub. Staff Engineer utk input data target plan nya...'
+      }
+    }
 
     /* VALIDATED DATA */
     for (const val of dataSheet) {
@@ -233,7 +247,6 @@ class DailyRitaseController {
             w.where('is_operator', 'Y')
           })
           .last()
-        console.log(val.G)
         if (!isOperator) {
           return {
             success: false,
@@ -270,6 +283,8 @@ class DailyRitaseController {
       }
     }
 
+    
+
     let dataParsing = []
     for (const [i, obj] of dataSheet.entries()) {
       if (obj.A || obj.B) {
@@ -286,6 +301,7 @@ class DailyRitaseController {
       }
     }
 
+    
     /* GROUPING BY EXCAVATOR FOR DAILY RITASE DATA OB */
     const OB = dataParsing.filter(e => e.material_ob != null)
     if (OB.length > 0) {
@@ -298,6 +314,7 @@ class DailyRitaseController {
       })
 
       console.log('MATERIAL OB ::', GRP_OB);
+
       for (const obj of GRP_OB) {
         const dailyFleet = await DailyFleet.query().where('id', req.dailyfleet_id).last()
         const exca_unit = await MasEquipment.query().where('kode', obj.exca).last()
@@ -541,7 +558,6 @@ class DailyRitaseController {
                 await ritaseDetails.save()
               } catch (error) {
                 console.log(error)
-                // await trx.rollback()
                 return {
                   success: false,
                   message: 'ERR save daily ritase details, \nerrcode: ' + JSON.stringify(error),
@@ -561,7 +577,6 @@ class DailyRitaseController {
           
         } catch (error) {
           console.log(error)
-          // await trx.rollback()
           return {
             success: false,
             message: 'ERR save daily ritase, \nerrcode: ' + JSON.stringify(error),
@@ -638,7 +653,6 @@ class DailyRitaseController {
                 await ritaseDetails.save()
               } catch (error) {
                 console.log(error)
-                // await trx.rollback()
                 return {
                   success: false,
                   message: 'ERR save daily ritase details, \nerrcode: ' + JSON.stringify(error),
@@ -658,7 +672,6 @@ class DailyRitaseController {
 
         } catch (error) {
           console.log(error)
-          // await trx.rollback()
           return {
             success: false,
             message: 'ERR save daily ritase, \nerrcode: ' + JSON.stringify(error),

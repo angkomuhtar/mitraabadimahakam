@@ -113,8 +113,8 @@ class repFuelRatio {
         ]
 
         return {
-            site: site,
-            pit: pit,
+            site: site?.toJSON(),
+            pit: pit?.toJSON(),
             xAxis: xAxis,
             staticRatio: ratio,
             series: result,
@@ -132,20 +132,23 @@ class repFuelRatio {
         const site = await MasSite.query().where('id', req.site_id).last()
 
         const avgDistance = await DailyRitase.query().where( w => {
-            
-            w.where('date', '>=', req.start)
-            w.where('date', '<=', req.end)
+            if(req.inp_ranges === 'week'){
+                w.where('date', '>=', moment(req.start).startOf('week').format('YYYY-MM-DD'))
+                w.where('date', '<=', moment(req.end).endOf('week').format('YYYY-MM-DD'))
+            }else{
+                w.where('date', '>=', req.start)
+                w.where('date', '<=', req.end)
+            }
         }).getAvg('distance')
 
+        
 
         const { ratio, distances } = await DB.from('mam_fuel_ratios_config').where( w => {
             w.where('distances', '>=', avgDistance)
             w.where('distances', '<=', (avgDistance + 200))
         }).last()
 
-        console.log(ratio, distances);
-
-        /* GET DATA FUEL RATIO */
+        /* GET DATA FUEL RATIO DAILY */
         if(req.inp_ranges === 'date'){
             let data = (
                 await MamFuelRatio.query().where( w => {
@@ -154,6 +157,12 @@ class repFuelRatio {
                     w.where('date', '<=', req.end)
                 }).orderBy('date').fetch()
             ).toJSON()
+            data = data.map(el => {
+                return {
+                    ...el,
+                    date: moment(el.date).format('YYYY-MM-DD')
+                }
+            })
 
             data = _.groupBy(data, 'date')
             data = Object.keys(data).map(key => {
@@ -276,7 +285,7 @@ class repFuelRatio {
             
 
             return {
-                site: site,
+                site: site?.toJSON(),
                 xAxis: xAxis,
                 series: res,
                 cummxAxis: cummxAxis,
@@ -284,8 +293,8 @@ class repFuelRatio {
             }
         }
 
+        /* GET DATA FUEL RATIO WEEKLY */
         if(req.inp_ranges === 'week'){
-
             let result = []
             
             let arrDate = []

@@ -1,6 +1,7 @@
 'use strict'
 
 const version = '2.0'
+const fs = require("fs")
 const _ = require('underscore')
 const moment = require("moment")
 const MasPit = use("App/Models/MasPit")
@@ -430,7 +431,7 @@ class ReportProductionController {
         let durasi
         var t0 = performance.now()
         var req = request.all()
-
+        console.log(req);
         
         const user = await userValidate(auth)
         if(!user){
@@ -449,18 +450,34 @@ class ReportProductionController {
 
         const pit = await MasPit.query().where('id', req.pit_id).last()
         const site = await MasSite.query().where('id', req.site_id).last()
-        // var img = '/img-notfound.png'
-
+        var fileName = user.id + '-' + moment(req.start_date).format('YYMMDD') + '-' + moment(req.end_date).format('YYMMDD') + '-' + site.kode + '-' + pit.kode + '-' + req.tipe + '-' + req.group + '-' + req.ranges
         
+        try {
+            if (fs.existsSync(`public/download/${fileName}.pdf`)) {
+                fs.unlinkSync(`public/download/${fileName}.pdf`)
+                console.log('SUCCESS DELETE FILES...');
+            }
+        } catch(err) {
+            console.log('FAILED DELETE FILES...');
+            console.error(err)
+        }
+
         /* PRODUCTION MONTHLY */
         if(req.ranges === 'MONTHLY'){
             req.month_begin = moment(req.start_date)
             req.month_end = moment(req.end_date)
             try {
+                /* GENERATE BASE64 PDF FILES */
                 const data = await ReportPDFHelpers.MONTHLY_OB_PDF(req, null)
                 const pdfDocGenerator = pdfMake.createPdf(data);
-                
                 const pdfData = await BUILD_PDF(pdfDocGenerator)
+
+                /* SAVING BASE64 TO FILE */
+                var base64Data = pdfData.replace(/^data:application\/pdf;base64,/,"")
+                let buff = Buffer.from(base64Data, 'base64');
+
+                fs.writeFileSync(`public/download/${fileName}.pdf`, buff); 
+
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(200).json({
                     diagnostic: {
@@ -470,6 +487,7 @@ class ReportProductionController {
                     },
                     data: {
                         site: site.name,
+                        uri: `/download/${fileName}.pdf`,
                         data: pdfData
                     },
                 });
@@ -494,10 +512,17 @@ class ReportProductionController {
             req.week_end = moment(req.end_date).format('YYYY-MM-DD')
 
             try {
+                /* GENERATE BASE64 PDF FILES */
                 const data = await ReportPDFHelpers.WEEKLY_OB_PDF(req, null)
                 const pdfDocGenerator = pdfMake.createPdf(data);
-                
                 const pdfData = await BUILD_PDF(pdfDocGenerator)
+
+                /* SAVING BASE64 TO FILE */
+                var base64Data = pdfData.replace(/^data:application\/pdf;base64,/,"")
+                let buff = Buffer.from(base64Data, 'base64');
+                
+
+                fs.writeFileSync(`public/download/${fileName}.pdf`, buff);
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(200).json({
                     diagnostic: {
@@ -507,6 +532,7 @@ class ReportProductionController {
                     },
                     data: {
                         site: site.name,
+                        uri: `/download/${fileName}.pdf`,
                         data: pdfData
                     },
                 });
@@ -532,10 +558,17 @@ class ReportProductionController {
             
 
             try {
+                /* GENERATE BASE64 PDF FILES */
                 const data = await ReportPDFHelpers.DAILY_OB_PDF(req, null)
                 const pdfDocGenerator = pdfMake.createPdf(data);
-
                 const pdfData = await BUILD_PDF(pdfDocGenerator)
+
+                /* SAVING BASE64 TO FILE */
+                var base64Data = pdfData.replace(/^data:application\/pdf;base64,/,"")
+                let buff = Buffer.from(base64Data, 'base64');
+                
+
+                fs.writeFileSync(`public/download/${fileName}.pdf`, buff);
                 durasi = await diagnoticTime.durasi(t0);
                 return response.status(200).json({
                     diagnostic: {
@@ -545,6 +578,7 @@ class ReportProductionController {
                     },
                     data: {
                         site: site.name,
+                        uri: `/download/${fileName}.pdf`,
                         data: pdfData
                     },
                 });
@@ -580,7 +614,6 @@ async function userValidate(auth){
 async function BUILD_PDF(pdfDocGen){
   return new Promise((resolve, reject) => {
     pdfDocGen.getDataUrl((dataUrl) => {
-          // console.log(dataUrl);
           resolve(dataUrl)
       });
   })
