@@ -139,12 +139,46 @@ class DailyRitaseCoalController {
         // JIKA UNIT EXCAVATOR TERISI
         if(obj.C){
           datetime = moment(req.date).hour(obj.B).format('YYYY-MM-DD HH:mm')
-          const dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
-          const pit = (await MasPit.query().with('site').where('kode', obj.G).andWhere('sts', 'Y').last()).toJSON()
-          const shift = await MasShift.query().where('kode', obj.F).last()
-          const exca = await MasEquipment.query().where('kode', obj.C.replace(' ', '')).last()
-  
-  
+          let dt_subcon
+          try {
+            dt_subcon = await UnitSubcont.query().where('kode', obj.D).last()
+          } catch (error) {
+            return {
+              success: false,
+              message: 'Invalid kode '+obj.D+' DumpTruck...'
+            }
+          }
+
+          let pit
+          try {
+            pit = (await MasPit.query().with('site').where('kode', obj.G).andWhere('sts', 'Y').last()).toJSON()
+          } catch (error) {
+            return {
+              success: false,
+              message: 'Invalid kode '+obj.G+' PIT...'
+            }
+          }
+
+          let shift
+          try {
+            shift = await MasShift.query().where('kode', obj.F).last()
+          } catch (error) {
+            return {
+              success: false,
+              message: 'Invalid kode '+obj.F+' SHIFT...'
+            }
+          }
+
+          let exca
+          try {
+            exca = await MasEquipment.query().where('kode', obj.C.replace(' ', '')).last()
+          } catch (error) {
+            return {
+              success: false,
+              message: 'Invalid kode '+obj.C+' Excavator...'
+            }
+          }
+
           const seam = await MasSeam.query()
             .where(w => {
               w.where('pit_id', pit.id)

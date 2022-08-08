@@ -28,11 +28,6 @@ class ReportFuelRatioController {
         }
         req.colorGraph = [ '#7ab2fa', '#1074f7', '#0451b6' ]
 
-        console.log('====================================');
-        console.log(moment(req.start).format('YYYY-[W]ww'));
-        console.log(moment(req.end).format('YYYY-[W]ww'));
-        console.log('====================================');
-
         if(req.inp_ranges === 'week'){
             req.start = moment(req.start).format('YYYY-[W]ww')
             req.end = moment(req.end).format('YYYY-[W]ww')
@@ -127,6 +122,79 @@ class ReportFuelRatioController {
                         error: false,
                     },
                     data: resultPeriode,
+                });
+            } catch (error) {
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(403).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: true,
+                        message: error,
+                    },
+                    data: [],
+                });
+            }
+        }
+    }
+
+    async list ( { auth, request, response } ) {
+        let durasi
+        var t0 = performance.now()
+        var req = request.all()
+        // console.log(req);
+        const user = await userValidate(auth)
+        if(!user){
+            return response.status(403).json({
+                diagnostic: {
+                    ver: version,
+                    error: true,
+                    message: 'not authorized...'
+                }
+            })
+        }
+        req.colorGraph = [ '#7ab2fa', '#1074f7', '#0451b6' ]
+
+        if(req.inp_ranges === 'week'){
+            req.start = moment(req.start).format('YYYY-[W]ww')
+            req.end = moment(req.end).format('YYYY-[W]ww')
+        }
+
+        if(req.range_type === 'pit'){
+            try {
+                const data = await ReportFuelRatioHelpers.PIT_WISE_LIST(req)
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(200).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: false,
+                    },
+                    data: data,
+                });
+            } catch (error) {
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(403).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: true,
+                        message: error,
+                    },
+                    data: [],
+                });
+            }
+        }else{
+            try {
+                const data = await ReportFuelRatioHelpers.PERIODE_WISE_LIST(req)
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(200).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: false,
+                    },
+                    data: data,
                 });
             } catch (error) {
                 durasi = await diagnoticTime.durasi(t0);
