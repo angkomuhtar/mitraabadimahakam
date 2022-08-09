@@ -1096,7 +1096,7 @@ class PDFReport {
                 items: arrData
             })
         }
-        console.log('DATA :::', arrData);
+        // console.log('DATA :::', arrData);
         result.push([
             { text: 'Location', style: 'tableHeader_L' },
             { text: 'Date', style: 'tableHeader_L' },
@@ -1241,9 +1241,9 @@ class PDFReport {
     }
 
     /* PDF MONTHLY COAL REPORT */
-    async MONTHLY_COAL_PDF(req, img){
-        console.log(req);
-    }
+    // async MONTHLY_COAL_PDF(req, img){
+    //     console.log(req);
+    // }
 
     /* PDF FUEL RATIO BY PIT */
     async PIT_FUEL_RATIO_PDF (req) {
@@ -1252,8 +1252,9 @@ class PDFReport {
         const pit = await MasPit.query().where('id', req.pit_id).last()
         const logoPath = Helpers.publicPath('logo.jpg')
         const logoAsBase64 = await Image64Helpers.GEN_BASE64(logoPath)
-        const chartPath = Helpers.publicPath(req.imagePath)
-        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+        const chartPath = req.imagePath && Helpers.publicPath(req.imagePath)
+        const chartAsBase64 = chartPath && await Image64Helpers.GEN_BASE64(chartPath)
+        const addImages = req.imagePath ? {image: chartAsBase64, width: 500} : {text: ""}
 
         const data = (
             await MamFuelRatio.query().where( w => {
@@ -1356,7 +1357,7 @@ class PDFReport {
                 ]
             },
             {text: '\n'},
-            {image: chartAsBase64, width: 500},
+            addImages,
             {text: '\n'},
             {
                 style: 'tableExample',
@@ -1416,8 +1417,9 @@ class PDFReport {
         const site = await MasSite.query().where('id', req.site_id).last()
         const logoPath = Helpers.publicPath('logo.jpg')
         const logoAsBase64 = await Image64Helpers.GEN_BASE64(logoPath)
-        const chartPath = Helpers.publicPath(req.imagePath)
-        const chartAsBase64 = await Image64Helpers.GEN_BASE64(chartPath)
+        const chartPath = req.imagePath && Helpers.publicPath(req.imagePath)
+        const chartAsBase64 = chartPath && await Image64Helpers.GEN_BASE64(chartPath)
+        const addImages = req.imagePath ? {image: chartAsBase64, width: 500} : {text: ""}
 
         const data = (
             await MamFuelRatio.query().where( w => {
@@ -1454,7 +1456,7 @@ class PDFReport {
                 }
             })
 
-            console.log(groupingPIT);
+            // console.log(groupingPIT);
             titleDocumentPeriode = `: ${moment(req.start).format('DD MMMM YYYY')} s/d ${moment(req.end).format('DD MMMM YYYY')}`
             for (const obj of groupingPIT) {
                 // console.log(obj);
@@ -1848,7 +1850,7 @@ class PDFReport {
                 ]
             },
             {text: '\n'},
-            {image: chartAsBase64, width: 500},
+            addImages,
             {text: '\n'},
             {
                 style: 'tableExample',
