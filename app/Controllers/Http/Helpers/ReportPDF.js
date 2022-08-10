@@ -1439,7 +1439,7 @@ class PDFReport {
             { text: 'Ratio', style: 'tableHeader_R' }
         ])
 
-        if(req.inp_ranges === 'date'){
+        if(req.inp_ranges == 'DAILY'){
             const data = (
                 await MamFuelRatio.query().where( w => {
                     w.where('site_id', req.site_id)
@@ -1523,7 +1523,7 @@ class PDFReport {
             }
         }
 
-        if(req.inp_ranges === 'week'){
+        if(req.inp_ranges == 'WEEKLY'){
             titleDocumentPeriode = `: ${req.start} s/d ${req.end}`
 
             let arrDate = []
@@ -1662,7 +1662,7 @@ class PDFReport {
                 ])
             }
         }
-        if(req.inp_ranges === 'month'){
+        if(req.inp_ranges == 'MONTHLY'){
             let arrMonth = []
 
             var startDate = moment(req.start);

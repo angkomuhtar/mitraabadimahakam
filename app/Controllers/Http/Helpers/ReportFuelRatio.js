@@ -124,6 +124,7 @@ class repFuelRatio {
     }
 
     async PERIODE_WISE (req) {
+        console.log(req);
         let result = []
         let cummulative = []
         let cummxAxis = []
@@ -134,7 +135,7 @@ class repFuelRatio {
         /* CARI JARAK RATA-RATA */
         const avgDistance = await DailyRitase.query().where( w => {
             w.where('site_id', req.site_id)
-            if(req.inp_ranges === 'week'){
+            if(req.inp_ranges == 'WEEKLY'){
                 w.where('date', '>=', moment(req.start).startOf('week').format('YYYY-MM-DD'))
                 w.where('date', '<=', moment(req.end).endOf('week').format('YYYY-MM-DD'))
             }else{
@@ -151,7 +152,7 @@ class repFuelRatio {
         }).last()
 
         /* GET DATA FUEL RATIO DAILY */
-        if(req.inp_ranges === 'date'){
+        if(req.inp_ranges == 'DAILY'){ //daily
             let data = (
                 await MamFuelRatio.query().where( w => {
                     w.where('site_id', req.site_id)
@@ -296,7 +297,7 @@ class repFuelRatio {
         }
 
         /* GET DATA FUEL RATIO WEEKLY */
-        if(req.inp_ranges === 'week'){
+        if(req.inp_ranges == 'WEEKLY'){ // weekly
             let result = []
             
             let arrDate = []
@@ -325,6 +326,7 @@ class repFuelRatio {
                     items: arrTgl
                 })
             }
+
 
             let xAxis = arrDate.map(el => el.date)
             /* GET LIST PIT */
@@ -460,7 +462,7 @@ class repFuelRatio {
             }
         }
 
-        if(req.inp_ranges === 'month'){
+        if(req.inp_ranges == 'MONTHLY'){ // monthly
             let result = []
             let arrMonth = []
 
@@ -624,7 +626,7 @@ class repFuelRatio {
         /* CARI JARAK RATA-RATA */
         const avgDistance = await DailyRitase.query().where( w => {
             w.where('pit_id', req.pit_id)
-            if(req.inp_ranges === 'week'){
+            if(req.inp_ranges == 'WEEKLY'){
                 w.where('date', '>=', moment(req.start).startOf('week').format('YYYY-MM-DD'))
                 w.where('date', '<=', moment(req.end).endOf('week').format('YYYY-MM-DD'))
             }else{
@@ -638,7 +640,7 @@ class repFuelRatio {
             w.where('distances', '<=', (avgDistance + 200))
         }).last()
 
-        if(req.inp_ranges === 'month'){
+        if(req.inp_ranges == 'MONTHLY'){ //monthly
             data = (
                 await MamFuelRatio.query().where(w => {
                     w.where('pit_id', req.pit_id)
@@ -671,7 +673,7 @@ class repFuelRatio {
             })
         }
 
-        if(req.inp_ranges === 'week'){
+        if(req.inp_ranges == 'WEEKLY'){ //weekly
             let arrDate = []
             var x = moment(req.start).week()
             var y = moment(req.end).week()
@@ -697,7 +699,7 @@ class repFuelRatio {
                     items: arrTgl
                 })
             }
-            console.log(arrDate);
+            // console.log(arrDate);
 
             for (const obj of arrDate) {
                 const ratio_act = 
@@ -718,7 +720,7 @@ class repFuelRatio {
             }
         }
 
-        if(req.inp_ranges === 'date'){
+        if(req.inp_ranges == 'DAILY'){ //daily
             try {
                 const dataDaily = (
                     await MamFuelRatio.query().where(w => {
@@ -756,7 +758,7 @@ class repFuelRatio {
 
         console.log(req);
 
-        if(req.inp_ranges === 'month'){
+        if(req.inp_ranges == 'MONTHLY'){ //monthly
             var start = moment(req.start).month()
             var end = moment(req.end).month()
             for (let i = start; i <= end; i++) {
@@ -808,7 +810,7 @@ class repFuelRatio {
             
         }
 
-        if(req.inp_ranges === 'week'){
+        if(req.inp_ranges == 'WEEKLY'){ //weekly
             let arrDate = []
             var x = moment(req.start).week()
             var y = moment(req.end).week()
@@ -881,7 +883,7 @@ class repFuelRatio {
             return data
         }
 
-        if(req.inp_ranges === 'date'){
+        if(req.inp_ranges == 'DAILY'){ //daily
             
             const pitArr = (await MasPit.query().where('sts', 'Y').fetch()).toJSON()
             for (const [i, pit] of pitArr.entries()) {

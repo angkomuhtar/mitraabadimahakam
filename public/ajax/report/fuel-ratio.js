@@ -46,12 +46,12 @@ $(function(){
             body.find('div#box-select-pit').css('display', 'inline')
             body.find('div#box-duration').css('display', 'inline')
             if(values != 'pit'){
-                body.find('input#month, input#week').removeAttr('disabled', false)
+                body.find('input#monthly, input#weekly').removeAttr('disabled', false)
                 body.find('div#box-select-pit').css('display', 'none')
                 body.find('div#box-select-periode').css('display', 'inline')
                 body.find('input[name="start"], input[name="end"]').attr('type', 'date')
             }else{
-                body.find('input#month, input#week').attr('disabled', true)
+                body.find('input#monthly, input#weekly').attr('disabled', true)
                 body.find('input#date').prop('checked')
                 body.find('div#box-select-pit').css('display', 'inline')
                 body.find('div#box-select-periode').css('display', 'none')
@@ -63,8 +63,19 @@ $(function(){
 
     $('body').on('click', 'input[name="inp_ranges"]', function(){
         var values = $(this).val()
+        console.log(values);
         body.find('div#box-duration').css('display', 'inline')
-        body.find('input[name="start"], input[name="end"]').attr('type', values)
+        switch (values) {
+            case 'MONTHLY':
+                body.find('input[name="start"], input[name="end"]').attr('type', 'month')
+                break;
+            case 'WEEKLY':
+                body.find('input[name="start"], input[name="end"]').attr('type', 'week')
+                break;
+            default:
+                body.find('input[name="start"], input[name="end"]').attr('type', 'date')
+                break;
+        }
     })
 
     $('body').on('blur', 'input[name="start"], input[name="end"]', function(){
