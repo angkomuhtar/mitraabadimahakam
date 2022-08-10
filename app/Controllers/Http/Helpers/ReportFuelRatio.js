@@ -10,6 +10,7 @@ const MasSite = use("App/Models/MasSite")
 
 class repFuelRatio {
     async PIT_WISE (req) {
+        console.log('<< BY PIT FUEL RATIO >>');
         console.log(req);
 
         const avgDistance = await DailyRitase.query().where( w => {
@@ -25,27 +26,105 @@ class repFuelRatio {
             w.where('distances', '<=', (avgDistance + 200))
         }).last()
 
-        console.log(ratio, distances);
+        // console.log(ratio, distances);
 
         /* GET DATA FUEL RATIO */
         let color = req.colorGraph
         let result = []
         let cumm = []
+        let data
+        let xAxis
+        let cummxAxis
 
         const site = await MasSite.query().where('id', req.site_id).last()
         const pit = await MasPit.query().where('id', req.pit_id).last()
 
-        const data = (
-            await MamFuelRatio.query().where( w => {
-                w.where('site_id', req.site_id)
-                w.where('pit_id', req.pit_id)
-                w.where('date', '>=', req.start)
-                w.where('date', '<=', req.end)
-            }).orderBy('date').fetch()
-        ).toJSON()
+        /* MONTHLY FUEL RATIO BY PIT */
+        if(req.inp_ranges == 'MONTHLY'){
+            data = (
+                await MamFuelRatio.query().where( w => {
+                    w.where('site_id', req.site_id)
+                    w.where('pit_id', req.pit_id)
+                    w.where('date', '>=', req.start)
+                    w.where('date', '<=', req.end)
+                }).orderBy('date').fetch()
+            ).toJSON()
+
+            data = data.map( val => {
+                return {
+                    ...val,
+                    date: moment(val.date).format('MMMM YYYY')
+                }
+            })
+            data = _.groupBy(data, 'date')
+            data = Object.keys(data).map( key => {
+                return {
+                    date: key,
+                    ob: data[key].reduce((a, b) => { return a + b.ob }, 0) / data[key].length,
+                    coal_mt: data[key].reduce((a, b) => { return a + b.coal_mt }, 0) / data[key].length,
+                    coal_bcm: data[key].reduce((a, b) => { return a + b.coal_bcm }, 0) / data[key].length,
+                    fuel_used: data[key].reduce((a, b) => { return a + b.fuel_used }, 0) / data[key].length,
+                    fuel_ratio: data[key].reduce((a, b) => { return a + b.fuel_ratio }, 0) / data[key].length,
+                    fuel_ratio: data[key].reduce((a, b) => { return a + b.fuel_ratio }, 0) / data[key].length,
+                    cum_production: _.last(data[key]).cum_production,
+                    cum_fuel_used: _.last(data[key]).cum_fuel_used,
+                    cum_fuel_ratio: _.last(data[key]).cum_fuel_ratio,
+                }
+            })
+
+            xAxis = data.map(el => moment(el.date, "MMMM YYYY").format('MM/YY'))
+            cummxAxis = data.map(el => moment(el.date, "MMMM YYYY").format('MM/YY'))
+        }
 
 
-        const xAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
+        /* WEEKLY FUEL RATIO BY PIT */
+        if(req.inp_ranges == 'WEEKLY'){
+            data = (
+                await MamFuelRatio.query().where( w => {
+                    w.where('site_id', req.site_id)
+                    w.where('pit_id', req.pit_id)
+                    w.where('date', '>=', req.start)
+                    w.where('date', '<=', req.end)
+                }).orderBy('date').fetch()
+            ).toJSON()
+
+            data = data.map( val => ({...val, date: moment(val.date).startOf('week').format("YYYY-[W]ww")}))
+            data = _.groupBy(data, 'date')
+            data = Object.keys(data).map( key => {
+                return {
+                    date: key,
+                    ob: data[key].reduce((a, b) => { return a + b.ob }, 0) / data[key].length,
+                    coal_mt: data[key].reduce((a, b) => { return a + b.coal_mt }, 0) / data[key].length,
+                    coal_bcm: data[key].reduce((a, b) => { return a + b.coal_bcm }, 0) / data[key].length,
+                    fuel_used: data[key].reduce((a, b) => { return a + b.fuel_used }, 0) / data[key].length,
+                    fuel_ratio: data[key].reduce((a, b) => { return a + b.fuel_ratio }, 0) / data[key].length,
+                    fuel_ratio: data[key].reduce((a, b) => { return a + b.fuel_ratio }, 0) / data[key].length,
+                    cum_production: _.last(data[key]).cum_production,
+                    cum_fuel_used: _.last(data[key]).cum_fuel_used,
+                    cum_fuel_ratio: _.last(data[key]).cum_fuel_ratio,
+                }
+            })
+
+            xAxis = data.map(el => 'W[' + (parseInt(moment(el.date, "YYYY-[W]ww").week()) - 1) + ']')
+            cummxAxis = data.map(el => 'W[' + (parseInt(moment(el.date, "YYYY-[W]ww").week() - 1 )) + ']')
+        }
+
+        if(req.inp_ranges == 'DAILY'){
+            data = (
+                await MamFuelRatio.query().where( w => {
+                    w.where('site_id', req.site_id)
+                    w.where('pit_id', req.pit_id)
+                    w.where('date', '>=', req.start)
+                    w.where('date', '<=', req.end)
+                }).orderBy('date').fetch()
+            ).toJSON()
+            xAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
+            cummxAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
+        }
+        
+
+
+        
         result.push({
             name: 'Fuel Ratio',
             type: req.typeChart,
@@ -71,8 +150,7 @@ class repFuelRatio {
                 format: '{point.y:.2f}%'
             }
         })
-
-        const cummxAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
+        
         cumm = [
             
             {
@@ -321,7 +399,7 @@ class repFuelRatio {
 
                 var arrTgl = getDaysBetweenDates(arrStart, arrEnd)
                 arrDate.push({
-                    date: 'WEEK-'+i,
+                    date: 'W['+i+']',
                     site_id: req.site_id,
                     items: arrTgl
                 })
@@ -617,6 +695,7 @@ class repFuelRatio {
     }
 
     async PIT_WISE_LIST (req) {
+        console.log('<BY PIT FUEL RATIO>');
         let data = []
         let color = req.colorGraph
         const site = await MasSite.query().where('id', req.site_id).last()

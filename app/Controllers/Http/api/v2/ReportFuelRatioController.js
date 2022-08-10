@@ -34,7 +34,7 @@ class ReportFuelRatioController {
         }
         req.colorGraph = [ '#7ab2fa', '#1074f7', '#0451b6' ]
 
-        if(req.inp_ranges === 'week'){
+        if(req.inp_ranges === 'WEEK'){
             req.start = moment(req.start).format('YYYY-[W]ww')
             req.end = moment(req.end).format('YYYY-[W]ww')
         }
@@ -42,6 +42,7 @@ class ReportFuelRatioController {
         if(req.range_type === 'pit'){
             try {
                 const data = await ReportFuelRatioHelpers.PIT_WISE(req)
+                
                 let resultPIT = {
                     site: data.site,
                     pit: data.pit,
@@ -94,6 +95,9 @@ class ReportFuelRatioController {
         }else{
             try {
                 const data = await ReportFuelRatioHelpers.PERIODE_WISE(req)
+                console.log('====================================');
+                console.log(data);
+                console.log('====================================');
                 let resultPeriode = {
                     site: data.site,
                     dataCurrent: data.series.map((val, c) => {
