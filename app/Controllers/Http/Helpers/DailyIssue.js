@@ -3,6 +3,7 @@
 const Issue = use('App/Models/MamIssue')
 const moment = require('moment')
 const MasShift = use('App/Models/MasShift')
+const MasSite = use('App/Models/MasSite')
 
 class dailyIssue {
      async ALL(req) {
@@ -80,7 +81,7 @@ class dailyIssue {
      }
 
      async SHOW_TODAY(){
-          const data = await Issue.
+          const data = (await Issue.
           query().
           with('user').
           with('dailyevent', w => w.with('event')).
@@ -90,9 +91,21 @@ class dailyIssue {
                w.where('report_at', '<=', moment().endOf('day').format('YYYY-MM-DD HH:mm'))
           }).
           orderBy('report_at', 'desc').
-          fetch()
+          fetch()).toJSON()
 
-          return data.toJSON()
+          let result = []
+
+          for (const obj of data) {
+               if(obj.unit){
+                    const site = await MasSite.query().where('id', obj.unit.site_id).last()
+                    result.push({...obj, kd_site: site.kode, nm_site: site.name})
+               }else{
+                    result.push(obj)
+               }
+          }
+
+
+          return result
      }
 
      async SHOW_BY_DATE(params) {

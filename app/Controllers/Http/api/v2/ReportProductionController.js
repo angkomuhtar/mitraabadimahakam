@@ -595,6 +595,52 @@ class ReportProductionController {
                 });
             }
         }
+
+        /* PRODUCTION HOURLY */
+        if(req.ranges === 'HOURLY'){
+            req.start_date = moment(req.start_date).format('YYYY-MM-DD HH:mm')
+            req.end_date = moment(req.end_date).format('YYYY-MM-DD HH:mm')
+
+            
+
+            try {
+                /* GENERATE BASE64 PDF FILES */
+                const data = await ReportPDFHelpers.HOURLY_OB_PDF(req, null)
+                const pdfDocGenerator = pdfMake.createPdf(data);
+                const pdfData = await BUILD_PDF(pdfDocGenerator)
+
+                /* SAVING BASE64 TO FILE */
+                var base64Data = pdfData.replace(/^data:application\/pdf;base64,/,"")
+                let buff = Buffer.from(base64Data, 'base64');
+                
+
+                fs.writeFileSync(`public/download/${fileName}.pdf`, buff);
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(200).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: false,
+                    },
+                    data: {
+                        site: site.name,
+                        uri: `/download/${fileName}.pdf`,
+                        data: pdfData
+                    },
+                });
+            } catch (error) {
+                durasi = await diagnoticTime.durasi(t0);
+                return response.status(403).json({
+                    diagnostic: {
+                        ver: version,
+                        times: durasi,
+                        error: true,
+                        message: error,
+                    },
+                    data: [],
+                });
+            }
+        }
     }
 }
 
