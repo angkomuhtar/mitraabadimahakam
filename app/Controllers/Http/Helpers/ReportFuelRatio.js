@@ -841,8 +841,8 @@ class repFuelRatio {
             var start = moment(req.start).month()
             var end = moment(req.end).month()
             for (let i = start; i <= end; i++) {
-                var awal = moment().month(i).startOf('month').format('DD-MM-YYYY')
-                var akhir = moment().month(i).endOf('month').format('DD-MM-YYYY')
+                var awal = moment().month(i).startOf('month').format('YYYY-MM-DD')
+                var akhir = moment().month(i).endOf('month').format('YYYY-MM-DD')
                 const pitArr = (await MasPit.query().where('sts', 'Y').fetch()).toJSON()
 
                 for (const [i, pit] of pitArr.entries()) {

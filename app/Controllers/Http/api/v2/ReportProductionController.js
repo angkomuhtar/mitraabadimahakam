@@ -229,14 +229,17 @@ class ReportProductionController {
                 let resp = []
                 for (let i = 0; i < result.xAxis.length; i++) {
                     var diff = (parseFloat(result.data[1].items[i].volume)) - (parseFloat(result.data[0].items[i].volume))
+                    const target = result.data[0].items[i].volume
+                    const actual = result.data[1].items[i].volume
                     resp.push({
                         periode: result.xAxis[i],
                         location: pit.name,
                         kode: pit.kode,
-                        target: result.data[0].items[i].volume,
-                        actual: result.data[1].items[i].volume,
+                        target: target,
+                        actual: actual,
                         diff: diff,
-                        status: diff >= 0 ? 'over target':'low target'
+                        status: diff >= 0 ? 'over target':'low target',
+                        variance : `${((actual - target) / target * 100).toFixed(2)} %`  
                     })
                     
                 }
@@ -279,14 +282,17 @@ class ReportProductionController {
                 let resp = []
                 for (let i = 0; i < result.xAxis.length; i++) {
                     var diff = (parseFloat(result.data[1].items[i].volume)) - (parseFloat(result.data[0].items[i].volume))
+                    const target = result.data[0].items[i].volume
+                    const actual = result.data[1].items[i].volume
                     resp.push({
                         periode: result.xAxis[i],
                         location: pit.name,
-                        location: pit.name,
-                        target: result.data[0].items[i].volume,
-                        actual: result.data[1].items[i].volume,
+                        kode: pit.kode,
+                        target: target,
+                        actual: actual,
                         diff: diff,
-                        status: diff >= 0 ? 'over target':'low target'
+                        status: diff >= 0 ? 'over target':'low target',
+                        variance : `${((actual - target) / target * 100).toFixed(2)} %`  
                     })
                     
                 }
@@ -328,14 +334,17 @@ class ReportProductionController {
                 let resp = []
                 for (let i = 0; i < result.xAxis.length; i++) {
                     var diff = (parseFloat(result.data[1].items[i].volume)) - (parseFloat(result.data[0].items[i].volume))
+                    const target = result.data[0].items[i].volume
+                    const actual = result.data[1].items[i].volume
                     resp.push({
                         periode: result.xAxis[i],
                         location: pit.name,
-                        location: pit.name,
-                        target: result.data[0].items[i].volume,
-                        actual: result.data[1].items[i].volume,
+                        kode: pit.kode,
+                        target: target,
+                        actual: actual,
                         diff: diff,
-                        status: diff >= 0 ? 'over target':'low target'
+                        status: diff >= 0 ? 'over target':'low target',
+                        variance : `${((actual - target) / target * 100).toFixed(2)} %`  
                     })
                     
                 }
@@ -376,13 +385,17 @@ class ReportProductionController {
                 let resp = []
                 for (let i = 0; i < result.xAxis.length; i++) {
                     var diff = (parseFloat(result.data[1].items[i].volume)) - (parseFloat(result.data[0].items[i]))
+                    const target = result.data[0].items[i]
+                    const actual = result.data[1].items[i].volume
                     resp.push({
                         periode: result.xAxis[i],
                         location: pit.name,
-                        target: result.data[0].items[i],
-                        actual: result.data[1].items[i].volume,
+                        kode: pit.kode,
+                        target: target,
+                        actual: actual,
                         diff: diff,
-                        status: diff >= 0 ? 'over target':'low target'
+                        status: diff >= 0 ? 'over target':'low target',
+                        variance : `${((actual - target) / target * 100).toFixed(2)} %`  
                     })
                     
                 }
@@ -487,7 +500,7 @@ class ReportProductionController {
                         error: true,
                         message: error,
                     },
-                    data: [],
+                    data: []
                 });
             }
         }

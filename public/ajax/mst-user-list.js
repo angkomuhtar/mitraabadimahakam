@@ -1,3 +1,4 @@
+
 $(function(){
     
     $('body select.select2').each(function(){

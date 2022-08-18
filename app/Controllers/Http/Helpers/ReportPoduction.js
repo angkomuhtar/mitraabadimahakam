@@ -169,7 +169,6 @@ class repPoduction {
                 w.where('current_date', '>=', _.first(obj.items))
                 w.where('current_date', '<=', _.last(obj.items))
             }).select('estimate').getSum('estimate') || 0
-
             
 
             tmpTarget.push({
@@ -446,7 +445,7 @@ class repPoduction {
         let startHour = moment(req.start_date).format('YYYY-MM-DD HH:mm')
         let endHour = moment(req.end_date).format('YYYY-MM-DD HH:mm')
         var arrHours = getHoursArray(startHour, endHour)
-
+        
         
         let arrRitaseId = (await DailyRitase.query().where( w => {
             w.where('pit_id', req.pit_id)
