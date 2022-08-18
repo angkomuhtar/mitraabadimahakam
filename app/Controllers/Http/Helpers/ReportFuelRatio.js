@@ -911,7 +911,6 @@ class repFuelRatio {
                 var arrTgl = getDaysBetweenDates(arrStart, arrEnd)
                 arrDate.push({
                     date: 'week-'+i,
-                    // site_id: req.site_id,
                     items: arrTgl
                 })
             }

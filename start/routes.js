@@ -901,6 +901,8 @@ Route.group(() => {
 
   Route.get('/available-fleet', 'EquipmentApiController.availableForFleet')
 
+  Route.get('/show-equipment-models', 'EquipmentApiController.showEquipmentModels')
+
   Route.get('/:id/show', 'EquipmentApiController.show')
 
   Route.get('/:idequip/last-smu', 'EquipmentApiController.lastEquipmentSMU')

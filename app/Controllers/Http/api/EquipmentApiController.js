@@ -1,6 +1,7 @@
 'use strict'
 
 // CustomClass
+const version = '1.0'
 const moment = require('moment')
 const { performance } = require('perf_hooks')
 const _ = require('underscore')
@@ -621,6 +622,56 @@ class EquipmentApiController {
                 })
             }
         }
+    }
+
+    async showEquipmentModels( { auth, request, response } ) {
+        const req = request.all()
+        var t0 = performance.now()
+        let durasi
+
+        try {
+            await auth.authenticator('jwt').getUser()
+        } catch (error) {
+            console.log(error)
+            durasi = await diagnoticTime.durasi(t0)
+            response.status(403).json({
+                diagnostic: {
+                    ver: version,
+                    times: durasi, 
+                    error: true,
+                    message: error.message
+                },
+                data: []
+            })
+        }
+
+        const equipment = (
+            await Equipment.query().where( w => {
+                if(req.site_id){
+                    w.where('site_id', req.site_id)
+                }
+                w.where('aktif', 'Y')
+                w.where('is_owned', 'Y')
+            }).fetch()
+        ).toJSON()
+
+        let data = _.groupBy(equipment, 'unit_model')
+        data = Object.keys(data).map( key => {
+            return {
+                model: key,
+                items: data[key]
+            }
+        })
+
+        durasi = await diagnoticTime.durasi(t0)
+        return response.status(201).json({
+            diagnostic: {
+                ver: version,
+                times: durasi, 
+                error: false
+            },
+            data: data
+        })
     }
 }
 
