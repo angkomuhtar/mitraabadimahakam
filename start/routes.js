@@ -1206,6 +1206,15 @@ Route.group(() => {
   .prefix('api/v2/fuel-ratio')
   .namespace('api/v2')
 
+// REPORT HEAVY EQUIPMENT PERFORMANCES
+Route.group(() => {
+  Route.get('/', 'ReportHeavyEquipmentPerformanceController.index')
+  // Route.get('/pdf', 'ReportHeavyEquipmentPerformanceController.pdf')
+  // Route.get('/list', 'ReportHeavyEquipmentPerformanceController.list')
+})
+  .prefix('api/v2/he-performances')
+  .namespace('api/v2')
+
 // REPORT ISSUES
 Route.group(() => {
   Route.get('/', 'ReportIssueController.index')

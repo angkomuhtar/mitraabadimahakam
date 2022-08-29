@@ -23,7 +23,7 @@ class repHeavyEquipment {
             }).select('id').fetch()
         ).toJSON()
 
-        console.log(dataEquipment.map(el => el.id));
+        // console.log(dataEquipment.map(el => el.id));
 
         let arrEquipment = dataEquipment.map(el => el.id)
         
@@ -49,14 +49,11 @@ class repHeavyEquipment {
             }
         }
 
-        console.log('data :::', data);
-
-
         /* GENERATE DATA KPI */
         let dataGroupModel = _.groupBy(data, 'date')
         dataGroupModel = Object.keys(dataGroupModel).map(key => {
             return {
-                date: moment(new Date(key)).format('DD MMM YY'),
+                date: moment(new Date(key)).format('DD/MM/YY'),
                 actPA: (dataGroupModel[key].reduce((x, y) => {
                     return x + y.actual_pa
                 }, 0)) / dataGroupModel[key].length,
@@ -79,6 +76,8 @@ class repHeavyEquipment {
             }
         })
 
+
+        dataGroupModel = _.sortBy(dataGroupModel, 'date')
         const xAxis = dataGroupModel.map( el => el.date)
         // console.log(xAxis);
         const series = dataGroupModel.map( obj => {
@@ -106,14 +105,19 @@ class repHeavyEquipment {
         let unitDowntimeGroup = _.groupBy(unitDowntime, 'downtime_status')
         unitDowntimeGroup = Object.keys(unitDowntimeGroup).map( key => {
             var kode
-            if(key === 'UNS'){
-                kode = 'UnScheduled'
-            }
-            if(key === 'SCH'){
-                kode = 'Scheduled'
-            }
-            if(key === 'ACD'){
-                kode = 'Accident'
+            switch (key) {
+                case 'UNS':
+                    kode = 'UnScheduled'
+                    break;
+                case 'SCH':
+                    kode = 'Scheduled'
+                    break;
+                case 'ACD':
+                    kode = 'Accident'
+                    break;
+                default:
+                    kode = 'Others'
+                    break;
             }
             return {
                 name: kode,
@@ -516,14 +520,27 @@ class repHeavyEquipment {
             }
         }
 
+        let getMonth = (new Date(req.end_month)).getMonth() + 1
+        let arrMonth = Array.apply(0, Array(getMonth)).map(function(_,i){return moment().month(i).format('MM/YY')})
+
         data =  data.map(obj => {
             return {
                 ...obj,
-                date: moment(obj.date).format('MMM YYYY')
+                date: moment(obj.date).format('MM/YY')
             }
         })
 
-        data = _.groupBy(data, 'date')
+        for (let i = 0; i < arrMonth.length; i++) {
+            if(data[i].date != arrMonth[i]){
+                data.push({
+                    date: arrMonth[i],
+                    target_downtime_monthly: 0,
+                    items: []
+                })
+            }
+        }
+
+        data = _.groupBy(_.sortBy(data, 'date'), 'date')
         data = Object.keys(data).map(key => {
             var a = moment(key).startOf('month')//now
             var b = moment(key).endOf('month')
@@ -534,7 +551,6 @@ class repHeavyEquipment {
             }
         })
 
-        console.log(data);
 
         let result = []
         for (let obj of data) {
@@ -582,7 +598,7 @@ class repHeavyEquipment {
                 breakdown_hours_total: parseFloat((obj.breakdown_hours_total).toFixed(2))
             }
         })
-        console.log(series);
+        // console.log(series);
 
         /* GENERATE DATA BREAKDOWN RATIO */
         const unitDowntime = (
