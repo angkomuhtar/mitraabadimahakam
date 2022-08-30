@@ -23,6 +23,9 @@ $(function(){
             },
             error: function(err){
                 console.log(err);
+            },
+            complete: function() {
+                elm.attr('data-placeholder', 'Pilih PIT Area')
             }
         })
     })

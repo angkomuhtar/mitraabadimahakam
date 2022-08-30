@@ -36,19 +36,22 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="">Waktu Selesai</label>
-                                                <input class="form-control set-datetime" type="datetime-local" name="end_at" id="end_at" data-datetime="{{data.end_at ? data.end_at:''}}">
+                                                @if(data.end_at)
+                                                    <input class="form-control set-datetime" type="datetime-local" name="end_at" id="end_at" data-datetime="{{data.end_at ? data.end_at:''}}">
+                                                @else
+                                                    <input class="form-control init-datetime" type="datetime-local" name="end_at" id="end_at">
+                                                @endif
                                             </div>
                                         </div>
-                                        <!--
-                                        <div class="col-md-2">
-                                            <label for="tgl">Metode By Equipment</label>
-                                            <div class="form-group" style="margin-top: 10px">
-                                                <div class="material-switch">
-                                                    <input id="metodeInput" name="metodeInput" type="checkbox"/>
-                                                    <label for="metodeInput" class="label-default"></label>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">PIT Area</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-map"></i></div>
+                                                    <select class="form-control select2pit" data-check="" name="pit_id"></select>
                                                 </div>
                                             </div>
-                                        </div> -->
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">

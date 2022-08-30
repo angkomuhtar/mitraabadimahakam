@@ -67,6 +67,9 @@
                                 <td>
                                     @if(item.end_at)
                                         <strong class="text-success">Ready</strong>
+                                        @if(item.pit_id)
+                                        <br><small>{{item.pit.name}}</small>
+                                        @endif
                                     @else
                                         <strong class="text-inverse">OnProses</strong>
                                     @endif

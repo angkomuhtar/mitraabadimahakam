@@ -31,9 +31,43 @@ $(function(){
         ajaxSearch(value)
     })
 
-    // $('body').on('click', 'input[name="metodeInput"]', function(){
-    //     var isCheck = $(this).is(':checked')
-    // })
+    $('body').on('change', 'select[name="pit_id"]', function(){
+        var values = $(this).val()
+        if(values){
+            getDataEquipmentOnFleet()
+        }else{
+            $('body').find('select#equip_id').val(null);
+            $('body').find('select#equip_id').trigger('change')
+        }
+    })
+
+    $('body').on('click', 'button#apply-filter', function(){
+        var limit = $('body').find('input#limit').val() || 100
+        var pit_id = $('body').find('select#pit_id').val()
+        var mulai_tanggal = $('body').find('input#mulai_tanggal').val()
+        var hingga_tanggal = $('body').find('input#hingga_tanggal').val()
+        $.ajax({
+            async: true,
+            url: '/operation/daily-issue/list',
+            method: 'GET',
+            data: {
+                keyword: 'true',
+                limit: limit,
+                pit_id: pit_id,
+                start_at: mulai_tanggal,
+                end_at: hingga_tanggal
+            },
+            dataType: 'html',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
 
     $('body').on('submit', 'form#fm-issue', function(e){
         e.preventDefault()
@@ -237,6 +271,38 @@ $(function(){
             success: function(result){
                 $('div#list-content').children().remove()
                 $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
+
+    function getDataEquipmentOnFleet(){
+        var selectOptions = $('body').find('select#equip_id')
+        var pit_id = $('select[name="pit_id"]').val()
+        var start_at = $('input[name="start_at"]').val()
+        $.ajax({
+            async: true,
+            url: '/ajax/fleet-by-equipment',
+            method: 'GET',
+            data: {
+                pit_id: pit_id,
+                start_at: start_at
+            },
+            dataType: 'json',
+            success: function(data){
+                console.log(data);
+                if(data.length > 0){
+                    for (const item of data) {
+                        selectOptions.find('option[value="'+item.equip_id+'"]').prop("selected","selected");
+                        selectOptions.trigger('change')
+                    }
+                }else{
+                    selectOptions.find('option').val(null);
+                    selectOptions.find('option').removeAttr("selected");
+                    selectOptions.trigger('change')
+                }
             },
             error: function(err){
                 console.log(err);

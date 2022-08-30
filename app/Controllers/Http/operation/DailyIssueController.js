@@ -76,6 +76,7 @@ class DailyIssueController {
                          dailyEvent.fill(dataEvent)
                          await dailyEvent.save()
                          dataIssue = {
+                              pit_id: req.pit_id || null,
                               unit_id: unit,
                               dailyevent_id: dailyEvent.id,
                               report_by: user.id,
@@ -105,6 +106,7 @@ class DailyIssueController {
                     }
                } else {
                     dataIssue = {
+                         pit_id: req.pit_id || null,
                          unit_id: unit,
                          report_by: user.id,
                          report_at: req.start_at,
