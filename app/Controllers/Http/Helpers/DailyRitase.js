@@ -432,7 +432,7 @@ class Ritase {
       sourceFile: filePath,
       header: 1,
     })
-    const sampleSheet = '07-08'
+    const sampleSheet = req.sheet || '07-08'
     // this is section where it is not a rotation data
     const getCoalRehandleIndex = xlsx[sampleSheet].findIndex(v => v.V === 'COAL REHANDLE')
 
@@ -707,7 +707,7 @@ class Ritase {
       sourceFile: filePath,
       header: 1,
     })
-    const sampleSheet = '07-08'
+    const sampleSheet = req.sheet || '07-08'
     // this is section where it is not a rotation data
     const getCoalRehandleIndex = xlsx[sampleSheet].findIndex(v => v.V === 'COAL REHANDLE')
 

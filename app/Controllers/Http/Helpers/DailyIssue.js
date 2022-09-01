@@ -238,6 +238,37 @@ class dailyIssue {
           }
      }
 
+     async SHOW_LOG_HOURLY(req) {
+
+          const { pit_id, start_at, end_at } = req;
+
+          console.log('req >> ', req)
+          const data = (await Issue.
+               query().
+               with('user').
+               with('dailyevent', w => w.with('event')).
+               with('unit').
+               where( w => {
+                    w.where('pit_id', pit_id)
+                    w.where('report_at', '>=', moment(start_at).format('YYYY-MM-DD HH:mm:ss'))
+                    w.where('report_at', '<=', moment(end_at).format('YYYY-MM-DD HH:mm:ss'))
+               }).
+               orderBy('report_at', 'desc').
+               fetch()).toJSON()
+
+               let result = []
+               for (const value of data) {
+                    // create the obj
+                    const obj = {
+                         start_at : (value.report_at && moment(value.report_at).format('HH:mm')) || null,
+                         end_at : (value.end_at && moment(value.end_at).format('HH:mm')) || null,
+                         event_name : value.dailyevent.event.narasi
+                    }
+                    result.push(obj)
+               }
+               return result
+     }
+
      // async DELETE(params){
      //     const eventTimeSheet = await EventTimeSheet.find(params.dailyEventID)
      //     if(eventTimeSheet){

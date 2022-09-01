@@ -917,7 +917,6 @@ class repFuelRatio {
 
             const pitArr = (await MasPit.query().where('sts', 'Y').fetch()).toJSON()
             for (const [i, pit] of pitArr.entries()) {
-
                 for (const obj of arrDate) {
                     const avgDistance = await DailyRitase.query().where( w => {
                         w.where('site_id', req.site_id)
@@ -957,7 +956,6 @@ class repFuelRatio {
                     })
                 }
             }
-
             return data
         }
 
