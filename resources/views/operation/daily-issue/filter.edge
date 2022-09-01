@@ -7,35 +7,29 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <label for="mulai_tanggal">Mulai Tanggal</label>
+                        <label for="mulai_tanggal">Tanggal Report</label>
                         <div class="form-group">
                             <input type="date" class="form-control inp-filter input-sm setDate" data-date="{{data.date}}" name="mulai_tanggal" id="mulai_tanggal">
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label for="hingga_tanggal">Mulai Tanggal</label>
+                        <label for="hingga_tanggal">Hingga Tanggal</label>
                         <div class="form-group">
                             <input type="date" class="form-control inp-filter input-sm setDate" data-date="{{data.date}}" name="hingga_tanggal" id="hingga_tanggal">
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
-                        <label for="mulai_tanggal">Pilih Shift</label>
+                    <div class="col-md-12">
+                        <label for="mulai_tanggal">Pilih Pit Area</label>
                         <div class="form-group">
-                            <select class="form-control inp-filter input-sm select2shift" name="shift_id" id="shift_id"></select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="mulai_tanggal">Fuel Truck</label>
-                        <div class="form-group">
-                            <select class="form-control inp-filter input-sm select2fuelTruck" name="fuel_truck" id="fuel_truck"></select>
+                            <select class="form-control inp-filter input-sm select2pit" name="find_pit_id" id="pit_id"></select>
                         </div>
                     </div>
                     <div class="col-md-12">
                         <label for="mulai_tanggal">Pilih Equipment</label>
                         <div class="form-group">
-                            <select class="form-control select2x inp-filter input-sm select2equipment" name="equip_id" id="equip_id" multiple="multiple"></select>
+                            <select class="form-control select2x inp-filter input-sm select2equipment" name="find_equip_id" multiple="multiple"></select>
                         </div>
                     </div>
                 </div>

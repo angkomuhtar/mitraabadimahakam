@@ -672,6 +672,8 @@ Route.group(() => {
 
   Route.get('/fleet-by-tipe', 'AjaxFleetController.getFleetsByTipe').as('fleet.getFleetsByTipe')
 
+  Route.get('/fleet-by-equipment', 'AjaxFleetController.getEquipmentOnFleet').as('fleet.getEquipmentOnFleet')
+
   Route.get('/activity', 'AjaxActivityController.getActivities').as('actitivity.getActivities')
 
   Route.get('/activity/:id', 'AjaxActivityController.getActivitiesID').as('actitivity.getActivitiesID')
@@ -1204,6 +1206,15 @@ Route.group(() => {
   Route.get('/list', 'ReportFuelRatioController.list')
 })
   .prefix('api/v2/fuel-ratio')
+  .namespace('api/v2')
+
+// REPORT HEAVY EQUIPMENT PERFORMANCES
+Route.group(() => {
+  Route.get('/', 'ReportHeavyEquipmentPerformanceController.index')
+  // Route.get('/pdf', 'ReportHeavyEquipmentPerformanceController.pdf')
+  // Route.get('/list', 'ReportHeavyEquipmentPerformanceController.list')
+})
+  .prefix('api/v2/he-performances')
   .namespace('api/v2')
 
 // REPORT ISSUES

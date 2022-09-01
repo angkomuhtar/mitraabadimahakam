@@ -38,6 +38,20 @@
                                                 <input class="form-control" type="datetime-local" name="end_at" id="end_at">
                                             </div>
                                         </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">PIT Area</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-map"></i></div>
+                                                    <select class="form-control select2pit" data-check="" name="pit_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <code>Keterangan : </code>
+                                            <small>Untuk memilih seluruh equipment pada pit area,,,</small><br>
+                                            <small>Pilih <span class="text-info">waktu mulai</span> terlebih dulu kemudian pilih Pit Area, System akan mendeteksi semua equipment yg terdaftar pada Pit tersebut sesuai daily fleetnya</small>
+                                        </div>
                                         <!--
                                         <div class="col-md-2">
                                             <label for="tgl">Metode By Equipment</label>
@@ -55,7 +69,7 @@
                                                 <label for="">Equipment Unit</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
-                                                    <select class="form-control xselect2equipment" data-check="" name="equip_id" multiple="multiple"></select>
+                                                    <select class="form-control xselect2equipment" data-check="" name="equip_id" id="equip_id" multiple="multiple"></select>
                                                 </div>
                                             </div>
                                         </div>

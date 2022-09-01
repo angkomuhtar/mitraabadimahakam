@@ -17,9 +17,9 @@ class MamIssue extends Model {
         return this.belongsTo("App/Models/MasEquipment", "unit_id", "id")
     }
 
-    // unit () {
-    //     return this.hasMany("App/Models/MasEquipment", "id", "unit_id")
-    // }
+    pit () {
+        return this.belongsTo("App/Models/MasPit", "pit_id", "id")
+    }
 
 
     dailyevent () {

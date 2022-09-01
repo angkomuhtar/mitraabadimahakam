@@ -1,8 +1,10 @@
 'use strict'
 
 const _ = require('underscore')
+const moment = require('moment')
 const Fleet = use("App/Models/MasFleet")
 const DailyFleet = use("App/Models/DailyFleet")
+const DailyFleetEquip = use("App/Models/DailyFleetEquip")
 
 class AjaxFleetController {
     async getFleets ({ request }) {
@@ -81,6 +83,25 @@ class AjaxFleetController {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    async getEquipmentOnFleet ({ request }) {
+        let data = []
+        const req = request.all()
+        const dailyFleet = (
+            await DailyFleet.query().with('details').where( w => {
+                w.where('date', '>=', moment(req.start_at).startOf('day').format('YYYY-MM-DD'))
+                w.where('date', '<=', moment(req.start_at).endOf('day').format('YYYY-MM-DD'))
+                w.where('pit_id', req.pit_id)
+            }).fetch()
+        ).toJSON()
+
+        for (const item of dailyFleet) {
+            for (const obj of item.details) {
+                data.push(obj)
+            }
+        }
+        return _.uniq(data, 'equip_id')
     }
 }
 

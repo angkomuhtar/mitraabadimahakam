@@ -90,10 +90,12 @@ class DailyRitaseController {
       const dailyFleet = await DailyFleet.query().where('id', dailyfleet_id).first()
 
       if (dailyFleet) {
-        const haulers = (await DailyFleetEquip.query().where('dailyfleet_id', dailyFleet.toJSON()?.id).with('equipment').fetch()).toJSON().filter(v => v.equipment.tipe === 'hauler truck')
-        let haulerArr = []
+        const haulers = (await DailyFleetEquip.query().where('dailyfleet_id', dailyFleet.toJSON()?.id).with('equipment').fetch()).toJSON().filter(v => v.equipment.tipe != 'excavator')
+       let haulerArr = []
 
-        const allHaulers = (await MasEquipment.query().where('tipe', 'hauler truck').fetch()).toJSON()
+        const allHaulers = (await MasEquipment.query().where( w => {
+          w.whereIn('tipe', ['hauler truck', 'dump truck', 'articulated'])
+        }).fetch()).toJSON()
         const allOperators = (await EmployeeHelpers.OPERATOR(request)).toJSON()
 
         for (const hauler of haulers) {
@@ -300,7 +302,6 @@ class DailyRitaseController {
         })
       }
     }
-
     
     /* GROUPING BY EXCAVATOR FOR DAILY RITASE DATA OB */
     const OB = dataParsing.filter(e => e.material_ob != null)
@@ -313,6 +314,7 @@ class DailyRitaseController {
         }
       })
 
+      
       console.log('MATERIAL OB ::', GRP_OB);
 
       for (const obj of GRP_OB) {
@@ -359,7 +361,7 @@ class DailyRitaseController {
                 spv_id: req.spv_id,
                 hauler_id: hauler_unit.id,
                 opr_id: oprUnit.id,
-                check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
+                check_in: moment(req.date).hours(val.times).format('YYYY-MM-DD HH:mm'),
                 urut: i + 1,
                 duration: 0,
                 satuan: 'menit',
@@ -453,7 +455,7 @@ class DailyRitaseController {
                 spv_id: req.spv_id,
                 hauler_id: hauler_unit.id,
                 opr_id: oprUnit.id,
-                check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
+                check_in: moment(req.date).hours(val.times).format('YYYY-MM-DD HH:mm'),
                 urut: i + 1,
                 duration: 0,
                 satuan: 'menit',
@@ -548,7 +550,7 @@ class DailyRitaseController {
                 spv_id: req.spv_id,
                 hauler_id: hauler_unit.id,
                 opr_id: oprUnit.id,
-                check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
+                check_in: moment(req.date).hours(val.times).format('YYYY-MM-DD HH:mm'),
                 urut: i + 1,
                 duration: 0,
                 satuan: 'menit',
@@ -643,7 +645,7 @@ class DailyRitaseController {
                 spv_id: req.spv_id,
                 hauler_id: hauler_unit.id,
                 opr_id: oprUnit.id,
-                check_in: moment(req.date).hours(7).format('YYYY-MM-DD HH:mm'),
+                check_in: moment(req.date).hours(val.times).format('YYYY-MM-DD HH:mm'),
                 urut: i + 1,
                 duration: 0,
                 satuan: 'menit',

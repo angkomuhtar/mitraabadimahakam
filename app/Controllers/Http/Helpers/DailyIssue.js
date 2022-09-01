@@ -10,16 +10,23 @@ class dailyIssue {
           const limit = parseInt(req.limit) || 100
           const halaman =
                req.page === undefined ? 1 : parseInt(req.page)
-          console.log(limit)
           let data
           if (req.keyword) {
                data = await Issue.query()
                     .with('user')
+                    .with('pit')
                     .with('dailyevent', w => w.with('event'))
                     .with('unit')
                     .where(w => {
                          if (req.event_id) {
                               w.where('event_id', req.event_id)
+                         }
+                         if(req.pit_id){
+                              w.where('pit_id', req.pit_id)
+                         }
+                         if(req.start_at && req.end_at){
+                              w.where('report_at', '>=', moment(req.start_at).startOf('day').format('YYYY-MM-DD HH:mm'))
+                              w.where('report_at', '<=', moment(req.end_at).endOf('day').format('YYYY-MM-DD HH:mm'))
                          }
                          if (req.issue) {
                               w.where(
@@ -31,12 +38,14 @@ class dailyIssue {
                          if (req.unit_id) {
                               w.whereIn('unit_id', req.unit_id)
                          }
+                         
                     })
                     .orderBy('report_at', 'desc')
                     .paginate(halaman, limit)
           } else {
                data = await Issue.query()
                     .with('user')
+                    .with('pit')
                     .with('dailyevent', w => w.with('event'))
                     .with('unit')
                     .orderBy('report_at', 'desc')
