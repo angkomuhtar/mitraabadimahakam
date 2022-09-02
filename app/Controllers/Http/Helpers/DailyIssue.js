@@ -251,7 +251,6 @@ class dailyIssue {
 
           const { pit_id, start_at, end_at } = req;
 
-          console.log('req >> ', req)
           const data = (await Issue.
                query().
                with('user').
@@ -265,16 +264,28 @@ class dailyIssue {
                orderBy('report_at', 'desc').
                fetch()).toJSON()
 
-               let result = []
+               let result = [];
                for (const value of data) {
                     // create the obj
-                    const obj = {
-                         start_at : (value.report_at && moment(value.report_at).format('HH:mm')) || null,
-                         end_at : (value.end_at && moment(value.end_at).format('HH:mm')) || null,
-                         event_name : value.dailyevent.event.narasi
+                    const eventName = value.dailyevent.event.narasi
+                    if(eventName === 'Rain' || eventName === 'Slippery' || eventName === 'Fog') {
+                         console.log('value >> ', value)
+                         const hour_start = value.report_at ? moment(value.report_at).format('HH:mm') : null
+                         const hour_end = value.end_at ? moment(value.end_at).format('HH:mm') : null
+                         const txtOngoing = `${hour_start} = ${eventName} (Ongoing)`;
+                         const txtStopped = `${hour_start} : ${hour_end} = ${eventName} (Stopped)`;
+
+                         if(!hour_end) {
+                              result.push(txtOngoing)
+                         } else {
+                              result.push(txtStopped)
+                         }
+                         console.log('txt onGoing >> ', txtOngoing );
+                         console.log('txt stopped ', txtStopped)
+                         
                     }
-                    result.push(obj)
                }
+
                return result
      }
 
