@@ -1221,6 +1221,7 @@ Route.group(() => {
 Route.group(() => {
   Route.get('/', 'ReportIssueController.index')
   Route.get('/today', 'ReportIssueController.today')
+  Route.get('/log/hourly', 'ReportIssueController.issueHourly')
 })
   .prefix('api/v2/issues')
   .namespace('api/v2')

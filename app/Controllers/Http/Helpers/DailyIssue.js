@@ -247,6 +247,48 @@ class dailyIssue {
           }
      }
 
+     async SHOW_LOG_HOURLY(req) {
+
+          const { pit_id, start_at, end_at } = req;
+
+          const data = (await Issue.
+               query().
+               with('user').
+               with('dailyevent', w => w.with('event')).
+               with('unit').
+               where( w => {
+                    w.where('pit_id', pit_id)
+                    w.where('report_at', '>=', moment(start_at).format('YYYY-MM-DD HH:mm:ss'))
+                    w.where('report_at', '<=', moment(end_at).format('YYYY-MM-DD HH:mm:ss'))
+               }).
+               orderBy('report_at', 'desc').
+               fetch()).toJSON()
+
+               let result = [];
+               for (const value of data) {
+                    // create the obj
+                    const eventName = value.dailyevent.event.narasi
+                    if(eventName === 'Rain' || eventName === 'Slippery' || eventName === 'Fog') {
+                         console.log('value >> ', value)
+                         const hour_start = value.report_at ? moment(value.report_at).format('HH:mm') : null
+                         const hour_end = value.end_at ? moment(value.end_at).format('HH:mm') : null
+                         const txtOngoing = `${hour_start} = ${eventName} (Ongoing)`;
+                         const txtStopped = `${hour_start} : ${hour_end} = ${eventName} (Stopped)`;
+
+                         if(!hour_end) {
+                              result.push(txtOngoing)
+                         } else {
+                              result.push(txtStopped)
+                         }
+                         console.log('txt onGoing >> ', txtOngoing );
+                         console.log('txt stopped ', txtStopped)
+                         
+                    }
+               }
+
+               return result
+     }
+
      // async DELETE(params){
      //     const eventTimeSheet = await EventTimeSheet.find(params.dailyEventID)
      //     if(eventTimeSheet){

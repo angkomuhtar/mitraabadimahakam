@@ -91,6 +91,47 @@ class ReportIssueController {
             });
         }
     }
+
+    async issueHourly({ auth, request, response }) {
+        let durasi
+        var t0 = performance.now()
+        var req = request.all()
+
+        const user = await userValidate(auth)
+        if(!user){
+            return response.status(403).json({
+                diagnostic: {
+                    ver: version,
+                    error: true,
+                    message: 'not authorized...'
+                }
+            })
+        }
+        
+        try {
+            const data = await DailyIssueHelpers.SHOW_LOG_HOURLY(req)
+            durasi = await diagnoticTime.durasi(t0);
+            return response.status(200).json({
+                diagnostic: {
+                    ver: version,
+                    times: durasi,
+                    error: false,
+                },
+                data: data,
+            });
+        } catch (error) {
+            durasi = await diagnoticTime.durasi(t0);
+            return response.status(403).json({
+                diagnostic: {
+                    ver: version,
+                    times: durasi,
+                    error: true,
+                    message: error,
+                },
+                data: [],
+            });
+        }
+    }
 }
 
 module.exports = ReportIssueController

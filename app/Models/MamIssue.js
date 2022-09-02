@@ -9,6 +9,10 @@ class MamIssue extends Model {
         return this.belongsTo("App/Models/VUser", "report_by", "id")
     }
 
+    pit(){
+        return this.belongsTo("App/Models/MasPit", "pit_id", "id")
+    }
+
     unit () {
         return this.belongsTo("App/Models/MasEquipment", "unit_id", "id")
     }
