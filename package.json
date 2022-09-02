@@ -38,6 +38,7 @@
     "mysql": "^2.18.1",
     "node-html-to-image": "^3.2.4",
     "pdfmake": "^0.2.2",
+    "quickchart-js": "^3.1.0",
     "request": "^2.88.2",
     "systeminformation": "^5.11.8",
     "uid": "^2.0.0",

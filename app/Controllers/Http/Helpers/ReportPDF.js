@@ -1907,20 +1907,34 @@ class PDFReport {
         const logoPath = Helpers.publicPath('logo.jpg')
         const logoAsBase64 = await Image64Helpers.GEN_BASE64(logoPath)
 
-        const KPIPath = Helpers.publicPath(req.imageKPI)
-        const KPIAsBase64 = await Image64Helpers.GEN_BASE64(KPIPath)
+        
 
-        const BDPath = Helpers.publicPath(req.imageRatio)
-        const BDAsBase64 = await Image64Helpers.GEN_BASE64(BDPath)
+        var KPIAsBase64
+        if(req.imageKPI){
+            var KPIPath = Helpers.publicPath(req.imageKPI)
+            KPIAsBase64 = await Image64Helpers.GEN_BASE64(KPIPath)
+        }else{
+            KPIAsBase64 = logoAsBase64
+        }
 
-        const DurationPath = Helpers.publicPath(req.imageDuration)
-        const DurationAsBase64 = await Image64Helpers.GEN_BASE64(DurationPath)
+        // var BDPath = Helpers.publicPath(req.imageRatio)
+        // var BDAsBase64 = await Image64Helpers.GEN_BASE64(BDPath)
 
-        const EventPath = Helpers.publicPath(req.imageEvent)
-        const EventAsBase64 = await Image64Helpers.GEN_BASE64(EventPath)
+        if(req.imageDuration){
+            var DurationPath = Helpers.publicPath(req.imageDuration)
+            var DurationAsBase64 = await Image64Helpers.GEN_BASE64(DurationPath)
+        }else{
+            var DurationAsBase64 = logoAsBase64
+        }
 
-        console.log(req);
-        console.log(data);
+        if(req.imageEvent){
+            var EventPath = Helpers.publicPath(req.imageEvent)
+            var EventAsBase64 = await Image64Helpers.GEN_BASE64(EventPath)
+        }else{
+            var EventAsBase64 = logoAsBase64 //req.urlKPI
+        }
+
+        // console.log(req);
 
         /* FORMAT DATA KPI PERFORMANCES TO PDFMAKE */
         let dataKPI = byKPI.dataTable.map(v => {

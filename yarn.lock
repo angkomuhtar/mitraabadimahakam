@@ -1342,7 +1342,7 @@ cross-env@^5.1.0:
   dependencies:
     cross-spawn "^6.0.5"
 
-cross-fetch@3.1.5:
+cross-fetch@3.1.5, cross-fetch@^3.1.5:
   version "3.1.5"
   resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.1.5.tgz"
   integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==
@@ -2778,6 +2778,11 @@ isurl@^1.0.0-alpha5:
     has-to-string-tag-x "^1.2.0"
     is-object "^1.0.1"
 
+javascript-stringify@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/javascript-stringify/-/javascript-stringify-2.1.0.tgz#27c76539be14d8bd128219a2d731b09337904e79"
+  integrity sha512-JVAfqNPTvNq3sB/VHQJAFxN/sPgKnsKrCwyRt15zwNCdrMMJDdcEOdubuy+DuJYYdm0ox1J4uzEuYKkN+9yhVg==
+
 jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.npmjs.org/jsbn/-/jsbn-0.1.1.tgz"
@@ -4124,6 +4129,14 @@ query-string@^5.0.1:
     decode-uri-component "^0.2.0"
     object-assign "^4.1.0"
     strict-uri-encode "^1.0.0"
+
+quickchart-js@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/quickchart-js/-/quickchart-js-3.1.0.tgz#bea4f1dd64fe9877217dffa3c9107b9ddbe80537"
+  integrity sha512-oJgrS8lFYIyKDDLJ81mwIsxax405RKYxKOKRy++WECHFV9JD1UK+le4PLPRLJZjDuioKXx6YOgOL3sgPiOmD0Q==
+  dependencies:
+    cross-fetch "^3.1.5"
+    javascript-stringify "^2.1.0"
 
 quote-stream@^1.0.1:
   version "1.0.2"
