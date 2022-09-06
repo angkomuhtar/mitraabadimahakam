@@ -158,7 +158,6 @@ class ReportProductionController {
             console.log(req.start_date, req.end_date);
             try {
                 let result = await ReportPoductionHelpers.MW_HOURLY(req)
-
                 const { xAxis, data } = result
     
                 let resp = data[1].items?.map((obj, i) => {

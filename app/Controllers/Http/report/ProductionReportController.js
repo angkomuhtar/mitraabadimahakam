@@ -97,16 +97,8 @@ class ProductionReportController {
 
     async genDataXLS ( { request } ) {
         let req = request.all()
-        // console.log('====================================');
-        // console.log(req);
-        // console.log('====================================');
         const data = await GEN_XLS (req)
         return data
-        // if(req.production_type === 'OB'){
-        // }else{
-        //     const dataCOAL = await GEN_XLS_COAL (req)
-        //     return dataCOAL
-        // }
     }
 }
 
@@ -172,7 +164,35 @@ async function PERIODE_WISE(req){
     }
 
     if(req.filterType === 'HOURLY'){
-        const data = await ReportPoductionHelpers.PW_HOURLY(req)
+        req.start_date = req.start_hours
+        req.end_date = req.end_hours
+        
+        var a = moment(req.end_hours)
+        var b = moment(req.start_hours)
+        var duration = a.diff(b, 'hours')
+
+        let arrHours = []
+        for (let i = 0; i <= duration; i++) {
+            arrHours.push(moment(req.start_hours).startOf('h').add(i, 'h').format('HH:[00]'))
+        }
+
+        let result = []
+        let data = await ReportPoductionHelpers.PW_HOURLY(req)
+        for (const obj of data.data) {
+            let details = []
+            for (const val of obj.items) {
+                if(arrHours.includes(val.pukul)){
+                    details.push(val)
+                }
+            }
+
+            result.push({
+                ...obj,
+                items: details
+            })
+        }
+        data.data = result
+        data.xAxis = arrHours
         return data
     }
 }
@@ -200,7 +220,15 @@ async function GEN_PDF_OB (req, img) {
     }
 
     if(req.filterType === 'HOURLY'){
+
+        req.start_date = req.start_hours
+        req.end_date = req.end_hours
+        req.pit_id = req.pit_id != 'undefined' ? req.pit_id : null
+        req.group = req.pit_id ? req.pit_id : null
+        req.date = req.date != 'undefined' ? req.date : null
+
         const data = await ReportPDFHelpers.HOURLY_OB_PDF(req, img)
+        
         return data
     }
 }

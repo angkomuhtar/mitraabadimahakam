@@ -886,7 +886,7 @@ class repPoduction {
     }
 
     async PW_HOURLY (req) {
-        console.log(req);
+        console.log('HOURLY :::',req);
         let result = []
         let data
         if(req.production_type === 'OB'){
@@ -895,7 +895,8 @@ class repPoduction {
                     if(req.site_id){
                         w.where('site_id', req.site_id)
                     }
-                    w.where('tglx', req.date)
+                    w.where('check_in', '>=', req.start_date)
+                    w.where('check_in', '<=', req.end_date)
                 }).fetch()
             ).toJSON()
         }else{
@@ -909,8 +910,6 @@ class repPoduction {
             ).toJSON()
         }
 
-        console.log(data);
-
         data = _.groupBy(data, 'pit_id')
         data = Object.keys(data).map(key => {
             return {
@@ -923,7 +922,7 @@ class repPoduction {
         let xAxis = []
         for (let i = 0; i < 24; i++) {
             var str = '0'.repeat(2 - `${i}`.length) + i
-            xAxis.push("Pukul " + str)
+            xAxis.push(str + ':00')
         }
 
         let color = req.colorGraph
@@ -957,11 +956,10 @@ class repPoduction {
             arrData = arrData.map(el => {
                 return {
                     pukul: el.jamx + ':00',
-                    actual: el.vol
+                    actual: el.vol,
                 }
             })
 
-            console.log(i);
 
             result.push({
                 pit_id: obj.pit_id,
@@ -983,7 +981,7 @@ class repPoduction {
                 })
             }
         }
-        // console.log(result);
+        // console.log(JSON.stringify(result, null, 2));
         return {
             xAxis: xAxis,
             data: result

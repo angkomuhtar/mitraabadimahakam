@@ -1042,7 +1042,13 @@ class PDFReport {
             /** GROUPING DATA BY WAKTU **/
             obj.items.reduce(function(res, value) {
               if (!res[value.jamx]) {
-                res[value.jamx] = { jamx: value.jamx, nm_pit: pit.name, vol: 0 };
+                res[value.jamx] = { 
+                    jamx: value.jamx, 
+                    nm_pit: pit.name, 
+                    vol: 0, 
+                    kode: value.kode,
+                    material: value.name
+                };
                 arrData.push(res[value.jamx])
               }
               res[value.jamx].vol += value.vol;
@@ -1059,7 +1065,7 @@ class PDFReport {
                         arrData.push({
                             jamx: str,
                             nm_pit: pit.name,
-                            vol: 0
+                            vol: 0,
                         })
                     }
                 }
@@ -1079,16 +1085,19 @@ class PDFReport {
             }
 
             
+            
             arrData = _.sortBy(arrData, 'jamx');
             arrData = arrData.map(el => {
                 return {
                     pukul: el.jamx + ':00',
                     date: req.date ? moment(req.date).format('DD MMM YYYY'):moment(req.start_date).format('DD MMM YYYY'),
                     nm_pit: pit.name,
-                    actual: el.vol
+                    actual: el.vol,
+                    material: el.material || '-',
+                    exca: el.kode || '-'
                 }
             })
-            
+            console.log(arrData);
             resultx.push({
                 pit_id: obj.pit_id,
                 pit_nm: pit.name,
@@ -1101,16 +1110,21 @@ class PDFReport {
             { text: 'Location', style: 'tableHeader_L' },
             { text: 'Date', style: 'tableHeader_L' },
             { text: 'Time', style: 'tableHeader_L' },
+            { text: 'Excavator', style: 'tableHeader_L' },
+            { text: 'Material', style: 'tableHeader_L' },
             { text: 'Actual', style: 'tableHeader_R' }
         ])
 
         for (const obj of resultx) {
             for (const val of obj.items) {
+                var valDate = val.date || req.start_date
                 result.push([
                     {text: val.nm_pit, style: 'tableCell_L'},
-                    {text: moment(val.date || req.start_date).format('DD MMMM YYYY'), style: 'tableCell_L'},
+                    {text: moment(valDate).format('dddd, DD MMMM YYYY'), style: 'tableCell_L'},
                     {text: val.pukul, style: 'tableCell_L'},
-                    {text: val.actual, style: 'tableCell_R'},
+                    {text: val.exca, style: 'tableCell_L'},
+                    {text: val.material, style: 'tableCell_L'},
+                    {text: val.actual + ' BCM', style: 'tableCell_R'},
                 ])
             }
         }
@@ -1197,7 +1211,7 @@ class PDFReport {
                 layout: 'headerLineOnly',
                 table: {
                     headerRows: 1,
-                    widths: ['auto', '*', 80, 'auto'],
+                    widths: ['auto', '*', 80, 80, '*', 'auto'],
                     body: result
                 }
             }

@@ -200,6 +200,12 @@ $(function(){
             processData: false,
             mimeType: "multipart/form-data",
             contentType: false,
+            beforeSend: function(){
+                body.find('div#text-loading').css('display', 'block').html(
+                    '<h3 class="text-center">Please Wait,</h3>'+
+                    '<small>Sedang melakukan collecting data...</small>'
+                )
+            },
             success: function(result){
                 console.log(result)
                 if(result.group === 'MW'){
@@ -208,13 +214,17 @@ $(function(){
                     showChart_PW(result)
                 }
                 body.find('div#box-chart').css('display', 'inline')
+                body.find('div#text-loading').css('display', 'none')
             },
             error: function(err){
                 console.log(err)
                 body.find('div#box-chart').css('display', 'none')
+                body.find('div#text-loading').css('display', 'block').html(
+                    '<h3 class="text-center">Error data,</h3>'+
+                    '<small>Chart tidak dapat di tampilkan...</small>'
+                )
             }
         })
-        console.log('...');
     })
 
     $('body').on('click', 'button#bt-generate-pdf', function(e){
@@ -225,6 +235,8 @@ $(function(){
             production_type: $('select[name="production_type"]').val(),
             range_type: $('select[name="range_type"]').val(),
             filterType: $('select[name="filterType"]').val(),
+            start_hours: $('input[name="start_hours"]').val(),
+            end_hours: $('input[name="end_hours"]').val(),
             start_date: $('input[name="start_date"]').val(),
             end_date: $('input[name="end_date"]').val(),
             month_begin: $('input[name="month_begin"]').val(),
@@ -251,6 +263,8 @@ $(function(){
             fd.append('filterType', data.filterType);
             fd.append('start_date', data.start_date);
             fd.append('end_date', data.end_date);
+            fd.append('start_hours', data.start_hours);
+            fd.append('end_hours', data.end_hours);
             fd.append('month_begin', data.month_begin);
             fd.append('month_end', data.month_end);
             fd.append('week_begin', data.week_begin);
@@ -358,7 +372,7 @@ $(function(){
     }
 
     function showChart_MW(result){
-
+        console.log('result ::', result);
         let site = result.site
         let pit = result.pit
         let xAxis = result.x_Axis
@@ -368,7 +382,16 @@ $(function(){
                 type: el.type,
                 color: el.color || '',
                 stack: el.stack || el.nm_pit,
-                data: el.items?.map( val => val.volume)
+                // data: el.items?.map( val => val.volume)
+                data: el.items?.map( val => {
+                    return {
+                        y: parseFloat((val.volume).toFixed(0)),
+                        name:  val.kd_pit,
+                        dataLabels: {
+                            color: el.color
+                        }
+                    }
+                })
             }
         })
         console.log(series);
@@ -386,7 +409,16 @@ $(function(){
                 type: el.type || 'column',
                 color: el.color || null,
                 stack: el.nm_pit || el.stack,
-                data: el.items?.map( val => val.actual) || el.data
+                // data: el.items?.map( val => val.actual) || el.data
+                data: el.items?.map( val => {
+                    return {
+                        y: val.actual,
+                        name:  el.stack,
+                        dataLabels: {
+                            color: el.color
+                        }
+                    }
+                }) || el.data
             }
         })
 
@@ -400,10 +432,10 @@ $(function(){
                 zoomType: 'xy'
             },
             title: {
-                text: 'Production Graph ' + site.name
+                text: 'PRODUCTION SITE ' + site.kode
             },
             subtitle: {
-                text: `${pit.name}`
+                text: `MONTHLY WISE ${pit.name}`
             },
             xAxis: [{
                 categories: arrDate,
@@ -419,7 +451,7 @@ $(function(){
             }],
             yAxis: [
                 { // Primary yAxis
-                    // gridLineColor: '#ddd',
+                    gridLineColor: '#c4c4c4',
                     // gridLineWidth: 0.2,
                     lineColor: '#FF0000',
                     lineWidth: 1,
@@ -464,6 +496,27 @@ $(function(){
             //         'rgba(255,255,255,0.25)'
             // },
             plotOptions: {
+                series: {
+                    dataLabels: {
+                      enabled: true,
+                      animation: {
+                        defer: 3000
+                      },
+                      crop: false,
+                      overflow: 'none',
+                      fontSize: '16px',
+                    //   style: {
+                    //     textShadow: false,
+                    //     textOutline: true,
+                    //   },
+                      formatter: function() {
+                        console.log(this);
+                        if(this.y > 0){
+                            return `<span>${this.y} BCM</span>`
+                        }
+                      }
+                    }
+                },
                 column: {
                     stacking: 'normal'
                 }
@@ -479,10 +532,10 @@ $(function(){
                 zoomType: 'xy'
             },
             title: {
-                text: 'Production Graph ' + site.name
+                text: 'PRODUCTION SITE ' + site.kode
             },
             subtitle: {
-                text: 'All Pit '
+                text: 'PERIOD WISE ALL PIT '
             },
             xAxis: [{
                 categories: xAxis,
@@ -500,7 +553,7 @@ $(function(){
             yAxis: {
                 lineColor: '#c4c4c4',
                 lineWidth: 1,
-                gridLineColor: '#ddd',
+                gridLineColor: '#c4c4c4',
                 gridLineWidth: 0.2,
                 labels: {
                     format: '{value}',
@@ -519,36 +572,31 @@ $(function(){
                     }
                 }
             },
-            // yAxis: [
-            //     { // Primary yAxis
-            //         gridLineColor: '#ddd',
-            //         gridLineWidth: 0.2,
-            //         labels: {
-            //             format: '{value}',
-            //             style: {
-            //                 fontSize: '11px',
-            //                 fontFamily: 'Verdana, sans-serif',
-            //                 color: '#000'
-            //             }
-            //         },
-            //         title: {
-            //             text: 'Total Volume',
-            //             style: {
-            //                 fontSize: '15px',
-            //                 fontFamily: 'Verdana, sans-serif',
-            //                 color: '#FF5A79'
-            //             }
-            //         }
-            //     }
-            // ],
             tooltip: {
                 formatter: function () {
                     return '<b>' + this.x + '</b><br/>' +
-                        this.series.name + ': ' + this.y + '<br/>'+
+                        this.series.name + ': ' + this.y + 'BCM<br/>'+
                         'PIT: ' + this.series.userOptions.stack;
                 }
             },
             plotOptions: {
+                series: {
+                    dataLabels: {
+                      enabled: true,
+                      crop: false,
+                      overflow: 'none',
+                      fontSize: '16px',
+                    //   style: {
+                    //     textOutline: 1
+                    //   },
+                      formatter: function() {
+                        console.log(this);
+                        if(this.y > 0){
+                            return `<span>${this.y} BCM</span>`
+                        }
+                      }
+                    }
+                },
                 column: {
                     stacking: 'normal'
                 }

@@ -137,9 +137,6 @@ class ReportHeavyEquipmentPerformanceController {
             });
             // req.urlKPI = myChart.getUrl()
             
-            console.log('====================================');
-            console.log('XXXXXX ::::', xxx);
-            console.log('====================================');
             if(data.success){
                 const result = await ReportPDFHelpers.KPI_PERFORMANCES(req, data)
                 const pdfDocGenerator = pdfMake.createPdf(result)
