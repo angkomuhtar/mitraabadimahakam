@@ -115,10 +115,9 @@ $(function () {
         showCancelButton: true,
         confirmButtonClass: 'btn-warning',
         confirmButtonText: 'Okey!',
-        closeOnConfirm: false,
+        closeOnConfirm: true,
       },
       function (isConfirm) {
-        swal('Please wait.....')
         if (isConfirm) {
           $.ajax({
             async: true,
@@ -130,8 +129,14 @@ $(function () {
             processData: false,
             mimeType: 'multipart/form-data',
             contentType: false,
+            beforeSend: function(){
+              $('body').find('div#div-row-form').css('display', 'none')
+              $('body').find('div#spinner').toggleClass('hidden')
+            },
             success: function (result) {
               console.log(result)
+              $('body').find('div#spinner').toggleClass('hidden')
+              $('body').find('div#div-row-form').css('display', 'block')
               if (result.success) {
                 swal('Okey!', result.message, 'success')
                 $('body form#fm-upload-daily-downtime').trigger('reset')
@@ -141,6 +146,7 @@ $(function () {
               }
             },
             error: function (err) {
+              $('body').find('div#spinner').toggleClass('hidden').html('Please reload pages....')
               console.log('error upload >> ', JSON.stringify(err))
               const { message } = err.responseJSON
               swal('Opps,,,!', message, 'warning')

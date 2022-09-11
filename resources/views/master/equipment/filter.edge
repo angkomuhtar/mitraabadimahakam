@@ -1,0 +1,143 @@
+<div class="modal fade" id="openFilter" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="tgl">Site</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">Project</div>
+                                <select class="form-control select2site" data-title="site" data-check id="site_id" name="site_id"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="">Kode Equipment</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                <input type="text" class="form-control" placeholder="sample: MWT003" name="kode_filter" id="kode_filter" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tgl">Type</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                <select class="form-control" id="tipe_filter" name="tipe_filter">
+                                    <option value="">Select type equipment</option>
+                                    @each(item in type)
+                                        <option value="{{item}}">{{item}}</option>
+                                    @endeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="">Brand Equipment</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                <select class="form-control" id="brand_filter" name="brand_filter">
+                                    <option value="">Select brand equipment</option>
+                                    @each(item in brand)
+                                        <option value="{{item}}">{{item}}</option>
+                                    @endeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="tgl">Model Equipment</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                <select class="form-control" id="model_filter" name="model_filter">
+                                    <option value="">Select model equipment</option>
+                                    @each(item in model)
+                                        <option value="{{item}}">{{item}}</option>
+                                    @endeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btn-reset-filter" class="btn btn-default" data-dismiss="modal">Reset Filter</button>
+                <button type="button" id="btn-apply-filter" class="btn btn-primary" data-dismiss="modal">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('select').select2()
+
+        $('button#btn-apply-filter').on('click', function(){
+            initDefault()
+        })
+
+        $('button#btn-reset-filter').on('click', function(){
+            initReset()
+        })
+
+        function initDefault(){
+            var limit = $('input#inpLimit').val()
+            var site_id = $('select[name="site_id"]').val()
+            var kode = $('input[name="kode_filter"]').val()
+            var tipe = $('select[name="tipe_filter"]').val()
+            var brand = $('select[name="brand_filter"]').val()
+            var model = $('select[name="model_filter"]').val()
+
+            $('div.content-module').css('display', 'none')
+            $.ajax({
+                async: true,
+                url: '/master/equipment/list',
+                method: 'GET',
+                data: {
+                    limit,
+                    site_id,
+                    kode,
+                    tipe,
+                    brand,
+                    model
+                },
+                success: function(result){
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        }
+        
+        function initReset(){
+            $('div.content-module').css('display', 'none')
+            $.ajax({
+                async: true,
+                url: '/master/equipment/list',
+                method: 'GET',
+                success: function(result){
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        }
+    })
+</script>
+  

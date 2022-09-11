@@ -15,6 +15,9 @@ class FuelUsageSummaryController {
   }
 
   async show({ params, view }) {
+    console.log('====================================');
+    console.log(params);
+    console.log('====================================');
     const data = await FuelSummaryHelpers.SHOW(params)
     return view.render('operation.fuel-usage-summary.show', {data: data})
   }

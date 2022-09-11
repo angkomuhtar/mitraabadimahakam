@@ -12,18 +12,27 @@ const Loggerx = use('App/Controllers/Http/customClass/LoggerClass')
 
 class MasEquipmentController {
   async index({ auth, request, response, view }) {
-    const req = request.all()
-    const limit = 10
-    const halaman = req.page === undefined ? 1 : parseInt(req.page)
-    const usr = await auth.getUser()
-    const logger = new Loggerx(request.url(), request.all(), usr, request.method(), true)
-    await logger.tempData()
-    const data = await Equipment.query().where('aktif', 'Y').paginate(halaman, limit)
-    return view.render('master.equipment.index', { list: data.toJSON() })
+    // const req = request.all()
+    // const limit = 10
+    // const halaman = req.page === undefined ? 1 : parseInt(req.page)
+    // const usr = await auth.getUser()
+    // const logger = new Loggerx(request.url(), request.all(), usr, request.method(), true)
+    // await logger.tempData()
+    const data = (await Equipment.query().where('aktif', 'Y').fetch()).toJSON()
+    let type = [...new Set(data.map(item => item.tipe))]
+    let brand = [...new Set(data.map(item => item.brand))]
+    let model = [...new Set(data.map(item => item.unit_model))]
+    console.log(type);
+    return view.render('master.equipment.index', {
+      type,
+      brand,
+      model
+    })
   }
 
   async list({ request, view }) {
     const req = request.all()
+    console.log('REQ ::', req);
     const limit = parseInt(req.limit) || 25
     const halaman = req.page === undefined ? 1 : parseInt(req.page)
     let data
@@ -32,13 +41,21 @@ class MasEquipmentController {
       data = await Equipment.query()
         .with('site')
         .where(whe => {
-          whe.where('kode', 'like', `%${req.keyword}%`)
-          whe.orWhere('tipe', 'like', `%${req.keyword}%`)
-          whe.orWhere('brand', 'like', `%${req.keyword}%`)
-          whe.orWhere('unit_sn', 'like', `%${req.keyword}%`)
-          whe.orWhere('unit_model', 'like', `%${req.keyword}%`)
-          whe.orWhere('engine_model', 'like', `%${req.keyword}%`)
-          whe.orWhere('engine_sn', 'like', `%${req.keyword}%`)
+          if(req.site_id){
+            whe.where('site_id', req.site_id)
+          }
+          if(req.kode){
+            whe.where('kode', 'like', `%${req.kode}%`)
+          }
+          if(req.tipe){
+            whe.where('tipe', req.tipe)
+          }
+          if(req.brand){
+            whe.where('brand', req.brand)
+          }
+          if(req.model){
+            whe.where('unit_model', req.model)
+          }
         })
         .andWhere('aktif', 'Y')
         .paginate(halaman, limit)
@@ -59,12 +76,12 @@ class MasEquipmentController {
       }
     }
 
-    console.log('*log data equipment*')
-    console.log(data1.toJSON().map(v => v.kode).join(','))
-    console.log(errUnit.length)
-    console.log('*log data equipment*')
+    // console.log('*log data equipment*')
+    // console.log(data1.toJSON().map(v => v.kode).join(','))
+    // console.log(errUnit.length)
+    // console.log('*log data equipment*')
 
-    console.log(data.toJSON());
+    // console.log(data.toJSON());
     return view.render('master.equipment.list', {
       limit: limit,
       search: req.keyword,

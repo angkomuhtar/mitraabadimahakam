@@ -22,8 +22,10 @@ class AksesResourceDelete {
     }else{
       const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'D'}).first()
       if(akses){
+        console.log('HAK AKSES DITEMUKAN');
         await next()
       }else{
+        console.log('HAK AKSES TIDAK DITEMUKAN');
         // response.redirect('back')
         response.status(404).json({success: false, message: 'You not authorized....'})
       }

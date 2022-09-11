@@ -27,11 +27,12 @@ class AksesResourceRead {
     const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'R'}).first()
     // console.log('AKSES >>>>>', akses);
     if(akses){
+      console.log('HAK AKSES DITEMUKAN');
       await next()
     }else{
+      console.log('HAK AKSES TIDAK DITEMUKAN');
       console.log('middleware:: ', uri);
-      // response.redirect('back')
-      // response.redirect('/401', false, 301)
+      response.status(404).json({success: false, message: 'You not authorized....'})
     }
   }
 }

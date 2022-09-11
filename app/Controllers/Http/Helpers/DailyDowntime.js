@@ -45,7 +45,6 @@ class DailyDowntime {
       },
     })
 
-    
     const data = []
     const currentMonth = moment(req.date).startOf('month').format('YYYY-MM-DD')
     const selectedDate = moment(req.date).format('YYYY-MM-DD')
@@ -53,21 +52,23 @@ class DailyDowntime {
     const daysInMonth = moment(currentMonth).daysInMonth()
     const getTotalHours = daysInMonth * 24
 
-    let arrMissEquipment = []
-    for (const obj of sheetData) {
-      const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
-      if(!validEquipment){
-        arrMissEquipment.push(obj.B)
+    for (const obj of sheetData.filter( kode => kode.B != undefined)) {
+      try {
+        const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
+        if(validEquipment){
+          return {
+            success: false,
+            message: 'Equipment '+obj.B+' tidak ditemukan pada data master Equipment...'
+          }
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: 'Data '+obj.B+' tidak valid...'
+        }
       }
+      
     }
-
-    if(arrMissEquipment.length > 0){
-      return {
-        success: false,
-        message: 'Equipment ini tdk di temukan pada master\n'+JSON.stringify(arrMissEquipment)
-      }
-    }
-
 
     // methods
     const GET_EQUIPMENT_DATA = async (tipe, brand, name) => {
@@ -314,7 +315,7 @@ class DailyDowntime {
     } catch (err) {
       await trx.rollback()
       return {
-        success: true,
+        success: false,
         message: 'failed upload daily downtime \n Reason : ' + err.message,
       }
     }
