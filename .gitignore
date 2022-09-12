@@ -17,7 +17,6 @@ database/*.sqlite
 
 # Upload Data Excel
 public/upload
-
 # Template Excel
 public/template-xls/*.*
 

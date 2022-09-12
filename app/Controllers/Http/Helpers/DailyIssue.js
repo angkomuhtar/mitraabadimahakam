@@ -4,6 +4,7 @@ const Issue = use('App/Models/MamIssue')
 const moment = require('moment')
 const MasShift = use('App/Models/MasShift')
 const MasSite = use('App/Models/MasSite')
+const _ = require('underscore');
 
 class dailyIssue {
      async ALL(req) {
@@ -261,7 +262,7 @@ class dailyIssue {
                     w.where('report_at', '>=', moment(start_at).format('YYYY-MM-DD HH:mm:ss'))
                     w.where('report_at', '<=', moment(end_at).format('YYYY-MM-DD HH:mm:ss'))
                }).
-               orderBy('report_at', 'desc').
+               orderBy('report_at', 'asc').
                fetch()).toJSON()
 
                let result = [];
@@ -269,7 +270,6 @@ class dailyIssue {
                     // create the obj
                     const eventName = value.dailyevent.event.narasi
                     if(eventName === 'Rain' || eventName === 'Slippery' || eventName === 'Fog') {
-                         console.log('value >> ', value)
                          const hour_start = value.report_at ? moment(value.report_at).format('HH:mm') : null
                          const hour_end = value.end_at ? moment(value.end_at).format('HH:mm') : null
                          const txtOngoing = `${hour_start} = ${eventName} (Ongoing)`;
@@ -280,13 +280,10 @@ class dailyIssue {
                          } else {
                               result.push(txtStopped)
                          }
-                         console.log('txt onGoing >> ', txtOngoing );
-                         console.log('txt stopped ', txtStopped)
-                         
                     }
                }
-
-               return result
+               const uniq = _.uniq(result)
+               return uniq
      }
 
      // async DELETE(params){
