@@ -463,7 +463,8 @@ class repPoduction {
                         w.where('check_in', '>=', moment(obj).startOf('hour').format('YYYY-MM-DD HH:mm'))
                         w.where('check_in', '<=', moment(obj).endOf('hour').format('YYYY-MM-DD HH:mm'))
                     }).fetch()).toJSON() || []
-                        
+                
+                if(dailyRitaseDetail.length > 0){
                     for (const el of dailyRitaseDetail) {
                         const equipment = await MasEquipment.query().where('id', el.hauler_id).last()
                         const material = await MasMaterial.query().where('id', el.daily_ritase.material).last()
@@ -476,6 +477,16 @@ class repPoduction {
                             material: el.daily_ritase.material,
                             volume: volume || 0
                         })
+                    }
+                }else{
+                    data.push({
+                        hour: moment(obj).format('HH'),
+                        hauler_id: null,
+                        site_id: null,
+                        pit_id: null,
+                        material: null,
+                        volume: 0
+                    })
                 }
             }
         }
@@ -484,12 +495,12 @@ class repPoduction {
         joinData = _.groupBy(joinData, 'hour')
         joinData = Object.keys(joinData).map(key => {
             return {
-                jamx: 'Pukul ' + key,
-                // sum_volume: parseFloat(joinData[key][0].vol) * parseFloat(joinData[key].length),
+                jamx: `${key}:00`,
                 sum_volume: joinData[key].reduce((a, b) => { return a + b.volume }, 0),
                 items: joinData[key]
             }
         })
+
         joinData = _.sortBy(joinData, 'jamx')
                 
         let xAxis = joinData.map(el => el.jamx)
