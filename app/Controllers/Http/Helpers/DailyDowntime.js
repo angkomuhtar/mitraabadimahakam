@@ -55,7 +55,7 @@ class DailyDowntime {
     for (const obj of sheetData.filter( kode => kode.B != undefined)) {
       try {
         const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
-        if(validEquipment){
+        if(!validEquipment){
           return {
             success: false,
             message: 'Equipment '+obj.B+' tidak ditemukan pada data master Equipment...'
