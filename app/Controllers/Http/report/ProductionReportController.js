@@ -178,6 +178,9 @@ async function PERIODE_WISE(req){
 
         let result = []
         let data = await ReportPoductionHelpers.PW_HOURLY(req)
+        console.log('====================================');
+        console.log(data.data[0]);
+        console.log('====================================');
         for (const obj of data.data) {
             let details = []
             for (const val of obj.items) {

@@ -929,49 +929,49 @@ class repPoduction {
             }
         })
 
-        /** GENERATE xAxis DATA **/
-        let xAxis = []
-        for (let i = 0; i < 24; i++) {
-            var str = '0'.repeat(2 - `${i}`.length) + i
-            xAxis.push(str + ':00')
-        }
-
+        var duration = moment.duration(moment(req.end_date).diff(moment(req.start_date)));
+        var hourLen = duration.asHours() + 1;
+        var xAxis = Array.apply(null, Array(hourLen)).map(function (_, i) {
+            return moment(req.start_date).startOf('hour').add(i, 'hour').format('YYYYMMDDHH');
+        });
+        
+        console.log(xAxis);
+        
         let color = req.colorGraph
-        for (const [i, obj] of data.entries()) {
+        for (let [i, obj] of data.entries()) {
             
             var arrData = [];
-
             const pit = await MasPit.query().where('id', obj.pit_id).last()
 
             /** GROUPING DATA BY WAKTU **/
             obj.items.reduce(function(res, value) {
-              if (!res[value.jamx]) {
-                res[value.jamx] = { jamx: value.jamx, vol: 0 };
-                arrData.push(res[value.jamx])
+              if (!res[value.tglx_jamx]) {
+                res[value.tglx_jamx] = { tglx_jamx: value.tglx_jamx, vol: 0 };
+                arrData.push(res[value.tglx_jamx])
               }
-              res[value.jamx].vol += value.vol;
+              res[value.tglx_jamx].vol += value.vol;
               return res;
             }, {});
 
-            for (let i = 0; i < 24; i++) {
-                var str = '0'.repeat(2 - `${i}`.length) + i
-                if(!arrData.map(el => el.jamx).includes(str)){
+            
+            for (let i = 0; i < xAxis.length; i++) {
+                if(!arrData.map(el => el.tglx_jamx).includes(xAxis[i])){
                     arrData.push({
-                        jamx: str,
+                        tglx_jamx: xAxis[i],
                         vol: 0
                     })
                 }
             }
 
-            arrData = _.sortBy(arrData, 'jamx');
+            arrData = _.sortBy(arrData, 'tglx_jamx');
             arrData = arrData.map(el => {
                 return {
-                    pukul: el.jamx + ':00',
+                    pukul: `${(el.tglx_jamx).substr(8, 2)}:00`,
                     actual: el.vol,
                 }
             })
 
-
+            console.log(arrData);
             result.push({
                 pit_id: obj.pit_id,
                 name: `${pit.name} (${pit.kode})`,
@@ -994,7 +994,7 @@ class repPoduction {
         }
         // console.log(JSON.stringify(result, null, 2));
         return {
-            xAxis: xAxis,
+            xAxis: xAxis.map(ex => `${ex.substr(8, 2)}:00`),
             data: result
         }
     }
