@@ -361,8 +361,10 @@ Route.group(() => {
   Route.get('/daily-ritase-ob/list', 'DailyRitaseController.list').as('opr.daily-ritase-ob.list').middleware('R')
 
   Route.get('/daily-ritase-ob/create', 'DailyRitaseController.create').as('opr.daily-ritase-ob.create').middleware('R')
-
+  
   Route.get('/daily-ritase-ob/create/addItems', 'DailyRitaseController.addItems').as('opr.daily-ritase-ob.addItems').middleware('R')
+  
+  Route.get('/daily-ritase-ob/:id/list-detail', 'DailyRitaseController.listDetails').as('opr.daily-ritase-ob.listDetails').middleware('R')
 
   Route.get('/daily-ritase-ob/:id/show', 'DailyRitaseController.show').as('opr.daily-ritase-ob.show').middleware('U')
 

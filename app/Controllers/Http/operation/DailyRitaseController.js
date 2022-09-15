@@ -56,6 +56,12 @@ class DailyRitaseController {
     }
   }
 
+  async listDetails ( { params } ) {
+    const data = await DailyRitaseHelpers.DETAILS(params)
+    console.log(data);
+    return data
+  }
+
   async graph({ view, auth }) {
     try {
       await auth.getUser()
