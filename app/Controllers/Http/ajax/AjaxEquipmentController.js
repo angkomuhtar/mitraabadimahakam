@@ -36,6 +36,16 @@ class AjaxEquipmentController {
     async getEquipmentModel ({ request }) {
         const req = request.all()
         const equipment = await EquipmentHelpers.MODELS(req)
+        console.log('====================================');
+        console.log(equipment);
+        console.log('====================================');
+        return equipment
+    }
+
+    async getEquipmentModelOnSite ( { request } ) {
+        const req = request.all()
+        let equipment = await EquipmentHelpers.GET_EQUIPMENT_NAME_BY_MODEL(req.site_id, req.model)
+        equipment.unshift({...equipment, id: '', kode: 'Semua Equipment dengan model terpilih', brand: ''})
         return equipment
     }
 }

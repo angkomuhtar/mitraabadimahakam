@@ -700,6 +700,8 @@ Route.group(() => {
 
   Route.get('/equipment/model', 'AjaxEquipmentController.getEquipmentModel').as('equipment.getEquipmentModel')
 
+  Route.get('/equipment/model-onsite', 'AjaxEquipmentController.getEquipmentModelOnSite').as('equipment.getEquipmentModelOnSite')
+
   Route.get('/equipment/excavator', 'AjaxEquipmentController.getEquipmentExcavator').as('equipment.getEquipmentExcavator')
 
   Route.get('/equipment/hauler', 'AjaxEquipmentController.getEquipmentHauler').as('equipment.getEquipmentHauler')

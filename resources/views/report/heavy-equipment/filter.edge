@@ -19,7 +19,7 @@
                                     <div class="panel-body">
                                         {{ csrfField() }}
                                         <div class="row">
-                                            <div class="form-group m-b-10">
+                                            <div class="form-group m-b-20">
                                                 <label for="" class="col-sm-4 control-label">Site/Project*</label>
                                                 <div class="col-sm-4">
                                                     <div class="input-group">
@@ -32,14 +32,24 @@
                                             </div>
                                             <div class="form-group m-b-10" id="unit_model" style="display:none">
                                                 <label for="" class="col-sm-4 control-label">Equipment Model*</label>
-                                                <div class="col-sm-8">
+                                                <div class="col-sm-6">
                                                     <div class="input-group" style="margin-bottom:10px">
                                                         <div class="input-group-addon">
                                                             <i class="ti-direction-alt"></i>
                                                         </div>
                                                         <select class="form-control inp-filter" name="unit_model" id="unit_model"></select>
                                                     </div>
-                                                    <span id="equipment-group" style="flex-wrap: wrap;display: flex;"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group m-b-10" id="list-equipment" style="display:none">
+                                                <label for="" class="col-sm-4 control-label">List Equipment</label>
+                                                <div class="col-sm-8">
+                                                    <div class="input-group" style="margin-bottom:10px">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-truck"></i>
+                                                        </div>
+                                                        <select class="form-control inp-filter" name="equip_id" id="equip_id"></select>
+                                                    </div>
                                                 </div>
                                             </div>
                                             
@@ -206,7 +216,10 @@
                         <td width="200" class="text-center" style="border: 1px solid #ddd;vertical-align: middle;">SITE/PROJECT</td>
                     </tr>
                     <tr class="b-b">
-                        <td id="unit_model" class="text-center">GROUP MODEL</td>
+                        <td class="text-center">
+                            <strong id="unit_model">GROUP MODEL </strong><br>
+                            <code id="equipmentID">Semua Equipment</code>
+                        </td>
                         <td id="site_nm" class="text-center" style="border: 1px solid #ddd;vertical-align: middle;"></td>
                     </tr>
                 </table>
@@ -320,6 +333,9 @@
     })
 </script>
 <style>
+    div.select2-container-multi {
+        padding: 0px !important;
+    }
     .container-radio-border {
         display: flex;
         justify-content: space-between;

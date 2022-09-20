@@ -1969,13 +1969,25 @@ class PDFReport {
         ])
 
         /* FORMAT DATA DOWNTIME EVENT TO PDFMAKE */
+        console.log(dataEvent);
         let dataTopEvent = dataEvent.map(v => {
             return [
-                {text: (v.equipment?.kode || ''), bold: true},
+                // {text: (v.equipment?.kode || ''), bold: true},
+                {
+                    stack: [
+                        {text: (v.equipment?.kode || ''), bold: true},
+                        {
+                            ul: [
+                                {text: `start: ${moment(v.breakdown_start).format('DD-MM-YY HH:mm')}`, fontSize: 9, listType: 'none'},
+                                {text: `finish: ${moment(v.breakdown_finish).format('DD-MM-YY HH:mm')}`, fontSize: 9, listType: 'none'}
+                            ]
+                        }
+                    ]
+                },
                 {text: v.location+'\n'+v.problem_reported, alignment:'left', fontSize: 9},
                 {text: v.downtime_status},
                 {text: v.corrective_action, fontSize: 9},
-                {text: v.downtime_total},
+                {text: `${v.downtime_total} Jam`},
                 {text: v.component_group},
             ]
         })
@@ -2029,8 +2041,7 @@ class PDFReport {
                         body: dataKPI
                     }
                 },
-                {text: ' \n\n'},
-                {text: 'Grafik Top Event\n', bold: true},
+                { text: 'Grafik Top Event\n', fontSize: 14, bold: true, pageBreak: 'before', margin: [0, 0, 0, 8] },
                 {text: '\n\n'},
                 {
                     alignment: 'justify',
@@ -2052,7 +2063,8 @@ class PDFReport {
                     table: {
                         widths: [100, 100, '*', 100, 50, 50],
                         body: dataTopEvent
-                    }
+                    },
+                    layout: 'lightHorizontalLines'
                 },
                 {text: ' '},
                 {text: '\n\n'},
