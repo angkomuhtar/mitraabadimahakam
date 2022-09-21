@@ -12,8 +12,8 @@ class AksesResourceCreate {
     const uri = (request.url()).split('/')
     const usr = await auth.getUser()
     const name = uri[2]
-    
-    if(usr.user_tipe === 'administrator'){
+    console.log(usr.user_tipe);
+    if(usr.user_tipe == 'administrator'){
       await next()
     }else{
       const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'C'}).first()
@@ -22,7 +22,11 @@ class AksesResourceCreate {
         await next()
       }else{
         console.log('HAK AKSES TIDAK DITEMUKAN');
-        response.status(404).json({success: false, message: 'You not authorized....'})
+        response.status(404).json({
+          success: false, 
+          usertype: usr.user_tipe,
+          message: 'You not authorized....'
+        })
       }
     }
 

@@ -264,38 +264,34 @@ class MonthlyPlan {
         for (const tgl of currentMonthDates) {
             const tgl_awal = tgl + ' 07:00:59'
             const tgl_akhir = moment(tgl_awal).add(1, 'days').format('YYYY-MM-DD HH:mm:ss')
-            
+
             try {
                 let arrData = []
                 
                 const dailyData = (
-                    await DailyRitaseCoalDetail
+                    await DailyRitaseCoal
                     .query()
-                    .with('seam', a => a.with('pit'))
-                    .with('transporter')
-                    .with('ritase_coal')
+                    .with('pit')
                     .where(
                         w => {
-                            w.where('checkout_jt', '>=', tgl_awal)
-                            w.where('checkout_jt', '<=', tgl_akhir)
+                            w.where('date', '>=', tgl_awal)
+                            w.where('date', '<=', tgl_akhir)
                         }
                     ).fetch()
                 ).toJSON()
 
-               
+               console.log(dailyData);
                 if(dailyData.length > 0){
                     for (const val of dailyData) {
-                        arrData.push({...val, tgl: tgl})
+                        arrData.push({...val, tgl: moment(val.date).format('DD/MM/YY')})
                     }
                 }
 
                 for (const elm of arrData) {
                     sumData.push({
-                        pit_name: elm.seam.pit.name,
+                        pit_name: elm.pit.name,
                         tgl: tgl,
-                        w_gross: elm.w_gross,
-                        w_tare: elm.w_tare,
-                        w_netto: elm.w_netto
+                        pit_gross: elm.sum_vol
                     })
                 }
 
@@ -316,7 +312,7 @@ class MonthlyPlan {
             let grpByDate = Object.keys(data).map(val => {
                 return {
                     tgl: val,
-                    w_netto: data[val].reduce((a, b) => { return a + b.w_netto }, 0)
+                    pit_gross: data[val].reduce((a, b) => { return a + b.pit_gross }, 0)
                 }
             })
 
@@ -333,7 +329,7 @@ class MonthlyPlan {
             var x = elm.data.map(val => val.tgl)
             for (const tgl of currentMonthDates) {
                 if(!x.includes(tgl)){
-                    elm.data.push({tgl: tgl, w_netto: 0})
+                    elm.data.push({tgl: tgl, pit_gross: 0})
                 }
             }
             let tmp = []
@@ -341,9 +337,9 @@ class MonthlyPlan {
                 tmp.push({
                     meta: elm.pit,
                     date: res.tgl,
-                    value: res.w_netto
+                    value: res.pit_gross
                 })
-                totalActual.push(res.w_netto)
+                totalActual.push(res.pit_gross)
             }
             result.push(tmp)
         }

@@ -525,17 +525,17 @@ Route.group(() => {
   Route.delete('/daily-issue/:id/destroy', 'DailyIssueController.destroy').as('opr.daily-issue.destroy').middleware('D')
 
   // Purchasing Request Order
-  Route.get('/purchasing-request', 'PurchasingRequestController.index').as('opr.purchasing-request.index').middleware('R')
+  Route.get('/purchasing-request', 'PurchasingRequestController.index').as('opr.purchasing-request.index')
 
-  Route.post('/purchasing-request', 'PurchasingRequestController.store').as('opr.purchasing-request.store').middleware('C')
+  Route.post('/purchasing-request', 'PurchasingRequestController.store').as('opr.purchasing-request.store')
 
-  Route.get('/purchasing-request/list', 'PurchasingRequestController.list').as('opr.purchasing-request.list').middleware('R')
+  Route.get('/purchasing-request/list', 'PurchasingRequestController.list').as('opr.purchasing-request.list')
 
-  Route.get('/purchasing-request/create', 'PurchasingRequestController.create').as('opr.purchasing-request.create').middleware('C')
+  Route.get('/purchasing-request/create', 'PurchasingRequestController.create').as('opr.purchasing-request.create')
 
-  Route.get('/purchasing-request/items-create', 'PurchasingRequestController.itemCreate').as('opr.purchasing-request.itemCreate').middleware('C')
+  Route.get('/purchasing-request/items-create', 'PurchasingRequestController.itemCreate').as('opr.purchasing-request.itemCreate')
 
-  Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view').middleware('R')
+  Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view')
 
   // SOP Operational
 
