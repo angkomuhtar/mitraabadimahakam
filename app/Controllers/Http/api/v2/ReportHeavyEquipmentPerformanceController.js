@@ -10,7 +10,7 @@ const MasSite = use("App/Models/MasSite")
 const QuickChart = require('quickchart-js')
 const { performance } = require('perf_hooks')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
-
+const MasEquipment = use('App/Models/MasEquipment')
 const ReportPDFHelpers = use("App/Controllers/Http/Helpers/ReportPDF")
 const ReportHeavyEquipment = use("App/Controllers/Http/Helpers/ReportHeavyEquipment")
 
@@ -169,6 +169,31 @@ class ReportHeavyEquipmentPerformanceController {
         // console.log('====================================');
         // console.log(data.byKPI);
         // console.log('====================================');
+    }
+
+    async equipmentList( { auth, request, response } ) {
+
+        const { site_id } = request.all();
+        const equipments = (
+            await MasEquipment.query()
+              .where(wh => {
+                wh.whereIn('tipe', ['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer', 'compaq', 'oth'])
+                wh.where('aktif', 'Y')
+                wh.where('site_id', site_id)
+              })
+              .fetch()
+          ).toJSON()
+
+        const parsedEquipment = equipments.map((v) => {
+            return {
+                id : String(v.id),
+                title : v.kode
+            }
+        })
+
+        return {
+            data : parsedEquipment
+        }
     }
 }
 

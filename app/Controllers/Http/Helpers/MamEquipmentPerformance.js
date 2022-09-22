@@ -111,15 +111,19 @@ class MamEquipmentPerformance {
       newEquipmentPerformance.fill({
         month: currentMonth,
         period: `${now} - ${to}`,
+        period_date_start : currentMonth,
+        period_date_end : currentMonth,
         equip_id: equipment,
         upload_by: user.id,
         mohh: getTotalHours,
         target_downtime_monthly: getTotalHours * (1 - 0 / 100),
       })
 
+
+
       await newEquipmentPerformance.save()
 
-      console.log(`---- equipment id ${equipment} saved to the monthly performance ----`)
+      console.log(`---- equipment id ${newEquipmentPerformance} saved to the monthly performance ----`)
     }
 
     return {

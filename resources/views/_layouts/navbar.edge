@@ -143,9 +143,9 @@
                         <div class="dw-user-box">
                             <div class="u-img">
                                 @if(auth.user.avatar === null)
-                                    <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="30" height="30" class="img-circle">
+                                    <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="200" height="80" class="img-circle">
                                 @else
-                                    <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="30" width="30" class="img-circle">
+                                    <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="200" width="80" class="img-circle">
                                 @endif
                             </div>
                             <div class="u-text">

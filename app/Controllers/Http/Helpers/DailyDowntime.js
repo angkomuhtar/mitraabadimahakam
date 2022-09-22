@@ -14,6 +14,7 @@ const EquipmentPerformanceHelpers = use('App/Controllers/Http/Helpers/MamEquipme
 const EquipmentPerformanceDetailsHelpers = use('App/Controllers/Http/Helpers/MamEquipmentPerformanceDetails')
 const Utils = use('App/Controllers/Http/customClass/utils')
 const MasShift = use('App/Models/MasShift')
+const _ = require('underscore')
 
 class DailyDowntime {
   async LIST(req) {
@@ -41,7 +42,7 @@ class DailyDowntime {
     const xlsx = excelToJson({
       sourceFile: filePath,
       header: {
-        rows: 6
+        rows: 6,
       },
     })
 
@@ -52,22 +53,40 @@ class DailyDowntime {
     const daysInMonth = moment(currentMonth).daysInMonth()
     const getTotalHours = daysInMonth * 24
 
-    for (const obj of sheetData.filter( kode => kode.B != undefined)) {
+    /**
+     * Check Wheter there is equipment performance master data for current month
+     */
+    const masterEquipmentPerformanceCheck = await EquipmentPerformance.query()
+      .where(wh => {
+        wh.where('month', moment(selectedDate).startOf('month').format('YYYY-MM-DD'))
+      })
+      .last()
+    console.log('masterEquipmentPerformanceCheck >> ', masterEquipmentPerformanceCheck)
+
+    const monthName = moment(selectedDate).startOf('month').format('MMMM')
+
+    if (!masterEquipmentPerformanceCheck) {
+      return {
+        success: false,
+        message: 'Equipment Performance Bulanan Belum di buat untuk bulan ' + monthName,
+      }
+    }
+
+    for (const obj of sheetData.filter(kode => kode.B != undefined)) {
       try {
         const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
-        if(validEquipment){
+        if (!validEquipment) {
           return {
             success: false,
-            message: 'Equipment '+obj.B+' tidak ditemukan pada data master Equipment...'
+            message: 'Equipment ' + obj.B + ' tidak ditemukan pada data master Equipment...',
           }
         }
       } catch (error) {
         return {
           success: false,
-          message: 'Data '+obj.B+' tidak valid...'
+          message: 'Data ' + obj.B + ' tidak valid...',
         }
       }
-      
     }
 
     // methods
@@ -87,16 +106,15 @@ class DailyDowntime {
 
     try {
       // update into equipment performance master
-      await EquipmentPerformanceHelpers.ADD(currentMonth, user)
+      // await EquipmentPerformanceHelpers.ADD(currentMonth, user)
       // await EquipmentPerformanceDetailsHelpers.ADD(selectedDate, user)
 
       for (const value of sheetData) {
-        console.log(value);
         let hour_start = String(value.J).split(' ')[4] || '00:00:00'
         let hour_finish = String(value.K).split(' ')[4] || '00:00:00'
-        console.log(String(value.J).split(' ')[4]);
-        console.log(String(value.K).split(' ')[4]);
-        console.log('-----------------------');
+        // console.log(String(value.J).split(' ')[4])
+        // console.log(String(value.K).split(' ')[4])
+        // console.log('-----------------------')
         const eqName = value.B && value.B.indexOf(' ') === -1 ? value.B.split(' ')[0] : value.B
         const date = moment(value.I).add(1, 'day').format('YYYY-MM-DD')
         const bd_start = moment(`${date} ${hour_start}`).add(3, 'minute').format('YYYY-MM-DD HH:mm:ss')
@@ -117,6 +135,7 @@ class DailyDowntime {
           component_group: value.N || null,
           downtime_code: value.O,
           pic: value.P || null,
+          budget_pa: value.V || 0,
         }
         data.push(obj)
 
@@ -127,6 +146,7 @@ class DailyDowntime {
         //   message: checkMsg,
         // }
       }
+      console.log('date >> ', selectedDate)
 
       // filter data by date
       const filteredData = data.filter(v => new Date(v.date) >= new Date(req.date) && new Date(v.date) <= new Date(req.date))
@@ -157,7 +177,7 @@ class DailyDowntime {
         try {
           await newDailyDowntime.save(trx)
           afterUpload.push(newDailyDowntime.toJSON())
-          console.log(`--- inserting data ${data.uid} finished ----`)
+          // console.log(`--- inserting data ${data.uid} finished ----`)
         } catch (err) {
           await trx.rollback()
           return {
@@ -197,7 +217,7 @@ class DailyDowntime {
       /**
        * DAILY EQUIPMENT PERFORMANCE
        */
-      const equipments = (
+      let equipments = (
         await MasEquipment.query()
           .where(wh => {
             wh.whereIn('tipe', ['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer'])
@@ -206,49 +226,135 @@ class DailyDowntime {
           .fetch()
       ).toJSON()
 
-      for (const eq of equipments) {
-        const getLastBudgetPA = await EquipmentPerformance.query()
+      const equipIds = _.uniq([...filteredData.map(v => v.unitName), ...equipments.map(v => v.id)]).map(v => {
+        return {
+          id: v,
+        }
+      })
+
+      const GET_BUDGET_PA_EQUIPMENT = equipId => {
+        let budgetPA = 0
+
+        for (const value of filteredData) {
+          if (value.unitName === equipId) {
+            budgetPA = value.budget_pa
+          }
+        }
+
+        console.log(`budget PA EQ ID :: ${equipId} >> ${budgetPA}`)
+
+        return budgetPA
+      }
+
+      console.log('equip ids >> ', equipIds)
+      for (const eq of equipIds) {
+        const SoM = moment(selectedDate).startOf('month').format('YYYY-MM-DD')
+        let prevDate = null
+        if (selectedDate.split('-')[2] === '01') {
+          prevDate = moment(selectedDate).format('YYYY-MM-DD')
+        } else {
+          prevDate = moment(selectedDate).subtract(1, 'day').format('YYYY-MM-DD')
+        }
+
+        let getLastBudgetPA = await EquipmentPerformance.query()
           .where(wh => {
             wh.where('equip_id', eq.id)
+            wh.where('period_date_start', SoM)
+            wh.where('period_date_end', prevDate)
           })
-          .first()
+          .last()
 
-        const newEquipmentPerformance = new EquipmentPerformanceDetails()
+        if (!getLastBudgetPA) {
+          getLastBudgetPA = await EquipmentPerformance.query()
+            .where(wh => {
+              wh.where('equip_id', eq.id)
+              wh.where('period_date_start', SoM)
+            })
+            .last()
+        }
+
+        let newEquipmentPerformance = null
         const breakdown_hours_scheduled = await GET_COUNT_SCHEDULED_BREAKDOWN('SCH', eq.id)
         const breakdown_hours_unscheduled = await GET_COUNT_SCHEDULED_BREAKDOWN('UNS', eq.id)
         const breakdown_hours_accident = await GET_COUNT_SCHEDULED_BREAKDOWN('ACD', eq.id)
         const breakdown_hours_total = breakdown_hours_scheduled + breakdown_hours_unscheduled + breakdown_hours_accident
 
-        console.log('daily sch >> ', breakdown_hours_scheduled)
-        console.log('daily uns >> ', breakdown_hours_unscheduled)
-        console.log('daily acd >> ', breakdown_hours_accident)
-        console.log('daily total >> ', breakdown_hours_total)
+        // console.log('daily sch >> ', breakdown_hours_scheduled)
+        // console.log('daily uns >> ', breakdown_hours_unscheduled)
+        // console.log('daily acd >> ', breakdown_hours_accident)
+        // console.log('daily total >> ', breakdown_hours_total)
 
-        newEquipmentPerformance.fill({
-          site_id: req.site_id,
-          budget_pa: getLastBudgetPA?.budget_pa || 0,
-          equip_id: eq.id,
-          target_downtime_monthly: 24 * (1 - 0 / 100), // daily,
-          mohh: 24, // daily
-          date: selectedDate,
-          breakdown_hours_scheduled: breakdown_hours_scheduled,
-          breakdown_hours_unscheduled: breakdown_hours_unscheduled,
-          breakdown_hours_accident: breakdown_hours_accident,
-          breakdown_hours_total: breakdown_hours_total,
-          standby_hours: 0,
-          actual_pa: ((24 - breakdown_hours_total) / 24) * 100,
-          breakdown_ratio_scheduled: (breakdown_hours_scheduled / (breakdown_hours_scheduled + breakdown_hours_unscheduled)) * 100 || 0,
-          breakdown_ratio_unscheduled: (breakdown_hours_unscheduled / (breakdown_hours_scheduled + breakdown_hours_unscheduled)) * 100 || 0,
-        })
+        const dailyActivityEquipArr = []
+        const dailyEquipmentChecks = await EquipmentPerformanceDetails.query()
+          .where(wh => {
+            wh.where('equip_id', eq.id)
+            wh.where('site_id', req.site_id)
+            wh.where('date', selectedDate)
+          })
+          .last()
+
+        if (dailyEquipmentChecks) {
+          newEquipmentPerformance = dailyEquipmentChecks.merge({
+            site_id: req.site_id,
+            budget_pa: getLastBudgetPA?.budget_pa || GET_BUDGET_PA_EQUIPMENT(eq.id) || 0,
+            equip_id: eq.id,
+            target_downtime_monthly: 24 * (1 - 0 / 100), // daily,
+            mohh: 24, // daily
+            date: selectedDate,
+            breakdown_hours_scheduled: breakdown_hours_scheduled,
+            breakdown_hours_unscheduled: breakdown_hours_unscheduled,
+            breakdown_hours_accident: breakdown_hours_accident,
+            breakdown_hours_total: breakdown_hours_total,
+            standby_hours: 0,
+            actual_pa: ((24 - breakdown_hours_total) / 24) * 100,
+            breakdown_ratio_scheduled: (breakdown_hours_scheduled / (breakdown_hours_scheduled + breakdown_hours_unscheduled)) * 100 || 0,
+            breakdown_ratio_unscheduled: (breakdown_hours_unscheduled / (breakdown_hours_scheduled + breakdown_hours_unscheduled)) * 100 || 0,
+          })
+        } else {
+          newEquipmentPerformance = new EquipmentPerformanceDetails()
+          newEquipmentPerformance.fill({
+            site_id: req.site_id,
+            budget_pa: getLastBudgetPA?.budget_pa || GET_BUDGET_PA_EQUIPMENT(eq.id) || 0,
+            equip_id: eq.id,
+            target_downtime_monthly: 24 * (1 - 0 / 100), // daily,
+            mohh: 24, // daily
+            date: selectedDate,
+            breakdown_hours_scheduled: breakdown_hours_scheduled,
+            breakdown_hours_unscheduled: breakdown_hours_unscheduled,
+            breakdown_hours_accident: breakdown_hours_accident,
+            breakdown_hours_total: breakdown_hours_total,
+            standby_hours: 0,
+            actual_pa: ((24 - breakdown_hours_total) / 24) * 100,
+            breakdown_ratio_scheduled: (breakdown_hours_scheduled / (breakdown_hours_scheduled + breakdown_hours_unscheduled)) * 100 || 0,
+            breakdown_ratio_unscheduled: (breakdown_hours_unscheduled / (breakdown_hours_scheduled + breakdown_hours_unscheduled)) * 100 || 0,
+          })
+        }
 
         try {
           await newEquipmentPerformance.save(trx)
+          dailyActivityEquipArr.push(newEquipmentPerformance.equip_id)
           console.log(`---- success insert data daily equipment performance : equip id ${eq.id} ----`)
         } catch (err) {
           await trx.rollback()
           return {
             success: false,
             message: 'failed when inserting eq.perf details to database. Reason : \n' + err.message,
+          }
+        }
+
+        // check the timesheet
+        try {
+          if (dailyActivityEquipArr.length > 0) {
+            for (const id of dailyActivityEquipArr) {
+              await this.timesheetChecks(id, selectedDate, req.site_id)
+            }
+          } else {
+            // do nothing
+          }
+        } catch (err) {
+          return {
+            success: false,
+            message: 'failed when when updating timesheet. Reason : \n' + err.message,
           }
         }
       }
@@ -265,27 +371,49 @@ class DailyDowntime {
       ).toJSON()
 
       for (const value of equipmentPerformanceData) {
-        const equipmentPerformance = await EquipmentPerformance.query()
+        const SoM = moment(selectedDate).startOf('month').format('YYYY-MM-DD')
+        let prevDate = null
+        if (selectedDate.split('-')[2] === '01') {
+          prevDate = moment(selectedDate).format('YYYY-MM-DD')
+        } else {
+          prevDate = moment(selectedDate).subtract(1, 'day').format('YYYY-MM-DD')
+        }
+
+        let equipmentPerformance = await EquipmentPerformance.query()
           .where(wh => {
             wh.where('equip_id', value.equip_id)
+            wh.where('period_date_start', SoM)
+            wh.where('period_date_end', prevDate)
           })
-          .first()
+          .last()
+
+        if (!equipmentPerformance) {
+          equipmentPerformance = await EquipmentPerformance.query()
+            .where(wh => {
+              wh.where('equip_id', value.equip_id)
+              wh.where('period_date_start', SoM)
+            })
+            .last()
+        }
 
         const breakdown_hours_scheduled = (await GET_COUNT_SCHEDULED_BREAKDOWN('SCH', value.equip_id)) + equipmentPerformance.breakdown_hours_scheduled
         const breakdown_hours_unscheduled = (await GET_COUNT_SCHEDULED_BREAKDOWN('UNS', value.equip_id)) + equipmentPerformance.breakdown_hours_unscheduled
         const breakdown_hours_accident = (await GET_COUNT_SCHEDULED_BREAKDOWN('ACD', value.equip_id)) + equipmentPerformance.breakdown_hours_accident
         const breakdown_hours_total = breakdown_hours_scheduled + breakdown_hours_unscheduled + breakdown_hours_accident
 
-        console.log('sch >> ', breakdown_hours_scheduled)
-        console.log('uns >> ', breakdown_hours_unscheduled)
-        console.log('acd >> ', breakdown_hours_accident)
-        console.log('total >> ', breakdown_hours_total)
+        // console.log('sch >> ', breakdown_hours_scheduled)
+        // console.log('uns >> ', breakdown_hours_unscheduled)
+        // console.log('acd >> ', breakdown_hours_accident)
+        // console.log('total >> ', breakdown_hours_total)
 
         const startDate = moment(equipmentPerformance.month).format('DD MMM')
         const nowDate = moment(selectedDate).format('DD MMM')
 
         equipmentPerformance.merge({
+          budget_pa: GET_BUDGET_PA_EQUIPMENT(value.equip_id) || 0,
           period: `${startDate} - ${nowDate}`,
+          period_date_start: SoM,
+          period_date_end: selectedDate,
           breakdown_hours_scheduled: breakdown_hours_scheduled,
           breakdown_hours_unscheduled: breakdown_hours_unscheduled,
           breakdown_hours_accident: breakdown_hours_accident,
@@ -326,7 +454,6 @@ class DailyDowntime {
    */
   async uploadProcessHourMeter(req, filePath, user) {
     let trx = await db.beginTransaction()
-    
 
     const sheet = req.sheet || 'DATABASE'
 
@@ -335,12 +462,9 @@ class DailyDowntime {
       header: 1,
     })
 
-    
-
     const data = []
     const sheetData = xlsx[sheet].slice(2)
     const reqDate = moment(req.date).format('YYYY-MM-DD')
-
 
     // methods
     const GET_EQUIPMENT_DATA = async (tipe, model, name) => {
@@ -425,7 +549,7 @@ class DailyDowntime {
 
       try {
         // insert into equipment performance master
-        await EquipmentPerformanceHelpers.ADD(reqDate, user)
+        // await EquipmentPerformanceHelpers.ADD(reqDate, user)
 
         const shifts = (await MasShift.query(trx).fetch()).toJSON()
 
@@ -474,11 +598,30 @@ class DailyDowntime {
              * MONTHLY PERFORMANCE
              */
             // update equipment performance master
-            const equipmentPerformance = await EquipmentPerformance.query(trx)
+            const SoM = moment(reqDate).startOf('month').format('YYYY-MM-DD')
+            let prevDate = null
+            if (reqDate.split('-')[2] === '01') {
+              prevDate = moment(reqDate).format('YYYY-MM-DD')
+            } else {
+              prevDate = moment(reqDate).subtract(1, 'day').format('YYYY-MM-DD')
+            }
+
+            let equipmentPerformance = await EquipmentPerformance.query(trx)
               .where(wh => {
                 wh.where('equip_id', equipId)
+                wh.where('period_date_start', SoM)
+                wh.where('period_date_end', prevDate)
               })
-              .first()
+              .last()
+
+            if (!equipmentPerformance) {
+              equipmentPerformance = await EquipmentPerformance.query(trx)
+                .where(wh => {
+                  wh.where('equip_id', equipId)
+                  wh.where('period_date_start', SoM)
+                })
+                .last()
+            }
 
             if (equipmentPerformance) {
               const standby_hours = equipmentPerformance.mohh - (USED_SMU + equipmentPerformance.breakdown_hours_total)
@@ -506,7 +649,6 @@ class DailyDowntime {
                   message: `Failed when updating hm equipment \n Reason : ` + err.message,
                 }
               }
-
               console.log(`---- finished update hm equipment ${value.equipName} ----`)
             }
 
@@ -564,6 +706,202 @@ class DailyDowntime {
           success: true,
           message: 'Failed to upload hour meter. \n Reason : ' + err.message,
         }
+      }
+    }
+  }
+
+  async timesheetChecks(equipId, date, siteId) {
+    const trx = await db.beginTransaction()
+    const GET_STARTING_HOUR_METER_EQUIPMENT = async equipId => {
+      if (equipId) {
+        let getStartingHourMeterEquipment = await DailyChecklist.query(trx)
+          .where(wh => {
+            wh.where('tgl', moment(date).startOf('month').format('YYYY-MM-DD'))
+            wh.where('unit_id', equipId)
+          })
+          .last()
+        if (!getStartingHourMeterEquipment) {
+          getStartingHourMeterEquipment = await DailyChecklist.query(trx)
+            .where(wh => {
+              wh.where('unit_id', equipId)
+            })
+            .last()
+        }
+        return getStartingHourMeterEquipment || 0
+      }
+    }
+
+    const GET_MTD_HOUR_METER_EQUIPMENT = async equipId => {
+      if (equipId) {
+        const start = moment(date).startOf('month').format('YYYY-MM-DD')
+        const end = moment(date).endOf('month').format('YYYY-MM-DD')
+        const equipment = await DailyChecklist.query()
+          .where(wh => {
+            wh.where('tgl', '>=', start)
+            wh.where('tgl', '<=', end)
+            wh.where('unit_id', equipId)
+          })
+          .last()
+        return equipment
+      }
+    }
+
+    //
+    const SMU_BEGIN = (await GET_STARTING_HOUR_METER_EQUIPMENT(equipId)).begin_smu
+    const SMU_MTD = (await GET_MTD_HOUR_METER_EQUIPMENT(equipId))?.end_smu
+    const USED_SMU = SMU_MTD - SMU_BEGIN || 0
+
+    /**
+     * MONTHLY PERFORMANCE
+     */
+    // update equipment performance master
+    const SoM = moment(date).startOf('month').format('YYYY-MM-DD')
+    let prevDate = null
+    if (date.split('-')[2] === '01') {
+      prevDate = moment(date).format('YYYY-MM-DD')
+    } else {
+      prevDate = moment(date).subtract(1, 'day').format('YYYY-MM-DD')
+    }
+
+    let equipmentPerformance = await EquipmentPerformance.query(trx)
+      .where(wh => {
+        wh.where('equip_id', equipId)
+        wh.where('period_date_start', SoM)
+        wh.where('period_date_end', prevDate)
+      })
+      .last()
+
+    if (!equipmentPerformance) {
+      equipmentPerformance = await EquipmentPerformance.query(trx)
+        .where(wh => {
+          wh.where('equip_id', equipId)
+          wh.where('period_date_start', SoM)
+        })
+        .last()
+    }
+
+    if (equipmentPerformance) {
+      const standby_hours = equipmentPerformance.mohh - (USED_SMU + equipmentPerformance.breakdown_hours_total)
+      const actual_pa_non_percentage = equipmentPerformance.actual_pa / 100
+      const actual_ma = !USED_SMU
+        ? USED_SMU / (USED_SMU + equipmentPerformance.breakdown_hours_total)
+        : actual_pa_non_percentage / (actual_pa_non_percentage + equipmentPerformance.breakdown_hours_total)
+
+      equipmentPerformance.merge({
+        hm_reading_start: SMU_BEGIN,
+        hm_reading_end: SMU_MTD,
+        work_hours: USED_SMU,
+        actual_eu: (USED_SMU / equipmentPerformance.mohh) * 100 || 0,
+        actual_ua: (USED_SMU / (USED_SMU + standby_hours)) * 100 || 0,
+        actual_ma: actual_ma * 100 || 0,
+        standby_hours: standby_hours,
+      })
+
+      try {
+        await equipmentPerformance.save(trx)
+      } catch (err) {
+        await trx.rollback()
+        return {
+          success: false,
+          message: `Failed when updating hm equipment \n Reason : ` + err.message,
+        }
+      }
+      // console.log(`---- finished update hm equipment ----`)
+    }
+
+    /**
+     * DAILY PERFORMANCE
+     */
+    const dailyEquipPerformance = await EquipmentPerformanceDetails.query(trx)
+      .where(wh => {
+        wh.where('date', date)
+        wh.where('equip_id', equipId)
+        wh.where('site_id', siteId)
+      })
+      .last()
+
+    if (dailyEquipPerformance) {
+      const standby_hours = dailyEquipPerformance.mohh - (USED_SMU + dailyEquipPerformance.breakdown_hours_total)
+      const actual_pa_non_percentage = dailyEquipPerformance.actual_pa / 100
+      const actual_ma = !USED_SMU
+        ? USED_SMU / (USED_SMU + dailyEquipPerformance.breakdown_hours_total)
+        : actual_pa_non_percentage / (actual_pa_non_percentage + dailyEquipPerformance.breakdown_hours_total)
+      dailyEquipPerformance.merge({
+        budget_pa: equipmentPerformance?.budget_pa || 0,
+        hm_reading_start: SMU_BEGIN,
+        hm_reading_end: SMU_MTD,
+        work_hours: USED_SMU,
+        actual_eu: (USED_SMU / dailyEquipPerformance.mohh) * 100 || 0,
+        actual_ua: (USED_SMU / (USED_SMU + standby_hours)) * 100 || 0,
+        actual_ma: actual_ma * 100 || 0,
+        standby_hours: standby_hours,
+      })
+      await dailyEquipPerformance.save(trx)
+      // console.log(`---- finished update hm equipment for daily ----`)
+    }
+
+    await trx.commit(trx)
+  }
+
+  async dailyEquipmentPerformanceChecks(equipId, date) {}
+
+  async budgetPAChecks(equipId, date, siteId, budgetPA) {
+    const trx = await db.beginTransaction()
+    // update monthly equipment performance budget pa
+    const SoM = moment(date).startOf('month').format('YYYY-MM-DD')
+    let prevDate = null
+    if (date.split('-')[2] === '01') {
+      prevDate = moment(date).format('YYYY-MM-DD')
+    } else {
+      prevDate = moment(date).subtract(1, 'day').format('YYYY-MM-DD')
+    }
+
+    // update daily equipment performance budget pa
+    let equipmentPerformance = await EquipmentPerformance.query(trx)
+      .where(wh => {
+        wh.where('equip_id', equipId)
+        wh.where('period_date_start', SoM)
+        wh.where('period_date_end', prevDate)
+      })
+      .last()
+
+    if (!equipmentPerformance) {
+      equipmentPerformance = await EquipmentPerformance.query(trx)
+        .where(wh => {
+          wh.where('equip_id', equipId)
+          wh.where('period_date_start', SoM)
+        })
+        .last()
+    }
+
+    if (equipmentPerformance) {
+      equipmentPerformance.merge({
+        budget_pa: budgetPA,
+      })
+      await equipmentPerformance.save(trx)
+    }
+
+    const dailyEquipPerformance = await EquipmentPerformanceDetails.query(trx)
+      .where(wh => {
+        wh.where('date', date)
+        wh.where('equip_id', equipId)
+        wh.where('site_id', siteId)
+      })
+      .last()
+
+    if (dailyEquipPerformance) {
+      dailyEquipPerformance.merge({
+        budget_pa: budgetPA,
+      })
+      await dailyEquipPerformance.save(trx)
+    }
+
+    try {
+      await trx.commit(trx)
+    } catch (err) {
+      return {
+        success: false,
+        message: 'failed when updating equipment budget pa, unit id ' + equipId,
       }
     }
   }

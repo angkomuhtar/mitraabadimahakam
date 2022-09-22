@@ -93,6 +93,8 @@ class EquipmentPerformanceController {
         month: currentMonth,
         site_id: site_id,
         period: `${now} - ${to}`,
+        period_date_start : currentMonth,
+        period_date_end : currentMonth,
         equip_id: equipment,
         upload_by: user.id,
         mohh: getTotalHours,
