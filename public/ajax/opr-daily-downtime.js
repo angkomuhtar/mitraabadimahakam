@@ -38,17 +38,30 @@ $(function () {
     $('textarea[name="desc"]').val(desc)
   })
 
-  $('body').on('click', 'a.btn-pagging', function (e) {
-    e.preventDefault()
-    var page = $(this).data('page')
-    var keyword = $('input#inpKeyworddoc').val()
-    var url = window.location.pathname + '/list?page=' + page + '&keyword=' + keyword
+  $('#filterModal').on('hidden.bs.modal', function (e) {
+    var body = $('body')
+    var page = $('input[name="inp-page"]').val()
+    var status = body.find('select[name="status"]').val()
+    var site_id = body.find('select[name="site_id"]').val()
+    var equip_id = body.find('select[name="equip_idx"]').val()
+    var begin_date = body.find('input[name="begin_date"]').val()
+    var end_date = body.find('input[name="end_date"]').val()
     $.ajax({
       async: true,
-      url: url,
+      url: '/operation/daily-downtime/list',
       method: 'GET',
+      dataType: 'html',
+      data: {
+        limit: 50,
+        page: page,
+        site_id: site_id,
+        equip_id: equip_id,
+        downtime_status: status,
+        breakdown_start: begin_date,
+        breakdown_finish: end_date
+      },
       success: function (result) {
-        $('div#form-content-details').children().remove()
+        $('content-module').css('display', 'none')
         $('div#list-content').html(result).show()
       },
       error: function (err) {
@@ -56,6 +69,25 @@ $(function () {
       },
     })
   })
+
+  // $('body').on('click', 'a.btn-pagging', function (e) {
+  //   e.preventDefault()
+  //   var page = $(this).data('page')
+  //   var keyword = $('input#inpKeyworddoc').val()
+  //   var url = window.location.pathname + '/list?page=' + page + '&keyword=' + keyword
+  //   $.ajax({
+  //     async: true,
+  //     url: url,
+  //     method: 'GET',
+  //     success: function (result) {
+  //       $('div#form-content-details').children().remove()
+  //       $('div#list-content').html(result).show()
+  //     },
+  //     error: function (err) {
+  //       console.log(err)
+  //     },
+  //   })
+  // })
 
   $('body').on('change', 'select[name="sts_approve"]', function () {
     const value = $(this).val()

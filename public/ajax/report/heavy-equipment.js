@@ -2,7 +2,7 @@ $(function(){
 
     var body = $('body')
 
-    var arrModels = []
+    var equipmentListx = []
 
     var siteName
 
@@ -35,25 +35,30 @@ $(function(){
                 error: function(err){
                     console.log(err)
                     body.find('div[id="unit_model"]').css('display', 'none')
+                    body.find('div[id="list-equipment"]').css('display', 'none')
                     body.find('select[name="unit_model"]').val(null).trigger('change')
                 }
             })
         }else{
             body.find('div[id="unit_model"]').css('display', 'none')
+            body.find('div[id="list-equipment"]').css('display', 'none')
             body.find('select[name="unit_model"]').val(null).trigger('change')
         }
     })
 
     body.on('change', 'select[name="unit_model"]', function(){
         var values = $(this).val()
-        body.find('td#unit_model').html('MODEL ' + values)
-        const [items] = arrModels.filter(val => val.model === values)
-        body.find('span#equipment-group').html(
-            items.items.map(elm => '<span class="label label-inverse label-rounded" style="margin-right:5px;margin-bottom:5px">'+elm.kode+'</span>')
-        )
+        var site_id = $('select[name="site_id"]').val()
+        GET_EQUIPMENT_BY_MODEL(site_id, values)
+        body.find('strong#unit_model').html('MODEL ' + values)
         if(values){
             body.find('div#box-select-periode').css('display', 'block')
         }
+    })
+
+    body.on('change', 'select[name="equip_id"]', function(){
+        const unitEquipment = equipmentListx.find( el => el.id == $(this).val())
+        body.find('code#equipmentID').html(`${unitEquipment.kode} ${unitEquipment.id ? '-':''} ${unitEquipment.brand}` )
     })
 
     body.on('click', 'input[name="inp_ranges"]', function(){
@@ -203,6 +208,32 @@ $(function(){
         })
     }
 
+    function GET_EQUIPMENT_BY_MODEL(site_id, model){
+        $.ajax({
+            async: true,
+            url: '/ajax/equipment/model-onsite',
+            method: 'GET',
+            data: {
+                site_id: site_id,
+                model: model,
+            },
+            dataType: 'json',
+            success: function(result){
+                console.log(result);
+                equipmentListx = result
+                body.find('div[id="list-equipment"]').css('display', 'block')
+                body.find('select[name="equip_id"]').html(result.map( eq => '<option value="'+eq.id+'">'+eq.kode+'</option>')).select2({
+                    placeholder: "Select Equipment Unit",
+                    allowClear: true
+                })
+            },
+            error: function(err){
+                console.log(err)
+                body.find('div[id="list-equipment"]').css('display', 'none')
+            }
+        })
+    }
+
 
     function initFilter(){
         $.ajax({
@@ -309,6 +340,7 @@ $(function(){
                     }
                 })
             })
+            
         }
 
         if(data.byDataRatio.length > 0){

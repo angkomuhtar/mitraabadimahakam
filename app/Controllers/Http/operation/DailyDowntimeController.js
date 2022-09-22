@@ -1,5 +1,6 @@
 'use strict'
 
+const Equipment = use('App/Models/MasEquipment')
 const DailyDowntimeHelpers = use('App/Controllers/Http/Helpers/DailyDowntime')
 const excelToJson = require('convert-excel-to-json')
 const moment = require('moment')
@@ -8,7 +9,8 @@ const fs = require('fs')
 
 class DailyDowntimeController {
   async index({ view }) {
-    return view.render('operation.daily-downtime-equipment.index')
+    const data = (await Equipment.query().where('aktif', 'Y').fetch()).toJSON()
+    return view.render('operation.daily-downtime-equipment.index', {equip: data})
   }
 
   async create({ view }) {

@@ -7,7 +7,13 @@
                 <h4 class="page-title">Daily Downtime Equipment</h4> 
             </div>
         </div>
+        @include('operation.daily-downtime-equipment.filter')
         <div class="content-module" id="list-content" style="display:none;"></div>
         <div class="content-module" id="form-content" style="display:none;"></div>
     </div>
+    <script>
+        $(function(){
+            $('select').select2()
+        })
+    </script>
 @endsection

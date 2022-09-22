@@ -110,6 +110,25 @@ class Ritase {
     return dailyRitase
   }
 
+  async DETAILS (params) {
+    let data = (
+      await DailyRitaseDetail
+      .query()
+      .with('operator')
+      .with('checker', p => p.with('profile'))
+      .with('hauler')
+      .where('dailyritase_id', params.id)
+      .fetch()
+    ).toJSON()
+    data = data.map( el => {
+      return {
+        ...el,
+        check_in: moment(el.check_in).format('DD-MM-YYYY')
+      }
+    })
+    return data
+  }
+
   async BY_PIT(params, req) {
     const limit = 25
     const halaman = req.page === undefined ? 1 : parseInt(req.page)

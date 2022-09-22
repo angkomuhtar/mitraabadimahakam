@@ -89,6 +89,18 @@ class EquipmentList {
     const equipmentName = equipments.kode;
     return equipmentName;
   }
+
+  async GET_EQUIPMENT_NAME_BY_MODEL(site_id, model) {
+    const equipments = (
+      await MasEquipment.query().where( w => {
+        if(site_id){
+          w.where("site_id", site_id)
+        }
+        w.where("unit_model", model)
+      }).fetch()
+    ).toJSON();
+    return equipments;
+  }
 }
 
 module.exports = new EquipmentList();

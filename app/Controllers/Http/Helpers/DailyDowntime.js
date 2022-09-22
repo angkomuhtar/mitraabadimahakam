@@ -18,9 +18,29 @@ const _ = require('underscore')
 
 class DailyDowntime {
   async LIST(req) {
-    const limit = req.limit || 25
+    const limit = req.limit || 50
     const halaman = req.page === undefined ? 1 : parseInt(req.page)
-    let dailyDowntime = (await DailyDowntimeEquipment.query().with('equipment').paginate(halaman, limit)).toJSON()
+    console.log(req);
+    let dailyDowntime = (
+      await DailyDowntimeEquipment.query()
+      .with('equipment')
+      .where( w => {
+        if(req.site_id){
+          w.where('site_id', req.site_id)
+        }
+        if(req.equip_id){
+          w.where('equip_id', req.equip_id)
+        }
+        if(req.downtime_status){
+          w.where('downtime_status', req.downtime_status)
+        }
+        if(req.breakdown_start && req.breakdown_finish){
+          w.where('breakdown_start', '>=', req.breakdown_start)
+          w.where('breakdown_finish', '<=', req.breakdown_finish)
+        }
+      })
+      .paginate(halaman, limit)
+    ).toJSON()
     dailyDowntime = {
       ...dailyDowntime,
       data: dailyDowntime.data.map(v => {
@@ -75,7 +95,7 @@ class DailyDowntime {
     for (const obj of sheetData.filter(kode => kode.B != undefined)) {
       try {
         const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
-        if (!validEquipment) {
+        if(!validEquipment){
           return {
             success: false,
             message: 'Equipment ' + obj.B + ' tidak ditemukan pada data master Equipment...',

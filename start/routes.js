@@ -361,8 +361,10 @@ Route.group(() => {
   Route.get('/daily-ritase-ob/list', 'DailyRitaseController.list').as('opr.daily-ritase-ob.list').middleware('R')
 
   Route.get('/daily-ritase-ob/create', 'DailyRitaseController.create').as('opr.daily-ritase-ob.create').middleware('R')
-
+  
   Route.get('/daily-ritase-ob/create/addItems', 'DailyRitaseController.addItems').as('opr.daily-ritase-ob.addItems').middleware('R')
+  
+  Route.get('/daily-ritase-ob/:id/list-detail', 'DailyRitaseController.listDetails').as('opr.daily-ritase-ob.listDetails').middleware('R')
 
   Route.get('/daily-ritase-ob/:id/show', 'DailyRitaseController.show').as('opr.daily-ritase-ob.show').middleware('U')
 
@@ -523,17 +525,17 @@ Route.group(() => {
   Route.delete('/daily-issue/:id/destroy', 'DailyIssueController.destroy').as('opr.daily-issue.destroy').middleware('D')
 
   // Purchasing Request Order
-  Route.get('/purchasing-request', 'PurchasingRequestController.index').as('opr.purchasing-request.index').middleware('R')
+  Route.get('/purchasing-request', 'PurchasingRequestController.index').as('opr.purchasing-request.index')
 
-  Route.post('/purchasing-request', 'PurchasingRequestController.store').as('opr.purchasing-request.store').middleware('C')
+  Route.post('/purchasing-request', 'PurchasingRequestController.store').as('opr.purchasing-request.store')
 
-  Route.get('/purchasing-request/list', 'PurchasingRequestController.list').as('opr.purchasing-request.list').middleware('R')
+  Route.get('/purchasing-request/list', 'PurchasingRequestController.list').as('opr.purchasing-request.list')
 
-  Route.get('/purchasing-request/create', 'PurchasingRequestController.create').as('opr.purchasing-request.create').middleware('C')
+  Route.get('/purchasing-request/create', 'PurchasingRequestController.create').as('opr.purchasing-request.create')
 
-  Route.get('/purchasing-request/items-create', 'PurchasingRequestController.itemCreate').as('opr.purchasing-request.itemCreate').middleware('C')
+  Route.get('/purchasing-request/items-create', 'PurchasingRequestController.itemCreate').as('opr.purchasing-request.itemCreate')
 
-  Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view').middleware('R')
+  Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view')
 
   // SOP Operational
 
@@ -697,6 +699,8 @@ Route.group(() => {
   Route.get('/equipment', 'AjaxEquipmentController.getEquipment').as('equipment.getEquipment')
 
   Route.get('/equipment/model', 'AjaxEquipmentController.getEquipmentModel').as('equipment.getEquipmentModel')
+
+  Route.get('/equipment/model-onsite', 'AjaxEquipmentController.getEquipmentModelOnSite').as('equipment.getEquipmentModelOnSite')
 
   Route.get('/equipment/excavator', 'AjaxEquipmentController.getEquipmentExcavator').as('equipment.getEquipmentExcavator')
 

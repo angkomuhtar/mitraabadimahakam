@@ -4,7 +4,7 @@ $(function(){
     getHaulerByDailyFleet()
     function initDeafult(lim, url, page){
         $('div.content-module').css('display', 'none')
-        var limit = lim || 100
+        var limit = lim || 25
         var page = page || 1
         $('div#list-content').html('<h4 style="text-align: center;">Please wait,,, System still loading data</h4>').show()
         $.ajax({

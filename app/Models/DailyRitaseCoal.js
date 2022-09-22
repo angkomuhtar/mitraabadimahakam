@@ -8,6 +8,11 @@ class DailyRitaseCoal extends Model {
         super.boot()
         this.addHook('beforeCreate', 'DailyRitaseCoalHook.beforeInsertData')
     }
+
+    pit(){
+        return this.belongsTo("App/Models/MasPit", "pit_id", "id")
+    }
+
     daily_fleet(){
         return this.belongsTo("App/Models/DailyFleet", "dailyfleet_id", "id")
     }

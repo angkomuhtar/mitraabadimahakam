@@ -20,10 +20,15 @@ class repHeavyEquipment {
         const dataEquipment = (
             await MasEquipment.query().where( w => {
                 w.where('unit_model', req.unit_model)
+                if(req.equip_id){
+                    if(typeof(req.equip_id) == 'string'){
+                        w.where('id', req.equip_id)
+                    }else{
+                        w.whereIn('id', req.equip_id)
+                    }
+                }
             }).select('id').fetch()
         ).toJSON()
-
-        // console.log(dataEquipment.map(el => el.id));
 
         let arrEquipment = dataEquipment.map(el => el.id)
         
@@ -31,7 +36,7 @@ class repHeavyEquipment {
         try {
             data = (
                 await MamEquipmentPerformanceDetails.query()
-                .whereIn('equip_id', dataEquipment.map(el => el.id))
+                .whereIn('equip_id', arrEquipment)
                 .andWhere( w => {
                     w.where('date', '>=', req.start_date)
                     w.where('date', '<=', req.end_date)
@@ -48,6 +53,7 @@ class repHeavyEquipment {
                 message: 'Failed generate data '+ error
             }
         }
+
 
         /* GENERATE DATA KPI */
         let dataGroupModel = _.groupBy(data, 'date')
@@ -76,6 +82,8 @@ class repHeavyEquipment {
             }
         })
 
+        // dataGroupModel = [new Array({x: 1, y: 3})]
+        
 
         dataGroupModel = _.sortBy(dataGroupModel, 'date')
         const xAxis = dataGroupModel.map( el => el.date)
@@ -184,12 +192,14 @@ class repHeavyEquipment {
                         name: 'MTBS', 
                         type: 'spline',
                         color: 'red',
+                        drilldown: "chrome",
                         data: series.map(obj => obj.actMTBS)
                     },
                     {
                         name: 'MTTR', 
                         type: 'spline',
                         color: '#ddd',
+                        drilldown: "edge",
                         data: series.map(obj => obj.actMTTR)
                     },
                     {
@@ -197,16 +207,18 @@ class repHeavyEquipment {
                         type: req.typeChart,
                         states: {hover: {enabled: false}},
                         color: color[2] || 'red',
+                        drilldown: "firefox",
                         data: series.map(obj => obj.actPA)
                     },
-                    {
-                        name: 'Plan PA', 
-                        type: req.typeChart,
-                        states: {hover: {enabled: false}},
-                        color: color[0] || 'red',
-                        data: series.map(obj => obj.budgetPA)
-                    }
-                ]
+                    // {
+                    //     name: 'Plan PA', 
+                    //     type: req.typeChart,
+                    //     states: {hover: {enabled: false}},
+                    //     color: color[0] || 'red',
+                    //     data: series.map(obj => obj.budgetPA)
+                    // },
+                    
+                ],
             },
             byRatio: [{
                 type: 'pie',
@@ -236,10 +248,15 @@ class repHeavyEquipment {
         const dataEquipment = (
             await MasEquipment.query().where( w => {
                 w.where('unit_model', req.unit_model)
+                if(req.equip_id){
+                    if(typeof(req.equip_id) == 'string'){
+                        w.where('id', req.equip_id)
+                    }else{
+                        w.whereIn('id', req.equip_id)
+                    }
+                }
             }).select('id').fetch()
         ).toJSON()
-
-        // console.log(dataEquipment.map(el => el.id));
 
         let arrEquipment = dataEquipment.map(el => el.id)
 
@@ -276,7 +293,7 @@ class repHeavyEquipment {
             try {
                 const mamEquipmentPerformanceDetails = (
                     await MamEquipmentPerformanceDetails.query()
-                    .whereIn('equip_id', dataEquipment.map(el => el.id))
+                    .whereIn('equip_id', arrEquipment)
                     .andWhere( w => {
                         w.where('date', '>=', _.first(obj.items))
                         w.where('date', '<=', _.last(obj.items))
@@ -492,94 +509,157 @@ class repHeavyEquipment {
         const dataEquipment = (
             await MasEquipment.query().where( w => {
                 w.where('unit_model', req.unit_model)
+                if(req.equip_id){
+                    if(typeof(req.equip_id) == 'string'){
+                        w.where('id', req.equip_id)
+                    }else{
+                        w.whereIn('id', req.equip_id)
+                    }
+                }
             }).select('id').fetch()
         ).toJSON()
-
-        // console.log(dataEquipment.map(el => el.id));
 
         let arrEquipment = dataEquipment.map(el => el.id)
         
 
-        let data = []
-        try {
-            data = (
-                await MamEquipmentPerformanceDetails.query()
-                .whereIn('equip_id', dataEquipment.map(el => el.id))
-                .andWhere( w => {
-                    w.where('date', '>=', moment(req.start_month).startOf('month').format('YYYY-MM-DD'))
-                    w.where('date', '<=', moment(req.end_month).endOf('month').format('YYYY-MM-DD'))
-                    w.where('site_id', req.site_id)
-                })
-                .fetch()
-            ).toJSON()
-        } catch (error) {
-            console.log(error);
-            return {
-                success: false,
-                message: 'Failed generate data '+ error
-            }
-        }
+        // let data = []
+        // try {
+        //     data = (
+        //         await MamEquipmentPerformanceDetails.query()
+        //         .whereIn('equip_id', arrEquipment)
+        //         .andWhere( w => {
+        //             w.where('date', '>=', moment(req.start_month).startOf('month').format('YYYY-MM-DD'))
+        //             w.where('date', '<=', moment(req.end_month).endOf('month').format('YYYY-MM-DD'))
+        //             w.where('site_id', req.site_id)
+        //         })
+        //         .fetch()
+        //     ).toJSON()
+        // } catch (error) {
+        //     console.log(error);
+        //     return {
+        //         success: false,
+        //         message: 'Failed generate data '+ error
+        //     }
+        // }
 
+        
         let getMonth = (new Date(req.end_month)).getMonth() + 1
         let arrMonth = Array.apply(0, Array(getMonth)).map(function(_,i){return moment().month(i).format('MM/YY')})
 
-        data =  data.map(obj => {
-            return {
-                ...obj,
-                date: moment(obj.date).format('MM/YY')
-            }
-        })
+        let tmp = []
+        for (const obj of arrMonth) {
+            let datails = (await MamEquipmentPerformanceDetails.query()
+            .whereIn('equip_id', arrEquipment)
+            .where( w => {
+                w.where('date', '>=', moment(obj, "MM/YY").startOf('month').format('YYYY-MM-DD'))
+                w.where('date', '<=', moment(obj, "MM/YY").endOf('month').format('YYYY-MM-DD'))
+                w.where('site_id', req.site_id)
+            }).fetch()).toJSON()
 
-        for (let i = 0; i < arrMonth.length; i++) {
-            if(data[i].date != arrMonth[i]){
-                data.push({
-                    date: arrMonth[i],
-                    target_downtime_monthly: 0,
-                    items: []
-                })
-            }
+            tmp.push({
+                date: obj,
+                items: datails
+            })
         }
 
-        data = _.groupBy(_.sortBy(data, 'date'), 'date')
-        data = Object.keys(data).map(key => {
-            var a = moment(key).startOf('month')//now
-            var b = moment(key).endOf('month')
-            return {
-                date: key,
-                target_downtime_monthly: b.diff(a, 'hours'),
-                items: data[key]
-            }
-        })
+        // console.log(tmp);
+        console.log(tmp[6].items[0]);
 
+        // data =  data.map(obj => {
+        //     return {
+        //         ...obj,
+        //         date: moment(obj.date).format('MM/YY')
+        //     }
+        // })
+        
+        // if(data.lenght > 0){
+        //     for (let i = 0; i < arrMonth.length; i++) {
+        //         if(data[i].date != arrMonth[i]){
+        //             data.push({
+        //                 date: arrMonth[i],
+        //                 target_downtime_monthly: moment(arrMonth[i], "MM-YY").daysInMonth() * 24,
+        //                 items: []
+        //             })
+        //         }
+        //     }
+        // }else{
+        //     for (let i = 0; i < arrMonth.length; i++) {
+        //         data.push({
+        //             date: arrMonth[i],
+        //             target_downtime_monthly: moment(arrMonth[i], "MM-YY").daysInMonth() * 24,
+        //             items: []
+        //         })
+        //     }
+        // }
+        
+        // data = _.groupBy(_.sortBy(data, 'date'), 'date')
+        // data = Object.keys(data).map(key => {
+        //     console.log(data[key]);
+        //     return {
+        //         date: key,
+        //         target_downtime_monthly: moment(key, "MM-YY").daysInMonth() * 24,
+        //         items: data[key]
+        //     }
+        // })
 
-        let result = []
-        for (let obj of data) {
-            obj = {
-                ...obj, 
-                mohh_monthly: obj.target_downtime_monthly,
-                budgetPA: obj.items.reduce((a, b) => { return a + b.budget_pa}, 0)/obj.items.length,
-                actPA: obj.items.reduce((a, b) => { return a + b.actual_pa}, 0)/obj.items.length,
-                targetMTBS: obj.items.reduce((a, b) => { return a + b.target_mtbs}, 0)/obj.items.length,
-                actMTBS: obj.items.reduce((a, b) => { return a + b.actual_mtbs}, 0)/obj.items.length,
-                targetMTTR: obj.items.reduce((a, b) => { return a + b.target_mttr}, 0)/obj.items.length,
-                actMTTR: obj.items.reduce((a, b) => { return a + b.actual_mttr}, 0)/obj.items.length,
-                actual_ua: obj.items.reduce((a, b) => { return a + b.actual_ua}, 0)/obj.items.length,
-                actual_ma: obj.items.reduce((a, b) => { return a + b.actual_ma}, 0)/obj.items.length,
-                actual_eu: obj.items.reduce((a, b) => { return a + b.actual_eu}, 0)/obj.items.length,
-                work_hours: obj.items.reduce((a, b) => { return a + b.work_hours}, 0)/obj.items.length,
-                standby_hours: obj.items.reduce((a, b) => { return a + b.standby_hours}, 0)/obj.items.length,
-                breakdown_hours_scheduled: obj.items.reduce((a, b) => { return a + b.breakdown_hours_scheduled}, 0)/obj.items.length,
-                breakdown_ratio_scheduled: obj.items.reduce((a, b) => { return a + b.breakdown_ratio_scheduled}, 0)/obj.items.length,
-                breakdown_hours_unscheduled: obj.items.reduce((a, b) => { return a + b.breakdown_hours_unscheduled}, 0)/obj.items.length,
-                breakdown_ratio_unscheduled: obj.items.reduce((a, b) => { return a + b.breakdown_ratio_unscheduled}, 0)/obj.items.length,
-                breakdown_hours_accident: obj.items.reduce((a, b) => { return a + b.breakdown_hours_accident}, 0)/obj.items.length,
-                breakdown_hours_total: obj.items.reduce((a, b) => { return a + b.breakdown_hours_total}, 0)/obj.items.length,
-                
-            }
-
-            result.push(obj)
+        function HITUNG (arr, props) {
+            var len = arr.length
+            var value = arr.reduce((a, b) => { return a + b[props] }, 0)
+            return value / len
         }
         
+        let result = tmp.map( el => {
+            var mohh_monthly = moment(el.date, "MM-YY").daysInMonth() * 24
+            return {
+                ...el,
+                mohh_monthly: mohh_monthly,
+                budgetPA: el.items.length > 0 ? HITUNG(el.items, 'budget_pa') : 0,
+                actPA: el.items.length > 0 ? HITUNG(el.items, 'actual_pa') : 0,
+                targetMTBS: el.items.length > 0 ? HITUNG(el.items, 'target_mtbs') : 0,
+                actMTBS: el.items.length > 0 ? HITUNG(el.items, 'actual_mtbs') : 0,
+                targetMTTR: el.items.length > 0 ? HITUNG(el.items, 'target_mttr') : 0,
+                actMTTR: el.items.length > 0 ? HITUNG(el.items, 'actual_mttr') : 0,
+                actual_ua: el.items.length > 0 ? HITUNG(el.items, 'actual_ua') : 0,
+                actual_ma: el.items.length > 0 ? HITUNG(el.items, 'actual_ma') : 0,
+                actual_eu: el.items.length > 0 ? HITUNG(el.items, 'actual_eu') : 0,
+                work_hours: el.items.length > 0 ? HITUNG(el.items, 'work_hours') : 0,
+                standby_hours: el.items.length > 0 ? HITUNG(el.items, 'standby_hours') : 0,
+                breakdown_hours_scheduled: el.items.length > 0 ? HITUNG(el.items, 'breakdown_hours_scheduled') : 0,
+                breakdown_ratio_scheduled: el.items.length > 0 ? HITUNG(el.items, 'breakdown_ratio_scheduled') : 0,
+                breakdown_hours_unscheduled: el.items.length > 0 ? HITUNG(el.items, 'breakdown_hours_unscheduled') : 0,
+                breakdown_ratio_unscheduled: el.items.length > 0 ? HITUNG(el.items, 'breakdown_ratio_unscheduled') : 0,
+                breakdown_hours_accident: el.items.length > 0 ? HITUNG(el.items, 'breakdown_hours_accident') : 0,
+                breakdown_hours_total: el.items.length > 0 ? HITUNG(el.items, 'breakdown_hours_total') : 0
+            }
+        })
+
+        console.log('result :::', result);
+        // for (let obj of data) {
+        //     obj = {
+        //         ...obj, 
+        //         mohh_monthly: obj.target_downtime_monthly,
+        //         budgetPA: obj.items.lenght > 0 ? obj.items.reduce((a, b) => { return a + b.budget_pa}, 0)/obj.items.length : 0,
+        //         actPA: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.actual_pa}, 0)/obj.items.length : 0,
+        //         targetMTBS: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.target_mtbs}, 0)/obj.items.length : 0,
+        //         actMTBS: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.actual_mtbs}, 0)/obj.items.length : 0,
+        //         targetMTTR: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.target_mttr}, 0)/obj.items.length : 0,
+        //         actMTTR: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.actual_mttr}, 0)/obj.items.length : 0,
+        //         actual_ua: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.actual_ua}, 0)/obj.items.length : 0,
+        //         actual_ma: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.actual_ma}, 0)/obj.items.length : 0,
+        //         actual_eu: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.actual_eu}, 0)/obj.items.length : 0,
+        //         work_hours: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.work_hours}, 0)/obj.items.length : 0,
+        //         standby_hours: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.standby_hours}, 0)/obj.items.length : 0,
+        //         breakdown_hours_scheduled: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.breakdown_hours_scheduled}, 0)/obj.items.length : 0,
+        //         breakdown_ratio_scheduled: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.breakdown_ratio_scheduled}, 0)/obj.items.length : 0,
+        //         breakdown_hours_unscheduled: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.breakdown_hours_unscheduled}, 0)/obj.items.length : 0,
+        //         breakdown_ratio_unscheduled: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.breakdown_ratio_unscheduled}, 0)/obj.items.length : 0,
+        //         breakdown_hours_accident: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.breakdown_hours_accident}, 0)/obj.items.length : 0,
+        //         breakdown_hours_total: obj.items.lenght > 0 ? obj.items?.reduce((a, b) => { return a + b.breakdown_hours_total}, 0)/obj.items.length : 0,
+                
+        //     }
+
+        //     result.push(obj)
+        // }
 
         const series = result.map( obj => {
             return {
@@ -616,14 +696,17 @@ class repHeavyEquipment {
         let unitDowntimeGroup = _.groupBy(unitDowntime, 'downtime_status')
         unitDowntimeGroup = Object.keys(unitDowntimeGroup).map( key => {
             var kode
-            if(key === 'UNS'){
-                kode = 'UnScheduled'
-            }
-            if(key === 'SCH'){
-                kode = 'Scheduled'
-            }
-            if(key === 'ACD'){
-                kode = 'Accident'
+            switch (key) {
+                case 'UNS':
+                    kode = 'UnScheduled'
+                    break;
+                case 'SCH':
+                    kode = 'Scheduled'
+                    break;
+            
+                default:
+                    kode = 'Accident'
+                    break;
             }
             return {
                 name: kode,
@@ -637,6 +720,7 @@ class repHeavyEquipment {
         for (const obj of unitDowntimeGroup) {
             downtimeRatio.push([obj.name, parseFloat((obj.persen).toFixed(2))])
         }
+
 
         /* GENERATE DATA TOP 10 BY DURATION */
         let downtimeType = _.groupBy(unitDowntime, 'component_group')
@@ -683,7 +767,7 @@ class repHeavyEquipment {
             success: true,
             byKPI: {
                 dataTable: series,
-                xAxis: data.map(obj => obj.date),
+                xAxis: arrMonth,
                 series: [
                     {
                         name: 'MTBS', 
@@ -704,13 +788,13 @@ class repHeavyEquipment {
                         color: color[2] || 'red',
                         data: series.map(obj => obj.actPA)
                     },
-                    {
-                        name: 'Plan PA', 
-                        type: req.typeChart,
-                        states: {hover: {enabled: false}},
-                        color: color[0] || 'red',
-                        data: series.map(obj => obj.budgetPA)
-                    }
+                    // {
+                    //     name: 'Plan PA', 
+                    //     type: req.typeChart,
+                    //     states: {hover: {enabled: false}},
+                    //     color: color[0] || 'red',
+                    //     data: series.map(obj => obj.budgetPA)
+                    // }
                 ]
             },
             byRatio: [{

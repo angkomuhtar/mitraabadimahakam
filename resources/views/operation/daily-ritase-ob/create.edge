@@ -23,7 +23,8 @@
                                         </div>
                                         <div class="col-md-4">
                                             <label for="tgl">Nama Fleet</label>
-                                            <div class="form-group">
+                                            <div class="input-group"> 
+                                                <span class="input-group-addon">@</span>
                                                 <select class="form-control input-sm select2dailyfleet" name="dailyfleet_id" id="dailyfleet_id_2" required></select>
                                             </div>
                                         </div>
@@ -143,30 +144,37 @@
             selectDailyFleet (date)
         })
 
-        // <div class="col-md-4">
-        //                                     <label for="tgl">Excavator</label>
-        //                                     <div class="form-group">
-        //                                         <select class="form-control inp-filter input-sm select2Excavator" name="exca_id" id="exca_id_2" required></select>
-        //                                     </div>
-        //                                 </div>
-
-
         function selectDailyFleet (date) {
             $('body select.select2dailyfleet').each(function(){
                 var selected = $(this).data('check')
                 var elm = $(this)
                 elm.children().remove()
-                $.get('/ajax/fleet/dailyfleet?date='+date+'&selected='+selected, function(data){
-                    console.log(data);
-                    if(data.length > 0){
-                        elm.html(
-                            data.map(title => '<optgroup label="'+title.nm_pit+'">'+
-                                title.item.map((list, index) => {
-                                    return '<option value="'+list.id+'">'+list.nm_fleet+' || '+list.nm_shift+'</option>' })
-                                +'</optgroup>')
-                        )
-                    }else{
-                        elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                $.ajax({
+                    async: true,
+                    url: '/ajax/fleet/dailyfleet',
+                    method: 'GET',
+                    data: {
+                        date: date,
+                        selected: selected
+                    },
+                    beforeSend: function(){
+                        elm.prev('span').html('<i class="fa fa-spinner fa-spin"></i>')
+                    },
+                    success: function(data){
+                        if(data.length > 0){
+                            elm.prev('span').html('<i class="fa fa-map-marker"></i>')
+                            elm.html(
+                                data.map(title => '<optgroup label="'+title.nm_pit+'">'+
+                                    title.item.map((list, index) => {
+                                        return '<option value="'+list.id+'">'+list.nm_fleet+' || '+list.nm_shift+'</option>' })
+                                    +'</optgroup>')
+                            )
+                        }else{
+                            elm.html('<option value="">Belum ada data pilihan...</option>')
+                        }
+                    },
+                    error: function(err){
+                        console.log(err);
                     }
                 })
             })

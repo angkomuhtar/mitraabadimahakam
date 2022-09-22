@@ -45,7 +45,7 @@ class DailyRitaseController {
       const dailyRitase = (await DailyRitaseHelpers.ALL(req)).toJSON()
       return view.render('operation.daily-ritase-ob.list', {
         list: dailyRitase,
-        limit: req.limit || 100,
+        limit: req.limit || 25,
       })
     } catch (error) {
       console.log(error)
@@ -54,6 +54,12 @@ class DailyRitaseController {
         message: error.message,
       }
     }
+  }
+
+  async listDetails ( { params } ) {
+    const data = await DailyRitaseHelpers.DETAILS(params)
+    console.log(data);
+    return data
   }
 
   async graph({ view, auth }) {
