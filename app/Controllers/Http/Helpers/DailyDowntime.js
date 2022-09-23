@@ -140,6 +140,20 @@ class DailyDowntime {
         const bd_start = moment(`${date} ${hour_start}`).add(3, 'minute').format('YYYY-MM-DD HH:mm:ss')
         const bd_finish = moment(`${date} ${hour_finish}`).add(3, 'minute').format('YYYY-MM-DD HH:mm:ss')
 
+        if(!value.M){
+          return {
+            success: false,
+            message: 'Breakdown status must have values...'
+          }
+        }
+
+        if(!value.V){
+          return {
+            success: false,
+            message: 'Budget PA must have values...'
+          }
+        }
+
         const obj = {
           uid: `${moment(date).format('YYYYMM.DDHHMM')}.${(await GET_EQUIPMENT_DATA(value.C, value.D, value.B))?.kode}` || value.B,
           unitName: (await GET_EQUIPMENT_DATA(value.C, value.D, value.B))?.id || value.B,
@@ -151,22 +165,14 @@ class DailyDowntime {
           bd_finish: bd_finish,
           // #TODO : fix this floating number
           total_bd: value.L,
-          bd_status: value.M,
-          component_group: value.N || null,
+          bd_status: (value.M).toUpperCase(),
+          component_group: (value.N)?.toUpperCase() || ' ',
           downtime_code: value.O,
           pic: value.P || null,
-          budget_pa: value.V || 0,
+          budget_pa: parseFloat(value.V) || 0,
         }
         data.push(obj)
-
-        // checks
-        // const { isSuccess, checkMsg } = await Utils.equipmentCheck(value.B, value.D)
-        // return {
-        //   success: isSuccess,
-        //   message: checkMsg,
-        // }
       }
-      console.log('date >> ', selectedDate)
 
       // filter data by date
       const filteredData = data.filter(v => new Date(v.date) >= new Date(req.date) && new Date(v.date) <= new Date(req.date))
@@ -188,7 +194,7 @@ class DailyDowntime {
           breakdown_finish: data.bd_finish,
           downtime_total: data.total_bd,
           status: data.bd_status,
-          component_group: data.component_group || 'Kosong',
+          component_group: data.component_group,
           downtime_status: data.downtime_code,
           person_in_charge: data.pic,
           urut: count,
@@ -197,7 +203,6 @@ class DailyDowntime {
         try {
           await newDailyDowntime.save(trx)
           afterUpload.push(newDailyDowntime.toJSON())
-          // console.log(`--- inserting data ${data.uid} finished ----`)
         } catch (err) {
           await trx.rollback()
           return {
