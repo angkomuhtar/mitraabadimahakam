@@ -20,26 +20,26 @@ class DailyDowntime {
   async LIST(req) {
     const limit = req.limit || 50
     const halaman = req.page === undefined ? 1 : parseInt(req.page)
-    console.log(req);
+    console.log(req)
     let dailyDowntime = (
       await DailyDowntimeEquipment.query()
-      .with('equipment')
-      .where( w => {
-        if(req.site_id){
-          w.where('site_id', req.site_id)
-        }
-        if(req.equip_id){
-          w.where('equip_id', req.equip_id)
-        }
-        if(req.downtime_status){
-          w.where('downtime_status', req.downtime_status)
-        }
-        if(req.breakdown_start && req.breakdown_finish){
-          w.where('breakdown_start', '>=', req.breakdown_start)
-          w.where('breakdown_finish', '<=', req.breakdown_finish)
-        }
-      })
-      .paginate(halaman, limit)
+        .with('equipment')
+        .where(w => {
+          if (req.site_id) {
+            w.where('site_id', req.site_id)
+          }
+          if (req.equip_id) {
+            w.where('equip_id', req.equip_id)
+          }
+          if (req.downtime_status) {
+            w.where('downtime_status', req.downtime_status)
+          }
+          if (req.breakdown_start && req.breakdown_finish) {
+            w.where('breakdown_start', '>=', req.breakdown_start)
+            w.where('breakdown_finish', '<=', req.breakdown_finish)
+          }
+        })
+        .paginate(halaman, limit)
     ).toJSON()
     dailyDowntime = {
       ...dailyDowntime,
@@ -95,7 +95,7 @@ class DailyDowntime {
     for (const obj of sheetData.filter(kode => kode.B != undefined)) {
       try {
         const validEquipment = await MasEquipment.query().where('kode', obj.B).last()
-        if(!validEquipment){
+        if (!validEquipment) {
           return {
             success: false,
             message: 'Equipment ' + obj.B + ' tidak ditemukan pada data master Equipment...',
@@ -582,27 +582,44 @@ class DailyDowntime {
         for (const value of data) {
           // get equipment id
           const equipId = (await GET_EQUIPMENT_DATA(value.equipType, value.equipModel, value.equipName)).id
-          /**
-           * Define the daily timesheet object
-           */
-          let dailyChecklist = new DailyChecklist()
-          dailyChecklist.fill({
-            user_chk: user.id,
-            user_spv: null,
-            operator: null,
-            unit_id: equipId,
-            dailyfleet_id: null,
-            description: 'hm upload',
-            begin_smu: value.hm_start,
-            end_smu: value.hm_end,
-            used_smu: value.hm_total,
-            tgl: reqDate,
-            approved_at: moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
-          })
 
           try {
+            /**
+             * Define the daily timesheet object
+             */
+            let dailyChecklist = null
+            let dailyChecklistCheck = await DailyChecklist.query()
+              .where(wh => {
+                wh.where('unit_id', equipId)
+                wh.where('tgl', reqDate)
+                wh.where('begin_smu', value.hm_start)
+                wh.where('end_smu', value.hm_end)
+                wh.where('used_smu', value.hm_total)
+              })
+              .last()
+
+            if (dailyChecklistCheck) {
+              dailyChecklist = dailyChecklistCheck
+            } else {
+              dailyChecklist = new DailyChecklist();
+              
+              dailyChecklist.fill({
+                user_chk: user.id,
+                user_spv: null,
+                operator: null,
+                unit_id: equipId,
+                dailyfleet_id: null,
+                description: 'hm upload',
+                begin_smu: value.hm_start,
+                end_smu: value.hm_end,
+                used_smu: value.hm_total,
+                tgl: reqDate,
+                approved_at: moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+              })
+              await dailyChecklist.save(trx)
+            }
+
             // save the daily time sheet
-            equipId && (await dailyChecklist.save(trx))
             console.log(`---- finished inserting timesheet id ${dailyChecklist.id} ----`)
           } catch (err) {
             // if
