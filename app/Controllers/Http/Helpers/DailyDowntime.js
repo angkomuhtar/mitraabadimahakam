@@ -567,6 +567,24 @@ class DailyDowntime {
         }
       }
 
+
+      for (const obj of data.filter(value => value.equipName != undefined)) {
+        try {
+          const validEquipment = await MasEquipment.query().where('kode', obj.equipName).last()
+          if (!validEquipment) {
+            return {
+              success: false,
+              message: 'Equipment ' + obj.equipName + ' tidak ditemukan pada data master Equipment...',
+            }
+          }
+        } catch (error) {
+          return {
+            success: false,
+            message: 'Data ' + obj.equipName + ' tidak valid...',
+          }
+        }
+      }
+
       try {
         // insert into equipment performance master
         // await EquipmentPerformanceHelpers.ADD(reqDate, user)
@@ -597,7 +615,7 @@ class DailyDowntime {
               dailyChecklist = dailyChecklistCheck
             } else {
               dailyChecklist = new DailyChecklist();
-              
+
               dailyChecklist.fill({
                 user_chk: user.id,
                 user_spv: null,
