@@ -140,17 +140,17 @@ class DailyDowntime {
         const bd_start = moment(`${date} ${hour_start}`).add(3, 'minute').format('YYYY-MM-DD HH:mm:ss')
         const bd_finish = moment(`${date} ${hour_finish}`).add(3, 'minute').format('YYYY-MM-DD HH:mm:ss')
 
-        if(!value.M){
+        if (!value.M) {
           return {
             success: false,
-            message: 'Breakdown status must have values...'
+            message: 'Breakdown status must have values...',
           }
         }
 
-        if(!value.V){
+        if (!value.V) {
           return {
             success: false,
-            message: 'Budget PA must have values...'
+            message: 'Budget PA must have values...',
           }
         }
 
@@ -165,8 +165,8 @@ class DailyDowntime {
           bd_finish: bd_finish,
           // #TODO : fix this floating number
           total_bd: value.L,
-          bd_status: (value.M).toUpperCase(),
-          component_group: (value.N)?.toUpperCase() || ' ',
+          bd_status: value.M.toUpperCase(),
+          component_group: value.N?.toUpperCase() || ' ',
           downtime_code: value.O,
           pic: value.P || null,
           budget_pa: parseFloat(value.V) || 0,
@@ -572,7 +572,6 @@ class DailyDowntime {
         }
       }
 
-
       for (const obj of data.filter(value => value.equipName != undefined)) {
         try {
           const validEquipment = await MasEquipment.query().where('kode', obj.equipName).last()
@@ -601,6 +600,9 @@ class DailyDowntime {
           // get equipment id
           const equipId = (await GET_EQUIPMENT_DATA(value.equipType, value.equipModel, value.equipName)).id
 
+          // update regulary equipment's model
+          await this.UPDATE_EQUIPMENT_MODEL(equipId, value.equipModel)
+
           try {
             /**
              * Define the daily timesheet object
@@ -619,20 +621,22 @@ class DailyDowntime {
             if (dailyChecklistCheck) {
               dailyChecklist = dailyChecklistCheck
             } else {
-              dailyChecklist = new DailyChecklist();
+              dailyChecklist = new DailyChecklist()
 
               dailyChecklist.fill({
                 user_chk: user.id,
                 user_spv: null,
                 operator: null,
                 unit_id: equipId,
+                shift_id: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).id,
                 dailyfleet_id: null,
-                description: 'hm upload',
+                description: 'hm upload from daily downtime',
                 begin_smu: value.hm_start,
                 end_smu: value.hm_end,
                 used_smu: value.hm_total,
                 tgl: reqDate,
-                approved_at: moment(req.date).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+                approved_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).start,
+                finish_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).end,
               })
               await dailyChecklist.save(trx)
             }
@@ -963,6 +967,68 @@ class DailyDowntime {
         success: false,
         message: 'failed when updating equipment budget pa, unit id ' + equipId,
       }
+    }
+  }
+
+  async GET_SHIFT_DATA(dateStart, dateEnd, byCode, code, dateNow) {
+    let shiftData = null
+
+    let shifts = null
+
+    if (byCode) {
+      shifts = await MasShift.query()
+        .where(wh => {
+          wh.where('kode', code)
+          wh.where('status', 'Y')
+        })
+        .last()
+      const startShift = moment(`${dateNow} ${shifts.start_shift}`).format('YYYY-MM-DD HH:mm:ss')
+      const endShift = moment(`${dateNow} ${shifts.start_shift}`).add(shifts.duration, 'hour').format('YYYY-MM-DD HH:mm:ss')
+      shiftData = {
+        id: shifts.id,
+        start: startShift,
+        end: endShift,
+      }
+    } else {
+      shifts = await MasShift.query().where('status', 'Y')
+      if (shifts.length > 0) {
+        for (const shift of shifts) {
+          const startShift = moment(`${dateStart} ${shift.start_shift}`).format('YYYY-MM-DD HH:mm:ss')
+          const endShift = moment(`${dateStart} ${shift.start_shift}`).add(shift.duration, 'hour').format('YYYY-MM-DD HH:mm:ss')
+
+          if (new Date(dateStart) >= new Date(startShift) && new Date(dateEnd) <= new dateEnd(endShift)) {
+            shiftData = {
+              id: shift.id,
+              start: startShift,
+              end: endShift,
+            }
+          }
+        }
+      }
+    }
+
+    return shiftData
+  }
+
+  async UPDATE_EQUIPMENT_MODEL(equipId, model) {
+    const trx = await db.beginTransaction()
+    let equipment = await MasEquipment.query()
+      .where(wh => {
+        wh.where('id', equipId)
+        wh.where('unit_model', model)
+      })
+      .last()
+    if (!equipment) {
+      equipment = await MasEquipment.query()
+        .where(wh => {
+          wh.where('id', equipId)
+        })
+        .last()
+      equipment.merge({
+        unit_model: model,
+      })
+      await equipment.save(trx)
+      await trx.commit(trx)
     }
   }
 }
