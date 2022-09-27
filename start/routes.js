@@ -1231,6 +1231,13 @@ Route.group(() => {
   .prefix('api/v2/issues')
   .namespace('api/v2')
 
+// REPORT EMPLOYEE
+Route.group(() => {
+  Route.get('/', 'ReportIssueController.index')
+})
+  .prefix('api/v2/employee')
+  .namespace('api/v2')
+
 /* END API VERSION 2.0 */
 
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
