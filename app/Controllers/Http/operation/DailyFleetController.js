@@ -74,11 +74,12 @@ class DailyFleetController {
   async store ({ auth, request }) {
     const usr = await auth.getUser()
     const req = request.only(['pit_id', 'fleet_id', 'activity_id', 'shift_id'])
-    const datetime = request.only(['datetime'])
+    let datetime = request.only(['datetime'])
     const reqEquip = request.collect(['equip_id'])
 
+    console.log('...req >> ', req, null)
     /* Check duplicate Fleet */
-    const cekMaster = await DailyFleet.query().where({...req, date: moment(datetime).format('YYYY-MM-DD')}).first()
+    const cekMaster = await DailyFleet.query().where({...req, date: moment(datetime.datetime).format('YYYY-MM-DD')}).first()
     if(cekMaster){
       return {
         success: false,
