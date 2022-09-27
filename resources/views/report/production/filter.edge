@@ -79,9 +79,11 @@
                                 <div class="panel-wrapper collapse in">
                                     <div class="panel-body">
                                         {{ csrfField() }}
-                                        <div class="row">
+                                        <div class="row" style="padding: 50px 10px 10px;border: 1px solid #ddd;">
                                             <div class="form-group m-b-10">
-                                                <label for="" class="col-sm-4 control-label">Site/Project*</label>
+                                                <div class="col-sm-3 col-sm-offset-2">
+                                                    <strong for="" class="p-l-10">Project Name*</strong>
+                                                </div>
                                                 <div class="col-sm-4">
                                                     <div class="input-group">
                                                         <div class="input-group-addon">
@@ -92,8 +94,10 @@
                                                 </div>
                                             </div>
                                             <div class="form-group m-b-10" id="select-production-type" style="display:none">
-                                                <label for="" class="col-sm-4 control-label">Production Type*</label>
-                                                <div class="col-sm-3">
+                                                <div class="col-sm-3 col-sm-offset-2">
+                                                    <strong for="" class="">Production Type*</strong>
+                                                </div>
+                                                <div class="col-sm-4">
                                                     <div class="input-group">
                                                         <div class="input-group-addon">
                                                             <i class="ti-shopping-cart-full"></i>
@@ -107,7 +111,9 @@
                                                 </div>
                                             </div>
                                             <div class="form-group m-b-10" id="select-range-type" style="display:none">
-                                                <label for="" class="col-sm-4 control-label">Group By*</label>
+                                                <div class="col-sm-3 col-sm-offset-2">
+                                                    <strong for="" class="">Group By*</strong>
+                                                </div>
                                                 <div class="col-sm-4">
                                                     <div class="input-group">
                                                         <div class="input-group-addon">
@@ -115,7 +121,7 @@
                                                         </div>
                                                         <select class="form-control select2range_type" name="range_type" id="range_type">
                                                             <option value="">Pilih</option>
-                                                            <option value="MW">Month Wise</option>
+                                                            <option value="MW">Pit Wise</option>
                                                             <option value="PW">Periode Wise</option>
                                                         </select>
                                                     </div>
@@ -125,7 +131,9 @@
                                             <div class="form-group m-b-10" id="select-pit"></div>
 
                                             <div class="form-group m-b-10" id="select-duration-type" style="display:none">
-                                                <label for="" class="col-sm-4 control-label">Range By*</label>
+                                                <div class="col-sm-3 col-sm-offset-2">
+                                                    <strong for="" class="">Range By*</strong>
+                                                </div>
                                                 <div class="col-sm-4">
                                                     <div class="input-group">
                                                         <div class="input-group-addon">
@@ -143,22 +151,11 @@
                                                 </div>
                                             </div>
                                             <div class="form-group m-b-10" id="box-daily" style="display:none">
-                                                <!--
                                                 <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">Date By Hours*</label>
-                                                    <div class="col-sm-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-addon">
-                                                                <i class="ti-calendar"></i>
-                                                            </div>
-                                                            <input type="date" class="form-control inp-filter initDate" name="date" id="date">
-                                                        </div>
-                                                    </div> 
-                                                </div>
-                                                -->
-                                                <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">Starting Time</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">Starting Time</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-timer"></i>
@@ -167,9 +164,11 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">Finish Time</label>
-                                                    <div class="col-sm-3">
+                                                <div class="form-group m-b-10">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">Finish Time</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-timer"></i>
@@ -181,8 +180,10 @@
                                             </div>
                                             <div class="container-type" id="box-monthly" style="display:none">
                                                 <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">From Month</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">From Month</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-control-skip-forward"></i>
@@ -192,8 +193,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">To Month</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">To Month</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-control-skip-backward"></i>
@@ -206,8 +209,10 @@
 
                                             <div class="container-type" id="box-weekly" style="display:none">
                                                 <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">From Week</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">From Week</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-control-skip-forward"></i>
@@ -217,8 +222,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">To Week</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">To Week</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-control-skip-backward"></i>
@@ -230,8 +237,10 @@
                                             </div>
                                             <div class="container-type" id="box-date" style="display:none">
                                                 <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">From Date</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">From Date</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-control-skip-forward"></i>
@@ -241,8 +250,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">To Date</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">To Date</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-control-skip-backward"></i>
@@ -254,8 +265,10 @@
                                             </div>
                                             <div class="container-type" id="box-shift" style="display:none">
                                                 <div class="form-group m-b-20">
-                                                    <label for="" class="col-sm-4 control-label">Shift Name</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">Shift Name</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-reload"></i>
@@ -267,8 +280,10 @@
                                             </div>
                                             <div class="container-type" id="box-type-chart" style="display:none">
                                                 <div class="form-group m-b-10">
-                                                    <label for="" class="col-sm-4 control-label">Chart Type</label>
-                                                    <div class="col-sm-3">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">Chart Type</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="ti-stats-up"></i>
@@ -284,29 +299,26 @@
                                             </div>
                                             <div class="container-type" id="box-apply-chart" style="display:none">
                                                 <div class="form-group m-t-20">
-                                                    <label for="" class="col-sm-4 control-label">&nbsp;</label>
-                                                    <div class="col-sm-8">
-                                                        <button class="btn btn-info waves-effect waves-light" type="submit"> 
-                                                            <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
-                                                        </button>
+                                                    <div class="col-sm-5 col-sm-offset-2">
+                                                        <label for="" class="">&nbsp;</label>
+                                                    </div>
+                                                    <div class="col-sm-2">
                                                         <button type="button" class="btn btn-outline btn-default pull-right" data-toggle="modal" data-target="#myModal">
                                                             <i class="ti-settings"></i> Color Picker
                                                         </button>
-                                                        
                                                     </div>
-                                                    <!--
-                                                    <div class="col-sm-3" style="padding-left:0px">
-                                                        <div class="input-group">
-                                                            <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#myModal">
-                                                                <i class="ti-settings"></i> Color Picker
-                                                            </button>
-                                                        </div>
-                                                    </div>-->
                                                 </div>
                                             </div>
                                             <div class="text-center" id="text-loading" style="display:none">
                                                 <h3 class="text-center">Please wait,</h3>
                                                 <small>Sedang melakukan pengambilan data...</small>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center p-t-20">
+                                            <div class="container-type" id="box-apply-chart" style="display:none">
+                                                <button class="btn btn-info waves-effect waves-light" type="submit"> 
+                                                    <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
