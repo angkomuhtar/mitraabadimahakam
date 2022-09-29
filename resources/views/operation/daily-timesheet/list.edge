@@ -44,17 +44,17 @@
                                     <td>
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                     </td>
-                                    <td class="single-line">
-                                        <strong>{{item.dailyFleet.fleet.name}} </strong> <br>
-                                        <small class="text-success">{{item.dailyFleet.pit.name}}</small><br>
-                                        <small class="text-info">{{item.dailyFleet.shift.name}}</small>
+                                    <td class="single-line" width="400">
+                                        <strong>{{item.dailyFleet.fleet.name || 'unkown fleet'}} </strong> <br>
+                                        <small class="text-success">{{item.dailyFleet.pit.name || 'unknown pit'}}</small><br>
+                                        <small class="text-info">{{item.dailyFleet.shift.name || item.shift.name || 'unknown shift'}}</small>
                                     </td>
                                     <td class="">
-                                        <strong>{{item.dailyFleet.activities.name}}</strong><br>
+                                        <strong>{{item.dailyFleet.activities.name || 'unknown activity'}}</strong><br>
                                         <small>{{item.description}}</small><br>
                                     </td>
-                                    <td class="myDateFormat single-line" data-date="{{item.approved_at}}" data-elm="p">
-                                        <p class="text-white"></p>
+                                    <td class="myDateFormat single-line" width="400" data-date="{{item.approved_at}}" data-elm="p">
+                                        <p class="text-black"></p>
                                         <small class="text-warning nomor-berkas" data-id="{{item.id}}"></small>
                                     </td>
                                     <td class="text-right single-line">{{item.begin_smu}}</td>
@@ -65,8 +65,8 @@
                                         <small>{{item.equipment.tipe}}</small>
                                     </td>
                                     <td class="text-center">
-                                        {{item.userCheck.username}} <br>
-                                        {{item.spv.username}} <br>
+                                        {{item.userCheck.username.toUpperCase()}} <br>
+                                        {{item.spv.username || ''}} <br>
                                     </td>
                                 </tr>
                             @endeach
