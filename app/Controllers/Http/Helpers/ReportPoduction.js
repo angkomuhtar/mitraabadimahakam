@@ -931,6 +931,8 @@ class repPoduction {
 
         var duration = moment.duration(moment(req.end_date).diff(moment(req.start_date)));
         var hourLen = duration.asHours() + 1;
+        hourLen = Math.floor(hourLen)
+
         var xAxis = Array.apply(null, Array(hourLen)).map(function (_, i) {
             return moment(req.start_date).startOf('hour').add(i, 'hour').format('YYYYMMDDHH');
         });

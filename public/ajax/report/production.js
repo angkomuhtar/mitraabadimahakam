@@ -63,7 +63,7 @@ $(function(){
                     body.find('div#select-pit').html(result)
                     body.find('div.container-type').css('display', 'none')
                     body.find('select[name="filterType"]').val('DATE')
-                    body.find('select#filterType option[value!="DATE"]').attr('disabled', 'true')
+                    // body.find('select#filterType option[value!="DATE"]').attr('disabled', 'true')
                     body.find('div#box-date').css('display', 'inline')
                 },
                 error: function(err){
@@ -432,10 +432,10 @@ $(function(){
                 zoomType: 'xy'
             },
             title: {
-                text: 'PRODUCTION SITE ' + site.kode
+                text: 'Production Site ' + site.kode
             },
             subtitle: {
-                text: `MONTHLY WISE ${pit.name}`
+                text: `Period Wise ${pit.name}`
             },
             xAxis: [{
                 categories: arrDate,
@@ -532,10 +532,10 @@ $(function(){
                 zoomType: 'xy'
             },
             title: {
-                text: 'PRODUCTION SITE ' + site.kode
+                text: 'Productions Site ' + site.kode
             },
             subtitle: {
-                text: 'PERIOD WISE ALL PIT '
+                text: 'Period Wise All PIT '
             },
             xAxis: [{
                 categories: xAxis,
