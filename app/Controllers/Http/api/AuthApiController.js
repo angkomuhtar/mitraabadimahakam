@@ -23,7 +23,7 @@ const transporter = nodemailer.createTransport({
 
 
 class AuthApiController {
-    async login ({request, auth, response}) {
+    async login ({request, auth, response, view}) {
         var t0 = performance.now()
         const { username, password } = request.all()
         let durasi

@@ -173,6 +173,19 @@ class ReportHeavyEquipmentPerformanceController {
 
     async equipmentList( { auth, request, response } ) {
 
+        var t0 = performance.now()
+        // console.log(req);
+        const user = await userValidate(auth)
+        if(!user){
+            return response.status(403).json({
+                diagnostic: {
+                    ver: version,
+                    error: true,
+                    message: 'not authorized...'
+                }
+            })
+        }
+
         const { site_id } = request.all();
         const equipments = (
             await MasEquipment.query()
@@ -194,6 +207,24 @@ class ReportHeavyEquipmentPerformanceController {
         return {
             data : parsedEquipment
         }
+    }
+
+    async getReport({ auth, request, response }) {
+        var t0 = performance.now()
+        var req = request.all()
+        // console.log(req);
+        const user = await userValidate(auth)
+        if(!user){
+            return response.status(403).json({
+                diagnostic: {
+                    ver: version,
+                    error: true,
+                    message: 'not authorized...'
+                }
+            })
+        }
+
+        
     }
 }
 
