@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer')
 const { performance } = require('perf_hooks')
 const UserApiController = require('./UserApiController')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
-
+const moment = require('moment');
 const User = use("App/Models/User")
 const Token = use("App/Models/Token")
 const userx = use("App/Models/VUser")
