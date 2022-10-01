@@ -77,7 +77,6 @@ class DailyFleetController {
     let datetime = request.only(['datetime'])
     const reqEquip = request.collect(['equip_id'])
 
-    console.log('...req >> ', req, null)
     /* Check duplicate Fleet */
     const cekMaster = await DailyFleet.query().where({...req, date: moment(datetime.datetime).format('YYYY-MM-DD')}).first()
     if(cekMaster){

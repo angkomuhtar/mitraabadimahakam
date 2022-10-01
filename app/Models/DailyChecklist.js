@@ -49,6 +49,10 @@ class DailyChecklist extends Model {
     p2h () {
         return this.belongsToMany("App/Models/MasP2H", "checklist_id", "p2h_id").pivotTable('daily_checkp2h')
     }
+
+    shift() {
+        return this.belongsTo("App/Models/MasShift", "shift_id", "id")
+    }
 }
 
 module.exports = DailyChecklist
