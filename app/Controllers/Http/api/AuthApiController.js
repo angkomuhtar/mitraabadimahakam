@@ -1,7 +1,9 @@
 'use strict'
 
 const version = '1.0'
+const Env = use('Env')
 const Hash = use('Hash')
+const nodemailer = require('nodemailer')
 const { performance } = require('perf_hooks')
 const UserApiController = require('./UserApiController')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
@@ -9,6 +11,16 @@ const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 const User = use("App/Models/User")
 const Token = use("App/Models/Token")
 const userx = use("App/Models/VUser")
+
+const transporter = nodemailer.createTransport({
+    host: Env.get('SMTP_HOST'),
+    port: Env.get('SMTP_PORT'),
+    auth: {
+        user: Env.get('MAIL_USERNAME'),
+        pass: Env.get('MAIL_PASSWORD')
+    },
+});
+
 
 class AuthApiController {
     async login ({request, auth, response}) {
@@ -19,6 +31,23 @@ class AuthApiController {
             const token = await auth.authenticator('jwt').newRefreshToken().attempt(username, password)
             const usr = await userx.findBy('username', username)
             durasi = await diagnoticTime.durasi(t0)
+            const userToken = await Token.query().where('user_id', usr.id).last()
+            
+            var uri = request.headers().origin + '/' + userToken.token + '/logout'
+            transporter.sendMail({
+                from: '"Administrator Alert '+moment().format('YYMMDD HH:mm')+' " <ayat.ekapoetra@gmail.com>', // sender address
+                to: `${usr.email}`, // list of receivers
+                subject: "MAM SYSTEM Notification ✔", // Subject line
+                text: "There is a new article. It's about sending emails, check it out!", // plain text body
+                html: view.render("email-login-notification", {
+                    date: moment().format('dddd, DD MMMM YYYY'),
+                    time: moment().format('HH:mm A') + ' WIB',
+                    user: request.headers()['user-agent'],
+                    uri: uri
+                }),
+            }).then(info => {
+              console.log({info});
+            }).catch(console.error);
             return response.status(201).json({
                 diagnostic: {
                     ver: version,

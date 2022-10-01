@@ -1,12 +1,23 @@
 'use strict'
 
+const Env = use('Env')
 const Hash = use('Hash')
 const Helpers = use('Helpers')
 const moment = require("moment")
 const User = use("App/Models/User")
 const Token = use("App/Models/Token")
+const nodemailer = require('nodemailer')
 const Profile = use("App/Models/Profile")
 const SysError = use("App/Models/SysError")
+
+const transporter = nodemailer.createTransport({
+    host: Env.get('SMTP_HOST'),
+    port: Env.get('SMTP_PORT'),
+    auth: {
+        user: Env.get('MAIL_USERNAME'),
+        pass: Env.get('MAIL_PASSWORD')
+    },
+});
 
 class AuthController {
     async index ({view, auth, response}) {
@@ -28,8 +39,9 @@ class AuthController {
         }
     }
 
-    async login ({ request, auth, response, session }) {
+    async login ({ request, auth, response, session, view }) {
         const { username, password } = request.all()
+
         try {
             await auth.remember(true).attempt(username, password)
             const usr = await auth.getUser()
@@ -39,6 +51,22 @@ class AuthController {
                 return response.redirect('/login')
             }
             else{
+                const token = await Token.query().where('user_id', usr.id).last()
+                var uri = request.headers().origin + '/' + token.token + '/logout'
+                transporter.sendMail({
+                    from: '"Administrator Alert '+moment().format('YYMMDD HH:mm')+' " <ayat.ekapoetra@gmail.com>', // sender address
+                    to: `${usr.email}`, // list of receivers
+                    subject: "MAM SYSTEM Notification ✔", // Subject line
+                    text: "There is a new article. It's about sending emails, check it out!", // plain text body
+                    html: view.render("email-login-notification", {
+                        date: moment().format('dddd, DD MMMM YYYY'),
+                        time: moment().format('HH:mm A') + ' WIB',
+                        user: request.headers()['user-agent'],
+                        uri: uri
+                    }),
+                }).then(info => {
+                  console.log({info});
+                }).catch(console.error);
                 return response.redirect('/')
             }
         } catch (error) {
@@ -128,11 +156,31 @@ class AuthController {
        }
     }
 
-    async loggingOut ({auth, response}) {
+    async loggingOut ({auth, params, response}) {
         const usr = await auth.getUser()
+        if(params.token){
+            const logoutUsr = await Token.query().where('token', params.token).last()
+            logoutUsr.merge({is_revoked: 1})
+            await logoutUsr.save()
+        }else{
+            
+        }
         await Token.query().where('user_id', usr.id).delete()
         await auth.logout()
         return response.redirect('/login')
+    }
+
+    async loggingOutToken ({auth, params, response}) {
+        if(params.token){
+            try {
+                const logoutUsr = await Token.query().where('token', params.token).last()
+                await logoutUsr.delete()
+                await auth.logout()
+                return response.redirect('/login')
+            } catch (error) {
+                return response.redirect('/404')
+            }
+        }
     }
 }
 

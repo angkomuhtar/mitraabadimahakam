@@ -22,6 +22,7 @@ Route.get('/login', 'AuthController.show').as('auth.login')
 Route.post('/login', 'AuthController.login')
 Route.get('/logout', 'AuthController.loggingOut').as('auth.logout')
 Route.post('/profile', 'AuthController.updatePassword').as('auth.upd-pass')
+Route.get('/:token/logout', 'AuthController.loggingOutToken').as('auth.loggingOutToken')
 Route.get('/profile/:id', 'AuthController.profile').as('auth.profile').middleware(['auth'])
 Route.post('/profile/:id/update-avatar', 'AuthController.updateAvatar').as('auth.updateAvatar').middleware(['auth'])
 
@@ -1243,6 +1244,8 @@ Route.group(() => {
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
 
 Route.get('/mobileapps', 'MobileappsDocumentController.index').namespace('documentation')
+
+Route.get('/email', ({ view }) => view.render('email-login-notification'))
 
 Route.get('/401', ({ view }) => view.render('401'))
 

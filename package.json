@@ -37,6 +37,7 @@
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
     "node-html-to-image": "^3.2.4",
+    "nodemailer": "^6.8.0",
     "pdfmake": "^0.2.2",
     "quickchart-js": "^3.1.0",
     "request": "^2.88.2",
