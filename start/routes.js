@@ -1215,7 +1215,7 @@ Route.group(() => {
 
 // REPORT HEAVY EQUIPMENT PERFORMANCES
 Route.group(() => {
-  Route.get('/', 'ReportHeavyEquipmentPerformanceController.index')
+  Route.get('/', 'ReportHeavyEquipmentPerformanceController.GET_REPORT')
   Route.get('/pdf', 'ReportHeavyEquipmentPerformanceController.pdf')
   Route.get('/equipment/list', 'ReportHeavyEquipmentPerformanceController.equipmentList')
   // Route.get('/list', 'ReportHeavyEquipmentPerformanceController.list')
