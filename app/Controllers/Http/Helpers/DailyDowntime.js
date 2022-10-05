@@ -147,12 +147,12 @@ class DailyDowntime {
           }
         }
 
-        if (!value.V) {
-          return {
-            success: false,
-            message: 'Budget PA must have values...',
-          }
-        }
+        // if (!value.V) {
+        //   return {
+        //     success: false,
+        //     message: 'Budget PA must have values...',
+        //   }
+        // }
 
         const obj = {
           uid: `${moment(date).format('YYYYMM.DDHHMM')}.${(await GET_EQUIPMENT_DATA(value.C, value.D, value.B))?.kode}` || value.B,
