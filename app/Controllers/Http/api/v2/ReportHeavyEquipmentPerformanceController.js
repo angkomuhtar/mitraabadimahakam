@@ -15,11 +15,54 @@ const ReportPDFHelpers = use('App/Controllers/Http/Helpers/ReportPDF')
 const ReportHeavyEquipment = use('App/Controllers/Http/Helpers/ReportHeavyEquipment')
 const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
 const EquipmentPerformanceDetails = use('App/Models/MamEquipmentPerformanceDetails')
+const DailyDowntimeEquipment = use('App/Models/DailyDowntimeEquipment')
 var pdfMake = require('pdfmake/build/pdfmake.js')
 var pdfFonts = require('pdfmake/build/vfs_fonts.js')
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 class ReportHeavyEquipmentPerformanceController {
+
+
+	async weekCheck (start,end) {
+	    const start_of_week = moment(start).startOf('week').format('YYYY-MM-DD');
+	    const start_of_week1 = moment(end).startOf('week').format('YYYY-MM-DD');
+	    const end_of_week = moment(end).endOf('week').format('YYYY-MM-DD');
+		const end_of_week1 = moment(start).endOf('week').format('YYYY-MM-DD');
+		const week_arr = [];
+	    // check if same week
+	    if(start_of_week1 === start_of_week) {
+	        const start_week = start_of_week;
+	        const end_week = end_of_week1;
+	        const date1 = moment(start_week).format('DD');
+	        const date2 = moment(end_week).format('DD');
+	    } else {
+	        const get_diff = (moment(end_of_week).diff(start_of_week, 'days') + 1) // week
+	        const arrDate = Array.from({ length: get_diff }, (x, i) =>
+	        moment(start_of_week).startOf('week').add(i, 'days').format('YYYY-MM-DD')
+	   )
+	        let start_of_week_array = [];
+	        for(const value of arrDate) {
+	            const week_start = moment(value).startOf('week').format('YYYY-MM-DD');
+	            start_of_week_array.push(week_start)
+	        };
+	        start_of_week_array = _.uniq(start_of_week_array);
+	        for(const date of start_of_week_array) {
+	            const start = moment(date).format('YYYY-MM-DD');
+	            const end =  moment(date).add(6, 'days').format('YYYY-MM-DD');
+	            const obj = {
+	                start : start,
+	                end : end,
+	                day : `${moment(start).format('DD MMM')} - ${moment(end).format('DD MMM')}`,
+	                data : {}
+	            };
+	            week_arr.push(obj);
+	        }
+	    }
+		return week_arr || [];
+	};
+
+
+
 	async index({ auth, request, response }) {
 		let data
 		let durasi
@@ -205,6 +248,80 @@ class ReportHeavyEquipmentPerformanceController {
 		}
 	}
 
+	async equipmentType({ auth, request, response }) {
+		var t0 = performance.now()
+		// console.log(req);
+		const user = await userValidate(auth)
+		if (!user) {
+			return response.status(403).json({
+				diagnostic: {
+					ver: version,
+					error: true,
+					message: 'not authorized...',
+				},
+			})
+		}
+
+		const { site_id } = request.all()
+		const equipments = (
+			await MasEquipment.query()
+				.where((wh) => {
+					wh.whereIn('tipe', ['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer', 'compaq', 'oth'])
+					wh.where('aktif', 'Y')
+					wh.where('site_id', site_id)
+				})
+				.fetch()
+		).toJSON()
+
+		const parsedEquipment = equipments.map((v) => {
+			return {
+				id: String(v.id),
+				title: v.tipe,
+			}
+		})
+
+		return {
+			data: parsedEquipment,
+		}
+	}
+
+	async equipmentModel({ auth, request, response }) {
+		var t0 = performance.now()
+		// console.log(req);
+		const user = await userValidate(auth)
+		if (!user) {
+			return response.status(403).json({
+				diagnostic: {
+					ver: version,
+					error: true,
+					message: 'not authorized...',
+				},
+			})
+		}
+
+		const { site_id } = request.all()
+		const equipments = (
+			await MasEquipment.query()
+				.where((wh) => {
+					wh.whereIn('tipe', ['excavator', 'general support', 'hauler truck', 'fuel truck', 'water truck', 'bulldozer', 'compaq', 'oth'])
+					wh.where('aktif', 'Y')
+					wh.where('site_id', site_id)
+				})
+				.fetch()
+		).toJSON()
+
+		const parsedEquipment = equipments.map((v) => {
+			return {
+				id: String(v.id),
+				title: v.unit_model,
+			}
+		})
+
+		return {
+			data: parsedEquipment,
+		}
+	}
+
 	async GET_REPORT({ auth, request, response }) {
 		var t0 = performance.now()
 		var req = request.all()
@@ -223,18 +340,119 @@ class ReportHeavyEquipmentPerformanceController {
 			req.start_date = req.start
 			req.end_date = req.end
 
+			const dateStart = moment(req.start_date).format('YYYY-MM-DD')
+			const dateEnd = moment(req.end_date).format('YYYY-MM-DD')
 			const final_data = []
+			const stoppages_duration_all = []
+			const stoppages_event_all = []
+
+
+            // methods
+			const GET_DATA_STOPPAGES = (componentName) => {
+                let dur = 0;
+
+                let count = 0;
+                for(const value of stoppages_event) {
+                    if(value.name === componentName) {
+                        count += 1
+                        dur += value.duration
+                    }
+                }
+
+                return {
+                    total : count,
+                    duration : dur
+                };
+            }
+
+
 			const ep_details = (
 				await EquipmentPerformanceDetails.query()
 					.where((wh) => {
-						wh.where('date', '>=', moment(req.start_date).format('YYYY-MM-DD'))
-						wh.where('date', '<=', moment(req.end_date).format('YYYY-MM-DD'))
+						wh.where('date', '>=', dateStart)
+						wh.where('date', '<=', dateEnd)
 						wh.where('site_id', req.site_id)
 						wh.where('equip_id', req.equip_id)
 					})
 					.orderBy('date', 'asc')
 					.fetch()
 			).toJSON()
+
+			const daily_downtime = (
+				await DailyDowntimeEquipment.query()
+					.where((wh) => {
+						wh.where('breakdown_start', '>=', dateStart)
+						wh.where('breakdown_start', '<=', dateEnd)
+						wh.where('equip_id', req.equip_id)
+						wh.where('component_group', '!=', 'Kosong')
+					})
+					.orderBy('urut', 'asc')
+					.fetch()
+			).toJSON()
+
+			const arrComponent = `
+            ENG	Engine
+            UNC	Undercarriage
+            TRN	Transmission
+            HS	Hydraulic System
+            ELS	Electrical System
+            PM	Maintenance Program
+            STR	Steering System
+            BRS	Braking System
+            RD	Radio comunication 
+            CFP	Chassis, Frame, & panels
+            ECS	Engine Cooling System
+            AIS	Air Induction System
+            FDR	Final Drive
+            CAB	Cabin
+            EFS	Engine Fuel System
+            ACS	Air Conditioning System
+            DIF	Differential 
+            SUS	Suspension
+            PT	Power train
+            CIR	Circle
+            GRS	Greasing System
+            GET	GET
+            BBT	Blade, Bucket, & Tray
+            T	Tyre
+            WRL	Work Lamp
+            BOO	Boom
+            SAF	Safety Devices
+            SWS	Swing System`
+				.split('\n')
+				.map((v) => v.replace('\t', ' '))
+				.map((v) => v.trim())
+				.slice(1)
+			let stoppages_event = []
+			if (daily_downtime.length > 0) {
+				for (const data of daily_downtime) {
+					stoppages_event.push({
+                        name : data.component_group,
+                        duration : data.downtime_total
+                    })
+				}
+
+				for (const component of arrComponent) {
+					const componentName = component.split(' ')[0]
+					const obj1 = {
+						label: componentName,
+						value: GET_DATA_STOPPAGES(componentName).duration,
+                        frontColor : '#0096FF',
+                        longName : component
+					}
+					const obj2 = {
+						label: componentName,
+						value: GET_DATA_STOPPAGES(componentName).total,
+                        frontColor : '#0096FF',
+                        longName : component
+					}
+
+                    stoppages_duration_all.push(obj1);
+                    stoppages_event_all.push(obj2)
+				}
+			}
+
+			
 
 			if (ep_details.length > 0) {
 				const daily_ep_arr = []
@@ -297,99 +515,103 @@ class ReportHeavyEquipmentPerformanceController {
 					name: 'Budget PA vs Actual PA',
 					data: daily_ep_arr,
 					type: 'Bar Chart',
-                    indicators : [
-                        {
-                            color : '#0096FF',
-                            text : 'PA Actual'
-                        },
-                        {
-                            color : '#fc0303',
-                            text : 'Budget PA'
-                        }
-                    ]
+					indicators: [
+						{
+							color: '#0096FF',
+							text: 'PA Actual',
+						},
+						{
+							color: '#fc0303',
+							text: 'Budget PA',
+						},
+					],
 				})
 				final_data.push({
 					name: 'Work Hour vs Standby Hour',
 					data: daily_hm_arr,
 					type: 'Bar Chart',
-                    indicators : [
-                        {
-                            color : '#0096FF',
-                            text : 'Work Hour'
-                        },
-                        {
-                            color : '#fc0303',
-                            text : 'Standby Hour'
-                        }
-                    ]
+					indicators: [
+						{
+							color: '#0096FF',
+							text: 'Work Hour',
+						},
+						{
+							color: '#fc0303',
+							text: 'Standby Hour',
+						},
+					],
 				})
 				final_data.push({
 					name: 'Breakdown Summary',
 					data: daily_breakdown_total,
 					type: 'Stack Bar Chart',
-                    indicators : [
-                        {
-                            color : '#e3fc03',
-                            text : 'BD UNS'
-                        },
-                        {
-                            color : '#0096FF',
-                            text : 'BD SCH'
-                        },
-                        {
-                            color : '#3103fc',
-                            text : 'BD ACD'
-                        }
-                    ]
+					indicators: [
+						{
+							color: '#e3fc03',
+							text: 'BD UNS',
+						},
+						{
+							color: '#0096FF',
+							text: 'BD SCH',
+						},
+						{
+							color: '#3103fc',
+							text: 'BD ACD',
+						},
+					],
 				})
 				final_data.push({
 					name: 'Breakdown Ratio',
 					data: daily_breakdown_ratio,
 					type: 'Bar Chart',
-                    indicators : [
-                        {
-                            color : '#0096FF',
-                            text : 'BD Ratio SCH'
-                        },
-                        {
-                            color : '#fc0303',
-                            text : 'BD Ratio UNS'
-                        }
-                    ]
+					indicators: [
+						{
+							color: '#0096FF',
+							text: 'BD Ratio SCH',
+						},
+						{
+							color: '#fc0303',
+							text: 'BD Ratio UNS',
+						},
+					],
 				})
 				final_data.push({
 					name: 'Mean Time Actual',
 					data: daily_actual_mean_time,
 					type: 'Bar Chart',
-                    indicators : [
-                        {
-                            color : '#0096FF',
-                            text : 'Actual MTTR'
-                        },
-                        {
-                            color : '#fc0303',
-                            text : 'Actual MTBS'
-                        }
-                    ]
+					indicators: [
+						{
+							color: '#0096FF',
+							text: 'Actual MTTR',
+						},
+						{
+							color: '#fc0303',
+							text: 'Actual MTBS',
+						},
+					],
 				})
 				final_data.push({
 					name: 'Mean Time Target',
 					data: daily_target_mean_time,
 					type: 'Bar Chart',
-                    indicators : [
-                        {
-                            color : '#0096FF',
-                            text : 'Target MTTR'
-                        },
-                        {
-                            color : '#fc0303',
-                            text : 'Target MTBS'
-                        }
-                    ]
+					indicators: [
+						{
+							color: '#0096FF',
+							text: 'Target MTTR',
+						},
+						{
+							color: '#fc0303',
+							text: 'Target MTBS',
+						},
+					],
 				})
 			}
 			return {
 				data: final_data,
+                stoppages : {
+                    duration : stoppages_duration_all,
+                    totalEvent : stoppages_event_all
+                }
 			}
 		}
 
