@@ -1241,6 +1241,18 @@ Route.group(() => {
   .prefix('api/v2/employee')
   .namespace('api/v2')
 
+// CMS MAIN
+Route.group(() => {
+  Route.get('/', 'CmsMainController.index')
+  Route.get('/carousel-home', 'CmsMainController.carouselHome')
+  Route.get('/about-home', 'CmsMainController.aboutHome')
+  Route.get('/service-home', 'CmsMainController.serviceHome')
+  Route.get('/testomoni-home', 'CmsMainController.testimonialHome')
+  Route.get('/leaders-home', 'CmsMainController.leadersHome')
+})
+  .prefix('api/v2/cms-main')
+  .namespace('api/v2')
+
 /* END API VERSION 2.0 */
 
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
