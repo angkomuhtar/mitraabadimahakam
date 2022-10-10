@@ -285,6 +285,20 @@ Route.group(() => {
   .namespace('master')
   .middleware(['MM'])
 
+// CMS
+Route.group(() => {
+  Route.get('/main-cms', 'PanelMainCMSController.index').as('cms.main.index')
+  Route.post('/main-cms/:id/update', 'PanelMainCMSController.update').as('cms.main.update')
+
+  Route.get('/carousel-img', 'PanelCarouselController.index').as('cms.carousel.index')
+  Route.get('/carousel-img/list', 'PanelCarouselController.list').as('cms.carousel.list')
+  Route.get('/carousel-img/:id/show', 'PanelCarouselController.show').as('cms.carousel.show')
+  Route.post('/carousel-img/:id/update', 'PanelCarouselController.update').as('cms.carousel.update')
+})
+  .prefix('cms')
+  .namespace('cms')
+  .middleware(['MM'])
+
 // DUCUMENTATIONS
 Route.group(() => {
   // Web Apps Documentations
@@ -1245,10 +1259,12 @@ Route.group(() => {
   Route.get('/carousel-home', 'CmsMainController.carouselHome')
   Route.get('/about-home', 'CmsMainController.aboutHome')
   Route.get('/service-home', 'CmsMainController.serviceHome')
+  Route.get('/team-home', 'CmsMainController.teamHome')
   Route.get('/testomoni-home', 'CmsMainController.testimonialHome')
-  Route.get('/leaders-home', 'CmsMainController.leadersHome')
+
+  Route.get('/equipment', 'CmsMainController.equipment')
 })
-  .prefix('api/v2/cms-main')
+  .prefix('api/v2/:lang/cms-main')
   .namespace('api/v2')
 
 /* END API VERSION 2.0 */
