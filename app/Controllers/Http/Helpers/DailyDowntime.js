@@ -114,6 +114,7 @@ class DailyDowntime {
 
 		// update master equipment and pa bugdet equoipment regularly
 		await UPDATE_EQUIPMENT_MASTER()
+
 		/**
 		 * Check Wheter there is equipment performance master data for current month
 		 */
@@ -142,12 +143,13 @@ class DailyDowntime {
 				// const get_sibling_equipment = await MasEquipment.query().where('kode', 'like', `%${obj.B}`).last();
 				// const get_last_equipment_id = await MasEquipment.query().where('aktif', 'Y').last();
 				if (!equipmentExist) {
+					console.log('does this running ? ', obj.B);
 					const newEquipment = new MasEquipment()
 					// create the new equipment
 					newEquipment.fill({
 						kode: obj.B,
 						site_id: req.site_id,
-						tipe: obj.D || 'general support',
+						tipe: 'general support',
 						brand: 'TEMP',
 						received_date: moment(req.date).format('YYYY-MM-DD'),
 						received_hm: '0',
@@ -155,7 +157,7 @@ class DailyDowntime {
 						warranty_date: moment(req.date).format('YYYY-MM-DD'),
 						is_owned: 'Y',
 						unit_sn: uid(6),
-						unit_model: uid(6),
+						unit_model: obj.D || uid(6),
 						engine_sn: uid(6),
 						engine_model: 'TEMP',
 						fuel_capacity: '0',
@@ -164,13 +166,13 @@ class DailyDowntime {
 						remark: 'created from daily downtime upload ' + selectedDate,
 						created_by: user.id,
 					})
-					await newEquipment.save(trx)
+					await newEquipment.save()
 					// create to the equipment performance too
 					const newEquipmentPerformance = new EquipmentPerformance()
 					const now = moment(currentMonth).format('DD MMM')
 					const to = moment(selectedDate).format('DD MMM')
 
-					if (modelArr.includes(newEquipment.tipe)) {
+					if (modelArr.includes(newEquipment.unit_model)) {
 						newEquipmentPerformance.fill({
 							month: currentMonth,
 							period: `${now} - ${to}`,
@@ -185,7 +187,7 @@ class DailyDowntime {
 					}
 				}
 			} catch (error) {
-				console.log('error >> ', error)
+				console.log('error insert new equipment >> ', error)
 				return {
 					success: false,
 					message: 'Data ' + obj.B + ' tidak valid...',
@@ -193,6 +195,7 @@ class DailyDowntime {
 			}
 		}
 
+	
 		// methods
 		const GET_EQUIPMENT_DATA = async (tipe, brand, name) => {
 			let result = null
