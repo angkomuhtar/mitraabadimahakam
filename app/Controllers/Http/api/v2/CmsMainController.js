@@ -21,8 +21,6 @@ const MasEquipment = use("App/Models/MasEquipment");
 class CmsMainController {
     async index ( { params, response } ) {
         
-        const lang = await CmsLang.query().where('id', params.lang).last()
-        console.log(lang);
         let data = (await CmsMain.query().where( w => {
             w.where('aktif', 'Y')
             w.where('lang', params.lang)
@@ -57,7 +55,7 @@ class CmsMainController {
                 w.where('aktif', 'Y')
                 w.where('lang', params.lang)
             }).first()
-        ).toJSON()
+        )?.toJSON()
         data = {...data, about: cmsAbout}
 
         const cmsFact = (
@@ -93,6 +91,15 @@ class CmsMainController {
         })
     }
 
+    async defaultLang ( { response } ) {
+        const lang = (await CmsLang.query().where('default', 'Y').last()).toJSON()
+
+        return response.status(200).json({
+            success: true,
+            data: lang
+        })
+    }
+
     async carouselHome ( { response } ) {
         const data = await CmsContent.query()
         .with('items')
@@ -110,16 +117,14 @@ class CmsMainController {
         })
     }
     
-    async aboutHome ( { response } ) {
-        const data = await CmsContent.query()
-        .with('items')
-        .where( w => {
-            w.where('type', 'about-home')
-            w.where( w => {
+    async aboutHome ( { params, response } ) {
+        const data = (
+            await CmsAbout.query()
+            .where( w => {
+                w.where('lang', params.lang)
                 w.where('aktif', 'Y')
-                
-            })
-        }).last()
+            }).fetch()
+        ).toJSON()
 
         return response.status(200).json({
             success: true,

@@ -22,7 +22,7 @@ $(function(){
         data.append('file', $('input[type=file]')[0].files[0])
         $.ajax({
             async: true,
-            url: '/cms/carousel-img',
+            url: '/cms/about-us',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -51,7 +51,7 @@ $(function(){
         data.append('file', $('input[type=file]')[0].files[0])
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/'+id+'/update',
+            url: '/cms/about-us/'+id+'/update',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -78,7 +78,7 @@ $(function(){
         var id = $(this).data('id')
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/'+id+'/destroy',
+            url: '/cms/about-us/'+id+'/destroy',
             method: 'POST',
             dataType: 'json',
             processData: false,
@@ -102,7 +102,7 @@ $(function(){
     function initDefault(){
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/list',
+            url: '/cms/about-us/list',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -118,7 +118,7 @@ $(function(){
     function initCreate(){
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/create',
+            url: '/cms/about-us/create',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -134,7 +134,7 @@ $(function(){
     function initShow(id){
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/'+id+'/show',
+            url: '/cms/about-us/'+id+'/show',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()

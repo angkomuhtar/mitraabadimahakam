@@ -6,7 +6,7 @@
                 <div class="col-md-8">
                     <form action="" id="form-create">
                         <div class="panel panel-default">
-                            <div class="panel-heading">Update Carousel</div>
+                            <div class="panel-heading">Insert Testimonial</div>
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
@@ -23,20 +23,20 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="">Title</label>
-                                                <input type="text" class="form-control" name="title" placeholder="Title Carousel"> 
+                                                <label for="">Name</label>
+                                                <input type="text" class="form-control" name="name" placeholder="Client Name" required> 
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="">Subtitle</label>
-                                                <input type="text" class="form-control" name="subtitle" placeholder="SubTitle Carousel"> 
+                                                <label for="">Job Title</label>
+                                                <input type="text" class="form-control" name="type" placeholder="Client Job title" required> 
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="">Descriptions</label>
-                                                <textarea class="form-control" name="details" id="details" rows="5"></textarea>
+                                                <label for="">Comment</label>
+                                                <textarea class="form-control" name="comment" id="comment" rows="5" required></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -46,8 +46,8 @@
                                         <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-update" type="reset"> 
                                             <i class="fa fa-close"></i> <span>Cancel</span>
                                         </button>
-                                        <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
-                                            <i class="fa fa-save"></i> <span>Update</span>
+                                        <button class="btn btn-success waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                            <i class="fa fa-save"></i> <span>Save</span>
                                         </button>
                                     </div>
                                 </div>
@@ -56,9 +56,12 @@
                     </form>
                 </div>
                 <div class="col-md-4">
-                    <img src="../../../images/cms/sample-carousel.png" height="500" class="img-fluid" alt="...">
+                    <div class="text-dimension">
+                        <code>Ukuran dimensi <strong>1024 x 1024</strong>px</code>
+                    </div>
+                    <img src="../../../images/cms/sample-testimonial.png" height="500" class="img-fluid" alt="...">
                     <div class="box-image">
-                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="../../../images/cms/sample-upload.png" data-height="128" />
+                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="../../../images/cms/sample-upload-testimonial.png" data-height="128" />
                     </div>
                 </div>
             </div>
@@ -71,10 +74,15 @@
     })
 </script>
 <style>
+    div.text-dimension {
+        position: absolute;
+        top: 220px;
+        z-index: 999;
+    }
     div.box-image {
         position: absolute;
-        top: 70px;
-        margin: 10px 5px;
+        bottom: 87px;
+        /* margin: 10px 5px; */
         /* border: 3px red dashed; */
         height: 150px;
         /* background-color: aliceblue; */

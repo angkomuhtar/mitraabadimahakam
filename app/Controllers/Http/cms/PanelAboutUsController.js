@@ -5,29 +5,18 @@ const ENV_TYPE = Env.get('NODE_ENV')
 const Helpers = use('Helpers')
 const _ = require('underscore')
 const moment = require("moment")
-const CmsMain = use("App/Models/CmsMain")
-const CmsPage = use("App/Models/CmsPage")
-const CmsContent = use("App/Models/CmsContent")
-const CmsFaq = use("App/Models/CmsFaq")
-const CmsFact = use("App/Models/CmsFact")
-const CmsLang = use("App/Models/CmsLang")
-const CmsCarousel = use("App/Models/CmsCarousel")
-const CmsFeature = use("App/Models/CmsFeature")
 const CmsAbout = use("App/Models/CmsAbout")
-const CmsTeam = use("App/Models/CmsTeam")
-const CmsService = use("App/Models/CmsService")
-const CmsTestimoni = use("App/Models/CmsTestimoni")
 
 const IMAGE_URI = ENV_TYPE != 'development' ? 'http://offices.mitraabadimahakam.id':'http://localhost:3001'
 
-class PanelCarouselController {
+class PanelAboutUsController {
     async index ( { auth, view } ) {
         const user = await userValidate(auth)
         if(!user){
             return view.render('401')
         }
 
-        return view.render('cms.carousel-img.index')
+        return view.render('cms.about-us.index')
     }
 
     async list ( { auth, view } ) {
@@ -36,9 +25,9 @@ class PanelCarouselController {
             return view.render('401')
         }
 
-        const data = (await CmsCarousel.query().where('aktif', 'Y').fetch()).toJSON()
+        const data = (await CmsAbout.query().where('aktif', 'Y').orderBy('urut', 'asc').fetch()).toJSON()
 
-        return view.render('cms.carousel-img.list', {list: data})
+        return view.render('cms.about-us.list', {list: data})
     }
 
     async create ( { auth, view } ) {
@@ -47,7 +36,7 @@ class PanelCarouselController {
             return view.render('401')
         }
 
-        return view.render('cms.carousel-img.create')
+        return view.render('cms.about-us.create')
     }
 
     async show ( { auth, params, request, view } ) {
@@ -56,9 +45,9 @@ class PanelCarouselController {
             return view.render('401')
         }
 
-        const data = (await CmsCarousel.query().where('id', params.id).last()).toJSON()
+        const data = (await CmsAbout.query().where('id', params.id).last()).toJSON()
 
-        return view.render('cms.carousel-img.show', {data: data})
+        return view.render('cms.about-us.show', {data: data})
     }
 
     async store ( { auth, request } ) {
@@ -68,38 +57,38 @@ class PanelCarouselController {
             return view.render('401')
         }
 
-        const carouselImg = request.file('file', {
+        const clientPhoto = request.file('file', {
             types: ['image'],
             size: '10mb'
         })
 
-        let imageCarousel
-        if(carouselImg){
-            const aliasName = `CAROUSEL-${moment().format('HHmmss')}.${carouselImg.extname}`
-            imageCarousel = IMAGE_URI+'/images/cms/'+aliasName
-            await carouselImg.move(Helpers.publicPath(`images/cms`), {
+        let photo
+        if(clientPhoto){
+            const aliasName = `ABOUTUS-${moment().format('HHmmss')}.${clientPhoto.extname}`
+            photo = IMAGE_URI+'/images/cms/'+aliasName
+            await clientPhoto.move(Helpers.publicPath(`images/cms`), {
                 name: aliasName,
                 overwrite: true,
             })
 
-            if (!carouselImg.moved()) {
+            if (!clientPhoto.moved()) {
                 return {
                     success: false,
-                    message: 'Failed upload photo image... \n'+carouselImg.error().message
+                    message: 'Failed upload photo image... \n'+clientPhoto.error().message
                 }
             }
         }
 
-        const cmsCarousel = new CmsCarousel()
-        cmsCarousel.fill({
+        const cmsAbout = new CmsAbout()
+        cmsAbout.fill({
             lang: req.lang,
             title: req.title,
             subtitle: req.subtitle,
             details: req.details,
-            img_url: imageCarousel
+            img_url: photo
         })
         try {
-            await cmsCarousel.save()
+            await cmsAbout.save()
             return {
                 success: true,
                 message: 'Success save data...'
@@ -120,39 +109,39 @@ class PanelCarouselController {
             return view.render('401')
         }
 
-        const carouselImg = request.file('file', {
+        const clientPhoto = request.file('file', {
             types: ['image'],
             size: '10mb'
         })
 
-        let imageCarousel
-        if(carouselImg){
-            const aliasName = `CAROUSEL-${params.id}.${carouselImg.extname}`
-            imageCarousel = IMAGE_URI+'/images/cms/'+aliasName
-            await carouselImg.move(Helpers.publicPath(`images/cms`), {
+        let photo
+        if(clientPhoto){
+            const aliasName = `ABOUTUS-${params.id}.${clientPhoto.extname}`
+            photo = IMAGE_URI+'/images/cms/'+aliasName
+            await clientPhoto.move(Helpers.publicPath(`images/cms`), {
                 name: aliasName,
                 overwrite: true,
             })
 
-            if (!carouselImg.moved()) {
+            if (!clientPhoto.moved()) {
                 return {
                     success: false,
-                    message: 'Failed upload photo image... \n'+carouselImg.error().message
+                    message: 'Failed upload photo image... \n'+clientPhoto.error().message
                 }
             }
         }
 
-        const cmsCarousel = await CmsCarousel.query().where('id', params.id).last()
-        cmsCarousel.merge({
+        const cmsAbout = await CmsAbout.query().where('id', params.id).last()
+        cmsAbout.merge({
             lang: req.lang,
             title: req.title,
             subtitle: req.subtitle,
             details: req.details,
-            img_url: imageCarousel
+            img_url: photo
         })
 
         try {
-            await cmsCarousel.save()
+            await cmsAbout.save()
             return {
                 success: true,
                 message: 'Success save data'
@@ -172,11 +161,11 @@ class PanelCarouselController {
             return view.render('401')
         }
 
-        const cmsCarousel = await CmsCarousel.query().where('id', params.id).last()
-        cmsCarousel.merge({aktif: 'N'})
+        const cmsAbout = await CmsAbout.query().where('id', params.id).last()
+        cmsAbout.merge({aktif: 'N'})
 
         try {
-            await cmsCarousel.save()
+            await cmsAbout.save()
             return {
                 success: true,
                 message: 'Success save data'
@@ -191,7 +180,7 @@ class PanelCarouselController {
     }
 }
 
-module.exports = PanelCarouselController
+module.exports = PanelAboutUsController
 
 async function userValidate(auth){
     let user

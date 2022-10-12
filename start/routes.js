@@ -290,10 +290,59 @@ Route.group(() => {
   Route.get('/main-cms', 'PanelMainCMSController.index').as('cms.main.index')
   Route.post('/main-cms/:id/update', 'PanelMainCMSController.update').as('cms.main.update')
 
+  /** CAROUSEL **/
   Route.get('/carousel-img', 'PanelCarouselController.index').as('cms.carousel.index')
+  Route.post('/carousel-img', 'PanelCarouselController.store').as('cms.carousel.store')
   Route.get('/carousel-img/list', 'PanelCarouselController.list').as('cms.carousel.list')
+  Route.get('/carousel-img/create', 'PanelCarouselController.create').as('cms.carousel.create')
   Route.get('/carousel-img/:id/show', 'PanelCarouselController.show').as('cms.carousel.show')
   Route.post('/carousel-img/:id/update', 'PanelCarouselController.update').as('cms.carousel.update')
+  Route.post('/carousel-img/:id/destroy', 'PanelCarouselController.destroy').as('cms.carousel.destroy')
+
+  /** FEATURE **/
+  Route.get('/feature', 'PanelFeatureController.index').as('cms.feature.index')
+  Route.post('/feature', 'PanelFeatureController.store').as('cms.feature.store')
+  Route.get('/feature/list', 'PanelFeatureController.list').as('cms.feature.list')
+  Route.get('/feature/create', 'PanelFeatureController.create').as('cms.feature.create')
+  Route.get('/feature/:id/show', 'PanelFeatureController.show').as('cms.feature.show')
+  Route.post('/feature/:id/update', 'PanelFeatureController.update').as('cms.feature.update')
+  Route.post('/feature/:id/destroy', 'PanelFeatureController.destroy').as('cms.feature.destroy')
+
+  /** FACT **/
+  Route.get('/fact', 'PanelFactController.index').as('cms.fact.index')
+  Route.post('/fact', 'PanelFactController.store').as('cms.fact.store')
+  Route.get('/fact/list', 'PanelFactController.list').as('cms.fact.list')
+  Route.get('/fact/create', 'PanelFactController.create').as('cms.fact.create')
+  Route.get('/fact/:id/show', 'PanelFactController.show').as('cms.fact.show')
+  Route.post('/fact/:id/update', 'PanelFactController.update').as('cms.fact.update')
+  Route.post('/fact/:id/destroy', 'PanelFactController.destroy').as('cms.fact.destroy')
+
+  /** FAQ **/
+  Route.get('/faq', 'PanelFaqController.index').as('cms.faq.index')
+  Route.post('/faq', 'PanelFaqController.store').as('cms.faq.store')
+  Route.get('/faq/list', 'PanelFaqController.list').as('cms.faq.list')
+  Route.get('/faq/create', 'PanelFaqController.create').as('cms.faq.create')
+  Route.get('/faq/:id/show', 'PanelFaqController.show').as('cms.faq.show')
+  Route.post('/faq/:id/update', 'PanelFaqController.update').as('cms.faq.update')
+  Route.post('/faq/:id/destroy', 'PanelFaqController.destroy').as('cms.faq.destroy')
+
+  /** TESTIMONIAL **/
+  Route.get('/testimonial', 'PanelTestimonialController.index').as('cms.testimonial.index')
+  Route.post('/testimonial', 'PanelTestimonialController.store').as('cms.testimonial.store')
+  Route.get('/testimonial/list', 'PanelTestimonialController.list').as('cms.testimonial.list')
+  Route.get('/testimonial/create', 'PanelTestimonialController.create').as('cms.testimonial.create')
+  Route.get('/testimonial/:id/show', 'PanelTestimonialController.show').as('cms.testimonial.show')
+  Route.post('/testimonial/:id/update', 'PanelTestimonialController.update').as('cms.testimonial.update')
+  Route.post('/testimonial/:id/destroy', 'PanelTestimonialController.destroy').as('cms.testimonial.destroy')
+
+  /** ABOUT US **/
+  Route.get('/about-us', 'PanelAboutUsController.index').as('cms.about-us.index')
+  Route.post('/about-us', 'PanelAboutUsController.store').as('cms.about-us.store')
+  Route.get('/about-us/list', 'PanelAboutUsController.list').as('cms.about-us.list')
+  Route.get('/about-us/create', 'PanelAboutUsController.create').as('cms.about-us.create')
+  Route.get('/about-us/:id/show', 'PanelAboutUsController.show').as('cms.about-us.show')
+  Route.post('/about-us/:id/update', 'PanelAboutUsController.update').as('cms.about-us.update')
+  Route.post('/about-us/:id/destroy', 'PanelAboutUsController.destroy').as('cms.about-us.destroy')
 })
   .prefix('cms')
   .namespace('cms')
@@ -1258,6 +1307,7 @@ Route.group(() => {
 // CMS MAIN
 Route.group(() => {
   Route.get('/', 'CmsMainController.index')
+  Route.get('/lang', 'CmsMainController.defaultLang')
   Route.get('/carousel-home', 'CmsMainController.carouselHome')
   Route.get('/about-home', 'CmsMainController.aboutHome')
   Route.get('/service-home', 'CmsMainController.serviceHome')
@@ -1273,6 +1323,7 @@ Route.group(() => {
 
 // Route.get('/mobileapps', ({ view }) => view.render('mobile-documentation'))
 
+// Route.get('/api/v2/cms-main/lang', 'CmsMainController.defaultLang').namespace('api/v2')
 Route.get('/mobileapps', 'MobileappsDocumentController.index').namespace('documentation')
 
 Route.get('/email', ({ view }) => view.render('email-login-notification'))
