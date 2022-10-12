@@ -4,9 +4,9 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-8">
-                    <form action="" id="form-create">
+                    <form action="" id="form-update" data-id="{{data.id}}">
                         <div class="panel panel-default">
-                            <div class="panel-heading">Update Carousel</div>
+                            <div class="panel-heading">Update Tetimonial</div>
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
@@ -14,29 +14,28 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="">Bahasa</label>
-                                                <select class="form-control" name="lang" required>
-                                                    <option value="">Pilih...</option>
-                                                    <option value="id">Indonesia</option>
-                                                    <option value="en">Inggris</option>
+                                                <select class="form-control" name="lang">
+                                                    <option value="id" {{data.lang === 'id' && 'selected'}}>Indonesia</option>
+                                                    <option value="en" {{data.lang === 'en' && 'selected'}}>Inggris</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label for="">Title</label>
-                                                <input type="text" class="form-control" name="title" placeholder="Title Carousel"> 
+                                                <label for="">Name</label>
+                                                <input type="text" class="form-control" name="name" value="{{data.name}}"> 
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="">Subtitle</label>
-                                                <input type="text" class="form-control" name="subtitle" placeholder="SubTitle Carousel"> 
+                                                <label for="">Job Title</label>
+                                                <input type="text" class="form-control" name="type" value="{{data.type}}"> 
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="">Descriptions</label>
-                                                <textarea class="form-control" name="details" id="details" rows="5"></textarea>
+                                                <label for="">Comment</label>
+                                                <textarea class="form-control" name="comment" id="comment" rows="5">{{data.comment}}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -55,10 +54,14 @@
                         </div>
                     </form>
                 </div>
+                
                 <div class="col-md-4">
-                    <img src="../../../images/cms/sample-carousel.png" height="500" class="img-fluid" alt="...">
+                    <div class="text-dimension">
+                        <code>Ukuran dimensi <strong>1024 x 1024</strong>px</code>
+                    </div>
+                    <img src="../../../images/cms/sample-testimonial.png" height="500" class="img-fluid" alt="...">
                     <div class="box-image">
-                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="../../../images/cms/sample-upload.png" data-height="128" />
+                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="{{data.img_url}}" data-height="128" />
                     </div>
                 </div>
             </div>
@@ -71,10 +74,15 @@
     })
 </script>
 <style>
+    div.text-dimension {
+        position: absolute;
+        top: 220px;
+        z-index: 999;
+    }
     div.box-image {
         position: absolute;
-        top: 70px;
-        margin: 10px 5px;
+        bottom: 87px;
+        /* margin: 10px 5px; */
         /* border: 3px red dashed; */
         height: 150px;
         /* background-color: aliceblue; */
@@ -89,14 +97,5 @@
         background-position: 0 0, 0 0, 100% 0, 0 100%;
         background-repeat: no-repeat;
         animation: borderAnimation 1s infinite steps(2, end);
-        
-    }
-    @keyframes borderAnimation {
-        from {
-            background-position: 0 0, -15px 0, 100% -15px, 0 100%;
-        }
-        to {
-            background-position: 0 -15px, 0 0, 100% 0, -15px 100%;
-        }
     }
 </style>

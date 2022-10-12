@@ -19,10 +19,9 @@ $(function(){
     $('body').on('submit', 'form#form-create', function(e){
         e.preventDefault()
         var data = new FormData(this)
-        data.append('file', $('input[type=file]')[0].files[0])
         $.ajax({
             async: true,
-            url: '/cms/carousel-img',
+            url: '/cms/fact',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -48,10 +47,9 @@ $(function(){
         e.preventDefault()
         var id = $(this).data('id')
         var data = new FormData(this)
-        data.append('file', $('input[type=file]')[0].files[0])
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/'+id+'/update',
+            url: '/cms/fact/'+id+'/update',
             method: 'POST',
             data: data,
             dataType: 'json',
@@ -78,7 +76,7 @@ $(function(){
         var id = $(this).data('id')
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/'+id+'/destroy',
+            url: '/cms/fact/'+id+'/destroy',
             method: 'POST',
             dataType: 'json',
             processData: false,
@@ -102,7 +100,7 @@ $(function(){
     function initDefault(){
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/list',
+            url: '/cms/fact/list',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -118,7 +116,7 @@ $(function(){
     function initCreate(){
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/create',
+            url: '/cms/fact/create',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()
@@ -134,7 +132,7 @@ $(function(){
     function initShow(id){
         $.ajax({
             async: true,
-            url: '/cms/carousel-img/'+id+'/show',
+            url: '/cms/fact/'+id+'/show',
             method: 'GET',
             success: function(result){
                 $('div#list-content').children().remove()

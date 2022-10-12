@@ -6,7 +6,7 @@
                 <div class="col-md-8">
                     <form action="" id="form-create">
                         <div class="panel panel-default">
-                            <div class="panel-heading">Update Carousel</div>
+                            <div class="panel-heading">Create Feature</div>
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
@@ -24,19 +24,45 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">Title</label>
-                                                <input type="text" class="form-control" name="title" placeholder="Title Carousel"> 
+                                                <input type="text" class="form-control" name="title" placeholder="Title Feature" required> 
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="">Subtitle</label>
-                                                <input type="text" class="form-control" name="subtitle" placeholder="SubTitle Carousel"> 
+                                                <input type="text" class="form-control" name="subtitle" placeholder="SubTitle Feature" required> 
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-4">
                                             <div class="form-group">
-                                                <label for="">Descriptions</label>
-                                                <textarea class="form-control" name="details" id="details" rows="5"></textarea>
+                                                <label for="">Urut</label>
+                                                <input type="number" class="form-control" name="urut" placeholder="Urutan dari kiri ke kanan" required> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="">Icon</label>
+                                                <select class="form-control" name="img_url" required>
+                                                    <option value="">Pilih...</option>
+                                                    <option value="flaticon-concrete">flaticon-concrete</option>
+                                                    <option value="flaticon-worker">flaticon-worker</option>
+                                                    <option value="flaticon-measure">flaticon-measure</option>
+                                                    <option value="flaticon-building">flaticon-building</option>
+                                                    <option value="flaticon-brush">flaticon-brush</option>
+                                                    <option value="flaticon-crane">flaticon-crane</option>
+                                                    <option value="flaticon-call">flaticon-call</option>
+                                                    <option value="flaticon-calendar">flaticon-calendar</option>
+                                                    <option value="flaticon-send-mail">flaticon-send-mail</option>
+                                                    <option value="flaticon-address">flaticon-address</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="feature-icon" style="padding-top: 10px;">
+                                                    <i id="icon-preview" class=""></i>
+                                                    Preview Icon
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -46,8 +72,8 @@
                                         <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-update" type="reset"> 
                                             <i class="fa fa-close"></i> <span>Cancel</span>
                                         </button>
-                                        <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
-                                            <i class="fa fa-save"></i> <span>Update</span>
+                                        <button class="btn btn-success waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                            <i class="fa fa-save"></i> <span>Save</span>
                                         </button>
                                     </div>
                                 </div>
@@ -58,7 +84,7 @@
                 <div class="col-md-4">
                     <img src="../../../images/cms/sample-carousel.png" height="500" class="img-fluid" alt="...">
                     <div class="box-image">
-                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="../../../images/cms/sample-upload.png" data-height="128" />
+                        
                     </div>
                 </div>
             </div>
@@ -68,35 +94,29 @@
 <script>
     $(function(){
         $('.dropify').dropify();
+        $('select[name="img_url"]').on('change', function(){
+            var value = $(this).val()
+            if(value){
+                $('i#icon-preview').attr('class', '')
+                $('i#icon-preview').attr('class', value)
+            }
+        })
     })
 </script>
 <style>
     div.box-image {
         position: absolute;
-        top: 70px;
+        top: 245px;
         margin: 10px 5px;
-        /* border: 3px red dashed; */
-        height: 150px;
-        /* background-color: aliceblue; */
+        border: 3px red dashed;
+        height: 100px;
+        background-color: transparent;
         width: 80%;
         max-width: 303px;
-        min-height: 170px;
+        min-height: 100px;
         display: flex;
         justify-content: center;
         align-items: center;
-        background-image: repeating-linear-gradient(0deg, red, red 5px, transparent 5px, transparent 15px, red 15px), repeating-linear-gradient(90deg, red, red 10px, transparent 5px, transparent 15px, red 15px), repeating-linear-gradient(180deg, red, red 5px, transparent 5px, transparent 15px, red 15px), repeating-linear-gradient(270deg, red, red 10px, transparent 5px, transparent 15px, red 15px);
-        background-size: 5px calc(100% + 15px), calc(100% + 15px) 5px, 5px calc(100% + 15px), calc(100% + 15px) 5px;
-        background-position: 0 0, 0 0, 100% 0, 0 100%;
-        background-repeat: no-repeat;
-        animation: borderAnimation 1s infinite steps(2, end);
         
-    }
-    @keyframes borderAnimation {
-        from {
-            background-position: 0 0, -15px 0, 100% -15px, 0 100%;
-        }
-        to {
-            background-position: 0 -15px, 0 0, 100% 0, -15px 100%;
-        }
     }
 </style>
