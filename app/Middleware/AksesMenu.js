@@ -11,6 +11,7 @@ class AksesMenu {
     try {
       const user = await auth.getUser()
       const check = await auth.check()
+      
       if(check){
         const usr = (await User.query().with('tokens').where('id', user.id).first()).toJSON()
         if(usr.tokens.length === 0 || usr.status != 'Y'){
@@ -21,11 +22,9 @@ class AksesMenu {
           await User.query()
           .with('user_menu', q => {
             q.orderBy('urut')
-            // q.where('id', usr.id)
           })
           .with('user_menuDetail', q => {
             q.orderBy('urut')
-            // q.where('id', usr.id)
           })
           .where('id', usr.id)
           .first()
@@ -37,7 +36,7 @@ class AksesMenu {
                 submenu: user_menuDetail.filter(fill => fill.menu_id === elm.id)
             }
         })
-        // console.log(data)
+        console.log('XXXXXX ::::::', data)
         view.share({
           data: data,
           user: user.toJSON()
