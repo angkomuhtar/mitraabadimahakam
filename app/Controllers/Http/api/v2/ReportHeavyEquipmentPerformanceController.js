@@ -31,10 +31,15 @@ class ReportHeavyEquipmentPerformanceController {
 		const week_arr = [];
 	    // check if same week
 	    if(start_of_week1 === start_of_week) {
-	        const start_week = start_of_week;
-	        const end_week = end_of_week1;
-	        const date1 = moment(start_week).format('DD');
-	        const date2 = moment(end_week).format('DD');
+			const start = moment(start_of_week).format('YYYY-MM-DD');
+			const end =  moment(start_of_week).add(6, 'days').format('YYYY-MM-DD');
+			const obj = {
+				start : start,
+				end : end,
+				day : `${moment(start).format('DD MMM')} - ${moment(end).format('DD MMM')}`,
+				data : {}
+			};
+			week_arr.push(obj);
 	    } else {
 	        const get_diff = (moment(end_of_week).diff(start_of_week, 'days') + 1) // week
 	        const arrDate = Array.from({ length: get_diff }, (x, i) =>
@@ -479,7 +484,7 @@ class ReportHeavyEquipmentPerformanceController {
 						obj2 = { value: data.work_hours, frontColor: '#0096FF', desc: 'Work Hours' }
 						obj4 = { value: data.breakdown_ratio_unscheduled, frontColor: '#0096FF', desc: 'BD Ratio SCH' }
 						obj5 = { value: data.actual_mttr, frontColor: '#0096FF', desc: 'Actual MTTR' }
-						obj6 = { value: data.actual_mtbs, frontColor: '#fc0303', desc: 'Actual MTBS' }
+						obj6 = { value: data.actual_mtbs, frontColor: '#0096FF', desc: 'Actual MTBS' }
 					} else {
 						obj1 = {
 							value: data.budget_pa,
@@ -494,7 +499,7 @@ class ReportHeavyEquipmentPerformanceController {
 							desc: 'Standby Hours',
 						}
 						obj4 = { value: data.breakdown_ratio_scheduled, frontColor: '#fc0303', label: date, desc: 'BD Ratio UNS' }
-						obj5 = { value: data.target_mttr, label: date, frontColor: '#0096FF', desc: 'Target MTTR' }
+						obj5 = { value: data.target_mttr, label: date, frontColor: '#fc0303', desc: 'Target MTTR' }
 						obj6 = { value: data.target_mtbs, label: date, frontColor: '#fc0303', desc: 'Target MTBS' }
 					}
 					obj3.stacks = [
@@ -576,7 +581,7 @@ class ReportHeavyEquipmentPerformanceController {
 					],
 				})
 				final_data.push({
-					name: 'Mean Time Actual',
+					name: 'MTTR',
 					data: daily_actual_mean_time,
 					type: 'Bar Chart',
 					indicators: [
@@ -586,18 +591,18 @@ class ReportHeavyEquipmentPerformanceController {
 						},
 						{
 							color: '#fc0303',
-							text: 'Actual MTBS',
+							text: 'Target MTTR',
 						},
 					],
 				})
 				final_data.push({
-					name: 'Mean Time Target',
+					name: 'MTBS',
 					data: daily_target_mean_time,
 					type: 'Bar Chart',
 					indicators: [
 						{
 							color: '#0096FF',
-							text: 'Target MTTR',
+							text: 'Actual MTBS',
 						},
 						{
 							color: '#fc0303',
