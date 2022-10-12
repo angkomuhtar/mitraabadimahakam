@@ -102,18 +102,24 @@ class Utils {
       try {
         const playersArr = userTipeArr
         const users = (await User.query().whereIn('user_tipe', playersArr).fetch()).toJSON()
-        const userDevices = (
-          await UserDevice.query()
-            .whereIn(
-              'user_id',
-              users.map(v => v.id)
-            )
-            .fetch()
-        ).toJSON()
 
-        for (const userDevice of userDevices) {
-          await construct.notifPlatformDivider(userDevice.platform, userDevice.playerId, data)
+        if(users.length > 0) {
+          const userDevices = (
+            await UserDevice.query()
+              .whereIn(
+                'user_id',
+                users.map(v => v.id)
+              )
+              .fetch()
+          ).toJSON()
+  
+          if(userDevices.length > 0) {
+            for (const userDevice of userDevices) {
+              await construct.notifPlatformDivider(userDevice.platform, userDevice.playerId, data)
+            }
+          }
         }
+        
       } catch (err) {
         return {
           success: false,
@@ -124,8 +130,10 @@ class Utils {
       try {
         const userDevices = (await UserDevice.query().fetch()).toJSON()
 
-        for (const userDevice of userDevices) {
-          await construct.notifPlatformDivider(userDevice.platform, userDevice.playerId, data)
+        if(userDevices.length > 0) {
+          for (const userDevice of userDevices) {
+            await construct.notifPlatformDivider(userDevice.platform, userDevice.playerId, data)
+          }
         }
       } catch (err) {
         return {
