@@ -10,9 +10,6 @@ const DailyDowntimeEquipment = use('App/Models/DailyDowntimeEquipment')
 const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
 const EquipmentPerformanceDetails = use('App/Models/MamEquipmentPerformanceDetails')
 const DailyChecklist = use('App/Models/DailyChecklist')
-const EquipmentPerformanceHelpers = use('App/Controllers/Http/Helpers/MamEquipmentPerformance')
-const EquipmentPerformanceDetailsHelpers = use('App/Controllers/Http/Helpers/MamEquipmentPerformanceDetails')
-const Utils = use('App/Controllers/Http/customClass/utils')
 const MasShift = use('App/Models/MasShift')
 const _ = require('underscore')
 
@@ -140,10 +137,8 @@ class DailyDowntime {
 		for (const obj of sheetData.filter((kode) => kode.B)) {
 			try {
 				const equipmentExist = await MasEquipment.query().where('kode', obj.B).first()
-				// const get_sibling_equipment = await MasEquipment.query().where('kode', 'like', `%${obj.B}`).last();
-				// const get_last_equipment_id = await MasEquipment.query().where('aktif', 'Y').last();
 				if (!equipmentExist) {
-					console.log('does this running ? ', obj.B);
+					console.log('does this running ? ', obj.B)
 					const newEquipment = new MasEquipment()
 					// create the new equipment
 					newEquipment.fill({
@@ -195,7 +190,6 @@ class DailyDowntime {
 			}
 		}
 
-	
 		// methods
 		const GET_EQUIPMENT_DATA = async (tipe, brand, name) => {
 			let result = null
@@ -212,27 +206,12 @@ class DailyDowntime {
 		}
 
 		try {
-			// update into equipment performance master
-			// await EquipmentPerformanceHelpers.ADD(currentMonth, user)
-			// await EquipmentPerformanceDetailsHelpers.ADD(selectedDate, user)
-
 			for (const value of sheetData) {
 				let hour_start = String(value.J).split(' ')[4] || '00:00:00'
 				let hour_finish = String(value.K).split(' ')[4] || '00:00:00'
-				// console.log(String(value.J).split(' ')[4])
-				// console.log(String(value.K).split(' ')[4])
-				// console.log('-----------------------')
-				const eqName = value.B && value.B.indexOf(' ') === -1 ? value.B.split(' ')[0] : value.B
 				const date = moment(value.I).add(1, 'day').format('YYYY-MM-DD')
 				const bd_start = moment(`${date} ${hour_start}`).add(3, 'minute').format('YYYY-MM-DD HH:mm:ss')
 				const bd_finish = moment(`${date} ${hour_finish}`).add(3, 'minute').format('YYYY-MM-DD HH:mm:ss')
-
-				// if (!value.M) {
-				//   return {
-				//     success: false,
-				//     message: 'Breakdown status must have values...',
-				//   }
-				// }
 
 				const obj = {
 					uid: `${moment(date).format('YYYYMM.DDHHMM')}.${(await GET_EQUIPMENT_DATA(value.C, value.D, value.B))?.kode}` || value.B,
@@ -255,7 +234,6 @@ class DailyDowntime {
 
 			// filter data by date
 			const filteredData = data.filter((v) => new Date(v.date) >= new Date(req.date) && new Date(v.date) <= new Date(req.date))
-			// .filter(v => new Date(v.date) >= new Date(req.date) && new Date(v.date) <= new Date(req.date))
 			// insert data to the table
 			const afterUpload = []
 
@@ -395,11 +373,6 @@ class DailyDowntime {
 				const breakdown_hours_accident = await GET_COUNT_SCHEDULED_BREAKDOWN('ACD', eq.id)
 				const breakdown_hours_total = breakdown_hours_scheduled + breakdown_hours_unscheduled + breakdown_hours_accident
 
-				// console.log('daily sch >> ', breakdown_hours_scheduled)
-				// console.log('daily uns >> ', breakdown_hours_unscheduled)
-				// console.log('daily acd >> ', breakdown_hours_accident)
-				// console.log('daily total >> ', breakdown_hours_total)
-
 				const dailyActivityEquipArr = []
 				let dailyEquipmentChecks = null
 
@@ -453,7 +426,7 @@ class DailyDowntime {
 							breakdown_ratio_unscheduled: (breakdown_hours_unscheduled / (breakdown_hours_scheduled + breakdown_hours_unscheduled)) * 100 || 0,
 							actual_mttr: !isFinite(breakdown_hours_unscheduled / freq_bus) ? 0 : breakdown_hours_unscheduled / freq_bus,
 							freq_bus: freq_bus,
-							upload_by : user.id
+							upload_by: user.id,
 						})
 						await newEquipmentPerformance.save()
 						dailyActivityEquipArr.push(newEquipmentPerformance.equip_id)
@@ -596,6 +569,9 @@ class DailyDowntime {
 		const data = []
 		const sheetData = xlsx[sheet].slice(2)
 		const reqDate = moment(req.date).format('YYYY-MM-DD')
+		const currentMonth = moment(reqDate).startOf('month').format('YYYY-MM-DD');
+		const daysInMonth = moment(currentMonth).daysInMonth()
+		const getTotalHours = daysInMonth * 24;
 
 		// methods
 		const GET_EQUIPMENT_DATA = async (tipe, model, name) => {
@@ -606,15 +582,6 @@ class DailyDowntime {
 					result = equipment.toJSON()
 					return result
 				} else {
-					// const { isSuccess, checkMsg } = await Utils.equipmentCheck(name, brand)
-					// return {
-					//   success: isSuccess,
-					//   message: checkMsg
-					// }
-					// return {
-					//   success: false,
-					//   message: `Equipment Unit ${name} tidak di temukan pada master equipment...`
-					// }
 					throw new Error(`Equipment Unit ${name} tidak di temukan pada master equipment...`)
 				}
 			}
@@ -669,14 +636,13 @@ class DailyDowntime {
 						hm_total: value.O,
 					}
 					data.push(obj)
-					// checks
-					// const { isSuccess, checkMsg } = await Utils.equipmentCheck(obj.equipName, obj.equipModel)
-					// return {
-					//   success: isSuccess,
-					//   message: checkMsg,
-					// }
 				}
 			}
+
+			const modelArr =
+			`CAT 320GC,HITACHI ZX870LCH,SANY SY750H,SANY SY365H,DOOSAN DX800LC,SANY SY500H,HYUNDAI R210W-9S,HYUNDAI HX210S,CAT 395,CAT 330,SANY SY500H,D10R,CAT D9,CAT D6R2 XL,CAT D6GC,CAT 14M,SEM 921,SEM 922,CAT 773E,CMT96,TR50,A60D,FM260 JD,LS60HZ,HILIGHT V4,FM260 JD,T50,CF-48H-SS,LS60HZ,FUSO FN62,PF6TB-22,GEP33-3,SEM 636D,ATLAS COPCO XATS350,COMPACTOR CS11GC,Light Vehicle,KOMATSU375`.split(
+				',',
+			)
 
 			for (const obj of data.filter((value) => value.equipName != undefined)) {
 				try {
@@ -705,10 +671,24 @@ class DailyDowntime {
 							created_by: user.id,
 						})
 						await newEquipment.save()
-						// return {
-						//   success: false,
-						//   message: 'Equipment ' + obj.equipName + ' tidak ditemukan pada data master Equipment...',
-						// }
+
+						const newEquipmentPerformance = new EquipmentPerformance()
+						const now = moment(currentMonth).format('DD MMM')
+						const to = moment(reqDate).format('DD MMM')
+
+						if (modelArr.includes(newEquipment.unit_model)) {
+							newEquipmentPerformance.fill({
+								month: currentMonth,
+								period: `${now} - ${to}`,
+								period_date_start: currentMonth,
+								period_date_end: reqDate,
+								equip_id: newEquipment.id,
+								upload_by: user.id,
+								mohh: getTotalHours,
+								target_downtime_monthly: getTotalHours * (1 - 0 / 100),
+							})
+							await newEquipmentPerformance.save(trx)
+						}
 					}
 				} catch (error) {
 					console.log('error upload hm equipment >> ', error)
@@ -720,19 +700,12 @@ class DailyDowntime {
 			}
 
 			try {
-				// insert into equipment performance master
-				// await EquipmentPerformanceHelpers.ADD(reqDate, user)
-
 				const shifts = (await MasShift.query(trx).fetch()).toJSON()
 
 				// now insert the data to daily timesheet
 				for (const value of data) {
 					// get equipment id
 					const equipId = (await GET_EQUIPMENT_DATA(value.equipType, value.equipModel, value.equipName)).id
-
-					// update regulary equipment's model
-					// await this.UPDATE_EQUIPMENT_MODEL(equipId, value.equipModel)
-
 					try {
 						/**
 						 * Define the daily timesheet object
@@ -964,54 +937,42 @@ class DailyDowntime {
 		}
 
 		const GET_DAILY_HM = async (equipId) => {
-			// const start_of_day = moment(value.bd_start).startOf('day').format('YYYY-MM-DD HH:mm:ss')
-			// const end_of_night_shift = moment(start_of_day).add(7, 'hour').format('YYYY-MM-DD HH:mm:ss')
-			// let temp_date = null
-
-			// if (new Date(value.bd_start) >= new Date(start_of_day) && new Date(value.bd_start) <= new Date(end_of_night_shift)) {
-			// 	temp_date = moment(value.bd_start).add(1, 'day').format('YYYY-MM-DD HH:mm:ss')
-			// } else {
-			// 	temp_date = value.bd_start
-			// }
-
 			const shifts = (await MasShift.query().fetch()).toJSON()
-			let begin_smu = 0;
-			let end_smu = 0;
-			let used_smu = 0;
+			let begin_smu = 0
+			let end_smu = 0
+			let used_smu = 0
 
-			const eq_timesheet_data = [];
+			const eq_timesheet_data = []
 
 			for (const shift of shifts) {
-				// const start = moment(`${date} ${shift.start_shift}`).format('YYYY-MM-DD HH:mm:ss')
-				// const end = moment(`${date} ${shift.start_shift}`).add(shift.duration).format('YYYY-MM-DD HH:mm:ss')
-
 				if (equipId) {
-					const equipment = (await DailyChecklist.query()
-						.where((wh) => {
-							wh.where('tgl', date)
-							wh.where('shift_id', shift.id)
-							wh.where('unit_id', equipId)
-						})
-						.last())?.toJSON()
+					const equipment = (
+						await DailyChecklist.query()
+							.where((wh) => {
+								wh.where('tgl', date)
+								wh.where('shift_id', shift.id)
+								wh.where('unit_id', equipId)
+							})
+							.last()
+					)?.toJSON()
 
-					if(equipment) {
-						eq_timesheet_data.push(equipment);
+					if (equipment) {
+						eq_timesheet_data.push(equipment)
 					}
 				}
 			}
 
-
-			for(const value of eq_timesheet_data) {
+			for (const value of eq_timesheet_data) {
 				begin_smu += value.begin_smu
-				end_smu += value.end_smu;
-				used_smu += value.used_smu;
-			};
+				end_smu += value.end_smu
+				used_smu += value.used_smu
+			}
 
 			return {
 				begin_smu,
 				end_smu,
-				used_smu
-			};
+				used_smu,
+			}
 		}
 
 		//
@@ -1043,7 +1004,6 @@ class DailyDowntime {
 				})
 				.last()
 		}
-		// console.log('test >> ', equipmentPerformance);
 		if (eq_check && !equipmentPerformance) {
 			equipmentPerformance = await EquipmentPerformance.query(trx)
 				.where((wh) => {
@@ -1086,7 +1046,6 @@ class DailyDowntime {
 					message: `Failed when updating hm equipment \n Reason : ` + err.message,
 				}
 			}
-			// console.log(`---- finished update hm equipment ----`)
 		}
 
 		/**
@@ -1109,10 +1068,7 @@ class DailyDowntime {
 			 * TODO
 			 * Maybe check if number is infinite or nan
 			 */
-
-			console.log('daily hm ', await GET_DAILY_HM(equipId))
-
-			const daily_used_smu =  (await GET_DAILY_HM(equipId)).used_smu
+			const daily_used_smu = (await GET_DAILY_HM(equipId)).used_smu
 			const daily_begin_smu = (await GET_DAILY_HM(equipId)).begin_smu
 			const daily_end_smu = (await GET_DAILY_HM(equipId)).end_smu
 			const mtbs = await this.numberPrettier(!dailyEquipPerformance.freq_bus ? daily_used_smu / daily_used_smu : daily_used_smu / dailyEquipPerformance.freq_bus)
@@ -1130,10 +1086,9 @@ class DailyDowntime {
 				actual_ma: actual_ma * 100 || 0,
 				standby_hours: standby_hours,
 				actual_mttr: mttr,
-				actual_mtbs: mtbs
+				actual_mtbs: mtbs,
 			})
 			await dailyEquipPerformance.save()
-			// console.log(`---- finished update hm equipment for daily ----`)
 		}
 	}
 
