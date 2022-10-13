@@ -4,9 +4,9 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-8">
-                    <form action="" id="form-create">
+                    <form action="" id="form-update" data-id="{{data.id}}">
                         <div class="panel panel-default">
-                            <div class="panel-heading">Insert Data</div>
+                            <div class="panel-heading">Update Data</div>
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
                                     {{ csrfField() }}
@@ -16,37 +16,31 @@
                                                 <label for="">Bahasa</label>
                                                 <select class="form-control" name="lang" required>
                                                     <option value="">Pilih...</option>
-                                                    <option value="id">Indonesia</option>
-                                                    <option value="en">Inggris</option>
+                                                    <option value="id" {{data.lang === 'id' && 'selected'}}>Indonesia</option>
+                                                    <option value="en" {{data.lang === 'en' && 'selected'}}>Inggris</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">Title</label>
-                                                <input type="text" class="form-control" name="title" placeholder="Client Name" required> 
+                                                <input type="text" class="form-control" name="title" placeholder="Title" value="{{data.title}}" required> 
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="">Img Position</label>
-                                                <select class="form-control" name="img_position">
+                                                <select class="form-control" name="img_position" required>
                                                     <option value="">No Images...</option>
-                                                    <option value="L">Left</option>
-                                                    <option value="R">Right</option>
+                                                    <option value="L" {{data.img_position === 'L' && 'selected'}}>Left</option>
+                                                    <option value="R" {{data.img_position === 'R' && 'selected'}}>Right</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <label for="">SubTitle</label>
-                                                <input type="text" class="form-control" name="subtitle" placeholder="Client Job title" required> 
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
                                                 <label for="">Details</label>
-                                                <textarea class="form-control" name="details" id="details" rows="5" required></textarea>
+                                                <textarea class="form-control" name="details" id="details" rows="5" required>{{data.details}}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -73,7 +67,7 @@
                     <img src="../../../images/cms/sample-default.png" height="500" class="img-fluid" alt="...">
 
                     <div class="box-image-left" id="img-position">
-                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="../../../images/cms/sample-upload-img.png" data-height="80" />
+                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="{{data.img_url}}" data-height="80" />
                     </div>
 
                     <div class="box-text-right" id="text-position">
@@ -93,8 +87,11 @@
 <script>
     $(function(){
         $('.dropify').dropify();
-        $('select[name="img_position"]').on('change', function(){
-            var value = $(this).val()
+        setImagePosition()
+
+
+        function setImagePosition(){
+            var value = $('select[name="img_position"]').val()
             switch (value) {
                 case "L":
                     $('div#text-position').attr('')
@@ -114,6 +111,10 @@
                     $('div#img-position').hide()
                     break;
             }
+        }
+        $('select[name="img_position"]').on('change', function(){
+            var value = $(this).val()
+            setImagePosition()
         })
     })
 </script>

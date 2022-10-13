@@ -5,18 +5,18 @@ const ENV_TYPE = Env.get('NODE_ENV')
 const Helpers = use('Helpers')
 const _ = require('underscore')
 const moment = require("moment")
-const CmsAbout = use("App/Models/CmsAbout")
+const CmsTeam = use("App/Models/CmsTeam")
 
 const IMAGE_URI = ENV_TYPE != 'development' ? 'http://offices.mitraabadimahakam.id':'http://localhost:3001'
 
-class PanelAboutUsController {
+class PanelTeamController {
     async index ( { auth, view } ) {
         const user = await userValidate(auth)
         if(!user){
             return view.render('401')
         }
 
-        return view.render('cms.about-us.index')
+        return view.render('cms.team.index')
     }
 
     async list ( { auth, view } ) {
@@ -25,9 +25,9 @@ class PanelAboutUsController {
             return view.render('401')
         }
 
-        const data = (await CmsAbout.query().where('aktif', 'Y').orderBy('urut', 'asc').fetch()).toJSON()
+        const data = (await CmsTeam.query().where('aktif', 'Y').orderBy('urut', 'asc').fetch()).toJSON()
 
-        return view.render('cms.about-us.list', {list: data})
+        return view.render('cms.team.list', {list: data})
     }
 
     async create ( { auth, view } ) {
@@ -36,7 +36,7 @@ class PanelAboutUsController {
             return view.render('401')
         }
 
-        return view.render('cms.about-us.create')
+        return view.render('cms.team.create')
     }
 
     async show ( { auth, params, request, view } ) {
@@ -45,9 +45,9 @@ class PanelAboutUsController {
             return view.render('401')
         }
 
-        const data = (await CmsAbout.query().where('id', params.id).last()).toJSON()
+        const data = (await CmsTeam.query().where('id', params.id).last()).toJSON()
 
-        return view.render('cms.about-us.show', {data: data})
+        return view.render('cms.team.show', {data: data})
     }
 
     async store ( { auth, request } ) {
@@ -64,7 +64,7 @@ class PanelAboutUsController {
 
         let photo
         if(clientPhoto){
-            const aliasName = `ABOUTUS-${moment().format('HHmmss')}.${clientPhoto.extname}`
+            const aliasName = `TEAMS-${moment().format('HHmmss')}.${clientPhoto.extname}`
             photo = IMAGE_URI+'/images/cms/'+aliasName
             await clientPhoto.move(Helpers.publicPath(`images/cms`), {
                 name: aliasName,
@@ -79,17 +79,16 @@ class PanelAboutUsController {
             }
         }
 
-        const cmsAbout = new CmsAbout()
-        cmsAbout.fill({
+        const cmsTestimoni = new CmsTeam()
+        cmsTestimoni.fill({
             lang: req.lang,
+            name: req.name,
+            group: req.group,
             title: req.title,
-            subtitle: req.subtitle,
-            img_position: req.img_position || null,
-            details: req.details,
             img_url: photo
         })
         try {
-            await cmsAbout.save()
+            await cmsTestimoni.save()
             return {
                 success: true,
                 message: 'Success save data...'
@@ -117,7 +116,7 @@ class PanelAboutUsController {
 
         let photo
         if(clientPhoto){
-            const aliasName = `ABOUTUS-${params.id}.${clientPhoto.extname}`
+            const aliasName = `TEAMS-${params.id}.${clientPhoto.extname}`
             photo = IMAGE_URI+'/images/cms/'+aliasName
             await clientPhoto.move(Helpers.publicPath(`images/cms`), {
                 name: aliasName,
@@ -132,18 +131,17 @@ class PanelAboutUsController {
             }
         }
 
-        const cmsAbout = await CmsAbout.query().where('id', params.id).last()
-        cmsAbout.merge({
+        const cmsTestimoni = await CmsTeam.query().where('id', params.id).last()
+        cmsTestimoni.merge({
             lang: req.lang,
+            name: req.name,
+            group: req.group,
             title: req.title,
-            subtitle: req.subtitle,
-            img_position: req.img_position || null,
-            details: req.details,
             img_url: photo
         })
 
         try {
-            await cmsAbout.save()
+            await cmsTestimoni.save()
             return {
                 success: true,
                 message: 'Success save data'
@@ -163,11 +161,11 @@ class PanelAboutUsController {
             return view.render('401')
         }
 
-        const cmsAbout = await CmsAbout.query().where('id', params.id).last()
-        cmsAbout.merge({aktif: 'N'})
+        const cmsTestimoni = await CmsTeam.query().where('id', params.id).last()
+        cmsTestimoni.merge({aktif: 'N'})
 
         try {
-            await cmsAbout.save()
+            await cmsTestimoni.save()
             return {
                 success: true,
                 message: 'Success save data'
@@ -182,7 +180,7 @@ class PanelAboutUsController {
     }
 }
 
-module.exports = PanelAboutUsController
+module.exports = PanelTeamController
 
 async function userValidate(auth){
     let user

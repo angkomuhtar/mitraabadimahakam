@@ -343,6 +343,24 @@ Route.group(() => {
   Route.get('/about-us/:id/show', 'PanelAboutUsController.show').as('cms.about-us.show')
   Route.post('/about-us/:id/update', 'PanelAboutUsController.update').as('cms.about-us.update')
   Route.post('/about-us/:id/destroy', 'PanelAboutUsController.destroy').as('cms.about-us.destroy')
+
+  /** SERVICE **/
+  Route.get('/service', 'PanelServiceController.index').as('cms.service.index')
+  Route.post('/service', 'PanelServiceController.store').as('cms.service.store')
+  Route.get('/service/list', 'PanelServiceController.list').as('cms.service.list')
+  Route.get('/service/create', 'PanelServiceController.create').as('cms.service.create')
+  Route.get('/service/:id/show', 'PanelServiceController.show').as('cms.service.show')
+  Route.post('/service/:id/update', 'PanelServiceController.update').as('cms.service.update')
+  Route.post('/service/:id/destroy', 'PanelServiceController.destroy').as('cms.service.destroy')
+
+  /** TEAM **/
+  Route.get('/team', 'PanelTeamController.index').as('cms.team.index')
+  Route.post('/team', 'PanelTeamController.store').as('cms.team.store')
+  Route.get('/team/list', 'PanelTeamController.list').as('cms.team.list')
+  Route.get('/team/create', 'PanelTeamController.create').as('cms.team.create')
+  Route.get('/team/:id/show', 'PanelTeamController.show').as('cms.team.show')
+  Route.post('/team/:id/update', 'PanelTeamController.update').as('cms.team.update')
+  Route.post('/team/:id/destroy', 'PanelTeamController.destroy').as('cms.team.destroy')
 })
   .prefix('cms')
   .namespace('cms')
