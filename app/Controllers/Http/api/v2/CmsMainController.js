@@ -15,6 +15,8 @@ const CmsAbout = use("App/Models/CmsAbout")
 const CmsTeam = use("App/Models/CmsTeam")
 const CmsService = use("App/Models/CmsService")
 const CmsTestimoni = use("App/Models/CmsTestimoni")
+const CmsProject = use("App/Models/CmsProject")
+const CmsHiring = use("App/Models/CmsHiring")
 
 const MasEquipment = use("App/Models/MasEquipment");
 
@@ -179,6 +181,59 @@ class CmsMainController {
         return response.status(200).json({
             success: true,
             data: data
+        })
+    }
+
+    async projectHome ( { response } ) {
+        let data = (await CmsProject.query()
+        .where( w => {
+            w.where('aktif', 'Y')
+        }).fetch()).toJSON()
+
+        return response.status(200).json({
+            success: true,
+            data: data
+        })
+    }
+
+    async careerHome ( { response } ) {
+        let data = (await CmsProject.query()
+        .where( w => {
+            w.where('aktif', 'Y')
+        }).fetch()).toJSON()
+
+        return response.status(200).json({
+            success: true,
+            data: data
+        })
+    }
+
+    async careerStore ( { request, response } ) {
+        const req = request.all()
+        const cmsHiring = new CmsHiring()
+        cmsHiring.fill({
+            position: req.position,
+            first_name: req.first_name,
+            last_name: req.last_name,
+            email: req.email,
+            phone: req.phone,
+            uri_file: req.uri_file,
+            ip: req.ip,
+            cms_token: req._csrf
+        })
+        try {
+            await cmsHiring.save()
+        } catch (error) {
+            console.log(error);
+            return response.status(400).json({
+                success: false,
+                message: 'Failed save data...\n'+error
+            })
+        }
+
+        return response.status(201).json({
+            success: false,
+            message: 'Success save data...'
         })
     }
 

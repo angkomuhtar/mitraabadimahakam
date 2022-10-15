@@ -361,6 +361,15 @@ Route.group(() => {
   Route.get('/team/:id/show', 'PanelTeamController.show').as('cms.team.show')
   Route.post('/team/:id/update', 'PanelTeamController.update').as('cms.team.update')
   Route.post('/team/:id/destroy', 'PanelTeamController.destroy').as('cms.team.destroy')
+
+  /** PROJECT **/
+  Route.get('/project', 'PanelProjectController.index').as('cms.project.index')
+  Route.post('/project', 'PanelProjectController.store').as('cms.project.store')
+  Route.get('/project/list', 'PanelProjectController.list').as('cms.project.list')
+  Route.get('/project/create', 'PanelProjectController.create').as('cms.project.create')
+  Route.get('/project/:id/show', 'PanelProjectController.show').as('cms.project.show')
+  Route.post('/project/:id/update', 'PanelProjectController.update').as('cms.project.update')
+  Route.post('/project/:id/destroy', 'PanelProjectController.destroy').as('cms.project.destroy')
 })
   .prefix('cms')
   .namespace('cms')
@@ -1331,6 +1340,9 @@ Route.group(() => {
   Route.get('/service-home', 'CmsMainController.serviceHome')
   Route.get('/team-home', 'CmsMainController.teamHome')
   Route.get('/testomoni-home', 'CmsMainController.testimonialHome')
+  Route.get('/project-home', 'CmsMainController.projectHome')
+  Route.get('/career-home', 'CmsMainController.careerHome')
+  Route.post('/career-home', 'CmsMainController.careerStore')
 
   Route.get('/equipment', 'CmsMainController.equipment')
 })

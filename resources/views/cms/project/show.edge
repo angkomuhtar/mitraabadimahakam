@@ -1,0 +1,112 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <form action="" id="form-update" data-id="{{data.id}}">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Insert Project</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Bahasa</label>
+                                                <select class="form-control" name="lang" required>
+                                                    <option value="">Pilih...</option>
+                                                    <option value="id" {{data.lang === 'id' && 'selected'}}>Indonesia</option>
+                                                    <option value="en" {{data.lang === 'en' && 'selected'}}>Inggris</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Type</label>
+                                                <select class="form-control" name="type" required>
+                                                    <option value="">Pilih...</option>
+                                                    <option value="complete" {{data.type === 'complete' && 'selected'}}>Completed</option>
+                                                    <option value="upcoming" {{data.type === 'upcoming' && 'selected'}}>Upcoming</option>
+                                                    <option value="running" {{data.type === 'running' && 'selected'}}>Running</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Name</label>
+                                                <input type="text" class="form-control" name="name" placeholder="Client Name" value="{{data.name}}" required> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Title</label>
+                                                <textarea class="textarea_editor form-control" name="title" rows="5" placeholder="Enter text ...">{{data.title}}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Caption</label>
+                                                <textarea class="textarea_editor form-control" name="caption" id="caption" rows="5" required>{{data.caption}}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-update" type="reset"> 
+                                            <i class="fa fa-close"></i> <span>Cancel</span>
+                                        </button>
+                                        <button class="btn btn-success waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                            <i class="fa fa-save"></i> <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-dimension">
+                            <code>Ukuran dimensi <strong>1024 x 1024</strong>px</code>
+                        </div>
+                        <div class="box-image">
+                            @if(data.img_url)
+                                <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="{{data.img_url}}" data-height="328" />
+                            @else
+                                <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="../../../img/about.jpg" data-height="328" />
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('.dropify').dropify();
+        $('textarea[name="title"], textarea[name="caption"]').wysihtml5();
+    })
+</script>
+<style>
+    div.text-dimension {
+        position: absolute;
+        top: 220px;
+        z-index: 999;
+    }
+    div.box-image {
+        position: absolute;
+        top: 245px;
+        margin: 10px 5px;
+        border: 3px red dashed;
+        height: 150px;
+        background-color: aliceblue;
+        width: 80%;
+        max-width: 315px;
+        min-height: 360px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+    }
+</style>
