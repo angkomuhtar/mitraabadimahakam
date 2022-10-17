@@ -278,10 +278,10 @@ class ReportHeavyEquipmentPerformanceController {
 				.fetch()
 		).toJSON()
 
-		const parsedEquipment = equipments.map((v) => {
+		const parsedEquipment = _.uniq(equipments.map((v) => v.tipe)).map((v,i) => {
 			return {
-				id: String(v.id),
-				title: v.tipe,
+				id: i,
+				title: v,
 			}
 		})
 
