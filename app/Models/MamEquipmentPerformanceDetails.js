@@ -11,6 +11,10 @@ class MamEquipmentPerformanceDetails extends Model {
     equipment(){
         return this.belongsTo("App/Models/MasEquipment", "equip_id", "id")
     }
+
+    site() {
+        return this.belongsTo("App/Models/MasSite", "site_id", "id")
+    }
 }
 
 module.exports = MamEquipmentPerformanceDetails

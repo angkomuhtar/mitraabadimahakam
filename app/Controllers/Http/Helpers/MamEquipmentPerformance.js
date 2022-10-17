@@ -15,7 +15,9 @@ class MamEquipmentPerformance {
     const halaman = req.page === undefined ? 1 : parseInt(req.page)
     const SoM = moment(req.date).startOf('month').format('YYYY-MM-DD')
 
-    let equipmentPerformance = (await EquipmentPerformance.query().with('equipment').paginate(halaman, limit)).toJSON()
+    let equipmentPerformance = (await EquipmentPerformance.query().with('equipment', wh => {
+      wh.orderBy('tipe','desc')
+    }).orderBy('period_date_end', 'desc').paginate(halaman, limit)).toJSON()
     equipmentPerformance = {
       ...equipmentPerformance,
       data: equipmentPerformance.data.map(v => {

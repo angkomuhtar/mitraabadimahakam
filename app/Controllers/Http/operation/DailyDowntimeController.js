@@ -93,14 +93,16 @@ class DailyDowntimeController {
     if (req.tipe && req.tipe === 'downtime') {
       try {
         const { success, message } = await DailyDowntimeHelpers.uploadProcessActivity(req, filePath, user)
-        // if success upload then we delete the uploaded's file immediately
-        fs.unlink(filePath, err => {
-          if (err) {
-            console.log(`failed when deleting ${filePath} file`)
-          }
-          console.log(`${filePath} is deleted from directory`)
-        })
+      
 
+        if(success) {
+          fs.unlink(filePath, err => {
+            if (err) {
+              console.log(`failed when deleting ${filePath} file`)
+            }
+            console.log(`${filePath} is deleted from directory`)
+          })
+        }
         return {
           success,
           message
@@ -116,12 +118,15 @@ class DailyDowntimeController {
       // Equipment's Hour Meter Upload
       try {
         const { success, message } = await DailyDowntimeHelpers.uploadProcessHourMeter(req, filePath, user)
-        fs.unlink(filePath, err => {
-          if (err) {
-            console.log(`failed when deleting ${filePath} file`)
-          }
-          console.log(`${filePath} is deleted from directory`)
-        })
+
+        if(success) {
+          fs.unlink(filePath, err => {
+            if (err) {
+              console.log(`failed when deleting ${filePath} file`)
+            }
+            console.log(`${filePath} is deleted from directory`)
+          })
+        }
 
         return {
           success,
@@ -135,6 +140,7 @@ class DailyDowntimeController {
         }
       }
     }
+
   }
 
   async list({ auth, request, view }) {

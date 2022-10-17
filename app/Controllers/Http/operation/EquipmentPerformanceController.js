@@ -98,7 +98,7 @@ class EquipmentPerformanceController {
         equip_id: equipment,
         upload_by: user.id,
         mohh: getTotalHours,
-        target_downtime_monthly: getTotalHours * (1 - 0 / 100)
+        target_downtime_monthly: getTotalHours * (1 - (0 / 100)) // 85 is default budget pa
       })
 
       await newEquipmentPerformance.save()
