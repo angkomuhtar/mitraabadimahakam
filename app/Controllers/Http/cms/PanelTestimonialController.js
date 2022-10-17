@@ -116,7 +116,7 @@ class PanelTestimonialController {
 
         let photo
         if(clientPhoto){
-            const aliasName = `CAROUSEL-${params.id}.${clientPhoto.extname}`
+            const aliasName = `TESTIMONI-${params.id}.${clientPhoto.extname}`
             photo = IMAGE_URI+'/images/cms/'+aliasName
             await clientPhoto.move(Helpers.publicPath(`images/cms`), {
                 name: aliasName,

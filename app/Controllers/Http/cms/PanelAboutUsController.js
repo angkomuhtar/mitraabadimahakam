@@ -84,6 +84,7 @@ class PanelAboutUsController {
             lang: req.lang,
             title: req.title,
             subtitle: req.subtitle,
+            img_position: req.img_position || null,
             details: req.details,
             img_url: photo
         })
@@ -136,6 +137,7 @@ class PanelAboutUsController {
             lang: req.lang,
             title: req.title,
             subtitle: req.subtitle,
+            img_position: req.img_position || null,
             details: req.details,
             img_url: photo
         })

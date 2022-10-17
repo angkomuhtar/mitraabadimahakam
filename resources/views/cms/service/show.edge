@@ -1,0 +1,211 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-8">
+                    <form action="" id="form-update" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Update Data</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Bahasa</label>
+                                                <select class="form-control" name="lang" required>
+                                                    <option value="">Pilih...</option>
+                                                    <option value="id" {{data.lang === 'id' && 'selected'}}>Indonesia</option>
+                                                    <option value="en" {{data.lang === 'en' && 'selected'}}>Inggris</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Title</label>
+                                                <input type="text" class="form-control" name="title" placeholder="Title" value="{{data.title}}" required> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Img Position</label>
+                                                <select class="form-control" name="img_position" required>
+                                                    <option value="">No Images...</option>
+                                                    <option value="L" {{data.img_position === 'L' && 'selected'}}>Left</option>
+                                                    <option value="R" {{data.img_position === 'R' && 'selected'}}>Right</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Details</label>
+                                                <textarea class="form-control" name="details" id="details" rows="5" required>{{data.details}}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-update" type="reset"> 
+                                            <i class="fa fa-close"></i> <span>Cancel</span>
+                                        </button>
+                                        <button class="btn btn-success waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                            <i class="fa fa-save"></i> <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-dimension">
+                        <h5>About Us</h5>
+                        <span><small>Home / about us</small></span>
+                    </div>
+                    <img src="../../../images/cms/sample-default.png" height="500" class="img-fluid" alt="...">
+
+                    <div class="box-image-left" id="img-position">
+                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="{{data.img_url}}" data-height="80" />
+                    </div>
+
+                    <div class="box-text-right" id="text-position">
+                        <p style="color:#FFF;font-size: 12px;line-height: 1.5;">
+                            Title <br>
+                            <span style="font-size: 14px;">SubTitle</span>
+                        </p>
+                        <small>xxxxxxxxxxxxxxxxxxxxxxxxxx</small><br>
+                        <small>xxxxxxxxxxxxxxxxxxxxxxxxxx</small><br>
+                        <small>xxxxxxxxxxxxxxxxxxx</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('.dropify').dropify();
+        setImagePosition()
+
+
+        function setImagePosition(){
+            var value = $('select[name="img_position"]').val()
+            switch (value) {
+                case "L":
+                    $('div#text-position').attr('')
+                    $('div#text-position').attr('class', 'box-text-left').show()
+                    $('div#img-position').attr('')
+                    $('div#img-position').attr('class', 'box-image-right').show()
+                    break;
+                case "R":
+                    $('div#text-position').attr('')
+                    $('div#text-position').attr('class', 'box-text-right').show()
+                    $('div#img-position').attr('')
+                    $('div#img-position').attr('class', 'box-image-left').show()
+                    break;
+            
+                default:
+                    $('div#text-position').hide()
+                    $('div#img-position').hide()
+                    break;
+            }
+        }
+        $('select[name="img_position"]').on('change', function(){
+            var value = $(this).val()
+            setImagePosition()
+        })
+    })
+</script>
+<style>
+    div.text-dimension {
+        position: absolute;
+        top: 85px;
+        z-index: 999;
+        text-align: center;
+        width: 311px;
+        /* border: 1px red solid; */
+    }
+    div.text-dimension > h5{
+        font-weight: 700;
+        margin-bottom: 0px;
+    }
+    div.box-image-left {
+        position: absolute;
+        top: 155px;
+        margin: 10px 5px;
+        border: 3px red dashed;
+        height: 100px;
+        background-color: aliceblue;
+        width: 125px;
+        max-width: 303px;
+        min-height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+    }
+    div.box-image-right {
+        position: absolute;
+        top: 155px;
+        right: 50px;
+        margin: 10px 5px;
+        border: 3px red dashed;
+        height: 100px;
+        background-color: aliceblue;
+        width: 125px;
+        max-width: 303px;
+        min-height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+    }
+    div.box-text-right {
+        position: absolute;
+        left: 150px;
+        top: 155px;
+        color: #FFF;
+        line-height: 0.5;
+        margin: 10px 5px;
+        border: 3px red dashed;
+        height: 100px;
+        background-color: black;
+        width: 166px;
+        max-width: 303px;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        
+    }
+    div.box-text-left {
+        position: absolute;
+        left: 15px;
+        top: 155px;
+        color: #FFF;
+        line-height: 0.5;
+        margin: 10px 5px;
+        border: 3px red dashed;
+        height: 100px;
+        background-color: black;
+        width: 166px;
+        max-width: 303px;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        
+    }
+    @keyframes borderAnimation {
+        from {
+            background-position: 0 0, -15px 0, 100% -15px, 0 100%;
+        }
+        to {
+            background-position: 0 -15px, 0 0, 100% 0, -15px 100%;
+        }
+    }
+</style>
