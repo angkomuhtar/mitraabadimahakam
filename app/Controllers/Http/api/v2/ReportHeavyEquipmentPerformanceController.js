@@ -2,18 +2,14 @@
 
 const version = '2.0'
 const fs = require('fs')
-const Helpers = use('Helpers')
 const _ = require('underscore')
 const moment = require('moment')
-const MasPit = use('App/Models/MasPit')
 const MasSite = use('App/Models/MasSite')
-const QuickChart = require('quickchart-js')
 const { performance } = require('perf_hooks')
 const diagnoticTime = use('App/Controllers/Http/customClass/diagnoticTime')
 const MasEquipment = use('App/Models/MasEquipment')
 const ReportPDFHelpers = use('App/Controllers/Http/Helpers/ReportPDF')
 const ReportHeavyEquipment = use('App/Controllers/Http/Helpers/ReportHeavyEquipment')
-const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
 const EquipmentPerformanceDetails = use('App/Models/MamEquipmentPerformanceDetails')
 const DailyDowntimeEquipment = use('App/Models/DailyDowntimeEquipment')
 var pdfMake = require('pdfmake/build/pdfmake.js')
