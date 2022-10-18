@@ -278,7 +278,7 @@ class ReportHeavyEquipmentPerformanceController {
 				.fetch()
 		).toJSON()
 
-		const parsedEquipment = _.uniq(equipments.map((v) => v.tipe)).map((v,i) => {
+		const parsedEquipment = _.uniq(equipments.map((v) => v.tipe)).map((v, i) => {
 			return {
 				id: i,
 				title: v,
@@ -527,26 +527,28 @@ class ReportHeavyEquipmentPerformanceController {
 
 					const date = moment(data.date).format('DD/MM')
 					// if (ctx % 2 === 0) {
-					obj1 = { value: data.actual_pa, frontColor: '#0096FF', desc: 'PA Actual', label: date }
-					obj2 = { value: data.work_hours, frontColor: '#fc0303', desc: 'Work Hours' }
-					obj4 = { value: data.breakdown_ratio_unscheduled, frontColor: '#0096FF', desc: 'BD Ratio SCH' }
-					obj5 = { value: data.actual_mttr, frontColor: '#0096FF', desc: 'Actual MTTR' }
-					obj6 = { value: data.actual_mtbs, frontColor: '#0096FF', desc: 'Actual MTBS' }
+					obj1 = { value: data.actual_pa, frontColor: '#0096FF', desc: 'PA Actual', label: date, spacing: 20 }
+					obj2 = { value: data.work_hours, frontColor: '#fc0303', desc: 'Work Hours', spacing: 3 }
+					obj4 = { value: data.breakdown_ratio_unscheduled, frontColor: '#0096FF', desc: 'BD Ratio UNS', spacing: 3 }
+					obj5 = { value: data.actual_mttr, frontColor: '#0096FF', desc: 'Actual MTTR', spacing: 3 }
+					obj6 = { value: data.actual_mtbs, frontColor: '#0096FF', desc: 'Actual MTBS', spacing: 3 }
 					// } else {
 					obj1_1 = {
 						value: data.budget_pa,
 						frontColor: '#fc0303',
 						desc: 'PA Budget',
+						spacing: 3,
 					}
 					obj2_1 = {
 						value: data.standby_hours,
 						label: date,
 						frontColor: '#0096FF',
 						desc: 'Standby Hours',
+						spacing: 20,
 					}
-					obj4_1 = { value: data.breakdown_ratio_scheduled, frontColor: '#fc0303', label: date, desc: 'BD Ratio UNS' }
-					obj5_1 = { value: data.target_mttr, label: date, frontColor: '#fc0303', desc: 'Target MTTR' }
-					obj6_1 = { value: data.target_mtbs, label: date, frontColor: '#fc0303', desc: 'Target MTBS' }
+					obj4_1 = { value: data.breakdown_ratio_scheduled, frontColor: '#fc0303', label: date, desc: 'BD Ratio SCH', spacing: 20 }
+					obj5_1 = { value: data.target_mttr, label: date, frontColor: '#fc0303', desc: 'Target MTTR', spacing: 20 }
+					obj6_1 = { value: data.target_mtbs, label: date, frontColor: '#fc0303', desc: 'Target MTBS', spacing: 20 }
 					// }
 					obj3.stacks = [
 						{ value: data.breakdown_hours_unscheduled, color: '#e3fc03', desc: 'BD UNS' },
@@ -628,11 +630,11 @@ class ReportHeavyEquipmentPerformanceController {
 					indicators: [
 						{
 							color: '#0096FF',
-							text: 'BD Ratio SCH',
+							text: 'BD Ratio UNS',
 						},
 						{
 							color: '#fc0303',
-							text: 'BD Ratio UNS',
+							text: 'BD Ratio SCH',
 						},
 					],
 				})
@@ -667,12 +669,56 @@ class ReportHeavyEquipmentPerformanceController {
 					],
 				})
 			}
+
+			const equip_performance_details = await EquipmentPerformanceDetails.query()
+				.where((wh) => {
+					wh.where('date', '>=', dateStart)
+					wh.where('date', '<=', dateEnd)
+					wh.where('site_id', req.site_id)
+					wh.whereIn('equip_id', equips)
+				})
+				.orderBy('date', 'asc')
+				.avg('actual_pa')
+				.avg('budget_pa')
+				.avg('actual_eu')
+				.avg('actual_ma')
+				.avg('actual_ua')
+				.avg('actual_mttr')
+				.avg('actual_mtbs')
+				.avg('target_mttr')
+				.avg('target_mtbs')
+				.avg('breakdown_ratio_unscheduled')
+				.avg('breakdown_ratio_scheduled')
+				.avg('work_hours')
+				.avg('standby_hours')
+				.avg('breakdown_hours_accident')
+				.avg('breakdown_hours_scheduled')
+				.avg('breakdown_hours_unscheduled')
+
+			const data = equip_performance_details[0]
+
 			return {
 				data: final_data,
 				stoppages: {
 					period: moment(req.start_date).format('DD MMM') + ' - ' + moment(req.end_date).format('DD MMM'),
 					duration: stoppages_duration_all,
 					totalEvent: stoppages_event_all,
+				},
+				summary: {
+					avgActualPA: parseFloat(data['avg(`actual_pa`)'].toFixed(2) || 0),
+					avgBudgetPA: parseFloat(data['avg(`budget_pa`)'].toFixed(2) || 0),
+					avgActualEU: parseFloat(data['avg(`actual_eu`)'].toFixed(2) || 0),
+					avgActualMA: parseFloat(data['avg(`actual_ma`)'].toFixed(2) || 0),
+					avgActualUA: parseFloat(data['avg(`actual_ua`)'].toFixed(2) || 0),
+					avgWorkHours: parseFloat(data['avg(`work_hours`)'].toFixed(2) || 0),
+					avgStandbyHours: parseFloat(data['avg(`standby_hours`)'].toFixed(2) || 0),
+					avgBDRatioSCH: parseFloat(data['avg(`breakdown_ratio_scheduled`)'].toFixed(2) || 0),
+					avgBDRatioUNS: parseFloat(data['avg(`breakdown_ratio_unscheduled`)'].toFixed(2) || 0),
+					avgActualMTTR: parseFloat(data['avg(`actual_mttr`)'].toFixed(2) || 0),
+					avgActualMTBS: parseFloat(data['avg(`actual_mtbs`)'].toFixed(2) || 0),
+					avgBDHourACD: parseFloat(data['avg(`breakdown_hours_accident`)'].toFixed(2) || 0),
+					avgBDHourSCH: parseFloat(data['avg(`breakdown_hours_scheduled`)'].toFixed(2) || 0),
+					avgBDHourUNS: parseFloat(data['avg(`breakdown_hours_unscheduled`)'].toFixed(2) || 0),
 				},
 			}
 		}
@@ -977,12 +1023,54 @@ class ReportHeavyEquipmentPerformanceController {
 				],
 			})
 
+			const ep_details = await EquipmentPerformanceDetails.query()
+				.where((wh) => {
+					wh.where('date', '>=', dateStart)
+					wh.where('date', '<=', dateEnd)
+					wh.where('site_id', req.site_id)
+					wh.whereIn('equip_id', equips)
+				})
+				.orderBy('date', 'asc')
+				.avg('actual_pa')
+				.avg('budget_pa')
+				.avg('actual_eu')
+				.avg('actual_ma')
+				.avg('actual_ua')
+				.avg('actual_mttr')
+				.avg('actual_mtbs')
+				.avg('target_mttr')
+				.avg('target_mtbs')
+				.avg('breakdown_ratio_unscheduled')
+				.avg('breakdown_ratio_scheduled')
+				.avg('work_hours')
+				.avg('standby_hours')
+				.avg('breakdown_hours_accident')
+				.avg('breakdown_hours_scheduled')
+				.avg('breakdown_hours_unscheduled')
+
+			const data = ep_details[0]
 			return {
 				data: final_data,
 				stoppages: {
 					period: moment(req.start_date).format('DD MMM') + ' - ' + moment(req.end_date).format('DD MMM'),
 					duration: stoppages_duration_all,
 					totalEvent: stoppages_event_all,
+				},
+				summary: {
+					avgActualPA: parseFloat(data['avg(`actual_pa`)'].toFixed(2) || 0),
+					avgBudgetPA: parseFloat(data['avg(`budget_pa`)'].toFixed(2) || 0),
+					avgActualEU: parseFloat(data['avg(`actual_eu`)'].toFixed(2) || 0),
+					avgActualMA: parseFloat(data['avg(`actual_ma`)'].toFixed(2) || 0),
+					avgActualUA: parseFloat(data['avg(`actual_ua`)'].toFixed(2) || 0),
+					avgWorkHours: parseFloat(data['avg(`work_hours`)'].toFixed(2) || 0),
+					avgStandbyHours: parseFloat(data['avg(`standby_hours`)'].toFixed(2) || 0),
+					avgBDRatioSCH: parseFloat(data['avg(`breakdown_ratio_scheduled`)'].toFixed(2) || 0),
+					avgBDRatioUNS: parseFloat(data['avg(`breakdown_ratio_unscheduled`)'].toFixed(2) || 0),
+					avgActualMTTR: parseFloat(data['avg(`actual_mttr`)'].toFixed(2) || 0),
+					avgActualMTBS: parseFloat(data['avg(`actual_mtbs`)'].toFixed(2) || 0),
+					avgBDHourACD: parseFloat(data['avg(`breakdown_hours_accident`)'].toFixed(2) || 0),
+					avgBDHourSCH: parseFloat(data['avg(`breakdown_hours_scheduled`)'].toFixed(2) || 0),
+					avgBDHourUNS: parseFloat(data['avg(`breakdown_hours_unscheduled`)'].toFixed(2) || 0),
 				},
 			}
 		}
