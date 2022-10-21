@@ -1412,13 +1412,56 @@ class ReportHeavyEquipmentPerformanceController {
 					],
 				})
 
+				const ep_details = await EquipmentPerformanceDetails.query()
+					.where((wh) => {
+						wh.where('date', '>=', moment(req.start_week).startOf('week').format('YYYY-MM-DD'))
+						wh.where('date', '<=', moment(req.end_week).endOf('week').format('YYYY-MM-DD'))
+						wh.where('site_id', req.site_id)
+						wh.whereIn('equip_id', equips)
+					})
+					.orderBy('date', 'asc')
+					.avg('actual_pa')
+					.avg('budget_pa')
+					.avg('actual_eu')
+					.avg('actual_ma')
+					.avg('actual_ua')
+					.avg('actual_mttr')
+					.avg('actual_mtbs')
+					.avg('target_mttr')
+					.avg('target_mtbs')
+					.avg('breakdown_ratio_unscheduled')
+					.avg('breakdown_ratio_scheduled')
+					.avg('work_hours')
+					.avg('standby_hours')
+					.avg('breakdown_hours_accident')
+					.avg('breakdown_hours_scheduled')
+					.avg('breakdown_hours_unscheduled')
+
+				const data = ep_details[0]
+
 				return {
 					data: final_data,
 					stoppages: {
-						period: moment(req.start_week).format('DD MMM') + ' - ' + moment(req.end_week).format('DD MMM'),
+						period: moment(req.start_week).startOf('week').format('DD MMM') + ' - ' + moment(req.end_week).endOf('week').format('DD MMM'),
 						duration: stoppages_duration_all,
 						totalEvent: stoppages_event_all,
 					},
+					summary: {
+						avgActualPA: parseFloat(data['avg(`actual_pa`)'].toFixed(2) || 0),
+						avgBudgetPA: parseFloat(data['avg(`budget_pa`)'].toFixed(2) || 0),
+						avgActualEU: parseFloat(data['avg(`actual_eu`)'].toFixed(2) || 0),
+						avgActualMA: parseFloat(data['avg(`actual_ma`)'].toFixed(2) || 0),
+						avgActualUA: parseFloat(data['avg(`actual_ua`)'].toFixed(2) || 0),
+						avgWorkHours: parseFloat(data['avg(`work_hours`)'].toFixed(2) || 0),
+						avgStandbyHours: parseFloat(data['avg(`standby_hours`)'].toFixed(2) || 0),
+						avgBDRatioSCH: parseFloat(data['avg(`breakdown_ratio_scheduled`)'].toFixed(2) || 0),
+						avgBDRatioUNS: parseFloat(data['avg(`breakdown_ratio_unscheduled`)'].toFixed(2) || 0),
+						avgActualMTTR: parseFloat(data['avg(`actual_mttr`)'].toFixed(2) || 0),
+						avgActualMTBS: parseFloat(data['avg(`actual_mtbs`)'].toFixed(2) || 0),
+						avgBDHourACD: parseFloat(data['avg(`breakdown_hours_accident`)'].toFixed(2) || 0),
+						avgBDHourSCH: parseFloat(data['avg(`breakdown_hours_scheduled`)'].toFixed(2) || 0),
+						avgBDHourUNS: parseFloat(data['avg(`breakdown_hours_unscheduled`)'].toFixed(2) || 0),
+					}
 				}
 			} else {
 				return {

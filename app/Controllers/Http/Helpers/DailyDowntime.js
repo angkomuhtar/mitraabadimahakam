@@ -182,7 +182,6 @@ class DailyDowntime {
 			try {
 				const equipmentExist = await MasEquipment.query().where('kode', obj.B).first()
 				if (!equipmentExist) {
-					console.log('does this running ? ', obj.B)
 					const newEquipment = new MasEquipment()
 					// create the new equipment
 					newEquipment.fill({
@@ -205,7 +204,7 @@ class DailyDowntime {
 						remark: 'created from daily downtime upload ' + selectedDate,
 						created_by: user.id,
 					})
-					await newEquipment.save(trx)
+					await newEquipment.save()
 					// create to the equipment performance too
 					const newEquipmentPerformance = new EquipmentPerformance()
 					const now = moment(currentMonth).format('DD MMM')
@@ -226,10 +225,9 @@ class DailyDowntime {
 					}
 				}
 			} catch (error) {
-				console.log('error insert new equipment >> ', error)
 				return {
 					success: false,
-					message: 'Data ' + obj.B + ' tidak valid...',
+					message: 'Failed when inserting new equipment kode ' + obj.B,
 				}
 			}
 		}
@@ -598,8 +596,6 @@ class DailyDowntime {
 					const startDate = moment(equipmentPerformance.month).format('DD MMM')
 					const nowDate = moment(selectedDate).format('DD MMM')
 					const totalFreqBUS = last_freq_bus + freq_bus
-					console.log('bd sch >> ', breakdown_hours_scheduled)
-					console.log('bd total >> ', breakdown_hours_total)
 					equipmentPerformance.merge({
 						period: `${startDate} - ${nowDate}`,
 						period_date_start: SoM,
@@ -649,7 +645,6 @@ class DailyDowntime {
 					message: 'failed when when updating timesheet. Reason : \n' + err.message,
 				}
 			}
-			
 		} catch (err) {
 			console.log('error daily downtime >> ', err)
 			await trx.rollback(trx)
@@ -798,10 +793,9 @@ class DailyDowntime {
 						}
 					}
 				} catch (error) {
-					console.log('error upload hm equipment >> ', error)
 					return {
 						success: false,
-						message: 'Data ' + obj.equipName + ' tidak valid...',
+						message: 'Failed when inserting new equipment kode ' + obj.equipName,
 					}
 				}
 			}
@@ -813,67 +807,105 @@ class DailyDowntime {
 				for (const value of data) {
 					// get equipment id
 					const equipId = (await GET_EQUIPMENT_DATA(value.equipType, value.equipModel, value.equipName)).id
+
+					/** check if end hour meter is lower than start hour meter */
+					if (value.hm_start && value.hm_end && value.hm_end < value.hm_start) {
+						throw new Error(`Target Unit ${value.equipName} ${value.date} - ${value.shift} \n \n SMU Akhir tidak boleh lebih kecil dari SMU Awal, harap di cek lagi!`)
+					}
+
+					/** check if sheet index doesnt have value for start hour meter */
+					if (!value.hm_start) {
+						console.log('equip name >> ', value.equipName)
+						const equipId = (await GET_EQUIPMENT_DATA(null, null, value.equipName)).id
+						const dailyChecklistCheck = await DailyChecklist.query()
+							.where((wh) => {
+								wh.where('unit_id', equipId)
+							})
+							.last()
+						if (dailyChecklistCheck || dailyChecklistCheck.begin_smu) {
+							value.hm_start = dailyChecklistCheck.begin_smu
+						} else {
+							throw new Error(`Target Unit ${value.equipName} ${value.date} - ${value.shift} \n \n SMU Awal Kosong, harap di isi terlebih dahulu!`)
+						}
+					}
+
+					if (!value.hm_end) {
+						throw new Error(`Target Unit ${value.equipName} ${value.date} - ${value.shift} \n \n SMU Akhir tidak ada nilainya, harap di isi SMU Akhirnya terlebih dahulu`)
+					}
+
+					/** check if start hour meter is lower than last hour meter */
+					if (value.hm_start) {
+						const getLastHMEquipment = await DailyChecklist.query()
+							.where((wh) => {
+								wh.where('unit_id', equipId)
+							})
+							.last()
+
+						if (getLastHMEquipment && value.hm_start < getLastHMEquipment.end_smu) {
+							getLastHMEquipment.merge({
+								begin_smu: getLastHMEquipment.end_smu,
+							})
+							await getLastHMEquipment.save(trx)
+							// throw notification to user
+							// throw new Error(`Target Unit ${value.equipName} ${value.date} - ${value.shift} \n \n SMU Awal tidak bisa kurang dari SMU Akhir, silahkan cek kembali SMU Awalnya! \n SMU Akhir di database : ${getLastHMEquipment.end_smu}`)
+						}
+					}
+
 					try {
 						/**
 						 * Define the daily timesheet object
 						 */
-						let dailyChecklist = null
-						let dailyChecklistCheck = null
 
-						if (equipId && reqDate && value.hm_start && value.hm_end && value.hm_total) {
-							dailyChecklistCheck = await DailyChecklist.query()
+						if (equipId && value.hm_start) {
+							const shiftID = (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).id
+							const dailyChecklistCheck = await DailyChecklist.query()
 								.where((wh) => {
 									wh.where('unit_id', equipId)
 									wh.where('tgl', reqDate)
-									wh.where('begin_smu', value.hm_start)
-									wh.where('end_smu', value.hm_end)
-									wh.where('used_smu', value.hm_total)
+									wh.where('shift_id', shiftID)
 								})
 								.last()
+
+							if (dailyChecklistCheck) {
+								dailyChecklistCheck.merge({
+									user_chk: user.id,
+									user_spv: null,
+									operator: null,
+									unit_id: equipId,
+									shift_id: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).id,
+									dailyfleet_id: null,
+									description: 'hm update from daily downtime',
+									begin_smu: value.hm_start,
+									end_smu: value.hm_end,
+									used_smu: value.hm_total,
+									tgl: reqDate,
+									approved_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).start,
+									finish_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).end,
+								})
+								await dailyChecklistCheck.save(trx)
+								console.log('update timesheet id >> ', dailyChecklistCheck.id)
+							} else {
+								const newTimesheet = new DailyChecklist()
+								newTimesheet.fill({
+									user_chk: user.id,
+									user_spv: null,
+									operator: null,
+									unit_id: equipId,
+									shift_id: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).id,
+									dailyfleet_id: null,
+									description: 'hm upload from daily downtime',
+									begin_smu: value.hm_start,
+									end_smu: value.hm_end,
+									used_smu: value.hm_total,
+									tgl: reqDate,
+									approved_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).start,
+									finish_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).end,
+								})
+								await newTimesheet.save(trx)
+								// save the daily time sheet
+								console.log(`---- finished inserting timesheet id ${newTimesheet.id} ----`)
+							}
 						}
-
-						if (dailyChecklistCheck) {
-							dailyChecklist = dailyChecklistCheck
-
-							dailyChecklist.merge({
-								user_chk: user.id,
-								user_spv: null,
-								operator: null,
-								unit_id: equipId,
-								shift_id: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).id,
-								dailyfleet_id: null,
-								description: 'hm update from daily downtime',
-								begin_smu: value.hm_start,
-								end_smu: value.hm_end,
-								used_smu: value.hm_total,
-								tgl: reqDate,
-								approved_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).start,
-								finish_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).end,
-							})
-							await dailyChecklist.save(trx)
-						} else {
-							dailyChecklist = new DailyChecklist()
-
-							dailyChecklist.fill({
-								user_chk: user.id,
-								user_spv: null,
-								operator: null,
-								unit_id: equipId,
-								shift_id: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).id,
-								dailyfleet_id: null,
-								description: 'hm upload from daily downtime',
-								begin_smu: value.hm_start,
-								end_smu: value.hm_end,
-								used_smu: value.hm_total,
-								tgl: reqDate,
-								approved_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).start,
-								finish_at: (await this.GET_SHIFT_DATA(null, null, true, value.shift, reqDate)).end,
-							})
-							await dailyChecklist.save(trx)
-						}
-
-						// save the daily time sheet
-						console.log(`---- finished inserting timesheet id ${dailyChecklist.id} ----`)
 					} catch (err) {
 						// if
 						await trx.rollback()
@@ -927,11 +959,15 @@ class DailyDowntime {
 							 * TODO
 							 * Maybe check is infinite number or NaN
 							 */
-							const mtbs = await this.numberPrettier(equipmentPerformance.freq_bus === 0 ? USED_SMU / USED_SMU : USED_SMU / equipmentPerformance.freq_bus)
+							const mtbs = await this.numberPrettier(!equipmentPerformance.freq_bus ? USED_SMU / USED_SMU : USED_SMU / equipmentPerformance.freq_bus)
 							const mttr = !isFinite(equipmentPerformance.breakdown_hours_unscheduled / equipmentPerformance.freq_bus) ? 0 : equipmentPerformance.breakdown_hours_unscheduled / equipmentPerformance.freq_bus
-							const standby_hours = equipmentPerformance.mohh - (USED_SMU + equipmentPerformance.breakdown_hours_total)
+							const sum_hm_bd_totals =
+								equipmentPerformance.breakdown_hours_total + USED_SMU >= equipmentPerformance.mohh || equipmentPerformance.breakdown_hours_total >= equipmentPerformance.mohh
+									? equipmentPerformance.breakdown_hours_total - USED_SMU
+									: USED_SMU + equipmentPerformance.breakdown_hours_total
+							const standby_hours = USED_SMU <= 0 ? 0 : equipmentPerformance.breakdown_hours_total >= equipmentPerformance.mohh || equipmentPerformance.mohh - sum_hm_bd_totals >= equipmentPerformance.mohh ? 0 : equipmentPerformance.mohh - sum_hm_bd_totals
 							const actual_pa_non_percentage = equipmentPerformance.actual_pa / 100
-							const actual_ma = USED_SMU ? USED_SMU / (USED_SMU + equipmentPerformance.breakdown_hours_total) : actual_pa_non_percentage / (actual_pa_non_percentage + equipmentPerformance.breakdown_hours_total)
+							const actual_ma = USED_SMU ? USED_SMU / sum_hm_bd_totals : actual_pa_non_percentage / (actual_pa_non_percentage + equipmentPerformance.breakdown_hours_total)
 
 							equipmentPerformance.merge({
 								hm_reading_start: SMU_BEGIN,
@@ -943,6 +979,7 @@ class DailyDowntime {
 								standby_hours: standby_hours,
 								actual_mtbs: mtbs,
 								actual_mttr: mttr,
+								description: equipmentPerformance.breakdown_hours_total + USED_SMU >= equipmentPerformance.mohh ? `HM is used while unit is breakdown for ${equipmentPerformance.breakdown_hours_total - USED_SMU} hours` : ' ',
 							})
 
 							try {
@@ -976,11 +1013,15 @@ class DailyDowntime {
 							 * TODO
 							 * Maybe check number is infinite or NaN
 							 */
-							const mtbs = await this.numberPrettier(dailyEquipPerformance.freq_bus === 0 ? value.hm_total / value.hm_total : value.hm_total / dailyEquipPerformance.freq_bus)
+							const sum_hm_bd_totals =
+								dailyEquipPerformance.breakdown_hours_total + value.hm_total >= dailyEquipPerformance.mohh || dailyEquipPerformance.breakdown_hours_total >= dailyEquipPerformance.mohh
+									? dailyEquipPerformance.breakdown_hours_total - value.hm_total
+									: value.hm_total + dailyEquipPerformance.breakdown_hours_total
+							const mtbs = await this.numberPrettier(!dailyEquipPerformance.freq_bus ? value.hm_total / value.hm_total : value.hm_total / dailyEquipPerformance.freq_bus)
 							const mttr = !isFinite(dailyEquipPerformance.breakdown_hours_unscheduled / dailyEquipPerformance.freq_bus) ? 0 : dailyEquipPerformance.breakdown_hours_unscheduled / dailyEquipPerformance.freq_bus
-							const standby_hours = dailyEquipPerformance.mohh - (value.hm_total + dailyEquipPerformance.breakdown_hours_total)
+							const standby_hours = value.hm_total <= 0 ? 0 : dailyEquipPerformance.breakdown_hours_total >= dailyEquipPerformance.mohh || dailyEquipPerformance.mohh - sum_hm_bd_totals >= dailyEquipPerformance.mohh ? 0 : dailyEquipPerformance.mohh - sum_hm_bd_totals
 							const actual_pa_non_percentage = dailyEquipPerformance.actual_pa / 100
-							const actual_ma = value.hm_total ? value.hm_total / (value.hm_total + dailyEquipPerformance.breakdown_hours_total) : actual_pa_non_percentage / (actual_pa_non_percentage + dailyEquipPerformance.breakdown_hours_total)
+							const actual_ma = value.hm_total ? value.hm_total / sum_hm_bd_totals : actual_pa_non_percentage / (actual_pa_non_percentage + dailyEquipPerformance.breakdown_hours_total)
 
 							dailyEquipPerformance.merge({
 								budget_pa: equipmentPerformance?.budget_pa || 0,
@@ -993,6 +1034,7 @@ class DailyDowntime {
 								standby_hours: standby_hours,
 								actual_mtbs: mtbs,
 								actual_mttr: mttr,
+								description: dailyEquipPerformance.breakdown_hours_total + value.hm_total >= dailyEquipPerformance.mohh ? `HM is used while unit is breakdown for ${dailyEquipPerformance.breakdown_hours_total - value.hm_total} hours` : ' ',
 							})
 
 							await dailyEquipPerformance.save(trx)
@@ -1016,7 +1058,7 @@ class DailyDowntime {
 					message: 'Finished upload hour meter.' + ' ' + reqDate,
 				}
 			} catch (err) {
-				await trx.rollback()
+				await trx.rollback(trx)
 				return {
 					success: true,
 					message: 'Failed to upload hour meter. \n Reason : ' + err.message,
