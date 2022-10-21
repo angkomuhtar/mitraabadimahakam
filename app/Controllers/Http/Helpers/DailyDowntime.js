@@ -458,7 +458,7 @@ class DailyDowntime {
 							wh.where('period_date_start', SoM)
 							wh.where('period_date_end', prevDate)
 						})
-						.last()
+						.last()  
 				}
 
 				if (eq_check && !getLastBudgetPA) {
@@ -844,6 +844,8 @@ class DailyDowntime {
 						if (getLastHMEquipment && value.hm_start < getLastHMEquipment.end_smu) {
 							getLastHMEquipment.merge({
 								begin_smu: getLastHMEquipment.end_smu,
+								end_smu : value.hm_end,
+								used_smu : value.hm_end - getLastHMEquipment.end_smu
 							})
 							await getLastHMEquipment.save(trx)
 							// throw notification to user
