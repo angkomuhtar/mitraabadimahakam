@@ -11,9 +11,12 @@
                     </div>
                     <div class="col-md-3 col-sm-3 col-xs-12 text-right">
                         <div class="input-group">
-                            <input id="inpKeyword" class="form-control" placeholder="Search for...">
                             <span class="input-group-btn"> 
-                                <button class="btn btn-info" id="bt-keyword-search" type="button">Go!</button> 
+                                <button class="btn btn-default" disabled>Limit</button> 
+                            </span>
+                            <input id="inpLimit" class="form-control" value="50">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" data-toggle="modal" data-target="#openFilter" type="button">Filter Data</button> 
                             </span>
                         </div>
                     </div>
@@ -22,47 +25,48 @@
             <div class="table-responsive">
                 <table class="table table-hover table-bordered">
                     <thead style="border-bottom: 2px solid;">
-                        <tr>
-                            <th class="text-center">
-                                No <br> &nbsp;
-                            </th>
-                            <th class="text-center">
-                                ACT <br> &nbsp;
-                            </th>
-                            <th class="sl text-center">
-                                NIK <br>
-                                Nama Lengkap
-                            </th>
-                            <th class="sl text-center">
-                                Alamat Lengkap
-                            </th>
-                            <th class="sl text-center">
-                                Tempat Lahir <br>
-                                Tanggal Lahir
-                            </th>
-                            <th class="sl text-center">
-                                Agama <br>
-                                SEX
-                            </th>
-                            <th class="sl text-center">
-                                Kartu <br>
-                                Identitas
-                            </th>
-                            <th class="sl text-center">
-                                WNI/WNA <br>
-                                STS Kawin
-                            </th>
-                            <th class="sl text-center">
-                                Status <br>
-                                Join Date
-                            </th>
-                            <th class="sl text-center">
-                                Phone/Email
-                            </th>
-                            <th class="sl text-center">
-                                Efektif Kontrak
-                            </th>
-                        </tr>
+                        <th class="text-center">
+                            No <br> &nbsp;
+                        </th>
+                        <th class="text-center">
+                            ACT <br> &nbsp;
+                        </th>
+                        <th class="text-center">
+                            NIK <br>
+                            NRP
+                        </th>
+                        <th class="text-center">
+                            Nama Lengkap
+                            <br>
+                            Alamat Lengkap
+                        </th>
+                        <th class="text-center">
+                            Tempat Lahir <br>
+                            Tanggal Lahir
+                        </th>
+                        <th class="text-center">
+                            Agama <br>
+                            SEX
+                        </th>
+                        <th class="text-center">
+                            Kartu <br>
+                            Identitas
+                        </th>
+                        <th class="text-center">
+                            WNI/WNA <br>
+                            STS Kawin
+                        </th>
+                        <th class="text-center">
+                            Status <br>
+                            Join Date
+                        </th>
+                        <th class="text-center">
+                            Phone <br>
+                            Email
+                        </th>
+                        <th class="text-center">
+                            Efektif Kontrak
+                        </th>
                     </thead>
                     <tbody>
                         @if(list.data.length < 1)
@@ -71,7 +75,7 @@
                           </tr>
                         @endif
                         @each(item in list.data)
-                            <tr style="background-color: {{item.aktif === 'N' ? '#ff767652': ''}}">
+                            <tr style="background-color: {{item.aktif === 'N' ? '#ff767652': 'white'}}">
                                 <td>
                                     {{$loop.index + 1}}
                                 </td>
@@ -81,13 +85,14 @@
                                 <td>
                                     <strong>{{item.nik}}</strong> 
                                     <br>
-                                    @if(item.old_nik)
-                                      <span class="text-danger">{{item.old_nik}}</span>
-                                      <br>
-                                    @endif
-                                    {{item.fullname}}
+                                    <span class="text-danger">{{item.old_nik || '-'}}</span>
+                                    <br>
+                                    <small>{{item.nrp || '-'}}</small>
                                 </td>
-                                <td>{{item.alamat ? item.alamat : ''}}</td>
+                                <td>
+                                    <strong>{{item.fullname}}</strong> <br>
+                                    {{item.alamat ? item.alamat : ''}}
+                                </td>
                                 <td class="myDateFormat" data-date="{{item.tgl_lahir}}" data-elm="span">
                                     {{item.t4_lahir}} <br>
                                     <span></span>

@@ -60,7 +60,8 @@ Route.group(() => {
   // Employee
   Route.get('/employee', 'MasEmployeeController.index').as('mas.employee.index').middleware('R')
 
-  Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store').validator('Employee-Post').middleware('C')
+  // Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store').validator('Employee-Post').middleware('C')
+  Route.post('/employee', 'MasEmployeeController.store').as('mas.employee.store').middleware('C')
 
   Route.get('/employee/list', 'MasEmployeeController.list').as('mas.employee.list')
 

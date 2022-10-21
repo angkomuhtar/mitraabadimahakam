@@ -36,7 +36,7 @@ class AksesMenu {
                 submenu: user_menuDetail.filter(fill => fill.menu_id === elm.id)
             }
         })
-        console.log('XXXXXX ::::::', data)
+        // console.log('XXXXXX ::::::', data)
         view.share({
           data: data,
           user: user.toJSON()
