@@ -1338,13 +1338,13 @@ class ReportHeavyEquipmentPerformanceController {
 					const componentName = component.split(' ')[0]
 					const obj1 = {
 						label: componentName,
-						value: parseFloat(GET_DATA_STOPPAGES(componentName).duration.toFixed(2) || 0),
+						value: parseFloat(GET_DATA_STOPPAGES(componentName).duration?.toFixed(2) || 0),
 						frontColor: '#0096FF',
 						longName: component,
 					}
 					const obj2 = {
 						label: componentName,
-						value: parseFloat(GET_DATA_STOPPAGES(componentName).total.toFixed(2) || 0),
+						value: parseFloat(GET_DATA_STOPPAGES(componentName).total?.toFixed(2) || 0),
 						frontColor: '#0096FF',
 						longName: component,
 					}
@@ -1638,7 +1638,7 @@ class ReportHeavyEquipmentPerformanceController {
 
 					// if (ctx % 2 === 0) {
 					obj1 = { value: parseFloat(ep_details[0]['avg(`actual_pa`)']?.toFixed(2) || 0), frontColor: '#0096FF', desc: 'PA Actual', label: month.day }
-					obj2 = { value: parseFloat(work_hours_total_in_a_month.toFixed(2) || 0), frontColor: '#0096FF', desc: 'Work Hours' }
+					obj2 = { value: parseFloat(work_hours_total_in_a_month?.toFixed(2) || 0), frontColor: '#0096FF', desc: 'Work Hours' }
 					obj4 = { value: parseFloat(ep_details[0]['avg(`breakdown_ratio_scheduled`)']?.toFixed(2) || 0), frontColor: '#0096FF', desc: 'BD Ratio SCH' }
 					obj5 = { value: parseFloat(ep_details[0]['avg(`actual_mttr`)']?.toFixed(2) || 0), frontColor: '#0096FF', desc: 'Actual MTTR' }
 					obj6 = { value: parseFloat(ep_details[0]['avg(`actual_mtbs`)']?.toFixed(2) || 0), frontColor: '#0096FF', desc: 'Actual MTBS' }
@@ -1649,7 +1649,7 @@ class ReportHeavyEquipmentPerformanceController {
 						desc: 'PA Budget',
 					}
 					obj2_1 = {
-						value: parseFloat(standby_hours_total_in_a_month.toFixed(2) || 0),
+						value: parseFloat(standby_hours_total_in_a_month?.toFixed(2) || 0),
 						label: month.day,
 						frontColor: '#fc0303',
 						desc: 'Standby Hours',
@@ -1739,13 +1739,13 @@ class ReportHeavyEquipmentPerformanceController {
 					const componentName = component.split(' ')[0]
 					const obj1 = {
 						label: componentName,
-						value: parseFloat(GET_DATA_STOPPAGES(componentName).duration.toFixed(2) || 0),
+						value: parseFloat(GET_DATA_STOPPAGES(componentName).duration?.toFixed(2) || 0),
 						frontColor: '#0096FF',
 						longName: component,
 					}
 					const obj2 = {
 						label: componentName,
-						value: parseFloat(GET_DATA_STOPPAGES(componentName).total.toFixed(2) || 0),
+						value: parseFloat(GET_DATA_STOPPAGES(componentName).total?.toFixed(2) || 0),
 						frontColor: '#0096FF',
 						longName: component,
 					}
