@@ -211,17 +211,27 @@ class DailyDowntime {
 					const to = moment(selectedDate).format('DD MMM')
 
 					if (modelArr.includes(newEquipment.unit_model)) {
-						newEquipmentPerformance.fill({
-							month: currentMonth,
-							period: `${now} - ${to}`,
-							period_date_start: currentMonth,
-							period_date_end: selectedDate,
-							equip_id: newEquipment.id,
-							upload_by: user.id,
-							mohh: getTotalHours,
-							target_downtime_monthly: getTotalHours * (1 - 0 / 100), // default budget pa is 0
-						})
-						await newEquipmentPerformance.save(trx)
+						const checkEquipPerformance = await EquipmentPerformance.query()
+							.where((wh) => {
+								wh.where('month', currentMonth)
+								wh.where('equip_id', newEquipment.id)
+								wh.where('upload_by', user.id)
+							})
+							.last()
+
+						if (!checkEquipPerformance) {
+							newEquipmentPerformance.fill({
+								month: currentMonth,
+								period: `${now} - ${to}`,
+								period_date_start: currentMonth,
+								period_date_end: selectedDate,
+								equip_id: newEquipment.id,
+								upload_by: user.id,
+								mohh: getTotalHours,
+								target_downtime_monthly: getTotalHours * (1 - 0 / 100), // default budget pa is 85
+							})
+							await newEquipmentPerformance.save()
+						}
 					}
 				}
 			} catch (error) {
@@ -779,17 +789,27 @@ class DailyDowntime {
 						const to = moment(reqDate).format('DD MMM')
 
 						if (modelArr.includes(newEquipment.unit_model)) {
-							newEquipmentPerformance.fill({
-								month: currentMonth,
-								period: `${now} - ${to}`,
-								period_date_start: currentMonth,
-								period_date_end: reqDate,
-								equip_id: newEquipment.id,
-								upload_by: user.id,
-								mohh: getTotalHours,
-								target_downtime_monthly: getTotalHours * (1 - 0 / 100), // default budget pa is 85
-							})
-							await newEquipmentPerformance.save(trx)
+							const checkEquipPerformance = await EquipmentPerformance.query()
+								.where((wh) => {
+									wh.where('month', currentMonth)
+									wh.where('equip_id', newEquipment.id)
+									wh.where('upload_by', user.id)
+								})
+								.last()
+
+							if (!checkEquipPerformance) {
+								newEquipmentPerformance.fill({
+									month: currentMonth,
+									period: `${now} - ${to}`,
+									period_date_start: currentMonth,
+									period_date_end: reqDate,
+									equip_id: newEquipment.id,
+									upload_by: user.id,
+									mohh: getTotalHours,
+									target_downtime_monthly: getTotalHours * (1 - 0 / 100), // default budget pa is 85
+								})
+								await newEquipmentPerformance.save()
+							}
 						}
 					}
 				} catch (error) {
@@ -815,7 +835,6 @@ class DailyDowntime {
 
 					/** check if sheet index doesnt have value for start hour meter */
 					if (!value.hm_start) {
-						console.log('equip name >> ', value.equipName)
 						const equipId = (await GET_EQUIPMENT_DATA(null, null, value.equipName)).id
 						const dailyChecklistCheck = await DailyChecklist.query()
 							.where((wh) => {
@@ -844,6 +863,8 @@ class DailyDowntime {
 						if (getLastHMEquipment && value.hm_start < getLastHMEquipment.end_smu) {
 							getLastHMEquipment.merge({
 								begin_smu: getLastHMEquipment.end_smu,
+								end_smu: value.hm_end,
+								used_smu: value.hm_end - getLastHMEquipment.end_smu,
 							})
 							await getLastHMEquipment.save(trx)
 							// throw notification to user
@@ -908,7 +929,7 @@ class DailyDowntime {
 						}
 					} catch (err) {
 						// if
-						await trx.rollback()
+						await trx.rollback(trx)
 						return {
 							success: false,
 							message: 'Failed when inserting timesheet to tb.timesheet .\n Reason : ' + err.message,

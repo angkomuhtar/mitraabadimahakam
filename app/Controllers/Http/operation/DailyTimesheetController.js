@@ -19,7 +19,6 @@ class DailyTimesheetController {
         console.log('....');
         return view.render('operation.daily-timesheet.create')
     }
-
     async store ( { auth, request } ) {
         let usr
         try {
