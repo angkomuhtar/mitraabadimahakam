@@ -1,7 +1,6 @@
 'use strict'
 
 const moment = require('moment')
-const { format } = require('mysql')
 const MasBarang = use("App/Models/MasBarang")
 const utils = use('App/Controllers/Http/customClass/utils')
 const BarangHelpers = use('App/Controllers/Http/Helpers/Barang')

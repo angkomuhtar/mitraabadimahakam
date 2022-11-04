@@ -376,6 +376,39 @@ Route.group(() => {
   .namespace('cms')
   .middleware(['MM'])
 
+  Route.group(() => {
+    /** MATERIAL REQUEST **/
+    Route.get('/material-request', 'MaterialRequestController.index').as('log.material-request.index')
+    Route.post('/material-request', 'MaterialRequestController.store').as('log.material-request.store')
+    Route.get('/material-request/list', 'MaterialRequestController.list').as('log.material-request.list')
+    Route.get('/material-request/create', 'MaterialRequestController.create').as('log.material-request.create')
+    Route.get('/material-request/:id/show', 'MaterialRequestController.show').as('log.material-request.show')
+    Route.get('/material-request/:id/update', 'MaterialRequestController.update').as('log.material-request.update')
+    Route.get('/material-request/:id/destroy', 'MaterialRequestController.destroy').as('log.material-request.destroy')
+    Route.get('/material-request/create/items', 'MaterialRequestController.createItems').as('log.material-request.createItems')
+
+    /** PURCHASING REQUEST **/
+    Route.get('/purchasing-request', 'PurchasingRequestController.index').as('log.purchasing-request.index')
+    Route.post('/purchasing-request', 'PurchasingRequestController.store').as('log.purchasing-request.store')
+    Route.get('/purchasing-request/list', 'PurchasingRequestController.list').as('log.purchasing-request.list')
+    Route.get('/purchasing-request/create', 'PurchasingRequestController.create').as('log.purchasing-request.create')
+    Route.get('/purchasing-request/:id/show', 'PurchasingRequestController.show').as('log.purchasing-request.show')
+    Route.get('/purchasing-request/:id/update', 'PurchasingRequestController.update').as('log.purchasing-request.update')
+    Route.get('/purchasing-request/:id/destroy', 'PurchasingRequestController.destroy').as('log.purchasing-request.destroy')
+
+    /** PURCHASING ORDER **/
+    Route.get('/purchasing-order', 'PurchasingOrderController.index').as('log.purchasing-order.index')
+    Route.post('/purchasing-order', 'PurchasingOrderController.store').as('log.purchasing-order.store')
+    Route.get('/purchasing-order/list', 'PurchasingOrderController.list').as('log.purchasing-order.list')
+    Route.get('/purchasing-order/create', 'PurchasingOrderController.create').as('log.purchasing-order.create')
+    Route.get('/purchasing-order/:id/show', 'PurchasingOrderController.show').as('log.purchasing-order.show')
+    Route.get('/purchasing-order/:id/update', 'PurchasingOrderController.update').as('log.purchasing-order.update')
+    Route.get('/purchasing-order/:id/destroy', 'PurchasingOrderController.destroy').as('log.purchasing-order.destroy')
+  })
+  .prefix('logistik')
+  .namespace('logistik')
+  .middleware(['MM'])
+
 // DUCUMENTATIONS
 Route.group(() => {
   // Web Apps Documentations
