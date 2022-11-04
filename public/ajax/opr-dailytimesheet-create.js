@@ -149,6 +149,11 @@ $(function(){
         $('input#smu_event'+id).val(parseSmu.toFixed(2))
     })
 
+    $('body').on('change', 'input[name="begin_smu"]', function(e){
+        e.preventDefault()
+        console.log(event.target);
+    })
+
     $('body').on('change', 'select[name="event_id"]', function(){
         var values = $(this).val()
         var isRequired = values != ''
@@ -185,6 +190,11 @@ $(function(){
         //     event: DATA_EVENT,
         //     refueling: DATA_REFUELING
         // }
+
+        const formData = new FormData(this);
+        console.log('formdata >> ', formData)
+        
+        return;
         $.ajax({
             async: true,
             headers: {'x-csrf-token': $('[name=_csrf]').val()},
