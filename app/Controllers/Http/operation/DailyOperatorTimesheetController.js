@@ -76,9 +76,9 @@ class DailyOperatorTimesheetController {
 
 			return {
 				success: true,
-				data: `<tr>
+				data: `<tr class="item-unit">
 				<td>
-				<select class="form-control select2x inp-timesheet" name="equipent_id" id="equipment_id" data-check="" required>
+				<select class="form-control select2x inp-timesheet" name="equipment_id" id="equipment_id" data-check="" required>
 						${equipments.map((v) => {
 							return `
 								 <option value="${v.id}">${v.kode}</option>
@@ -106,7 +106,7 @@ class DailyOperatorTimesheetController {
 				<td class="text-center"> 
 				   <button class="btn btn-danger">Delete</button>
 				</td>
-			</tr>`
+			</tr>`,
 			}
 		} catch (error) {
 			console.log('erorr message ,, ', error.message)
@@ -129,23 +129,31 @@ class DailyOperatorTimesheetController {
 			}
 		}
 
-		const unit_id = req.unit_id
-
-		let getLastHM = await DailyChecklist.query()
-			.where((wh) => {
-				wh.where('unit_id', unit_id)
-				wh.where('site_id', req.site_id)
-			})
-			.last()
-		if (!getLastHM) {
-			getLastHM.end_smu = 0
-		}
-
-		return {
-			success: true,
-			data: {
-				prevHM: getLastHM.end_smu || getLastHM.begin_smu || 0,
-			},
+		try {
+			const unit_id = req.unit_id
+			let getLastHM = await DailyChecklist.query()
+				.where((wh) => {
+					wh.where('unit_id', unit_id)
+					wh.where('site_id', req.site_id)
+				})
+				.last()
+			console.log('last hm >> ', getLastHM.toJSON())
+			if (getLastHM) {
+				return {
+					success: true,
+					data: {
+						prevHM: getLastHM?.toJSON().end_smu || getLastHM?.toJSON().begin_smu || 0,
+					},
+				}
+			}
+		} catch (err) {
+			return {
+				success: false,
+				data: {
+					prevHM: 0,
+				},
+				message: err.message,
+			}
 		}
 	}
 }
