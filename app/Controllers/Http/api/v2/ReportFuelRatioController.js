@@ -78,6 +78,8 @@ class ReportFuelRatioController {
                         error: false,
                     },
                     data: resultPIT,
+                    startDate : data.startDate,
+                    endDate : data.endDate
                 });
             } catch (error) {
                 durasi = await diagnoticTime.durasi(t0);
