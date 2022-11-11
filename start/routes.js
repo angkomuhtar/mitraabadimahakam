@@ -377,15 +377,32 @@ Route.group(() => {
   .middleware(['MM'])
 
   Route.group(() => {
+
     /** MATERIAL REQUEST **/
     Route.get('/material-request', 'MaterialRequestController.index').as('log.material-request.index')
     Route.post('/material-request', 'MaterialRequestController.store').as('log.material-request.store')
     Route.get('/material-request/list', 'MaterialRequestController.list').as('log.material-request.list')
     Route.get('/material-request/create', 'MaterialRequestController.create').as('log.material-request.create')
     Route.get('/material-request/:id/show', 'MaterialRequestController.show').as('log.material-request.show')
-    Route.get('/material-request/:id/update', 'MaterialRequestController.update').as('log.material-request.update')
-    Route.get('/material-request/:id/destroy', 'MaterialRequestController.destroy').as('log.material-request.destroy')
+    Route.get('/material-request/:id/view', 'MaterialRequestController.view').as('log.material-request.view')
+    Route.post('/material-request/:id/check', 'MaterialRequestController.check').as('log.material-request.check')
+    Route.post('/material-request/:id/update', 'MaterialRequestController.update').as('log.material-request.update')
+    Route.post('/material-request/:id/destroy', 'MaterialRequestController.destroy').as('log.material-request.destroy')
     Route.get('/material-request/create/items', 'MaterialRequestController.createItems').as('log.material-request.createItems')
+
+    /** CHECK LOGISTIK MATERIAL REQUEST **/
+    Route.get('/material-request-check', 'CheckMaterialRequestController.index').as('log.check-material-request.index')
+    Route.post('/material-request-check', 'CheckMaterialRequestController.store').as('log.check-material-request-check.store')
+    Route.get('/material-request-check/list', 'CheckMaterialRequestController.list').as('log.check-material-request-check.list')
+    Route.get('/material-request-check/create', 'CheckMaterialRequestController.create').as('log.check-material-request-check.create')
+    Route.get('/material-request-check/:id/show', 'CheckMaterialRequestController.show').as('log.check-material-request-check.show')
+    Route.get('/material-request-check/:id/view', 'CheckMaterialRequestController.view').as('log.check-material-request-check.view')
+    Route.post('/material-request-check/:id/check', 'CheckMaterialRequestController.check').as('log.check-material-request-check.check')
+    Route.post('/material-request-check/:id/update', 'CheckMaterialRequestController.update').as('log.check-material-request-check.update')
+    Route.post('/material-request-check/:id/destroy', 'CheckMaterialRequestController.destroy').as('log.check-material-request-check.destroy')
+    Route.post('/material-request-check/:id/barang-out', 'CheckMaterialRequestController.barangOut').as('log.check-material-request-check.barangOut')
+    Route.post('/material-request-check/:id/purchasing-request', 'CheckMaterialRequestController.purchasingRequest').as('log.check-material-request-check.purchasingRequest')
+    Route.get('/material-request-check/check-items', 'CheckMaterialRequestController.checkItems').as('log.check-material-request.checkItems')
 
     /** PURCHASING REQUEST **/
     Route.get('/purchasing-request', 'PurchasingRequestController.index').as('log.purchasing-request.index')
@@ -394,7 +411,9 @@ Route.group(() => {
     Route.get('/purchasing-request/create', 'PurchasingRequestController.create').as('log.purchasing-request.create')
     Route.get('/purchasing-request/:id/show', 'PurchasingRequestController.show').as('log.purchasing-request.show')
     Route.get('/purchasing-request/:id/update', 'PurchasingRequestController.update').as('log.purchasing-request.update')
-    Route.get('/purchasing-request/:id/destroy', 'PurchasingRequestController.destroy').as('log.purchasing-request.destroy')
+    Route.get('/purchasing-request/:id/add-stock', 'PurchasingRequestController.addStok').as('log.purchasing-request.addStok')
+    Route.post('/purchasing-request/:id/add-stock', 'PurchasingRequestController.barangIn').as('log.purchasing-request.barangIn')
+    Route.post('/purchasing-request/:id/destroy', 'PurchasingRequestController.destroy').as('log.purchasing-request.destroy')
 
     /** PURCHASING ORDER **/
     Route.get('/purchasing-order', 'PurchasingOrderController.index').as('log.purchasing-order.index')
@@ -404,6 +423,17 @@ Route.group(() => {
     Route.get('/purchasing-order/:id/show', 'PurchasingOrderController.show').as('log.purchasing-order.show')
     Route.get('/purchasing-order/:id/update', 'PurchasingOrderController.update').as('log.purchasing-order.update')
     Route.get('/purchasing-order/:id/destroy', 'PurchasingOrderController.destroy').as('log.purchasing-order.destroy')
+
+    /** STOCK MONITORING **/
+    Route.get('/monitoring-stok', 'StockMonitoringController.index').as('log.monitoring-stok.index')
+    Route.post('/monitoring-stok', 'StockMonitoringController.store').as('log.monitoring-stok.store')
+    Route.get('/monitoring-stok/list', 'StockMonitoringController.list').as('log.monitoring-stok.list')
+    Route.get('/monitoring-stok/create', 'StockMonitoringController.create').as('log.monitoring-stok.create')
+    Route.get('/monitoring-stok/:id/show', 'StockMonitoringController.show').as('log.monitoring-stok.show')
+    Route.get('/monitoring-stok/:id/update', 'StockMonitoringController.update').as('log.monitoring-stok.update')
+    Route.get('/monitoring-stok/:id/destroy', 'StockMonitoringController.destroy').as('log.monitoring-stok.destroy')
+    Route.get('/monitoring-stok/history/:id/in/:gudang_id', 'StockMonitoringController.historyIn').as('log.monitoring-stok.historyIn')
+    Route.get('/monitoring-stok/history/:id/out/:gudang_id', 'StockMonitoringController.historyOut').as('log.monitoring-stok.historyOut')
   })
   .prefix('logistik')
   .namespace('logistik')
@@ -653,7 +683,7 @@ Route.group(() => {
 
   Route.delete('/daily-issue/:id/destroy', 'DailyIssueController.destroy').as('opr.daily-issue.destroy').middleware('D')
 
-  // Purchasing Request Order
+  // Purchasing Request Request
   Route.get('/purchasing-request', 'PurchasingRequestController.index').as('opr.purchasing-request.index')
 
   Route.post('/purchasing-request', 'PurchasingRequestController.store').as('opr.purchasing-request.store')
@@ -665,6 +695,21 @@ Route.group(() => {
   Route.get('/purchasing-request/items-create', 'PurchasingRequestController.itemCreate').as('opr.purchasing-request.itemCreate')
 
   Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view')
+
+  Route.post('/purchasing-request/:id/destroy', 'PurchasingRequestController.destroy').as('opr.purchasing-request.destroy')
+
+  // Purchasing Request Order
+  Route.get('/purchasing-order', 'PurchasingOrderController.index').as('opr.purchasing-order.index')
+
+  Route.post('/purchasing-order', 'PurchasingOrderController.store').as('opr.purchasing-order.store')
+
+  Route.get('/purchasing-order/list', 'PurchasingOrderController.list').as('opr.purchasing-order.list')
+
+  Route.get('/purchasing-order/create', 'PurchasingOrderController.create').as('opr.purchasing-order.create')
+
+  Route.get('/purchasing-order/items-create', 'PurchasingOrderController.itemCreate').as('opr.purchasing-order.itemCreate')
+
+  Route.get('/purchasing-order/:id/view', 'PurchasingOrderController.view').as('opr.purchasing-order.view')
 
   // SOP Operational
 
@@ -846,6 +891,20 @@ Route.group(() => {
   Route.get('/daily-fleet/:id', 'AjaxDailyFleetController.getDailyfleet').as('daily-fleet.getDailyfleet')
 
   Route.get('/running-text', 'AjaxIssueController.runningText')
+
+  Route.get('/barang', 'AjaxBarangController.getBarang')
+
+  Route.get('/barang/:id', 'AjaxBarangController.getBarangDetails')
+
+  Route.get('/vendor', 'AjaxBarangController.getVendor')
+  
+  Route.get('/vendor/:id', 'AjaxBarangController.getVendorDetails')
+
+  Route.get('/gudang', 'AjaxGudangController.list')
+  
+  Route.get('/gudang/:id', 'AjaxGudangController.gudangID')
+
+  Route.get('/opt-department', 'AjaxDepartmentController.list')
 
   // GRAFIK
   Route.get('/grafik1', 'AjaxChartController.grafik_OB_MTD')

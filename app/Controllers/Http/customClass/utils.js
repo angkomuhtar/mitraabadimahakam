@@ -4,6 +4,8 @@ const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
 const moment = require('moment')
 const User = use('App/Models/User')
 const UserDevice = use('App/Models/UserDevice')
+const MasDepartment = use("App/Models/MasDepartment")
+const LogMaterialRequest = use("App/Models/LogMaterialRequest")
 
 class Utils {
   async infinityCheck(num) {
@@ -227,38 +229,53 @@ class Utils {
       if (teks) {
         let str = teks.substr(11, 5)
         let strToNum = parseInt(str) + 1
-        let prefix = '0'.repeat(5 - strToNum) + strToNum
+        let prefix = '0'.repeat(5 - `${strToNum}`.length) + strToNum
         return prefix
       } else {
         return '00001'
       }
     }
 
+    
     if (!site_id) {
       purchasingRequest = await PurchasingRequest.query()
-        .where(w => {
-          w.where('kode', 'like', '%HOA%')
-          w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD HH:mm'))
-          w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD HH:mm'))
-        })
-        .orderBy('date', 'asc')
-        .last()
-
+      .where(w => {
+        w.where('kode', 'like', '%HOA%')
+        w.where('date', '>=', moment().startOf('year').format('YYYY-MM-DD HH:mm'))
+        w.where('date', '<=', moment().endOf('year').format('YYYY-MM-DD HH:mm'))
+      })
+      .orderBy('date', 'desc')
+      .last()
+      
       kode = 'PR' + moment().format('YYMMDD') + 'HOA' + strPrefix(purchasingRequest?.kode)
     } else {
       const site = await MasSite.query().where('id', site_id).last()
       purchasingRequest = await PurchasingRequest.query()
-        .where(w => {
-          w.where('site_id', site_id)
-          w.where('date', '>=', moment().startOf('month').format('YYYY-MM-DD HH:mm'))
-          w.where('date', '<=', moment().endOf('month').format('YYYY-MM-DD HH:mm'))
-        })
-        .orderBy('date', 'asc')
-        .last()
-
+      .where(w => {
+        w.where('site_id', site_id)
+        w.where('date', '>=', moment().startOf('year').format('YYYY-MM-DD HH:mm'))
+        w.where('date', '<=', moment().endOf('year').format('YYYY-MM-DD HH:mm'))
+      })
+      .orderBy('date', 'desc')
+      .last()
       kode = 'PR' + moment().format('YYMMDD') + site.kode + strPrefix(purchasingRequest?.kode)
     }
+    
+    return kode
+  }
 
+  async GEN_KODE_MATERIAL_REQUEST(req){
+    const department = await MasDepartment.query().where('id', req.department_id).last()
+    const prefix = await LogMaterialRequest.query().where( w => {
+      w.where('date', '>=', moment().startOf('year').format('YYYY-MM-DD'))
+      w.where('date', '<=', moment().endOf('year').format('YYYY-MM-DD'))
+    }).last()
+
+    let string = prefix ? (parseInt((prefix.kode).substr(10, 5)) + 1) : 1
+    
+    string = '0'.repeat(5 - `${string}`.length) + string
+    // console.log(string);
+    const kode = `MR${department.kode}${moment().format('YYMMDD')}${string}`
     return kode
   }
 }

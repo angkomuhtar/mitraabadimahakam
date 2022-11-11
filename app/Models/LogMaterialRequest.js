@@ -21,16 +21,17 @@ class LogMaterialRequest extends Model {
     }
 
     author () {
-        return this.belongsTo("App/Models/Users", "request_by", "id")
+        return this.belongsTo("App/Models/VUser", "request_by", "id")
     }
     
     approved () {
-        return this.belongsTo("App/Models/Users", "approved_by", "id")
+        return this.belongsTo("App/Models/VUser", "approved_by", "id")
     }
 
     items () {
         return this.hasMany("App/Models/LogMaterialRequestItem", "id", "material_req_id")
     }
+
 }
 
 module.exports = LogMaterialRequest

@@ -292,6 +292,7 @@ $(function(){
         $.get('/ajax/site?selected='+selected, function(data){
             let list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
             elm.append(list)
+            elm.trigger('change')
         })
     })
 

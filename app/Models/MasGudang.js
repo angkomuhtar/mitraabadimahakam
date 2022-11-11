@@ -5,7 +5,7 @@ const Model = use('Model')
 
 class MasGudang extends Model {
     static get table(){
-        return 'mam_gudangs'
+        return 'mas_gudangs'
     }
 }
 

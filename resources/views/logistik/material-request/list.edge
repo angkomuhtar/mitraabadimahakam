@@ -1,3 +1,4 @@
+{{ script('ajax/index') }}
 <div class="row">
     <div class="col-md-12">
         <div class="white-box">
@@ -11,7 +12,7 @@
                     <div class="col-md-4 col-sm-4 col-xs-12 text-right">
                         <div class="input-group">
                             <span class="input-group-btn"> 
-                                <button class="btn btn-inverse" type="button" id="bt-search-keyword">Keyword</button> 
+                                <button class="btn btn-inverse" type="button" id="bt-search-keyword">Kode</button> 
                             </span>
                             <input type="text" name="keyword" class="form-control" value="" placeholder="Search for...">
                             <span class="input-group-btn" style="margin-left: 10px"> 
@@ -29,7 +30,7 @@
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="20">Act</th>
                                 <th class="sl" width="70">Kode</th>
-                                <th class="sl" width="150">Department</th>
+                                <th class="sl" width="100">Dept</th>
                                 <th class="sl">Descriptions</th>
                                 <th class="sl" width="150">Priority</th>
                                 <th class="sl">Status</th>
@@ -41,29 +42,59 @@
                             @endif
                             @each(item in list.data)
                                 <tr>
-                                    <td style="vertical-align: middle;">{{$loop.index + 1}}</td>
-                                    <td style="vertical-align: middle;">
-                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    <td style="">{{$loop.index + 1}}</td>
+                                    <td style="">
+                                        @if(!item.approved_by)
+                                        <p>
+                                            <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}" style="width: 58px;">edit</button>
+                                        </p>
+                                            <button class="btn btn-outline btn-info btn-xs bt-view-data" data-id="{{item.id}}" style="width: 58px">view</button>
+                                        @else
+                                            <button class="btn btn-outline btn-info btn-xs bt-view-data" data-id="{{item.id}}" style="width: 58px;height:50px">view</button>
+                                        @endif
                                     </td>
-                                    <td class="single-line" style="vertical-align: middle;">
-                                        {{item.control_acc}}
-                                    </td>
-                                    <td class="single-line" style="vertical-align: middle;">
+                                    <td class="single-line" style="">
                                         <strong>
                                             {{item.kode}}
-                                        </strong>
+                                        </strong> <br>
+                                        <i class="ti-calendar"></i> <small class="myDateTimeFormat" data-date="{{item.date}}"></small> <br>
+                                        <small class="text-muted">Author : {{item.author.nm_lengkap}}</small>
                                     </td>
-                                    <td style="vertical-align: middle;">
-                                        <small>{{item.partnumber}}</small> <br>
-                                        <span>{{item.descriptions}}</span>
+                                    <td class="single-line" style="">
+                                        {{item.department.nama}} <br>
+                                        <small>{{item.department.description}}</small>
                                     </td>
-                                    <td style="vertical-align: middle;">
-                                        <small class="text-capitalize">{{item.parttype || ''}}</small> <br>
-                                        <span>{{item.equiptype || ''}}</span>
+                                    <td style="">
+                                        @if(item.narasi)
+                                          {{item.narasi}} <br>
+                                        @else
+                                            Tdk ada keterangan <br>
+                                        @endif
+                                        <small class="text-muted">
+                                            @if(item.approved_by)
+                                               <span class="text-danger"> Approved By : {{item.approved.nm_lengkap}}</span>
+                                            @endif
+                                        </small>
                                     </td>
-                                    <td class="" style="vertical-align: middle;">
-                                        <small>{{item.planmodel || ''}}</small> <br>
-                                        <strong>{{item.manufacture || ''}}</strong>
+                                    <td style="">
+                                        @if(item.priority === 'NORMAL')
+                                            <span class="text-warning">Normal</span>
+                                        @elseif(item.priority === 'URGENT')
+                                            <span class="text-danger">Urgent</span>
+                                        @else
+                                            <span class="text-info">Stock</span>
+                                        @endif
+                                    </td>
+                                    <td class="" style="">
+                                        @if(item.status === 'waiting')
+                                            <strong class="text-warning">Waiting</strong>
+                                        @elseif(item.status === 'ready')
+                                            <strong class="text-success">Logistik Check</strong>
+                                        @elseif(item.status === 'reject')
+                                            <strong class="text-danger">Rejected</strong>
+                                        @else
+                                            <strong class="text-info">Finish</strong>
+                                        @endif
                                     </td>
                                 </tr>
                             @endeach

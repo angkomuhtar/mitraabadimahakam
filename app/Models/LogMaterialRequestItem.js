@@ -17,7 +17,7 @@ class LogMaterialRequestItem extends Model {
     }
 
     equipment () {
-        return this.belongsTo("App/Models/MasEquipment", "equipment_id", "id")
+        return this.belongsTo("App/Models/MasEquipment", "equipment_reff", "id")
     }
 
     received () {

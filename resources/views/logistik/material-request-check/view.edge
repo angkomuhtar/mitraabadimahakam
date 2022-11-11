@@ -1,0 +1,396 @@
+{{ script('./ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="white-box m-b-0 p-b-10">
+                        <form class="form-horizontal form-material">
+                            {{ csrfField() }}
+                            <div class="form-group m-b-20">
+                                <label class="col-md-12">Kode Material Request</label>
+                                <div class="col-md-12">
+                                    <input type="text" value="{{data.kode}}" class="form-control form-control-line" style="background-color: #ffffff;" disabled> 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-12">Project Name</label>
+                                <div class="col-md-12">
+                                    <input type="text" value="{{data.site.name}}" class="form-control form-control-line" style="background-color: #ffffff;" disabled> 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-12">PIT Name</label>
+                                <div class="col-md-12">
+                                    <input type="text" value="{{data.pit.name}}" class="form-control form-control-line" style="background-color: #ffffff;" disabled> 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-12">Department</label>
+                                <div class="col-md-12">
+                                    <input type="text" value="{{data.department.nama}}" class="form-control form-control-line" style="background-color: #ffffff;" disabled> 
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="white-box m-b-0 p-b-10">
+                        <form class="form-horizontal form-material">
+                            <div class="form-group m-b-20">
+                                <label class="col-md-12">Tanggal Request</label>
+                                <div class="col-md-12">
+                                    <input type="datetime-local" data-datetime="{{data.date}}" class="form-control form-control-line set-datetime" style="background-color: #ffffff;" disabled> 
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-12">Priority</label>
+                                <div class="col-md-12">
+                                    <input type="text" value="{{data.priority}}" class="form-control form-control-line" style="background-color: #ffffff;" disabled> 
+                                </div>
+                            </div>
+                            <div style="display: flex;">
+                                <div class="form-group">
+                                    <label class="col-md-11">Status</label>
+                                    <div class="col-md-11">
+                                        <input type="text" value="{{data.status}}" class="form-control form-control-line" style="background-color: #ffffff;" disabled> 
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-12">Request Oleh</label>
+                                    <div class="col-md-12">
+                                        <input type="text" value="{{data.author.nm_lengkap}}" class="form-control form-control-line" style="background-color: #ffffff;" disabled> 
+                                    </div>
+                                </div>
+                            </div>
+                            @if(data.approved_by)
+                            <div style="display: flex;">
+                                <div class="form-group">
+                                    <label class="col-md-11">Disetujui Oleh</label>
+                                    <div class="col-md-11">
+                                        <input type="text" value="{{data.approved.nm_lengkap}}" class="form-control form-control-line" style="background-color: #ffffff;" disabled> 
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-12">Disetujui Tanggal</label>
+                                    <div class="col-md-12">
+                                        <input type="datetime-local" data-datetime="{{data.approved_at}}" class="form-control form-control-line set-datetime" style="background-color: #ffffff;" disabled> 
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="white-box m-t-0">
+                            <div class="form-group">
+                                <label class="col-md-12">Keterangan</label>
+                                <div class="col-md-12">
+                                    <textarea rows="3" class="form-control form-control-line" style="background-color: #ffffff;" disabled>{{data.narasi}}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" style="padding: 0px 30px;">
+                        <div class="modal fade" id="searchItems" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Search Items</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped" id="search-barang">
+                                                <thead>
+                                                    <tr style="font-weight: 600;">
+                                                        <td>No</td>
+                                                        <td>Act</td>
+                                                        <td>NamaBarang</td>
+                                                        <td>UOM</td>
+                                                        <td>Kode</td>
+                                                        <td>PartNumber</td>
+                                                        <td width="100">ItemType</td>
+                                                        <td>PartType</td>
+                                                        <td>Manufaktur</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="searc-item">
+                                                    @each(val in barang)
+                                                        <tr id="{{val.id}}">
+                                                            <td>{{$loop.index + 1}}</td>
+                                                            <td>
+                                                                <button type="button" class="btn btn-info btn-circle bt-select-items" data-kode="{{val.kode}}" data-id="{{val.barang_id}}">
+                                                                    <i class="fa fa-check"></i> 
+                                                                </button>
+                                                            </td>
+                                                            <td>{{val.descriptions}}</td>
+                                                            <td>{{val.uom}}</td>
+                                                            <td>
+                                                                <strong>{{val.kode}}</strong>
+                                                            </td>
+                                                            <td>{{val.partnumber || '-'}}</td>
+                                                            <td>
+                                                                <small>{{val.equiptype || 'others'}}</small>
+                                                            </td>
+                                                            <td>{{val.parttype || 'others'}}</td>
+                                                            <td>{{val.manufactur || '-'}}</td>
+                                                        </tr>
+                                                    @endeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="white-box">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <label for="">Gudang</label>
+                                    <div class="input-group m-b-30">
+                                        <span class="input-group-btn"> 
+                                            <button class="btn btn-default" type="button">
+                                                <i class="fa fa-barcode"></i>
+                                            </button> 
+                                        </span>
+                                        <select name="gudang_id" class="form-control">
+                                            <option value="">Pilih Gudang</option>
+                                            <option value="1">Gudang BBE</option>
+                                            <option value="2">Gudang Jongkang</option>
+                                        </select>
+                                        <input type="hidden" class="form-control" name="request_id" value="{{data.id}}">
+                                    </div>
+                                </div>
+                                <div class="col-xs-5">
+                                    <label for="">Scan Items</label>
+                                    <div class="input-group m-b-30">
+                                        <span class="input-group-btn"> 
+                                            <button class="btn btn-default" type="button">
+                                                <i class="fa fa-barcode"></i>
+                                            </button> 
+                                        </span>
+                                        <input class="form-control" placeholder="Search for..." name="scan-kode" data-id="{{data.id}}">
+                                        <span class="input-group-btn"> 
+                                            <button class="btn btn-info" type="button" data-toggle="modal" data-target="#searchItems">Cari</button> 
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-2" id="input-qty" style="display:none">
+                                    <label for="">Qty</label>
+                                    <div class="input-group m-b-30">
+                                        <span class="input-group-btn"> 
+                                            <button class="btn btn-default" type="button">
+                                                <i class="fa fa-barcode"></i>
+                                            </button> 
+                                        </span>
+                                        <input class="form-control" name="qty-check" value="1">
+                                        <span class="input-group-btn"> 
+                                            <button class="btn btn-inverse" type="button" id="satuan">UOM</button> 
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-pills m-b-30" role="tablist">
+                                <li role="presentation" class="active" id="home-link">
+                                    <a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true">
+                                        <span class="visible-xs"><i class="ti-home"></i></span>
+                                        <span class="hidden-xs"> Request Items</span>
+                                    </a></li>
+                                <li role="presentation" class="">
+                                    <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false">
+                                        <span class="visible-xs"><i class="ti-shopping-cart-full"></i></span> 
+                                        <span class="hidden-xs">Keranjang Logistik</span>
+                                        <span class="badge-count" style="display:none;">99</span>
+                                    </a></li>
+                                <li role="presentation" class="">
+                                    <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab" aria-expanded="false">
+                                        <span class="visible-xs"><i class="ti-export"></i></span> 
+                                        <span class="hidden-xs">Purchasing Request</span>
+                                    </a></li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="home">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tbody id="compare-item">
+                                                <tr style="font-weight: 600;">
+                                                    <td>No</td>
+                                                    <td>Nama Barang</td>
+                                                    <td>Qty</td>
+                                                    <td class="bg-light text-right">Check</td>
+                                                    <td class="bg-light" width="5"></td>
+                                                    <td>Kode</td>
+                                                    <td>PartNumber</td>
+                                                    <td>Type</td>
+                                                    <td>Act</td>
+                                                </tr>
+                                                @each(item in data.items)
+                                                    <tr class="item-details" 
+                                                        data-req="{{item.material_req_id}}"
+                                                        data-barangid="{{item.barang_id}}"
+                                                        data-barangnm="{{item.barang.descriptions}}"
+                                                        data-uom="{{item.barang.uom}}"
+                                                        data-kode="{{item.barang.kode}}"
+                                                        data-partnumber="{{item.barang.partnumber}}"
+                                                        data-equiptype="{{item.barang.equiptype}}"
+                                                        data-qty="{{item.qty}}"
+                                                        data-equipment="{{item.equipment_reff}}">
+                                                        <td>{{$loop.index + 1}}</td>
+                                                        <td>{{item.barang.descriptions}}</td>
+                                                        <td>{{item.qty - item.qty_accept}} {{item.barang.uom}}</td>
+                                                        <!--<td id="TAB1-{{item.barang.id}}" class="text-right bg-extralight">0</td>-->
+                                                        <td id="TAB1-{{item.barang.kode}}" class="text-right bg-extralight">0</td>
+                                                        <td class="text-right bg-extralight"><i class="ti-shopping-cart-full"></i></td>
+                                                        <td>{{item.barang.kode}}</td>
+                                                        <td>{{item.barang.partnumber || '-'}}</td>
+                                                        <td>{{item.barang.equiptype}}</td>
+                                                        <td>
+                                                            <button class="btn btn-outline btn-danger btn-xs bt-buat-purchasing">Buat Purchasing</button>
+                                                        </td>
+                                                    </tr>
+                                                @endeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="profile">
+                                    <form action="#" id="form-barang-out" data-id="{{data.id}}">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <tbody id="checked-items">
+                                                    <tr style="font-weight: 600;">
+                                                        <td>No</td>
+                                                        <td>Nama Barang</td>
+                                                        <td>UOM</td>
+                                                        <td>Qty Check</td>
+                                                        <td>Kode</td>
+                                                        <td>PartNumber</td>
+                                                        <td>Type</td>
+                                                        <td>Act</td>
+                                                    </tr>
+                                                    {{ csrfField() }}
+                                                    @each(val in data.items)
+                                                        @if(val.qty_accept > 0)
+                                                            <tr class="result-scan">
+                                                                <td>{{$loop.index + 1}}</td>
+                                                                <td>{{val.barang.descriptions}}</td>
+                                                                <td>{{val.barang.uom}}</td>
+                                                                <td>{{val.qty_accept}} <i class="icon-basket-loaded" style="font-weight: bold;"></i></td>
+                                                                <td>{{val.barang.kode}}</td>
+                                                                <td>{{val.barang.partnumber}}</td>
+                                                                <td>{{val.barang.equiptype}}</td>
+                                                                <td class="text-success"><i class="ti-check-box"></i></td>
+                                                            </tr>
+                                                        @endif
+                                                    @endeach
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="text-right">
+                                                        <td colspan="8">
+                                                            <button class="btn btn-warning waves-effect waves-light" id="barang-out-logistik" type="submit">
+                                                                <span class="btn-label">
+                                                                    <i class="fa fa-check"></i>
+                                                                </span> Kirim Barang
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </form>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="messages">
+                                    <form action="" id="form-purchasing-request"data-id="{{data.id}}">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead class="bg-extralight">
+                                                    <th>No</th>
+                                                    <th>Nama</th>
+                                                    <th>UOM</th>
+                                                    <th>Qty</th>
+                                                    <th>Kode</th>
+                                                    <th>PartNumber</th>
+                                                    <th>Type</th>
+                                                    <th>Act</th>
+                                                </thead>
+                                                <tbody id="purchasing-request">
+                                                    @each(item in purchasingReq)
+                                                        <tr class="result-purchasing">
+                                                            <td>{{$loop.index + 1}}</td>
+                                                            <td>
+                                                                {{item.descriptions}}
+                                                            </td>
+                                                            <td>{{item.satuan}}</td>
+                                                            <td>{{item.qty}}</td>
+                                                            <td>{{item.kode}}</td>
+                                                            <td>{{item.partnumber}}</td>
+                                                            <td>{{item.barang.equiptype}}</td>
+                                                            <td class="text-warning">waiting</td>
+                                                        </tr>
+                                                    @endeach
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="text-right">
+                                                        <td colspan="8">
+                                                            <button class="btn btn-danger waves-effect waves-light" type="submit">
+                                                                <span class="btn-label">
+                                                                    <i class="ti-shopping-cart"></i>
+                                                                </span> Buat Purchasing Request
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </form>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    span.badge-count {
+        position: absolute;
+        top: -7px;
+        right: -2px;
+        background-color: #42b3f9;
+        width: 23px;
+        height: 23px;
+        border-radius: 15px;
+        text-align: center;
+        color: white;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        z-index: 9;
+    }
+</style>
+<script>
+    $(function(){
+        $('#search-barang').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+    })
+</script>

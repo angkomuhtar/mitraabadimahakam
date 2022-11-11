@@ -1,0 +1,80 @@
+{{ script('ajax/index') }}
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-default waves-effect waves-light" id="bt-back"> 
+                            <i class="ti-arrow-left m-r-5"></i> <span>Back</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" class="form-control" value="{{list.perPage}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl">Lokasi Gudang</th>
+                                <th class="sl" width="180">Kode</th>
+                                <th class="sl" width="*">Description</th>
+                                <th class="sl" width="*">ReceivedAt</th>
+                                <th class="sl">Qty In</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(!list.data.length > 0)
+                                <tr>
+                                    <td colspan="5">History data tidak ditemukan...</td>
+                                </tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        {{item.gudang.kode}} <br>
+                                        <small class="text-success">{{item.author.nm_lengkap}}</small>
+                                    </td>
+                                    <td>
+                                        {{item.barang.kode}} <br>
+                                        <small>{{item.barang.partnumber || '-'}}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{item.barang.descriptions}}</strong>
+                                        @if(item.barang.manufactur)
+                                            <br> <small><code>{{item.barang.manufactur}}</code></small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <strong>SJ : {{item.purchasingRequest.sj}}</strong> <br>
+                                        <i class="ti-alarm-clock"></i>
+                                        <small class="myDateTimeFormat" data-date="{{item.date}}"></small>
+                                    </td>
+                                    <td>
+                                        {{item.qty_in}} {{item.barang.uom}}
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.simple-pagination')
+            </div>
+        </div>
+    </div>
+</div>

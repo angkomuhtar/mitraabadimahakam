@@ -15,26 +15,17 @@ $(function(){
         initDeafult()
     })
 
-    // $('body').on('keyup', 'input#inpKeywordSite', function(e){
-    //     var value = $(this).val()
-    //     if(e.keyCode === 13){
-    //         ajaxSearch(value)
-    //     }
-    // })
-
-    // $('body').on('click', 'button#bt-search-keyword', function(){
-    //     var keyword = $('input[name="keyword"]').val()
-    //     ajaxSearch(keyword)
-    // })
-
     $('body').on('click', 'button#add-items', function(){
         var site_id = $('body').find('select[name="site_id"]').val()
-        console.log(site_id);
         if(site_id){
             $('body').find('code#keterangan-row').remove()
             var inpLen = $('body').find('input[name="add-items"]').val()
-            for (let i = 0; i < parseInt(inpLen); i++) {
-                addItems()
+            if(parseInt(inpLen) <= 20){
+                for (let i = 0; i < parseInt(inpLen); i++) {
+                    addItems()
+                }
+            }else{
+                alert('Maximal tambah item hanya 20 rows per klik')
             }
         }else{
             alert('Tentukan project/site terlebih dulu...')
@@ -55,8 +46,8 @@ $(function(){
             url: 'material-request/'+id+'/show',
             method: 'GET',
             success: function(result){
-                // initShow()
-                $('div#list-content').html(result).show()
+                $('div#list-content').html('').hide()
+                $('div#form-content').html(result).show()
             },
             error: function(err){
                 console.log(err);
@@ -64,9 +55,27 @@ $(function(){
         })
     })
 
-    $('body').on('submit', 'form#fm-barang', function(e){
+    $('body').on('click', 'button.bt-view-data', function(e){
+        var id = $(this).data('id')
+        $.ajax({
+            async: true,
+            url: 'material-request/'+id+'/view',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').html('').hide()
+                $('div#form-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    $('body').on('submit', 'form#form-create', function(e){
         e.preventDefault()
         var data = new FormData(this)
+        var items = formDataItems()
+        data.append('items', JSON.stringify(items))
         $.ajax({
             async: true,
             url: 'material-request',
@@ -94,15 +103,48 @@ $(function(){
         })
     })
 
-    $('body').on('submit', 'form#fm-barang-upd', function(e){
+    $('body').on('submit', 'form#form-update', function(e){
         e.preventDefault()
         var id = $(this).data('id')
         var data = new FormData(this)
+        var items = formDataItems()
+        data.append('items', JSON.stringify(items))
         $.ajax({
             async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
             url: 'material-request/'+id+'/update',
             method: 'POST',
             data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                const { message } = result
+                if(result.success){
+                    swal("Okey,,,!", message, "success")
+                    initDeafult()
+                }else{
+                    swal("Opps,,,!", message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
+    $('body').on('click', 'button#approved-head', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        $.ajax({
+            async: true,
+            headers: {'x-csrf-token': $('[name=_csrf]').val()},
+            url: 'material-request/'+id+'/check',
+            method: 'POST',
             dataType: 'json',
             processData: false,
             mimeType: "multipart/form-data",
@@ -216,6 +258,7 @@ $(function(){
             success: function(result){
                 $('div#list-content').children().remove()
                 $('div#form-content').html(result).show()
+                $('select').select2()
             },
             error: function(err){
                 console.log(err);
@@ -249,10 +292,32 @@ $(function(){
         })
     }
 
-    function initShow(){
-        $('div.content-module').css('display', 'none')
-        $('div#form-content').show()
+    function formDataItems(){
+        let items = []
+        $('tr.item-details').each(function(){
+            var elm = $(this)
+
+            var props = []
+            var vals = []
+            elm.find('select.form-control, input.form-control').each(function(){
+                props.push($(this).attr('name'))
+                vals.push($(this).val())
+            })
+
+            const obj = props.reduce((acc, element, i) => {
+                return {...acc, [element]: vals[i]};
+            }, {});
+            
+            items.push(obj)
+        })
+        console.log(items);
+        return items
     }
+
+    // function initShow(){
+    //     $('div.content-module').css('display', 'none')
+    //     $('div#form-content').show()
+    // }
 
     // function ajaxSearch(value){
     //     $.ajax({

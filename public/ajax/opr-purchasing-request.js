@@ -115,36 +115,46 @@ $(function(){
         })
     })
 
-    // $('body').on('submit', 'form#fm-doc-upd', function(e){
-    //     e.preventDefault()
-    //     var id = $(this).data('id')
-    //     var data = new FormData(this)
-    //     $.ajax({
-    //         async: true,
-    //         url: '/operation/purchasing-request/'+id+'/update',
-    //         method: 'POST',
-    //         data: data,
-    //         dataType: 'json',
-    //         processData: false,
-    //         mimeType: "multipart/form-data",
-    //         contentType: false,
-    //         success: function(result){
-    //             console.log(result)
-    //             const { message } = result
-    //             if(result.success){
-    //                 swal("Okey,,,!", message, "success")
-    //                 initDefault()
-    //             }else{
-    //                 swal("Opps,,,!", message, "warning")
-    //             }
-    //         },
-    //         error: function(err){
-    //             console.log(err)
-    //             const { message } = err.responseJSON
-    //             swal("Opps,,,!", message, "warning")
-    //         }
-    //     })
-    // })
+    $('body').on('click', 'button.btn-delete-data', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        swal({
+            title: "Are you sure?",
+            text: "Your will not be able to recover this imaginary file!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: false
+          },
+          function(){
+            $.ajax({
+                async: true,
+                url: '/operation/purchasing-request/'+id+'/destroy',
+                method: 'POST',
+                dataType: 'json',
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                success: function(result){
+                    console.log(result)
+                    const { message } = result
+                    if(result.success){
+                        swal("Okey,,,!", message, "success")
+                        initDefault()
+                    }else{
+                        swal("Opps,,,!", message, "warning")
+                    }
+                },
+                error: function(err){
+                    console.log(err)
+                    const { message } = err.responseJSON
+                    swal("Opps,,,!", message, "warning")
+                }
+            })
+          });
+        
+    })
 
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()

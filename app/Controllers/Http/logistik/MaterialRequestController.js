@@ -32,9 +32,101 @@ class MaterialRequestController {
         return view.render('logistik.material-request.create', {list: department})
     }
 
+    async store ( { auth, request } ) {
+        const req = request.all()
+        req.items = JSON.parse(req.items)
+
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+
+        req.kode = await utils.GEN_KODE_MATERIAL_REQUEST(req)
+        // console.log(req);
+
+        const data = await MaterialRequestHelpers.POST(req, user)
+        return data
+    }
+
+    async update ( { auth, params, request } ) {
+        const req = request.all()
+        req.items = JSON.parse(req.items)
+
+        console.log(req);
+
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+
+        const data = await MaterialRequestHelpers.UPDATE(req, params, user)
+        return data
+    }
+
+    async check ( { auth, params } ) {
+
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+
+        const data = await MaterialRequestHelpers.CHECK(params, user)
+        return data
+    }
+
+    async show ( { auth, params, view } ) {
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+
+        const data = await MaterialRequestHelpers.SHOW(params)
+        const department = (await MasDepartment.query().where('status', 'Y').fetch()).toJSON()
+        let equipment = (await MasEquipment.query().where('site_id', data.site_id).fetch()).toJSON()
+
+        equipment = _.groupBy(equipment, 'tipe')
+        equipment = Object.keys(equipment).map(key => {
+            return {
+                type: key,
+                items: equipment[key]
+            }
+        })
+
+        let barang = (await MasBarang.query().where('aktif', 'Y').fetch()).toJSON()
+
+        barang = _.groupBy(barang, 'equiptype')
+        barang = Object.keys(barang).map(key => {
+            return {
+                type: key,
+                items: barang[key]
+            }
+        })
+        return view.render('logistik.material-request.show', {
+            data: {...data, items: data.items.map( obj => {
+                return {
+                    ...obj,
+                    listBarang: barang,
+                    listEquipment: equipment
+                }
+            })}, 
+            list: department
+        })
+    }
+
+    async view ( { auth, params, view } ) {
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+
+        const data = await MaterialRequestHelpers.SHOW(params)
+        return view.render('logistik.material-request.view', {data: data})
+    }
+
     async createItems ( { auth, request, view } ) {
         const req = request.all()
         const user = await userValidate(auth)
+
         if(!user){
             return view.render('401')
         }
@@ -63,20 +155,9 @@ class MaterialRequestController {
 
         const HTML = '<tr class="item-details">'+
             '    <td>'+req.length+'</td>'+
-            // '    <td>'+
-            // '        <div class="form-group" style="margin-bottom:5px">'+
-            // '            <select class="form-control custom-option" data-title="uom" data-check="" name="material-type">'+
-            // '               <option value="">Pilih Item Type</option>'+
-            // '               <option value="SPARE PART">SPARE PART</option>'+
-            // '               <option value="CONSUMABLE">CONSUMABLE</option>'+
-            // '               <option value="F&B">F&B</option>'+
-            // '               <option value="OTHERS">OTHERS</option>'+
-            // '            </select>'+
-            // '        </div>'+
-            // '    </td>'+
             '    <td>'+
             '        <div class="form-group" style="margin-bottom:5px">'+
-            '            <select class="form-control" name="equipment_reff">'+
+            '            <select class="form-control" name="barang_id">'+
             '               <option value="">Pilih Item Request</option>'+
                                 barang.map( v => '<optgroup label="'+v.type+'">'+v.items.map(i => '<option type="'+i.equiptype+'" value="'+i.id+'">'+`[ ${i.kode} ] ${i.descriptions}  ${i.partnumber ? '-- partNum: '+i.partnumber : ''} `+'</option>')+'</optgroup>')+
             '            </select>'+

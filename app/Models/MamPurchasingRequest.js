@@ -16,6 +16,10 @@ class PurchasingRequest extends Model {
         return this.belongsTo("App/Models/VUser", "createdby", "id")
     }
 
+    dept () {
+        return this.belongsTo("App/Models/MasDepartment", "department", "id")
+    }
+
     mengetahui () {
         return this.belongsTo("App/Models/VUser", "acceptby", "id")
     }

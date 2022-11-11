@@ -1,7 +1,9 @@
 'use strict'
 const db = use('Database')
+const { async } = require('crypto-random-string')
 const moment = require('moment')
 const Barang = use("App/Models/MasBarang")
+const MasDepartment = use("App/Models/MasDepartment")
 const LogMaterialRequest = use("App/Models/LogMaterialRequest")
 const LogMaterialRequestItem = use("App/Models/LogMaterialRequestItem")
 
@@ -16,7 +18,7 @@ class mamMaterialRequest {
         .with('author')
         .with('approved')
         .with('department')
-        .with('items')
+        .with('items', i => i.where('aktif', 'Y'))
         .where( w  => {
             if (req.kode) {
                 w.where('kode', 'like', `%${req.kode}%`)
@@ -35,66 +37,75 @@ class mamMaterialRequest {
                 w.where('date', '<=', req.end_date)
             }
         }).orderBy([{column: 'date', order: 'desc'}, {column: 'kode', order: 'asc'}]).paginate(halaman, limit)
-        return materialRequest.toJSON()
+
+        let data = materialRequest.toJSON()
+        return data
     }
     
     async SHOW (params) {
-        const purchasingRequest = await PurchasingRequest.query().with('author').with('mengetahui').with('site').with('items').where('id', params.id).last()
-        console.log(purchasingRequest.toJSON());
-        return purchasingRequest.toJSON()
+        const materialRequest = (
+            await LogMaterialRequest.query()
+            .with('site')
+            .with('pit')
+            .with('author')
+            .with('approved')
+            .with('department')
+            .with('items', i => {
+                i.with('barang')
+                i.with('equipment')
+                i.where('aktif', 'Y')
+            })
+            .where('id', params.id).last()
+        ).toJSON()
+        return materialRequest
     }
 
     async POST (req, user) {
 
         const trx = await db.beginTransaction()
-
-        let purchasingRequest
-        let purchasingRequestItem
+        
+        let materialRequest = new LogMaterialRequest()
 
         try {
-            purchasingRequest = new PurchasingRequest()
-            purchasingRequest.fill({
+            materialRequest.fill({
                 site_id: req.site_id || null,
-                kode: req.kode,
-                date: moment(req.date).format('YYYY-MM-DD HH:mm'),
-                department: req.department,
+                pit_id: req.pit_id || null,
+                department_id: req.department_id,
                 priority: req.priority,
-                createdby: user.id
+                narasi: req.narasi || '',
+                request_by: user.id,
+                date: new Date(),
+                kode: req.kode
             })
-            await purchasingRequest.save(trx)
+            await materialRequest.save(trx)
         } catch (error) {
             console.log(error);
             await trx.rollback()
             return {
                 success: false,
-                message: 'Failed save Purchasing Requesting,,,'
+                message: 'Failed save Material Request,,,'
             }
         }
 
         for (const obj of req.items) {
 
-            const barang = await Barang.query().where('id', obj.barang_id).last()
-
+            let materialRequestItem = new LogMaterialRequestItem()
             try {
-                purchasingRequestItem = new PurchasingRequestItem()
-                purchasingRequestItem.fill({
-                    request_id: purchasingRequest.id,
-                    barang_id: barang.id,
-                    kode: barang.kode,
-                    partnumber: barang.partnumber,
-                    descriptions: barang.descriptions,
-                    satuan: barang.uom,
+                materialRequestItem.fill({
+                    material_req_id: materialRequest.id,
+                    barang_id: obj.barang_id,
                     qty: obj.qty,
-                    equipment_id: obj.equipment_id || null,
-                    remark: obj.remark
+                    qty_accept: obj.qty,
+                    narasi: '',
+                    equipment_reff: obj.equipment_reff || null
                 })
-                await purchasingRequestItem.save(trx)
+                await materialRequestItem.save(trx)
             } catch (error) {
                 console.log(error);
                 await trx.rollback()
                 return {
                     success: false,
-                    message: 'Failed save Purchasing Requesting Items,,,'
+                    message: 'Failed save Material Request Items,,,'
                 }
             }
         }
@@ -102,7 +113,105 @@ class mamMaterialRequest {
         await trx.commit()
         return {
             success: true,
-            message: 'Success save Purchasing Requesting,,,'
+            message: 'Success save Material Request,,,'
+        }
+    }
+
+    async CHECK (params, user) {
+        const materialRequest = await LogMaterialRequest.query().where('id', params.id).last()
+
+        try {
+            materialRequest.merge({
+                approved_at: new Date(),
+                status: 'ready',
+                approved_by: user.id
+            })
+            await materialRequest.save()
+        } catch (error) {
+            console.log(error);
+            return {
+                success: false,
+                message: error
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Data success approved...'
+        }
+    }
+
+    async UPDATE (req, params, user) {
+        const trx = await db.beginTransaction()
+        const materialRequest = await LogMaterialRequest.query().where('id', params.id).last()
+
+        try {
+            materialRequest.merge({
+                site_id: req.site_id || null,
+                pit_id: req.pit_id || null,
+                department_id: req.department_id,
+                narasi: req.narasi || '',
+                priority: req.priority,
+                request_by: user.id,
+                date: new Date()
+            })
+            await materialRequest.save(trx)
+        } catch (error) {
+            console.log(error);
+            await trx.rollback()
+            return {
+                success: false,
+                message: error
+            }
+        }
+
+        /** UPDATE INACTIVE STATUS ITEM **/
+        const itemsMaterial = (await LogMaterialRequestItem.query().where('material_req_id', params.id).fetch()).toJSON()
+        for (const val of itemsMaterial) {
+            const itemInactive = await LogMaterialRequestItem.query().where('id', val.id).last()
+            try {
+                itemInactive.merge({
+                    aktif: 'N',
+                    narasi: 'item diupdate oleh user'
+                })
+                await itemInactive.save(trx)
+            } catch (error) {
+                console.log(error);
+                await trx.rollback()
+                return {
+                    success: false,
+                    message: error
+                }
+            }
+        }
+
+        /** REINSERT MATERIAL REQUEST ITEM **/
+        for (const obj of req.items) {
+            const materialRequestItem = new LogMaterialRequestItem()
+            try {
+                materialRequestItem.fill({
+                    material_req_id: params.id,
+                    barang_id: obj.barang_id,
+                    qty: obj.qty,
+                    qty_accept: obj.qty,
+                    narasi: '',
+                    equipment_reff: obj.equipment_reff || null
+                })
+                await materialRequestItem.save(trx)
+            } catch (error) {
+                console.log(error);
+                await trx.rollback()
+                return {
+                    success: false,
+                    message: 'Failed save Material Request Items,,,'
+                }
+            }
+        }
+
+        await trx.commit()
+        return {
+            success: true,
+            message: 'Success save Material Request,,,'
         }
     }
 }

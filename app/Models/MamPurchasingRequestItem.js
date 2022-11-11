@@ -16,6 +16,10 @@ class MamPurchaseRequestItem extends Model {
         return this.belongsTo("App/Models/MasBarang", "barang_id", "id")
     }
 
+    replaceWith () {
+        return this.belongsTo("App/Models/MasBarang", "replace_with", "id")
+    }
+
     equipment () {
         return this.belongsTo("App/Models/MasEquipment", "equipment_id", "id")
     }

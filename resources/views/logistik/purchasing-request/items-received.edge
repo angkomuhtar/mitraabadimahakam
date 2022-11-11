@@ -1,0 +1,49 @@
+<tr class="tr-items" data-id="">
+    {{ script('script/opt-options') }}
+    {{ script('script/opt-equipment') }}
+    
+    <td class="td-items" style="vertical-align: middle;border-right: 1px #ddd solid;">
+        <strong id="teks-urut">{{$loop.index + 1}}</strong>
+    </td>
+    <td>
+        {{item.barang.kode}} - {{item.barang.partnumber || ''}} <br>
+        <strong><small>{{item.barang.descriptions}}</small></strong>
+    </td>
+    <td>
+        @if(item.replaceWith)
+            <span class="text-danger">
+                {{item.replaceWith.kode || ''}} - {{item.replaceWith.partnumber || ''}} <br>
+                <strong><small>{{item.replaceWith.descriptions || ''}}</small></strong>
+            </span>
+        @else
+            {{item.barang.kode}} - {{item.barang.partnumber || ''}} <br>
+            <strong><small>{{item.barang.descriptions}}</small></strong>
+        @endif
+    </td>
+    <td class="p-t-10">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm req-item-details" name="remark" placeholder="Input keterangan items..."/>
+                </div>
+            </div>
+        </div>
+    </td>
+    <td>
+        {{item.barang.uom || ''}}
+    </td>
+    <td>
+        {{item.qty}}
+    </td>
+    <td class="p-t-10">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm req-item-details" name="qty_received" value="{{item.qty}}"/>
+                    <input type="hidden" class="form-control input-sm req-item-details" name="id_items" value="{{item.id}}"/>
+                    <input type="hidden" class="form-control input-sm req-item-details" name="barang_id" value="{{item.replace_with || item.barang_id}}"/>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>

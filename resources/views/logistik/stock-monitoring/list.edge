@@ -1,0 +1,91 @@
+{{ script('ajax/index') }}
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <!--
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Purchasing Request</span>
+                        </button> -->
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" class="form-control" value="{{list.perPage}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="50">ACT</th>
+                                <th class="sl">Lokasi Gudang</th>
+                                <th class="sl" width="180">Kode</th>
+                                <th class="sl" width="*">Description</th>
+                                <th class="sl">GroupType</th>
+                                <th class="sl">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button 
+                                        class="btn btn-outline btn-success btn-xs bt-history-in" 
+                                        data-id="{{item.barang_id}}" 
+                                        data-gudang="{{item.gudang_id}}" 
+                                        style="padding-right: 15px;margin-bottom: 3px;">
+                                            <i class="ti-import"></i> History In
+                                        </button>
+                                        <button 
+                                        class="btn btn-outline btn-danger btn-xs bt-history-out" 
+                                        data-gudang="{{item.gudang_id}}" 
+                                        data-id="{{item.barang_id}}">
+                                            <i class="ti-export"></i> History Out
+                                        </button>
+                                    </td>
+                                    <td>
+                                        {{item.gudang.kode}} <br>
+                                        <small>{{item.gudang.nama}}</small>
+                                    </td>
+                                    <td>
+                                        {{item.barang.kode}} <br>
+                                        <small>{{item.barang.partnumber || '-'}}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{item.barang.descriptions}}</strong>
+                                        @if(item.barang.manufactur)
+                                            <br> <small><code>{{item.barang.manufactur}}</code></small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{item.barang.equiptype}} <br>
+                                        <small>{{item.barang.parttype || '-'}}</small>
+                                    </td>
+                                    <td class="{{item.stok <= item.barang.minstok ? 'text-danger':''}}">
+                                        {{item.stok}} {{item.barang.uom}}
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.simple-pagination')
+            </div>
+        </div>
+    </div>
+</div>
