@@ -12,7 +12,7 @@ $(function () {
 
 	$('body').on('click', 'button#create-form', function () {
 		initCreate()
-	})
+	})	
 
 	$('body').on('click', 'button#bt-cancel-update', function (e) {
 		e.preventDefault()
@@ -38,6 +38,15 @@ $(function () {
 	$('body').on('click', 'button#bt-search-keyword', function (e) {
 		searchKeyword()
 	})
+
+	$('body').on('change', 'input#equipment_id', function (e) {
+		console.log('qwe')
+	})
+
+	// $('#hm-unit-list tr'). click(function (event) {
+	// 	 var elID = $(this). attr('id'); alert(elID); 
+
+	// 	});
 
 	$('body').on('click', 'a.btn-pagging', function (e) {
 		e.preventDefault()
@@ -88,6 +97,28 @@ $(function () {
 			},
 		})
 	}
+
+    // function getUnitLastHM() {
+	// 	const site_id = parseInt($('select[name="site_id').val())
+	// 	$.ajax({
+	// 		async: true,
+	// 		url: '/operation/daily-timesheet/getLastHM',
+	// 		method: 'GET',
+	// 		data: {
+	// 			site_id: site_id,
+	// 		},
+	// 		success: function (result) {
+	// 			if (result.success) {
+	// 				$('tbody#hm-unit-list').append(result.data)
+	// 			} else {
+	// 				swal('Oops!', result.message, 'warning')
+	// 			}
+	// 		},
+	// 		error: function (err) {
+	// 			console.log('err >> ', err)
+	// 		},
+	// 	})
+	// }
 
 	function searchKeyword() {
 		var keyword = $('input#keywordTimeSheet').val()

@@ -587,6 +587,8 @@ Route.group(() => {
 
   Route.get('/daily-timesheet/create/addItems', 'DailyOperatorTimesheetController.addItems').as('opr.daily-timesheet.addItems').middleware('R')
 
+  Route.post('/daily-timesheet/getLastHM', 'DailyOperatorTimesheetController.getLastHMEquipment').as('opr.daily-timesheet.getLastHMEquipment').middleware('R')
+
   // Route.get('/daily-timesheet/create', 'DailyTimesheetController.createv2').as('opr.daily-timesheet.create').middleware('R') // old version
 
   Route.get('/daily-timesheet/:id/show', 'DailyTimesheetController.show').as('opr.daily-timesheet.show').middleware('U')

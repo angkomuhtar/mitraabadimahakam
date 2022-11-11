@@ -222,6 +222,9 @@ class repPoduction {
     async MW_DAILY (req) {
         let result = []
         let color = req.colorGraph
+        let startDate = null;
+        let endDate = null;
+
         req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
 
         let planDaily 
@@ -237,6 +240,22 @@ class repPoduction {
             }).fetch()).toJSON()
         } catch (error) {
             console.log(error);
+        }
+
+        const checkEmptyData = planDaily.every((v) => v.current_date && v.monthlyplans_id);
+        
+        if(!checkEmptyData || planDaily.length <= 1) {
+            planDaily = (await DailyPlan.query().where(w => {
+                if(req.production_type){
+                    w.where('tipe', req.production_type)
+                }
+                w.where('site_id', req.site_id)
+                w.where('pit_id', req.pit_id)
+            }).fetch()).toJSON()
+            // get last 7 days
+            planDaily = planDaily.slice((planDaily.length - 7), planDaily.length);
+            startDate = planDaily[0].current_date;
+            endDate = planDaily[planDaily.length - 1].current_date;
         }
 
 
@@ -325,7 +344,9 @@ class repPoduction {
         return {
             xAxis: xAxis,
             short_xAxist: short_xAxist,
-            data: [...arrTarget, ...arrActual, ...arrDiff, ...arrTrands]
+            data: [...arrTarget, ...arrActual, ...arrDiff, ...arrTrands],
+            startDate : startDate,
+            endDate : endDate
         }
     }
 

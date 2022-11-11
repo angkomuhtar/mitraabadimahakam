@@ -13,6 +13,9 @@ class repFuelRatio {
         console.log('<< BY PIT FUEL RATIO >>');
         console.log(req);
 
+        let startDate = null;
+        let endDate = null;
+
         const avgDistance = await DailyRitase.query().where( w => {
             w.where('site_id', req.site_id)
             w.where('pit_id', req.pit_id)
@@ -110,7 +113,7 @@ class repFuelRatio {
         }
 
         if(req.inp_ranges == 'DAILY'){
-            data = (
+            let data1 = (
                 await MamFuelRatio.query().where( w => {
                     w.where('site_id', req.site_id)
                     w.where('pit_id', req.pit_id)
@@ -118,9 +121,26 @@ class repFuelRatio {
                     w.where('date', '<=', req.end)
                 }).orderBy('date').fetch()
             ).toJSON()
+
+            if(!data1 || data.length <= 0) {
+                data1 = (
+                    await MamFuelRatio.query().where( w => {
+                        w.where('site_id', req.site_id)
+                        w.where('pit_id', req.pit_id)
+                    }).orderBy('date').fetch()
+                ).toJSON()
+
+                data1 = data1.slice((data1.length - 7), data1.length);
+                startDate = data1[0].date;
+                endDate = data1[data1.length - 1].date;
+                data = data1;
+            }
+            
             xAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
             cummxAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
         }
+
+
         
 
 
@@ -197,7 +217,9 @@ class repFuelRatio {
             staticRatio: ratio,
             series: result,
             cummxAxis: cummxAxis,
-            cummSeries: cumm
+            cummSeries: cumm,
+            startDate : startDate,
+            endDate : endDate
         }
     }
 

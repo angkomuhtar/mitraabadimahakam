@@ -136,6 +136,8 @@ class ReportProductionController {
                         error: false,
                     },
                     data: resp,
+                    startDate : result.startDate,
+                    endDate : result.endDate
                 });
             } catch (error) {
                 durasi = await diagnoticTime.durasi(t0);

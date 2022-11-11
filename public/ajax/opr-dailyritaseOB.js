@@ -268,10 +268,6 @@ $(function(){
     })
 
 
-
-
-
-
     $('body').on('change', 'input[name="detail-ritase-ob"]', function(){
         var data = new FormData()
         
