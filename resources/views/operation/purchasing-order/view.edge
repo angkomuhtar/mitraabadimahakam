@@ -1,0 +1,496 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="tab-pane active" id="profile">
+                        <div class="row">
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Location</strong>
+                                <br>
+                                @if(data.site)
+                                    <p class="text-muted">{{data.site.name}}</p>
+                                @else
+                                    <p class="text-muted">Head Offices Administration</p>
+                                @endif
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Kode Purchasing</strong>
+                                <br>
+                                <p class="text-muted">{{data.kode}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Priority Scale</strong>
+                                <br>
+                                @if(data.priority === 'URGENT PRIORITY')
+                                    <small class="label label-danger">
+                                        {{data.priority}}
+                                    </small>
+                                @endif
+                                @if(data.priority === 'NORMAL PRIORITY')
+                                    <small class="label label-warning">
+                                        {{data.priority}}
+                                    </small>
+                                @endif
+                                @if(data.priority === 'LOW PRIORITY')
+                                    <small class="label label-info">
+                                        {{data.priority}}
+                                    </small>
+                                @endif
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Created At</strong>
+                                <br>
+                                <i class="ti-calendar m-r-10"></i><small class="myDateTimeFormat" data-date="{{data.date}}"></small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Author</strong>
+                                <br>
+                                <p class="text-muted">{{data.author.nm_lengkap}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Department</strong>
+                                <br>
+                                <p class="text-muted">{{data.dept.nama}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Status</strong>
+                                <br>
+                                <p class="text-muted">{{data.status}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Accept</strong>
+                                <br>
+                                <p class="text-muted m-b-0">
+                                    {{data.mengetahui.nm_lengkap||''}}
+                                </p>
+                                @if(data.acceptAt)
+                                <span><i class="ti-calendar m-r-10"></i><small class="myDateTimeFormat" data-date="{{data.acceptAt}}"></small></span>
+                                  
+                                @endif
+                            </div>
+                        </div>
+                        <hr>
+                        
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                @if(data.description)
+                                    <h4 class="font-bold m-t-30">Description</h4>
+                                    <p class="m-t-10">{{data.description}}</p>
+                                @endif
+                            </div>
+                            <div class="panel-body">
+                                <ul class="nav nav-pills m-b-30 pull-right">
+                                    <li class="active"> 
+                                        <a href="#navpills-11" data-toggle="tab" aria-expanded="true">Approval</a> 
+                                    </li>
+                                    <li class=""> 
+                                        <a href="#navpills-21" data-toggle="tab" aria-expanded="false">Purchasing Order</a> 
+                                    </li>
+                                </ul>
+                                <div class="tab-content br-n pn">
+                                    <div id="navpills-11" class="tab-pane active">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="modal fade" id="open-modal-appoval" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                                    <div class="modal-dialog" role="document">
+                                                      <div class="modal-content">
+                                                        <div class="modal-header">
+                                                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                          <h4 class="modal-title" id="myModalLabel">Pindahkan ke keranjang purchasing order</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form action="#" id="add-po">
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group">
+                                                                            <label for="">Original Order</label>
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-addon"><i class="ti-gift"></i></div>
+                                                                                <input type="text" class="form-control" id="nm-barang" disabled>
+                                                                                <input type="hidden" class="form-control" id="id-barang" name="barang_id">
+                                                                                <input type="hidden" class="form-control" id="id-equipment" name="equipment_id">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="form-group">
+                                                                            <label for="">Kode Items</label>
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                                                <input type="text" class="form-control" id="kd-barang" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="form-group">
+                                                                            <label for="">Part Number</label>
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
+                                                                                <input type="text" class="form-control" id="part-barang" disabled>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-12">
+                                                                        <div class="form-group">
+                                                                            <label for="">Replace Order</label>
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-addon"><i class="ti-magnet"></i></div>
+                                                                                <select class="form-control" name="barang_replace">
+                                                                                    <option value="">Pilih</option>
+                                                                                    @each(brg in barang)
+                                                                                        <optgroup label="{{brg.itemType}}">
+                                                                                            @each(item in brg.items)
+                                                                                                <option value="{{item.id}}">{{item.kode}} - {{item.descriptions}}</option>
+                                                                                            @endeach
+                                                                                        </optgroup>
+                                                                                    @endeach
+                                                                                </select>
+                                                                                <input type="hidden" class="form-control" id="kd-replace" name="replace_kd">
+                                                                                <input type="hidden" class="form-control" id="nm-replace" name="replace_nm">
+                                                                                <input type="hidden" class="form-control" id="partnumber-replace" name="replace_partnumber">
+                                                                            </div>
+                                                                            <span class="text-danger"><small>Item pengganti yang sesuai dengan item pesanan</small></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-10">
+                                                                        <div class="form-group">
+                                                                            <label for="">Vendor</label>
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                                                                <select class="form-control" name="vendor_id" id="">
+                                                                                    <option value="">Pilih</option>
+                                                                                    @each(item in vendor)
+                                                                                        <option value="{{item.id}}">{{item.kode}} - {{item.name}}</option>
+                                                                                    @endeach
+                                                                                </select>
+                                                                                <input type="hidden" class="form-control" id="kd-vendor" name="vendor_kd">
+                                                                                <input type="hidden" class="form-control" id="nm-vendor" name="vendor_nm">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-2">
+                                                                        <div class="form-group">
+                                                                            <label for="">Qty</label>
+                                                                            <input type="text" class="form-control" id="qty-order" name="qty">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                          <button type="button" class="btn btn-warning" id="send-keranjang-po">Save</button>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                </div>
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover dataTable" id="myTable">
+                                                        <thead style="border-bottom: 2px solid;">
+                                                            <tr class="bg-light">
+                                                                <th class="sl">ACT</th>
+                                                                <th class="sl">Original Order</th>
+                                                                <th class="sl">Manufacture</th>
+                                                                <th class="sl">Uom</th>
+                                                                <th class="sl">Part Number</th>
+                                                                <th class="sl">Equipment</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @each(item in data.items)
+                                                                <tr>
+                                                                    <td>
+                                                                        <button type="button" 
+                                                                            class="btn btn-default select-item" 
+                                                                            data-equipment="{{item.equipment_id || ''}}" 
+                                                                            data-qty="{{item.qty}}" 
+                                                                            data-barangid="{{item.id}}" 
+                                                                            data-barangkode="{{item.kode}}" 
+                                                                            data-partnumber="{{item.partnumber || ''}}" 
+                                                                            data-parttype="{{item.parttype || ''}}" 
+                                                                            data-uom="{{item.barang.uom}}" 
+                                                                            data-description="{{item.descriptions}}">
+                                                                            <i class="ti-check-box"></i> 
+                                                                        </button>
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>{{item.descriptions}}</strong> <br>
+                                                                        <small>{{item.kode}}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>{{item.manufactur || ''}}</strong> <br>
+                                                                        <small>{{item.equiptype || ''}}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>{{item.qty}}</strong> 
+                                                                        <small>{{item.satuan}}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>{{item.partnumber || ''}}</strong> <br>
+                                                                        <small>{{item.parttype || ''}}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        {{item.equipment.kode || ''}} <br/>
+                                                                        <small>{{item.equipment.brand || ''}} - {{item.equipment.unit_model || ''}}</small>
+                                                                    </td>
+                                                                </tr>
+                                                            @endeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="navpills-21" class="tab-pane">
+                                        <div class="row">
+                                            <div class="col-md-12"> 
+                                                <code>Note :</code> System secara otomatis akan membuat <strong>purchasing order baru</strong> untuk setiap vendor atau pemasok yang ditentukan di setiap pesanan / order items nya. 
+                                                Kode purchasing order akan dibuat sementara dan dapat di ubah pada kesempatan lain
+                                                <div class="table-responsive">
+                                                    <form action="#" data-id="{{data.id}}" id="form-save-purchasing-order">
+                                                        {{ csrfField() }}
+                                                        <table class="table table-hover dataTable" id="myTable">
+                                                            <thead style="border-bottom: 2px solid;">
+                                                                <tr class="bg-light">
+                                                                    <th class="sl">ACT</th>
+                                                                    <th class="sl">Original Order</th>
+                                                                    <th class="sl">Replace With</th>
+                                                                    <th class="sl">Qty</th>
+                                                                    <th class="sl">Pemasok</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="list-purchasing-order"></tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td colspan="5">
+                                                                        <button class="btn btn-success waves-effect waves-light" type="submit" id="save-purchasing-order" style="display: none">
+                                                                            <span class="btn-label"><i class="fa fa-check"></i></span>
+                                                                            Buat Purchasing Order
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('select').select2()
+
+        $('body').on('click', 'button.delete-item', function(e){
+            e.preventDefault()
+            $(this).parents('tr').remove()
+            visibleButtonSavePurchasingOrder()
+        })
+
+        $('button.select-item').on('click', function(){
+            var idbarang = $(this).data('barangid')
+            var idequipment = $(this).data('equipment')
+            var nmbarang = $(this).data('description')
+            var kdbarang = $(this).data('barangkode')
+            var partnumber = $(this).data('partnumber')
+            var qty = $(this).data('qty')
+            $('#open-modal-appoval').modal('show')
+            $('input[id="id-equipment"]').val(idequipment)
+            $('input[id="id-barang"]').val(idbarang)
+            $('input[id="nm-barang"]').val(nmbarang)
+            $('input[id="kd-barang"]').val(kdbarang)
+            $('input[id="part-barang"]').val(partnumber)
+            $('input[id="qty-order"]').val(qty)
+            $('select[name="barang_replace"]').val('').trigger('change')
+            $('input[id="partnumber-replace"]').val('')
+            $('input[id="kd-replace"]').val('')
+            $('input[id="nm-replace"]').val('')
+            $('select[name="vendor_id"]').val('').trigger('change')
+            $('input[id="kd-vendor"]').val('')
+            $('input[id="nm-vendor"]').val('')
+        })
+
+        $('select[name="barang_replace"]').on('change', function(){
+            var value = $(this).val()
+            if(value){
+                $.ajax({
+                    async: false,
+                    url: '/ajax/barang/'+value,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(result){
+                        console.log(result);
+                        $('input[id="partnumber-replace"]').val(result.partnumber || '')
+                        $('input[id="kd-replace"]').val(result.kode)
+                        $('input[id="nm-replace"]').val(result.descriptions)
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+            }else{
+                $('input[id="partnumber-replace"]').val('')
+                $('input[id="kd-replace"]').val('')
+                $('input[id="nm-replace"]').val('')
+            }
+        })
+
+        $('select[name="vendor_id"]').on('change', function(){
+            var value = $(this).val()
+            if(value){
+                $.ajax({
+                    async: false,
+                    url: '/ajax/vendor/'+value,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(result){
+                        console.log(result);
+                        $('input[id="kd-vendor"]').val(result.kode)
+                        $('input[id="nm-vendor"]').val(result.name)
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+            }else{
+                $('input[id="kd-vendor"]').val('')
+                $('input[id="nm-vendor"]').val('')
+            }
+        })
+
+        $('button#send-keranjang-po').on('click', function(e){
+            e.preventDefault()
+            var idbarang = $('input[id="id-barang"]').val()
+            var nmbarang = $('input[id="nm-barang"]').val()
+            var kdbarang = $('input[id="kd-barang"]').val()
+            var partnumber = $('input[id="part-barang"]').val()
+            var idequipment = $('input[id="id-equipment"]').val()
+            var replaceWith = $('select[name="barang_replace"]').val()
+            var replaceWithKode = $('input[id="kd-replace"]').val()
+            var replaceWithNama = $('input[id="nm-replace"]').val()
+            var replaceWithPartNumber = $('input[id="partnumber-replace"]').val()
+            var vendor_id = $('select[name="vendor_id"]').val()
+            var nmvendor = $('input[id="nm-vendor"]').val()
+            var kdvendor = $('input[id="kd-vendor"]').val()
+            var qty = $('input[name="qty"]').val()
+
+            if(!vendor_id){
+                alert('Pemasok belum ditentukan...')
+            }else{
+                $('#open-modal-appoval').modal('hide')
+    
+                $('tbody#list-purchasing-order').append(
+                    '<tr class="po-items">'+
+                    '   <td>'+
+                    '       <button type="button" class="btn btn-danger btn-circle delete-item">'+
+                    '           <i class="ti-trash"></i>'+
+                    '       </button>'+
+                    '       <input type="hidden" class="inp-value" name="barang_id" value="'+idbarang+'"/>'+
+                    '       <input type="hidden" class="inp-value" name="replace_with" value="'+(replaceWith || 'null')+'"/>'+
+                    '       <input type="hidden" class="inp-value" name="qty" value="'+qty+'"/>'+
+                    '       <input type="hidden" class="inp-value" name="vendor_id" value="'+vendor_id+'"/>'+
+                    '       <input type="hidden" class="inp-value" name="equipment_id" value="'+idequipment+'"/>'+
+                    '   </td>'+
+                    '   <td>'+
+                    '       <strong>'+nmbarang+'</strong><br><small>'+kdbarang+' - '+partnumber+'</small>'+
+                    '   </td>'+
+                    '   <td>'+
+                    '       <strong>'+replaceWithNama+'</strong><br><small>'+replaceWithKode+' - '+replaceWithPartNumber+'</small>'+
+                    '   </td>'+
+                    '   <td>'+
+                    '       <strong>'+qty+'</strong>'+
+                    '   </td>'+
+                    '   <td>'+
+                    '       <strong>'+nmvendor+'</strong><br><small>'+kdvendor+'</small>'+
+                    '   </td>'+
+                    '</tr>'
+                )
+            }
+            visibleButtonSavePurchasingOrder()
+        })
+    })
+
+    $('form#form-save-purchasing-order').on('submit', function(e){
+        e.preventDefault()
+        var items = formDataValue('po-items', 'inp-value')
+        var request_id = $(this).data('id')
+        const dataForm = new FormData()
+        dataForm.append('request_id', request_id)
+        dataForm.append('items', JSON.stringify(items))
+        swal({
+            title: "An input!",
+            text: "Write something interesting:",
+            type: "input",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            inputPlaceholder: "Write something"
+        }, function (inputValue) {
+            dataForm.append('narasi', inputValue)
+            if (inputValue === false) return false;
+            $.ajax({
+                async: true,
+                url: '/operation/purchasing-order',
+                method: 'POST',
+                data: dataForm,
+                dataType: 'json',
+                processData: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                success: function(result){
+                    console.log(result)
+                    if(result.success){
+                        swal("Okey,,,!", result?.message, "success")
+                        initDefault()
+                    }else{
+                        swal("Opps,,,!", result?.message, "warning")
+                    }
+                },
+                error: function(err){
+                    console.log(err)
+                    const { message } = err.responseJSON
+                    swal("Opps,,,!", message, "warning")
+                },
+                complete: function(){
+                    swal("Nice!", "You wrote: " + inputValue, "success");
+                }
+            })
+        });
+    })
+
+    function visibleButtonSavePurchasingOrder(){
+        var len = $('tbody#list-purchasing-order').children().length
+        if(len >= 1){
+            $('button#save-purchasing-order').css('display', 'inline')
+        }else{
+            $('button#save-purchasing-order').css('display', 'none')
+        }
+    }
+
+    function formDataValue(trClass, elmClass){
+        let items = []
+        $('tr.'+trClass).each(function(){
+            var elm = $(this)
+
+            var props = []
+            var vals = []
+            elm.find('input.'+elmClass).each(function(){
+                props.push($(this).attr('name'))
+                vals.push($(this).val())
+            })
+
+            const obj = props.reduce((acc, element, i) => {
+                return {...acc, [element]: vals[i]};
+            }, {});
+            
+            items.push(obj)
+        })
+        console.log(items);
+        return items
+    }
+</script>

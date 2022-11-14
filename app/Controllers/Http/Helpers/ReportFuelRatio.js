@@ -112,6 +112,7 @@ class repFuelRatio {
             cummxAxis = data.map(el => 'W[' + (parseInt(moment(el.date, "YYYY-[W]ww").week() - 1 )) + ']')
         }
 
+        /* DAILY FUEL RATIO BY PIT */
         if(req.inp_ranges == 'DAILY'){
             let data1 = (
                 await MamFuelRatio.query().where( w => {
@@ -122,7 +123,9 @@ class repFuelRatio {
                 }).orderBy('date').fetch()
             ).toJSON()
 
-            if(!data1 || data.length <= 0) {
+            console.log('XXXXX :::', data1.length);
+
+            if(data1 || data1.length > 0) {
                 data1 = (
                     await MamFuelRatio.query().where( w => {
                         w.where('site_id', req.site_id)
@@ -139,11 +142,6 @@ class repFuelRatio {
             xAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
             cummxAxis = data.map(el => moment(el.date).format('DD MMM YYYY'))
         }
-
-
-        
-
-
         
         result.push({
             name: 'Fuel Ratio',
@@ -152,7 +150,6 @@ class repFuelRatio {
             data: data.map(el => el.fuel_ratio),
             dataLabels: {
                 enabled: true,
-                // color: '#FFFFFF',
                 format: '{point.y:.2f}'
             }
         })

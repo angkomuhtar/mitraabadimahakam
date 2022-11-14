@@ -1,0 +1,43 @@
+
+<tr class="item-details">
+    <td>{{$loop.index + 1}}</td>
+    <td>
+        <div class="form-group" style="margin-bottom:5px">
+            <select class="form-control" name="barang_id" data-check={{item.barang_id}}>
+               <option value="">Pilih Item Request</option>
+               @each(brg in listBarang)
+                    <optgroup label="{{brg.type}}">
+                        @each(val in brg.items)
+                            <option value="{{val.id}}">{{val.descriptions}}</option>
+                        @endeach
+                    </optgroup>
+               @endeach
+            </select>
+        </div>
+    </td>
+    <td>
+        <div class="form-group" style="margin-bottom:5px">
+            <input class="form-control" type="number" name="qty" value="1"/>
+        </div>
+    </td>
+    <td>
+        <div class="form-group" style="margin-bottom:5px">
+            <select class="form-control" name="equipment_reff">
+                <option value="">Pilih Equipment</option>
+                @each(unit in listEquipment)
+                    <optgroup label="{{unit.type}}">
+                        @each(val in unit.items)
+                            <option value="{{val.id}}">{{val.kode}}</option>
+                        @endeach
+                    </optgroup>
+               @endeach
+            </select>
+        </div>
+    </td>
+    <td class="text-center">
+        <button type="button" class="btn btn-danger btn-circle remove-items">
+            <i class="icon-trash text-white"></i>
+        </button>
+    </td>
+</tr>
+

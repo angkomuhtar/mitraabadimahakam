@@ -3,6 +3,8 @@ const MasEquipment = use('App/Models/MasEquipment')
 const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
 const moment = require('moment')
 const User = use('App/Models/User')
+const MasBarang = use("App/Models/MasBarang")
+const SysOption = use("App/Models/SysOption")
 const UserDevice = use('App/Models/UserDevice')
 const MasDepartment = use("App/Models/MasDepartment")
 const LogMaterialRequest = use("App/Models/LogMaterialRequest")
@@ -276,6 +278,42 @@ class Utils {
     string = '0'.repeat(5 - `${string}`.length) + string
     // console.log(string);
     const kode = `MR${department.kode}${moment().format('YYMMDD')}${string}`
+    return kode
+  }
+
+  async GEN_KODE_BARANG(req) {
+
+    function strPrefix(values){
+      var str = '0'.repeat(2 - `${values}`.length) + values
+      return str
+    }
+
+    const type = await SysOption.query().where( w => {
+      w.where('group', 'equipment-type')
+      w.where('nilai', req.equiptype)
+    }).last()
+
+    const brand = await SysOption.query().where( w => {
+      w.where('group', 'brand-unit')
+      w.where('nilai', req.manufactur)
+    }).last()
+
+    
+
+    const prefix01 = type ? strPrefix(type.urut) : 99
+    const prefix02 = brand ? strPrefix(brand.urut) : 99
+
+    const brg = await MasBarang.query().where( w => {
+      w.where('aktif', 'Y')
+      w.where('equiptype', req.equiptype)
+      w.where('manufactur', req.manufactur)
+    }).getCount('id') || 0
+
+    const prefix03 = '0'.repeat(5 - `${brg}`.length) + `${brg + 1}`
+    const kode = prefix01 + prefix02 + prefix03
+    console.log(prefix01);
+    console.log(prefix02);
+    console.log(prefix03);
     return kode
   }
 }

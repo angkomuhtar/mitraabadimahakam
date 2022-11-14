@@ -429,6 +429,7 @@ Route.group(() => {
     Route.post('/monitoring-stok', 'StockMonitoringController.store').as('log.monitoring-stok.store')
     Route.get('/monitoring-stok/list', 'StockMonitoringController.list').as('log.monitoring-stok.list')
     Route.get('/monitoring-stok/create', 'StockMonitoringController.create').as('log.monitoring-stok.create')
+    Route.get('/monitoring-stok/create/items', 'StockMonitoringController.createItems').as('log.monitoring-stok.createItems')
     Route.get('/monitoring-stok/:id/show', 'StockMonitoringController.show').as('log.monitoring-stok.show')
     Route.get('/monitoring-stok/:id/update', 'StockMonitoringController.update').as('log.monitoring-stok.update')
     Route.get('/monitoring-stok/:id/destroy', 'StockMonitoringController.destroy').as('log.monitoring-stok.destroy')

@@ -1,7 +1,9 @@
 'use strict'
 
+
 const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
 const BarangHelpers = use("App/Controllers/Http/Helpers/Barang")
+const utils = use("App/Controllers/Http/customClass/utils")
 
 class MasBarangController {
   async index ({ auth, view }) {
@@ -36,6 +38,10 @@ class MasBarangController {
         return view.render('401')
     }
 
+    if(!req.kode){
+      req.kode = await utils.GEN_KODE_BARANG(req)
+    }
+
     try {
       await BarangHelpers.POST(req, user)
       return {
@@ -66,6 +72,11 @@ class MasBarangController {
     if(!user){
         return view.render('401')
     }
+
+    if(!req.kode){
+      req.kode = await utils.GEN_KODE_BARANG(req)
+    }
+
     try {
       await BarangHelpers.UPDATE(params, req, user)
       return {

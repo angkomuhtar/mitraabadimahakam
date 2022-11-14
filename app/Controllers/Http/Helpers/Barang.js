@@ -60,6 +60,7 @@ class masBarang {
         const barang = new MasBarang()
         barang.fill({
             kode: req.kode,
+            minstok: req.minstok || 0,
             control_acc: req.control_acc || '',
             partnumber: req.partnumber,
             descriptions: req.descriptions,
@@ -85,6 +86,7 @@ class masBarang {
         barang.merge({
             control_acc: req.control_acc,
             kode: req.kode,
+            minstok: req.minstok || 0,
             partnumber: req.partnumber,
             descriptions: req.descriptions,
             parttype: req.parttype,

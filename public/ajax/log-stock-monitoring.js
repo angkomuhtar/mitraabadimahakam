@@ -10,9 +10,22 @@ $(function(){
         initCreate()
     })
 
+    $('body').on('click', 'button#auto-form', function(){
+        alert('Fitur ini akan segera hadir...')
+    })
+
     $('body').on('click', 'button#bt-cancel-update', function(e){
         e.preventDefault()
         initDeafult()
+    })
+
+    $('body').on('change', 'select[name="type"]', function(){
+        var value = $(this).val()
+        if(value === 'in'){
+            $('body').find('.panel-items-color').removeClass('bg-danger').addClass('bg-success')
+        }else{
+            $('body').find('.panel-items-color').removeClass('bg-success').addClass('bg-danger')
+        }
     })
 
     $('body').on('click', 'button.bt-history-in', function(e){
@@ -49,7 +62,61 @@ $(function(){
         })
     })
 
-    
+    $('body').on('click', 'button#add-items', function(){
+        var site_id = $('body').find('select[name="site_id"]').val()
+        if(site_id){
+            $('body').find('code#keterangan-row').remove()
+            var inpLen = $('body').find('input[name="add-items"]').val()
+            if(parseInt(inpLen) <= 20){
+                for (let i = 0; i < parseInt(inpLen); i++) {
+                    addItems()
+                }
+            }else{
+                alert('Maximal tambah item hanya 20 rows per klik')
+            }
+        }else{
+            alert('Tentukan project/site terlebih dulu...')
+        }
+    })
+
+    $('body').on('click', 'button.remove-items', function(){
+        $(this).parents('tr').remove()
+        $('body').find('tr.item-details > td:first-child').each(function(i){
+            $(this).html(i+1)
+        })
+    })
+
+    $('body').on('submit', 'form#form-create', function(e){
+        e.preventDefault()
+        var data = new FormData(this)
+        var items = formDataItems()
+        data.append('items', JSON.stringify(items))
+        $.ajax({
+            async: true,
+            url: 'monitoring-stok',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                const { message } = result
+                if(result.success){
+                    swal("Okey,,,!", message, "success")
+                    initDeafult()
+                }else{
+                    swal("Opps,,,!", message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
 
     $('body').on('click', 'a#btPreviousPage', function(e){
         e.preventDefault()
@@ -102,6 +169,21 @@ $(function(){
         })
     }
 
+    function initCreate () {
+        $.ajax({
+            async: true,
+            url: 'monitoring-stok/create',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').html('').hide()
+                $('div#form-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
+
     function addItems(){
         var site_id = $('body').find('select[name="site_id"]').val()
         var len = $('body').find('tbody#list-items > tr').length
@@ -114,6 +196,7 @@ $(function(){
                 site_id: site_id
             },
             success: function(result){
+                console.log(result);
                 $('body').find('tbody#list-items').append(result)
             },
             error: function(err){

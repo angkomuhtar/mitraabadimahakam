@@ -12,6 +12,7 @@
                                 <div class="panel-body">
                                     {{ csrfField() }}
                                     <div class="row">
+                                        <!--
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="">Control Acc</label>
@@ -20,13 +21,13 @@
                                                     <select class="form-control custom-option" data-title="department" data-check="" name="control_acc" required></select>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label for="">Kode</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
-                                                    <input type="text" class="form-control" name="kode" value="" required> 
+                                                    <input type="text" class="form-control" name="kode" value=""> 
                                                 </div>
                                             </div>
                                         </div>
@@ -75,12 +76,21 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="">Plan Model</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
                                                     <input type="text" class="form-control" name="planmodel"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="">MinStok</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="number" class="form-control" name="minstok"> 
                                                 </div>
                                             </div>
                                         </div>
@@ -93,7 +103,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-9">
+                                        <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="">Remark</label>
                                                 <div class="input-group">

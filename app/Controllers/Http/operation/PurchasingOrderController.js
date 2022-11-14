@@ -10,7 +10,7 @@ const PurchaseOrderHelpers = use('App/Controllers/Http/Helpers/PurchasingOrder')
 
 class PurchasingOrderController {
     async index ( { view } ) {
-        return view.render('operation.purchasing-request.index')
+        return view.render('operation.purchasing-order.index')
     }
 
     async list ( { auth, request, view } ) {
@@ -20,8 +20,8 @@ class PurchasingOrderController {
             return view.render('401')
         }
 
-        const data = await PurchaseRequestHelpers.LIST(req)
-        return view.render('operation.purchasing-request.list', { list: data })
+        const data = await PurchaseOrderHelpers.LIST(req)
+        return view.render('operation.purchasing-order.list', { list: data })
     }
 
     async create ( { auth, view } ) {
@@ -29,7 +29,7 @@ class PurchasingOrderController {
         if(!user){
             return view.render('401')
         }
-        return view.render('operation.purchasing-request.create')
+        return view.render('operation.purchasing-order.create')
     }
 
     async view ( { auth, params, view } ) {
@@ -49,7 +49,7 @@ class PurchasingOrderController {
             }
         })
 
-        return view.render('operation.purchasing-request.view', {
+        return view.render('operation.purchasing-order.view', {
             data: data,
             barang: barang,
             vendor: vendor
@@ -72,7 +72,7 @@ class PurchasingOrderController {
     async itemCreate ( { auth, view } ) {
         
         const barang = await MasBarang.query().fetch()
-        return view.render('operation.purchasing-request.items-create', {barang: barang.toJSON() || []})
+        return view.render('operation.purchasing-order.items-create', {barang: barang.toJSON() || []})
     }
 }
 

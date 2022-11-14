@@ -1,0 +1,131 @@
+{{ script('./ajax/index') }}
+{{ script('script/opt-gudang') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="form-create">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-gift" style="margin-right: 10px;"></i>Manual IN/OUT Items</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">IN/OUT</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-shopping-cart-full"></i></div>
+                                                    <select class="form-control" data-check="" name="type" required>
+                                                        <option value="in">Item Masuk</option>
+                                                        <option value="out">Item Keluar</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Project Name</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-flag"></i></div>
+                                                    <select class="form-control select2site" data-check="" name="site_id" required></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="">Gudang</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-home"></i></div>
+                                                    <select class="form-control" data-check="" name="gudang_id" required></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Date</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-calendar"></i></div>
+                                                    <input type="datetime-local" class="form-control init-datetime" name="date">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Narasi</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-notepad"></i></div>
+                                                    <input type="text" class="form-control" name="narasi" placeholder="Description here..."> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-inverse">
+                                                <div class="panel-heading panel-items-color bg-success"> 
+                                                    Description Items Request
+                                                    <div class="pull-right">
+                                                        <a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> 
+                                                    </div>
+                                                </div>
+                                                <div class="panel-wrapper collapse in" aria-expanded="true" style="padding: 0px 20px;">
+                                                    <div class="panel-body" style="padding: 0px 10px;">
+                                                        <div class="row">
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th width="30">No</th>
+                                                                            <!--<th width="150">Type</th>-->
+                                                                            <th width="*">Item Request</th>
+                                                                            <th width="10%">Qty</th>
+                                                                            <th width="20%">Equipment Reff</th>
+                                                                            <th width="7%" class="text-center">Act</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="list-items">
+                                                                        <code id="keterangan-row">Untuk menambah material item, silahkan klik tombol <strong>+items</strong> dibawah...</code>
+                                                                    </tbody>
+                                                                    <tfoot>
+                                                                        <tr>
+                                                                            <td colspan="2">
+                                                                                <div class="input-group" style="max-width: 30%;">
+                                                                                    <input class="form-control" type="number" name="add-items" min="1" max="20" value="1">
+                                                                                    <span class="input-group-btn"> 
+                                                                                        <button id="add-items" class="btn btn-success panel-items-color" type="button"><i class="ti-plus"></i> Items</button> 
+                                                                                    </span>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td colspan="3"></td>
+                                                                        </tr>
+                                                                    </tfoot>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="panel-items-color btn btn-success waves-effect waves-light" id="bt-save-pit" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -52,16 +52,19 @@
                                     </td>
                                     <td>
                                         {{item.barang.kode}} <br>
-                                        <small>{{item.barang.partnumber || '-'}}</small>
-                                    </td>
-                                    <td>
-                                        <strong>{{item.barang.descriptions}}</strong>
+                                        <small>{{item.barang.partnumber || '-'}}</small> &nbsp;
                                         @if(item.barang.manufactur)
-                                            <br> <small><code>{{item.barang.manufactur}}</code></small>
+                                            <small><code>{{item.barang.manufactur}}</code></small>
                                         @endif
                                     </td>
                                     <td>
-                                        <strong>{{item.materialRequest.kode}}</strong> <br>
+                                        <strong>{{item.barang.descriptions}}</strong>
+                                        @if(item.narasi)
+                                            <br/> <small>{{item.narasi}}</small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <strong>{{item.materialRequest.kode || '-'}}</strong> <br>
                                         <i class="ti-alarm-clock"></i>
                                         <small class="myDateTimeFormat" data-date="{{item.date}}"></small>
                                     </td>

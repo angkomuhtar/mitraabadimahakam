@@ -57,6 +57,59 @@ class StockMonitoringController {
         console.log(data);
         return view.render('logistik.stock-monitoring.history-out', {list: data})
     }
+
+    async create ( { auth, view } ) {
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+
+        return view.render('logistik.stock-monitoring.create')
+    }
+
+    async store ( {auth, request } ) {
+        let req = request.all()
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+        req.items = JSON.parse(req.items)
+        console.log(req);
+        const data = await StockMonitoringHelpers.POST(req, user)
+        return data
+    }
+
+    async createItems ( { request, view } ){
+        let req = request.all()
+
+        let barang = (await MasBarang.query().where('aktif', 'Y').fetch()).toJSON()
+        barang = _.groupBy(barang, 'equiptype')
+        barang = Object.keys(barang).map(key => {
+            return {
+                type: key,
+                items: barang[key]
+            }
+        })
+
+        let equipment = (await MasEquipment.query().where( w => {
+            w.where('aktif', 'Y')
+            if(req.site_id){
+                w.where('site_id', req.site_id)
+            }
+        }).fetch()).toJSON()
+        equipment = _.groupBy(equipment, 'tipe')
+        equipment = Object.keys(equipment).map(key => {
+            return {
+                type: key,
+                items: equipment[key]
+            }
+        })
+
+        return view.render('logistik.stock-monitoring.items-add', {
+            listBarang: barang,
+            listEquipment: equipment
+        }) 
+    }
 }
 
 module.exports = StockMonitoringController
