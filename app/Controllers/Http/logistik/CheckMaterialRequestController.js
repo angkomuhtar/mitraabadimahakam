@@ -134,6 +134,8 @@ class CheckMaterialRequestController {
             .where('mr_id', params.id)
             .fetch()
         ).toJSON()
+
+        console.log(data);
         return view.render('logistik.material-request-check.view', {
             data: data,
             purchasingReq: purchReq,

@@ -8,6 +8,18 @@ class MamPurchasingOrder extends Model {
         return 'mam_purchasing_order'
     }
 
+    pr () {
+        return this.belongsTo("App/Models/MamPurchasingRequest", "request_id", "id")
+    }
+
+    vendor () {
+        return this.belongsTo("App/Models/MasSupplier", "vendor_id", "id")
+    }
+
+    gudang () {
+        return this.belongsTo("App/Models/MasGudang", "gudang_id", "id")
+    }
+
     items () {
         return this.hasMany("App/Models/MamPurchasingOrderItem", "id", "order_id")
     }

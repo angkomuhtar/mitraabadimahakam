@@ -19,6 +19,7 @@ class dailyIssue {
                     .with('dailyevent', w => w.with('event'))
                     .with('unit')
                     .where(w => {
+                         w.whereNull('end_at')
                          if (req.event_id) {
                               w.where('event_id', req.event_id)
                          }

@@ -2,7 +2,7 @@
 
 const moment = require("moment");
 const DailyPlan = use("App/Models/DailyPlan");
-const DailyFleet = use("App/Models/DailyFleet");
+const SysVolume = use("App/Models/SysVolume");
 const MonthlyPlan = use("App/Models/MonthlyPlan");
 const DailyRitase = use("App/Models/DailyRitase");
 const MasMaterial = use("App/Models/MasMaterial");
@@ -12,6 +12,7 @@ const DailyRitaseDetail = use("App/Models/DailyRitaseDetail");
 const DailyRitaseDetailHook = (exports = module.exports = {});
 
 DailyRitaseDetailHook.beforeInsertData = async (dailyritasedetail) => {
+  // URUT
   const counter = await DailyRitaseDetail.query()
     .where({
       hauler_id: dailyritasedetail.hauler_id,
@@ -20,6 +21,7 @@ DailyRitaseDetailHook.beforeInsertData = async (dailyritasedetail) => {
     .getCount()
   dailyritasedetail.urut = counter + 1;
 
+  // TOTAL CICLE TIMES
   const lastData = await DailyRitaseDetail.query()
     .where({
       hauler_id: dailyritasedetail.hauler_id,
@@ -34,6 +36,8 @@ DailyRitaseDetailHook.beforeInsertData = async (dailyritasedetail) => {
   const dailyRitase = await DailyRitase.findOrFail(
     dailyritasedetail.dailyritase_id
   );
+
+  // TOTAL RITASE
   const totalRitase = await DailyRitaseDetail.query()
     .where("dailyritase_id", dailyritasedetail.dailyritase_id)
     .getCount();
@@ -45,6 +49,8 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
   const dailyRitase = await DailyRitase.findOrFail(
     dailyritasedetail.dailyritase_id
   );
+
+  // TOTAL RITASE
   const totalRitase = await DailyRitaseDetail.query()
     .where("dailyritase_id", dailyritasedetail.dailyritase_id)
     .getCount();
@@ -55,7 +61,7 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
   const hauler = await MasEquipment.findOrFail(dailyritasedetail.hauler_id);
 
   /* GET VOLUME MATERIAL */
-  const volume = await MasMaterial.query()
+  let volume = await MasMaterial.query()
     .where("id", dailyRitase.material)
     .last();
 
@@ -85,7 +91,13 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
     })
     .first()
 
+  /* CHECK SETTING VOLUME BY EQUIPMENT AND MATERIAL */
+  const sysvolume = await SysVolume.query().where( w => {
+    w.where('type', hauler.tipe)
+    w.where('material', dailyRitase.material)
+  }).last()
 
+  volume = sysvolume?.volume || 22
 
   /** check whether this is a OHT or SFI */
   const regTest = /SFI/i;
@@ -94,23 +106,27 @@ DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
   const checkIfSFIType = regTest.test(equipmentName);
   const checkMDTType = regTest2.test(equipmentName)
 
-  if (checkIfSFIType) {
-    dailyPlan.merge({
-      actual: parseFloat(dailyPlan.actual) + parseFloat(hauler.qty_capacity),
-    })
-  }
+  // if (checkIfSFIType) {
+  //   dailyPlan.merge({
+  //     actual: parseFloat(dailyPlan.actual) + parseFloat(hauler.qty_capacity),
+  //   })
+  // }
  
-  // because mdt can only handle 9tonnes
-  if(checkMDTType) {
-    dailyPlan.merge({
-      actual: parseFloat(dailyPlan.actual) + 9,
-    })
-  }
+  // // because mdt can only handle 9tonnes
+  // if(checkMDTType) {
+  //   dailyPlan.merge({
+  //     actual: parseFloat(dailyPlan.actual) + 9,
+  //   })
+  // }
 
-    dailyPlan.merge({
-      actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol)
-    })
-  
+  //   dailyPlan.merge({
+  //     actual: parseFloat(dailyPlan.actual) + parseFloat(volume.vol)
+  //   })
+
+  /* GANTI SCRIPT YG DI COMMENT DGN SCRIPT BARU DIBAWAH INI */
+  dailyPlan.merge({
+    actual: parseFloat(dailyPlan.actual) + parseFloat(volume)
+  })
   
   await dailyPlan.save();
 };
@@ -128,16 +144,25 @@ DailyRitaseDetailHook.afterDeleteData = async (dailyritasedetail) => {
   /* GET CAPACITY HAULER */
   const hauler = await MasEquipment.findOrFail(dailyritasedetail.hauler_id);
 
+  /* CHECK SETTING VOLUME BY EQUIPMENT AND MATERIAL */
+  const sysvolume = await SysVolume.query().where( w => {
+    w.where('type', hauler.tipe)
+    w.where('material', dailyRitase.material)
+  }).last()
+
   /* GET VOLUME MATERIAL */
-  const volume = await MasMaterial.query()
-    .where("id", dailyRitase.material)
-    .last()
+  // let volume = await MasMaterial.query()
+  //   .where("id", dailyRitase.material)
+  //   .last()
+
+  /* GANTI SCRIPT YG DI COMMENT DGN SCRIPT BARU DIBAWAH INI */
+  let volume = sysvolume?.volume || 22
 
   /* GET PLAN DATE */
   const date = moment(dailyritasedetail.check_in).format("YYYY-MM-DD");
   const dailyPlan = await DailyPlan.query().where("current_date", date).first();
   dailyPlan.merge({
-    actual: parseFloat(dailyPlan.actual) - parseFloat(volume.vol),
+    actual: parseFloat(dailyPlan.actual) - parseFloat(volume),
   });
   await dailyPlan.save();
 };

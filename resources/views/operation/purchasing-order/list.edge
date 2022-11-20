@@ -9,7 +9,7 @@
                     <div class="col-md-8 col-sm-8 col-xs-12">
                         
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
-                            <i class="fa fa-plus m-r-5"></i> <span>Purchasing Request</span>
+                            <i class="fa fa-plus m-r-5"></i> <span>Purchasing Order</span>
                         </button>
                     </div>
                     <div class="col-md-4 col-sm-4 col-xs-12 text-right">
@@ -33,28 +33,34 @@
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="100">ACT</th>
                                 <th class="sl" width="180">Kode</th>
-                                <th class="sl" width="140">CreatedAt</th>
-                                <th class="sl" width="*">Section</th>
-                                <th class="sl" width="*">Narasi</th>
-                                <th class="sl" width="150">AcceptBy</th>
+                                <th class="sl" width="190">CreatedAt</th>
+                                <th class="sl" width="200">Vendor</th>
+                                <th class="sl" width="*">Remark</th>
                             </tr>
                         </thead>
                         <tbody>
                             @each(item in list.data)
                                 <tr>
-                                    <td>{{$loop.index + 1}}</td>
-                                    <td>
-                                        @if(item.status === 'accept')
-                                            <button class="btn btn-outline btn-default btn-xs" style="width: 70px;">
-                                                <i class="fa fa-print"></i> print
+                                    <td class="v-middle">{{$loop.index + 1}}</td>
+                                    <td class="v-middle">
+                                        @if(item.status === 'editable')
+                                            <button class="m-b-5 btn btn-outline btn-warning btn-xs btn-edit-data" data-id="{{item.id}}" style="width:70px;">
+                                                <i class="ti-write"></i> edit
                                             </button>
-                                        @elseif(item.status === 'pending')
-                                            <button class="btn btn-outline btn-info btn-xs btn-view-data" data-id="{{item.id}}" style="width: 70px;">
-                                                <i class="fa fa-search"></i> view
+                                            <button class="btn btn-outline btn-inverse btn-xs btn-print-data" data-id="{{item.id}}" style="width:70px;">
+                                                <i class="ti-printer"></i> print
+                                            </button>
+                                        @elseif(item.status === 'waiting')
+                                            <button class="m-b-5 btn btn-outline btn-success btn-receive-data btn-xs" data-id="{{item.id}}" style="width:70px;height:50px;">
+                                                <i class="ti-import"></i>
+                                                Terima
                                             </button>
                                         @else
-                                            <button class="btn btn-outline btn-default btn-xs" data-id="{{item.id}}" style="width: 70px;" disabled>
-                                                Received
+                                            <button class="m-b-5 btn btn-outline btn-default btn-deliver-data btn-xs" data-id="{{item.id}}" {{item.spj ? 'disabled':''}} style="width:70px;">
+                                                <i class="ti-truck"></i> SPJ
+                                            </button>
+                                            <button class="btn btn-outline btn-inverse btn-xs" data-id="{{item.id}}" style="width:70px;">
+                                                <i class="ti-eye"></i> view
                                             </button>
                                         @endif
 
@@ -64,48 +70,34 @@
                                             </button>
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="v-middle">
                                         <strong>{{item.kode}}</strong> <br>
-                                        @if(item.status === 'accept')
-                                            <small class="text-success">ACCEPT</small>
-                                        @endif
-                                        @if(item.status === 'pending')
-                                            <small class="text-warning">PENDING</small>
-                                        @endif
-                                        @if(item.status === 'done')
-                                            <small class="text-muted">GUDANG RECEIVED</small>
+                                        @if(item.request_id)
+                                            <span>{{item.pr.kode}}</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <i class="ti-calendar m-r-10"></i><strong class="myDateFormat" data-date="{{item.date}}"></strong> <br>
-                                        <i class="ti-alarm-clock m-r-10"></i><small class="myTimeFormat" data-date="{{item.date}}"></small>
-                                    </td>
-                                    <td>
-                                        <strong>{{item.dept.nama}}</strong> <br>
-                                        @if(item.priority === 'URGENT')
-                                            <small class="text-danger">
-                                                {{item.priority}}
-                                            </small>
+                                    <td class="v-middle">
+                                        <p class="m-b-0">
+                                            <i class="ti-calendar m-r-5"></i><strong class="myDateFormat" data-date="{{item.date}}"></strong>
+                                            <i class="ti-alarm-clock m-r-5"></i><strong class="myTimeFormat" data-date="{{item.date}}"></strong>
+                                        </p>
+                                        @if(item.status === 'editable')
+                                            <small class="text-muted">STATUS - EDITBALE</small>
                                         @endif
-                                        @if(item.priority === 'NORMAL')
-                                            <small class="text-warning">
-                                                {{item.priority}}
-                                            </small>
+                                        @if(item.status === 'waiting')
+                                            <small class="text-warning">STATUS - WAITING</small>
                                         @endif
-                                        @if(item.priority === 'LOW')
-                                            <small class="text-info">
-                                                {{item.priority}}
-                                            </small>
+                                        @if(item.status === 'received')
+                                            <small class="text-muted">STATUS - RECEIVED</small>
                                         @endif
                                     </td>
-                                    <td>
-                                        <small>{{item.description || 'Tidak ada keterangan tambahan'}}</small>
+                                    <td class="v-middle">
+                                        <small>{{item.vendor.kode}}</small> <br>
+                                        <span>{{item.vendor.name}}</span>
                                     </td>
-                                    <td>
-                                        @if(item.mengetahui)
-                                            <i class="mdi mdi-account-circle m-r-10"></i>{{item.mengetahui.nm_lengkap}} <br>
-                                            <i class="ti-alarm-clock m-r-10"></i><small class="myDateTimeFormat" data-date="{{item.acceptAt}}"></small>
-                                        @endif
+                                    <td class="v-middle">
+                                        <small>{{item.narasi || 'Tidak ada keterangan tambahan'}}</small> <br>
+                                        <small>{{item.gudang.nama}}</small>
                                     </td>
                                 </tr>
                               

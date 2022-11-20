@@ -249,8 +249,11 @@
                                                         data-equipment="{{item.equipment_reff}}">
                                                         <td>{{$loop.index + 1}}</td>
                                                         <td>{{item.barang.descriptions}}</td>
-                                                        <td>{{item.qty - item.qty_accept}} {{item.barang.uom}}</td>
-                                                        <!--<td id="TAB1-{{item.barang.id}}" class="text-right bg-extralight">0</td>-->
+                                                        @if(item.qty != item.qty_accept)
+                                                            <td>{{item.qty - item.qty_accept}} {{item.barang.uom}}</td>
+                                                        @else
+                                                            <td>{{item.qty}} {{item.barang.uom}}</td>
+                                                        @endif
                                                         <td id="TAB1-{{item.barang.kode}}" class="text-right bg-extralight">0</td>
                                                         <td class="text-right bg-extralight"><i class="ti-shopping-cart-full"></i></td>
                                                         <td>{{item.barang.kode}}</td>
@@ -339,7 +342,17 @@
                                                             <td>{{item.kode}}</td>
                                                             <td>{{item.partnumber}}</td>
                                                             <td>{{item.barang.equiptype}}</td>
-                                                            <td class="text-warning">waiting</td>
+                                                            <td>
+                                                                @if(item.status === 'waiting')
+                                                                    <span class="text-info">{{item.status}}</span>
+                                                                @endif
+                                                                @if(item.status === 'received')
+                                                                    <span class="text-warning">{{item.status}}</span>
+                                                                @endif
+                                                                @if(item.status === 'delivered')
+                                                                    <span class="text-success">{{item.status}}</span>
+                                                                @endif
+                                                            </td>
                                                         </tr>
                                                     @endeach
                                                 </tbody>

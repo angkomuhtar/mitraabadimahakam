@@ -50,6 +50,12 @@ $(function(){
         deleteRowItems(elm)
     })
 
+    // $('body').on('hidden.bs.modal', 'div.modal', function(){
+    //     console.log('....');
+    //     console.log('....', $(this).find('input[id="kd-replace"]').val(''));
+    //     console.log('....', $(this).find('input[id="kd-replace"]').val());
+    // })
+
     $('body').on('click', 'button.select-item', function(){
         var uom = $(this).data('uom')
         var id = $(this).data('barangid')
@@ -83,6 +89,39 @@ $(function(){
     })
 
     $('body').on('submit', 'form#fm-purchasing-request', function(e){
+        e.preventDefault()
+        const data = formJSON()
+        const dataForm = new FormData()
+        console.log(formJSON());
+        dataForm.append('data', JSON.stringify(data))
+        $.ajax({
+            async: true,
+            url: '/operation/purchasing-request',
+            method: 'POST',
+            data: dataForm,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                const { message } = result
+                if(result.success){
+                    swal("Okey,,,!", message, "success")
+                    initDefault()
+                }else{
+                    swal("Opps,,,!", message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
+    $('body').on('submit', 'form#form-update', function(e){
         e.preventDefault()
         const data = formJSON()
         const dataForm = new FormData()

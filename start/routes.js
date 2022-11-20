@@ -422,7 +422,8 @@ Route.group(() => {
     Route.get('/purchasing-order/create', 'PurchasingOrderController.create').as('log.purchasing-order.create')
     Route.get('/purchasing-order/:id/show', 'PurchasingOrderController.show').as('log.purchasing-order.show')
     Route.get('/purchasing-order/:id/update', 'PurchasingOrderController.update').as('log.purchasing-order.update')
-    Route.get('/purchasing-order/:id/destroy', 'PurchasingOrderController.destroy').as('log.purchasing-order.destroy')
+    Route.post('/purchasing-order/:id/destroy', 'PurchasingOrderController.destroy').as('log.purchasing-order.destroy')
+    // Route.post('/purchasing-order/item/:id/destroy-items', 'PurchasingOrderController.destroyItems').as('log.purchasing-order.destroyItems')
 
     /** STOCK MONITORING **/
     Route.get('/monitoring-stok', 'StockMonitoringController.index').as('log.monitoring-stok.index')
@@ -713,6 +714,18 @@ Route.group(() => {
   Route.get('/purchasing-order/items-create', 'PurchasingOrderController.itemCreate').as('opr.purchasing-order.itemCreate')
 
   Route.get('/purchasing-order/:id/view', 'PurchasingOrderController.view').as('opr.purchasing-order.view')
+
+  Route.get('/purchasing-order/:id/receive', 'PurchasingOrderController.receive').as('opr.purchasing-order.receive')
+
+  Route.get('/purchasing-order/:id/delivering', 'PurchasingOrderController.delivering').as('opr.purchasing-order.delivering')
+
+  Route.post('/purchasing-order/:id/received', 'PurchasingOrderController.received').as('opr.purchasing-order.received')
+  
+  Route.post('/purchasing-order/:id/delivered', 'PurchasingOrderController.delivered').as('opr.purchasing-order.delivered')
+
+  Route.post('/purchasing-order/:id/update', 'PurchasingOrderController.update').as('opr.purchasing-order.update')
+
+  Route.post('/purchasing-order/item/:id/destroy-items', 'PurchasingOrderController.destroyItems').as('log.purchasing-order.destroyItems')
 
   // SOP Operational
 

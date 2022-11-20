@@ -30,6 +30,7 @@
                                 <th class="sl text-center" width="20">ACT</th>
                                 <th class="sl" width="150">Kode</th>
                                 <th class="sl">Descriptions</th>
+                                <th class="sl">Remark</th>
                                 <th class="sl" width="200">Tipe</th>
                                 <th class="sl">Model</th>
                                 <th class="sl text-right">MinStok</th>
@@ -54,6 +55,9 @@
                                     <td style="vertical-align: middle;">
                                         <small>{{item.partnumber}}</small> <br>
                                         <span>{{item.descriptions}}</span>
+                                    </td>
+                                    <td style="vertical-align: middle;">
+                                        <small>{{item.remark || ''}}</small>
                                     </td>
                                     <td style="vertical-align: middle;">
                                         <small class="text-capitalize"><strong>{{item.parttype || ''}}</strong></small> <br>

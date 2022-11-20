@@ -224,86 +224,95 @@ class mamMaterialRequestCheck {
     async OUT_ITEMS (req, user) {
         const trx = await db.beginTransaction()
 
+        console.log(req);
+
         for (const val of req.items) {
-            const barangOut = new BarangOut()
-            barangOut.fill({
-                request_id: req.request_id,
-                gudang_id: req.gudang_id,
-                barang_id: val.barang_id,
-                date: new Date(),
-                qty_out: val.qty,
-                created_by: user.id
-            })
-            console.log(barangOut.toJSON());
-            try {
-                await barangOut.save(trx)
-            } catch (error) {
-                console.log('AAA', error);
-                await trx.rollback()
-                return {
-                    success: false,
-                    message: 'Failed save items out...'
-                }
-            }
-        }
-
-        for (const obj of req.items) {
-
-            const materialRequestItem = await LogMaterialRequestItem.query().where( w => {
-                w.where('material_req_id', req.request_id)
-                w.where('barang_id', obj.barang_id)
-                w.where('aktif', 'Y')
-            }).last()
-
-            if(materialRequestItem){
-                var valQty = parseFloat(materialRequestItem.qty_accept) + parseFloat(obj.qty)
-                materialRequestItem.merge({
-                    qty_accept: materialRequestItem.qty_accept + obj.qty,
-                    status: valQty >= materialRequestItem.qty ? 'out':'pending'
+            if(val.barang_id != 'undefined'){
+                const barangOut = new BarangOut()
+                barangOut.fill({
+                    request_id: req.request_id,
+                    gudang_id: req.gudang_id,
+                    barang_id: val.barang_id,
+                    date: new Date(),
+                    qty_out: val.qty,
+                    created_by: user.id
                 })
+                console.log(barangOut.toJSON());
                 try {
-                    await materialRequestItem.save(trx)
+                    await barangOut.save(trx)
                 } catch (error) {
-                    console.log('BBB', error);
+                    console.log('AAA', error);
                     await trx.rollback()
                     return {
                         success: false,
-                        message: 'Failed update items material status...'
+                        message: 'Failed save items out...'
                     }
                 }
             }
         }
 
         for (const obj of req.items) {
-            let mamBarangStok = await MamBarangStok.query().where(w => {
-                w.where('barang_id', obj.barang_id)
-                w.where('gudang_id', req.gudang_id)
-            }).last()
-
-            if(mamBarangStok){
-                mamBarangStok.merge({
-                    stok: mamBarangStok.stok - obj.qty,
-                    remark: user.nm_lengkap + ' mengeluarkan barang dari stok gudang'
-                })
-            }else{
-                mamBarangStok = new MamBarangStok()
-                mamBarangStok.fill({
-                    barang_id: obj.barang_id,
-                    gudang_id: req.gudang_id,
-                    stok: (obj.qty) * -1,
-                    remark: user.nm_lengkap + ' mengeluarkan barang dari stok gudang'
-                })
-            }
-
-            try {
-                await mamBarangStok.save(trx)
-            } catch (error) {
-                console.log('CCC', error);
-                await trx.rollback()
-                return {
-                    success: false,
-                    message: 'Failed update items material status...'
+            if(obj.barang_id != 'undefined'){
+                const materialRequestItem = await LogMaterialRequestItem.query().where( w => {
+                    w.where('material_req_id', req.request_id)
+                    w.where('barang_id', obj.barang_id)
+                    w.where('aktif', 'Y')
+                }).last()
+    
+                if(materialRequestItem){
+                    var valQty = parseFloat(materialRequestItem.qty_accept) + parseFloat(obj.qty)
+                    materialRequestItem.merge({
+                        qty_accept: materialRequestItem.qty_accept + obj.qty,
+                        status: valQty >= materialRequestItem.qty ? 'out':'pending'
+                    })
+                    try {
+                        await materialRequestItem.save(trx)
+                    } catch (error) {
+                        console.log('BBB', error);
+                        await trx.rollback()
+                        return {
+                            success: false,
+                            message: 'Failed update items material status...'
+                        }
+                    }
                 }
+
+            }
+        }
+
+        for (const obj of req.items) {
+            if(obj.barang_id != 'undefined'){
+                let mamBarangStok = await MamBarangStok.query().where(w => {
+                    w.where('barang_id', obj.barang_id)
+                    w.where('gudang_id', req.gudang_id)
+                }).last()
+    
+                if(mamBarangStok){
+                    mamBarangStok.merge({
+                        stok: mamBarangStok.stok - obj.qty,
+                        remark: user.nm_lengkap + ' mengeluarkan barang dari stok gudang'
+                    })
+                }else{
+                    mamBarangStok = new MamBarangStok()
+                    mamBarangStok.fill({
+                        barang_id: obj.barang_id,
+                        gudang_id: req.gudang_id,
+                        stok: (obj.qty) * -1,
+                        remark: user.nm_lengkap + ' mengeluarkan barang dari stok gudang'
+                    })
+                }
+    
+                try {
+                    await mamBarangStok.save(trx)
+                } catch (error) {
+                    console.log('CCC', error);
+                    await trx.rollback()
+                    return {
+                        success: false,
+                        message: 'Failed update items material status...'
+                    }
+                }
+
             }
         }
 
@@ -351,6 +360,7 @@ class mamMaterialRequestCheck {
             mamPurchasingRequest.fill({
                 mr_id: params.id,
                 kode: kode,
+                gudang_id: req.gudang_id,
                 date: new Date(),
                 site_id: mr.site_id,
                 group_view: groupType.usertype,

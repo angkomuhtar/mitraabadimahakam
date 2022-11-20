@@ -6,7 +6,7 @@
         <div class="white-box p-b-0">
             <div class="row">
                 <div class="col-md-12">
-                    <form action="" id="form-update" data-id="{{data.id}}">
+                    <form action="" id="form-receive" data-id="{{data.id}}">
                         <div class="panel panel-default">
                             <div class="panel-wrapper collapse in">
                                 <div class="panel-body">
@@ -46,7 +46,7 @@
                                                 <label for="">Kode Purchasing Order</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="ti-receipt"></i></div>
-                                                    <input type="text" class="form-control req-items" name="kode" value="{{data.kode}}">
+                                                    <input type="text" class="form-control req-items" name="kode" value="{{data.kode}}" disabled>
                                                 </div>
                                             </div>
                                         </div>
@@ -78,7 +78,7 @@
                                                 <label for="">Narasi</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="ti-notepad"></i></div>
-                                                    <input type="text" class="form-control req-items" name="narasi" value="{{data.narasi}}"> 
+                                                    <input type="text" class="form-control req-items" name="narasi" value="{{data.narasi}}" disabled> 
                                                 </div>
                                             </div>
                                         </div>
@@ -86,8 +86,8 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="panel panel-inverse">
-                                                <div class="panel-heading bg-warning"> 
-                                                    Description Items Request
+                                                <div class="panel-heading bg-light"> 
+                                                    Items Receiving
                                                     <div class="pull-right">
                                                         <a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> 
                                                     </div>
@@ -101,10 +101,10 @@
                                                                         <tr>
                                                                             <th width="30">No</th>
                                                                             <th width="*">Item Request</th>
+                                                                            <th width="10%">Qty Order</th>
+                                                                            <th width="10%">Qty Receive</th>
                                                                             <th width="15%">HE.Reff</th>
-                                                                            <th width="20%">Estimasi</th>
-                                                                            <th width="10%">Qty</th>
-                                                                            <th width="7%" class="text-center">Act</th>
+                                                                            <th width="15%">Est.Received</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody id="list-items">
@@ -134,40 +134,24 @@
                                                                                         </select>
                                                                                     @endif
                                                                                 </td>
+                                                                                <td>
+                                                                                    <input type="number" class="form-control req-item-details" name="qty" value="{{item.qty}}" disabled>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <input type="number" class="form-control req-item-details" name="receive" value="{{item.receive}}">
+                                                                                </td>
                                                                                 <td class="p-t-10">
                                                                                     @if(item.equipment_id)
-                                                                                        <strong>{{item.equipment.kode}}</strong> <br>
-                                                                                        <small>{{item.equipment.unit_model}}</small>
+                                                                                    <strong>{{item.equipment.kode}}</strong> <br>
+                                                                                    <small>{{item.equipment.unit_model}}</small>
                                                                                     @endif
                                                                                 </td>
                                                                                 <td>
-                                                                                    <input type="date" class="form-control req-item-details setDate" data-date="{{item.est_received}}" name="est_received">
-                                                                                </td>
-                                                                                <td>
-                                                                                    <input type="number" class="form-control req-item-details" name="qty" value="{{item.qty}}">
-                                                                                </td>
-                                                                                <td class="text-center">
-                                                                                    <button class="btn btn-danger waves-effect waves-light btn-delete-items" data-id="{{item.id}}" type="button">
-                                                                                        <i class="fa fa-trash"></i>
-                                                                                    </button>
+                                                                                    {{item.est_received}}
                                                                                 </td>
                                                                             </tr>
                                                                         @endeach
                                                                     </tbody>
-                                                                    <!--
-                                                                    <tfoot>
-                                                                        <tr>
-                                                                            <td colspan="4">
-                                                                                <div class="input-group" style="max-width: 30%;">
-                                                                                    <input class="form-control" type="number" name="add-items" min="1" max="20" value="1">
-                                                                                    <span class="input-group-btn"> 
-                                                                                        <button id="add-items" class="btn btn-warning" type="button"><i class="ti-plus"></i> Items</button> 
-                                                                                    </span>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td colspan="3"></td>
-                                                                        </tr>
-                                                                    </tfoot> -->
                                                                 </table>
                                                             </div>
                                                         </div>
@@ -181,8 +165,8 @@
                                     <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
                                         <i class="fa fa-close"></i> <span>Cancel</span>
                                     </button>
-                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-pit" type="submit"> 
-                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    <button class="btn btn-success waves-effect waves-light" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Terima</span>
                                     </button>
                                 </div>
                             </div>

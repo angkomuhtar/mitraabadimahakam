@@ -68,6 +68,7 @@ class mamMaterialRequest {
 
         try {
             materialRequest.fill({
+                gudang_id: req.gudang_id,
                 site_id: req.site_id || null,
                 pit_id: req.pit_id || null,
                 department_id: req.department_id,
@@ -95,7 +96,7 @@ class mamMaterialRequest {
                     material_req_id: materialRequest.id,
                     barang_id: obj.barang_id,
                     qty: obj.qty,
-                    qty_accept: obj.qty,
+                    qty_accept: 0,
                     narasi: '',
                     equipment_reff: obj.equipment_reff || null
                 })

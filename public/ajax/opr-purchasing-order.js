@@ -11,31 +11,6 @@ $(function(){
         initCreate()
     })
 
-    $('body').on('click', 'button#create-form-details', function(){
-        initCreateDetails()
-    })
-
-    $('body').on('click', 'button#bt-cancel-update', function(e){
-        e.preventDefault()
-        initDefault()
-    })
-
-    $('body').on('click', 'button.bt-edit', function(e){
-        var id = $(this).data('id')
-        initShow(id)
-    })
-
-    $('body').on('click', 'button.bt-edit-data', function(e){
-        var id = $(this).data('id')
-        initShowDetails(id)
-    })
-
-    $('body').on('change', 'select#fitur_id', function(){
-        var values = $(this).val()
-        var desc = $(this).find('option[value="'+values+'"]').data('desc')
-        $('textarea[name="desc"]').val(desc)
-    })
-
     $('body').on('click', 'button.btn-add-rows', function(e){
         e.preventDefault()
         var len = $('body').find('input[name="add-rows"]').val()
@@ -44,30 +19,9 @@ $(function(){
         }
     })
 
-    $('body').on('click', 'button.btn-delete-row-items', function(e){
-        e.preventDefault()
-        var elm = $(this).parents('tr')
-        deleteRowItems(elm)
-    })
-
-    $('body').on('click', 'button.select-item', function(){
-        var uom = $(this).data('uom')
-        var id = $(this).data('barangid')
-        var parttype = $(this).data('parttype')
-        var partnumber = $(this).data('partnumber')
-        var description = $(this).data('description')
-        $(this).parents('tr').find('input[name="uom"]').val(uom)
-        $(this).parents('tr').find('input[name="barang_id"]').val(id)
-        $(this).parents('tr').find('input[name="nm_barang"]').val(description)
-        $(this).parents('tr').find('input[name="partnumber"]').val(partnumber)
-        $(this).parents('tr').find('input[name="parttype"]').val(parttype).trigger('change')
-        $(this).parents('tr').find('div.modal').modal('hide')
-    })
-
-    $('body').on('click', 'button.btn-view-data', function(e){
+    $('body').on('click', 'button.btn-edit-data', function(e){
         e.preventDefault()
         var id = $(this).data('id')
-        console.log('DATA ID :::', id);
         $.ajax({
             async: true,
             url: '/operation/purchasing-order/'+id+'/view',
@@ -78,6 +32,181 @@ $(function(){
             },
             error: function(err){
                 console.log(err);
+            }
+        })
+    })
+
+    $('body').on('click', 'button.btn-deliver-data', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        $.ajax({
+            async: true,
+            url: '/operation/purchasing-order/'+id+'/delivering',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#form-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    $('body').on('click', 'button.btn-receive-data', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        $.ajax({
+            async: true,
+            url: '/operation/purchasing-order/'+id+'/receive',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#form-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    $('body').on('click', 'button.btn-delete-items', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        console.log(id);
+        swal({
+            title: "Are you sure?",
+            text: "Your will not be able to recover this imaginary file!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: false
+          }, function(){
+              $.ajax({
+                    async: true,
+                    url: 'purchasing-order/item/'+id+'/destroy-items',
+                    method: 'POST',
+                    dataType: 'json',
+                    processData: false,
+                    mimeType: "multipart/form-data",
+                    contentType: false,
+                    success: function(result){
+                        console.log(result)
+                        const { message } = result
+                        if(result.success){
+                            swal("Okey,,,!", message, "success")
+                            initDefault()
+                        }else{
+                            swal("Opps,,,!", message, "warning")
+                        }
+                    },
+                    error: function(err){
+                        console.log(err)
+                        const { message } = err.responseJSON
+                        swal("Opps,,,!", message, "warning")
+                    }
+                })
+          });
+    })
+
+    $('body').on('submit', 'form#form-update', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        const json = formJSON()
+        const data = new FormData()
+        data.append('data', JSON.stringify(json))
+        $.ajax({
+            async: true,
+            url: 'purchasing-order/'+id+'/update',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                const { message } = result
+                if(result.success){
+                    swal("Okey,,,!", message, "success")
+                    initDefault()
+                }else{
+                    swal("Opps,,,!", message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err)
+                const { message } = err.responseJSON
+                swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
+    $('body').on('submit', 'form#form-receive', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        const json = formJSON()
+        const data = new FormData()
+        data.append('data', JSON.stringify(json))
+        console.log(json);
+        $.ajax({
+            async: true,
+            url: 'purchasing-order/'+id+'/received',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                const { message } = result
+                if(result.success){
+                    swal("Okey,,,!", message, "success")
+                    initDefault()
+                }else{
+                    swal("Opps,,,!", message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err)
+                // const { message } = err.responseJSON
+                // swal("Opps,,,!", message, "warning")
+            }
+        })
+    })
+
+    $('body').on('submit', 'form#form-deliver', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        const json = formJSON()
+        const data = new FormData()
+        data.append('data', JSON.stringify(json))
+        console.log(json);
+        $.ajax({
+            async: true,
+            url: 'purchasing-order/'+id+'/delivered',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            success: function(result){
+                console.log(result)
+                const { message } = result
+                if(result.success){
+                    swal("Okey,,,!", message, "success")
+                    initDefault()
+                }else{
+                    swal("Opps,,,!", message, "warning")
+                }
+            },
+            error: function(err){
+                console.log(err)
+                // const { message } = err.responseJSON
+                // swal("Opps,,,!", message, "warning")
             }
         })
     })
@@ -115,47 +244,6 @@ $(function(){
         })
     })
 
-    $('body').on('click', 'button.btn-delete-data', function(e){
-        e.preventDefault()
-        var id = $(this).data('id')
-        swal({
-            title: "Are you sure?",
-            text: "Your will not be able to recover this imaginary file!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonClass: "btn-danger",
-            confirmButtonText: "Yes, delete it!",
-            closeOnConfirm: false
-          },
-          function(){
-            $.ajax({
-                async: true,
-                url: '/operation/purchasing-order/'+id+'/destroy',
-                method: 'POST',
-                dataType: 'json',
-                processData: false,
-                mimeType: "multipart/form-data",
-                contentType: false,
-                success: function(result){
-                    console.log(result)
-                    const { message } = result
-                    if(result.success){
-                        swal("Okey,,,!", message, "success")
-                        initDefault()
-                    }else{
-                        swal("Opps,,,!", message, "warning")
-                    }
-                },
-                error: function(err){
-                    console.log(err)
-                    const { message } = err.responseJSON
-                    swal("Opps,,,!", message, "warning")
-                }
-            })
-          });
-        
-    })
-
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
@@ -184,6 +272,7 @@ $(function(){
             success: function(result){
                 $('content-module').css('display', 'none')
                 $('div#list-content').html(result).show()
+                $('div#form-content').html('')
             },
             error: function(err){
                 console.log(err);

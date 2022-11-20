@@ -1,4 +1,5 @@
 {{ script('./ajax/index') }}
+{{ script('./script/opt-gudang') }}
 <div class="row">
     <div class="col-md-12">
         <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
@@ -21,7 +22,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label for="">PIT</label>
                                                 <div class="input-group">
@@ -30,7 +31,16 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-5">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Gudang</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-cubes"></i></div>
+                                                    <select class="form-control" data-check="" name="gudang_id" required></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">Department</label>
                                                 <div class="input-group">
@@ -44,7 +54,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="">Priority</label>
                                                 <div class="input-group">
@@ -53,7 +63,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-9">
+                                        
+                                        <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="">Narasi</label>
                                                 <div class="input-group">

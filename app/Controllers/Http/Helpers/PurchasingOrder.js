@@ -14,19 +14,13 @@ class mamPurchasingOrder {
         const limit = req.limit || 25
         const halaman = req.page === undefined ? 1 : parseInt(req.page)
         const purchasingOrder = await PurchasingOrder.query()
+        .with('pr')
+        .with('vendor')
+        .with('gudang')
         .with('items')
         .where( w  => {
             if (req.kode) {
                 w.where('kode', req.kode)
-            }
-            if (req.department) {
-                w.where('department', req.department)
-            }
-            if (req.type) {
-                w.where('type', req.type)
-            }
-            if (req.priority) {
-                w.where('priority', priority)
             }
         }).orderBy([{column: 'date', order: 'desc'}, {column: 'kode', order: 'asc'}]).paginate(halaman, limit)
         return purchasingOrder.toJSON()
@@ -34,12 +28,17 @@ class mamPurchasingOrder {
     
     async SHOW (params) {
         const purchasingOrder = await PurchasingOrder.query()
+        .with('pr')
+        .with('vendor')
+        .with('gudang')
         .with('items', i => {
             i.with('barang')
+            i.with('barang_alt')
             i.with('equipment')
-        })
-        .where('id', params.id).last()
-        return purchasingRequest.toJSON()
+            i.where('aktif', 'Y')
+        }).where('id', params.id).last()
+
+        return purchasingOrder.toJSON()
     }
 
     async POST (req, user) {
@@ -125,6 +124,186 @@ class mamPurchasingOrder {
         return {
             success: true,
             message: 'Success save Purchasing Requesting,,,'
+        }
+    }
+
+    async UPDATE (params, req, user) {
+        const trx = await db.beginTransaction()
+
+        for (const obj of req.items) {
+            const items = await PurchasingOrderItem.query().where('id', obj.id).last()
+            items.merge({
+                est_received: obj.est_received || null,
+                qty: obj.qty
+            })
+
+            try {
+                await items.save(trx)
+            } catch (error) {
+                console.log(error);
+                await trx.rollback()
+                return {
+                    success: false,
+                    message: 'Failed update purchasing order items...'
+                }
+            }
+        }
+
+        const purchasingOrder = await PurchasingOrder.query().where('id', params.id).last()
+        purchasingOrder.merge({
+            kode: req.kode,
+            narasi: req.narasi || null,
+            status: req.status
+        })
+        try {
+            await purchasingOrder.save(trx)
+        } catch (error) {
+            console.log(error);
+            await trx.rollback()
+            return {
+                success: false,
+                message: 'Failed update purchasing order...'
+            }
+        }
+
+        await trx.commit()
+        return {
+            success: true,
+            message: 'Success update Purchasing order,,,'
+        }
+    }
+
+    async RECEIVED (params, req, user) {
+        const trx = await db.beginTransaction()
+
+        const purchasingOrder = await PurchasingOrder.query().where('id', params.id).last()
+        purchasingOrder.merge({
+            status: req.status
+        })
+
+        try {
+            await purchasingOrder.save(trx)
+        } catch (error) {
+            console.log(error);
+            await trx.rollback()
+            return {
+                success: false,
+                message: 'Failed update purchasing order...'
+            }
+        }
+
+        // console.log(req);
+        for (const obj of req.items) {
+            const items = await PurchasingOrderItem.query().where('id', obj.id).last()
+            console.log((items.receive + parseFloat(obj.receive)));
+            console.log(items.qty);
+            if((items.receive + parseFloat(obj.receive)) > items.qty){
+                await trx.rollback()
+                return {
+                    success: false,
+                    message: 'Failed update purchasing order, \ninput received lebih besar dari qty order...'
+                }
+            }
+
+            items.merge({
+                receive: items.receive + parseFloat(obj.receive)
+            })
+
+            try {
+                await items.save(trx)
+            } catch (error) {
+                console.log(error);
+                await trx.rollback()
+                return {
+                    success: false,
+                    message: 'Failed update purchasing order items...'
+                }
+            }
+        }
+
+        await trx.commit()
+        return {
+            success: true,
+            message: 'Success update Purchasing order,,,'
+        }
+    }
+
+    async DELIVERED (params, req, user) {
+        const trx = await db.beginTransaction()
+
+        const purchasingOrder = await PurchasingOrder.query().where('id', params.id).last()
+        purchasingOrder.merge({
+            status: req.status,
+            spj: req.spj,
+            delman: req.delman
+        })
+
+        try {
+            await purchasingOrder.save(trx)
+        } catch (error) {
+            console.log(error);
+            await trx.rollback()
+            return {
+                success: false,
+                message: 'Failed update purchasing order...'
+            }
+        }
+
+        /** UPDATE ITEM PURCHASING REQUEST JIKA ADA REPLACEMNET ITEMS **/
+        const request_id = purchasingOrder.request_id
+
+        const purchasingOrderItem = (
+            await PurchasingOrderItem.query().where( w => {
+                w.where('order_id', params.id)
+                w.where('aktif', 'Y')
+            }).fetch()
+        ).toJSON()
+
+        for (const obj of purchasingOrderItem) {
+            const purchasingRequestItem = await PurchasingRequestItem.query().where( w => {
+                w.where('aktif', 'Y')
+                w.where('request_id', request_id)
+                w.where('barang_id', obj.barang_id)
+            }).last()
+
+            if(purchasingRequestItem){
+                purchasingRequestItem.merge({
+                    replace_with: obj.replace_with || null
+                })
+                try {
+                    await purchasingRequestItem.save(trx)
+                } catch (error) {
+                    await trx.rollback()
+                    return {
+                        success: false,
+                        message: 'Failed update replacement order items...'
+                    }
+                }
+            }
+        }
+
+        await trx.commit()
+        return {
+            success: true,
+            message: 'Success update Purchasing order,,,'
+        }
+    }
+
+    async DELETE_ITEMS (params) {
+        const purchasingOrderItem = await PurchasingOrderItem.query().where('id', params.id).last()
+        purchasingOrderItem.merge({aktif: 'N'})
+        try {
+            await purchasingOrderItem.save()
+        } catch (error) {
+            return {
+                success: false,
+                message: 'Failed delete purchasing order items...'
+            }
+        }
+
+        return {
+            success: true,
+            message: 'Success delete Purchasing order items,,,'
         }
     }
 }

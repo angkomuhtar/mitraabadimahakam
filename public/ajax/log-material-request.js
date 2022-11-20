@@ -90,7 +90,7 @@ $(function(){
                 const { message } = result
                 if(result.success){
                     swal("Okey,,,!", message, "success")
-                    // initDeafult()
+                    initDeafult()
                 }else{
                     swal("Opps,,,!", message, "warning")
                 }

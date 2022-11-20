@@ -1,9 +1,9 @@
 $(function(){
     console.log('log-stock-monitoring.js');
-    initDeafult()
+    initDefault()
 
     $('body').on('click', 'button#bt-back', function(){
-        initDeafult()
+        initDefault()
     })
 
     $('body').on('click', 'button#create-form', function(){
@@ -16,7 +16,7 @@ $(function(){
 
     $('body').on('click', 'button#bt-cancel-update', function(e){
         e.preventDefault()
-        initDeafult()
+        initDefault()
     })
 
     $('body').on('change', 'select[name="type"]', function(){
@@ -105,7 +105,7 @@ $(function(){
                 const { message } = result
                 if(result.success){
                     swal("Okey,,,!", message, "success")
-                    initDeafult()
+                    initDefault()
                 }else{
                     swal("Opps,,,!", message, "warning")
                 }
@@ -153,12 +153,15 @@ $(function(){
         })
     })
 
-    function initDeafult(){
+    function initDefault(){
         $('div.content-module').css('display', 'none')
         $.ajax({
             async: true,
             url: 'monitoring-stok/list',
             method: 'GET',
+            beforeSend: function(){
+                $('div#list-content').html('Please wait....').show()
+            },
             success: function(result){
                 $('div#list-content').children().remove()
                 $('div#list-content').html(result).show()

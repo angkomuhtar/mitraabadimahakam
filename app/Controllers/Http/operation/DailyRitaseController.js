@@ -525,7 +525,7 @@ class DailyRitaseController {
           shift_id: dailyFleet.shift_id,
           exca_id: exca_unit.id,
           site_id: exca_unit.site_id,
-          material: 12,
+          material: 10,
           distance: req.distance,
           tot_ritase: obj.items.reduce((a, b) => {
             return a + parseInt(b.material_lumpur)
@@ -618,7 +618,7 @@ class DailyRitaseController {
           shift_id: dailyFleet.shift_id,
           exca_id: exca_unit.id,
           site_id: exca_unit.site_id,
-          material: 12,
+          material: 15,
           distance: req.distance,
           tot_ritase: obj.items.reduce((a, b) => {
             return a + parseInt(b.material_blasting)
