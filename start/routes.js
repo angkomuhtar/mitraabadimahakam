@@ -386,6 +386,7 @@ Route.group(() => {
     Route.get('/material-request/:id/show', 'MaterialRequestController.show').as('log.material-request.show')
     Route.get('/material-request/:id/view', 'MaterialRequestController.view').as('log.material-request.view')
     Route.post('/material-request/:id/check', 'MaterialRequestController.check').as('log.material-request.check')
+    Route.get('/material-request/:id/print', 'MaterialRequestController.print').as('log.material-request.print')
     Route.post('/material-request/:id/update', 'MaterialRequestController.update').as('log.material-request.update')
     Route.post('/material-request/:id/destroy', 'MaterialRequestController.destroy').as('log.material-request.destroy')
     Route.get('/material-request/create/items', 'MaterialRequestController.createItems').as('log.material-request.createItems')
@@ -398,6 +399,7 @@ Route.group(() => {
     Route.get('/material-request-check/:id/show', 'CheckMaterialRequestController.show').as('log.check-material-request-check.show')
     Route.get('/material-request-check/:id/view', 'CheckMaterialRequestController.view').as('log.check-material-request-check.view')
     Route.post('/material-request-check/:id/check', 'CheckMaterialRequestController.check').as('log.check-material-request-check.check')
+    // Route.post('/material-request-check/:id/print', 'CheckMaterialRequestController.print').as('log.check-material-request-check.print')
     Route.post('/material-request-check/:id/update', 'CheckMaterialRequestController.update').as('log.check-material-request-check.update')
     Route.post('/material-request-check/:id/destroy', 'CheckMaterialRequestController.destroy').as('log.check-material-request-check.destroy')
     Route.post('/material-request-check/:id/barang-out', 'CheckMaterialRequestController.barangOut').as('log.check-material-request-check.barangOut')
@@ -719,11 +721,16 @@ Route.group(() => {
 
   Route.get('/purchasing-order/:id/delivering', 'PurchasingOrderController.delivering').as('opr.purchasing-order.delivering')
 
+  Route.get('/purchasing-order/:id/print', 'PurchasingOrderController.printOrder').as('opr.purchasing-order.printOrder')
+
+  Route.get('/purchasing-order/:id/view-print', 'PurchasingOrderController.viewPrint').as('opr.purchasing-order.viewPrint')
+
   Route.post('/purchasing-order/:id/received', 'PurchasingOrderController.received').as('opr.purchasing-order.received')
   
   Route.post('/purchasing-order/:id/delivered', 'PurchasingOrderController.delivered').as('opr.purchasing-order.delivered')
 
   Route.post('/purchasing-order/:id/update', 'PurchasingOrderController.update').as('opr.purchasing-order.update')
+
 
   Route.post('/purchasing-order/item/:id/destroy-items', 'PurchasingOrderController.destroyItems').as('log.purchasing-order.destroyItems')
 

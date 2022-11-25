@@ -70,6 +70,40 @@ $(function(){
         })
     })
 
+    $('body').on('click', 'button.btn-view-data', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        $.ajax({
+            async: true,
+            url: '/operation/purchasing-order/'+id+'/view-print',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#form-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
+    $('body').on('click', 'button.btn-print-data', function(e){
+        e.preventDefault()
+        var id = $(this).data('id')
+        $.ajax({
+            async: true,
+            url: '/operation/purchasing-order/'+id+'/print',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#form-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
     $('body').on('click', 'button.btn-delete-items', function(e){
         e.preventDefault()
         var id = $(this).data('id')

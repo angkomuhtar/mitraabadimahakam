@@ -49,12 +49,15 @@
                                     <td class="single-line" style="vertical-align: middle;">
                                         <strong>
                                             {{item.kode}}
-                                            <span><small>{{item.equiptype || ''}}</small></span>
-                                        </strong>
+                                        </strong> <br/>
+                                        <small>{{item.equiptype || ''}}</small>
                                     </td>
                                     <td style="vertical-align: middle;">
-                                        <small>{{item.partnumber}}</small> <br>
                                         <span>{{item.descriptions}}</span>
+                                        @if(item.partnumber)
+                                            <br>
+                                            <small>PartNumber : {{item.partnumber}}</small>
+                                        @endif
                                     </td>
                                     <td style="vertical-align: middle;">
                                         <small>{{item.remark || ''}}</small>

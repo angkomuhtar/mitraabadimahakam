@@ -1,0 +1,89 @@
+{{ script('ajax/index') }}
+{{ script('script/opt-gudang') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="white-box printableArea">
+                        <h3><b>PURCHASING ORDER</b> <span class="pull-right">#{{data.kode}}</span></h3>
+                        <hr>
+                        <div class="row">
+                            <img src="../mam-transparant.png" width="550" alt="user"style="position: absolute;">
+                            <div class="col-md-12">
+                                <div class="pull-left">
+                                    <h4>REFF : {{data.pr.kode || ''}}</h4>
+                                    <address>
+                                        <p class="text-muted">
+                                            <br> Request Date : <span class="myDateFormat" data-date="{{data.pr.date}}"></span>
+                                            <br> Order Date : <span class="myDateFormat" data-date="{{data.date}}"></span>
+                                            <br> <strong>author : {{data.author.nm_lengkap}}</strong>
+                                        </p>
+                                    </address>
+                                </div>
+                                <div class="pull-right text-right">
+                                    <address>
+                                        <h3>To.</h3>
+                                        <h4 class="font-bold">{{data.vendor.name}}</h4>
+                                        <span>{{data.vendor.kode}}</span>
+                                        <p class="text-muted m-l-30">
+                                            <br>{{data.vendor.tipe || ''}}
+                                            <br> <span class="text-lowercase">{{data.vendor.email || '-'}}</span>
+                                            <br> {{data.vendor.phone || '-'}}
+                                            <br> {{data.vendor.address || '-'}}
+                                        </p>
+                                    </address>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="table-responsive m-t-40" style="clear: both;">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr class="bg-light">
+                                                <th class="text-center">#</th>
+                                                <th>Item Order</th>
+                                                <th>Item Replace</th>
+                                                <th class="text-right">Qty</th>
+                                                <th class="text-right">UOM</th>
+                                                <th class="text-right">Equipment</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @each(item in data.items)
+                                                <tr>
+                                                    <td class="text-center">
+                                                        {{$loop.index + 1}}
+                                                    </td>
+                                                    <td>
+                                                        <strong>{{item.barang.descriptions}}</strong> <br>
+                                                        <small><code>[{{item.barang.partnumber || 'x'}}]</code> {{item.barang.kode}}</small>
+                                                    </td>
+                                                    <td>
+                                                        <strong>{{item.barang_alt.descriptions || ''}}</strong>
+                                                        @if(item.replace_with)
+                                                        <br>
+                                                        <small><code>[{{item.barang_alt.partnumber || 'x'}}]</code> {{item.barang_alt.kode}}</small>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-right">{{item.qty}}</td>
+                                                    <td class="text-right">{{item.barang.uom}}</td>
+                                                    <td class="text-right">{{item.equipment.kode || ''}}</td>
+                                                </tr>
+                                            @endeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="text-right">
+                                    <button id="print" class="btn btn-default btn-outline" type="button"> <span><i class="fa fa-print"></i> Print</span> </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

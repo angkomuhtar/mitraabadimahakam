@@ -114,13 +114,17 @@ class mamPurchasingRequest {
     }
 
     async RECEIVED_GUDANG (params, req, user) {
+        console.log(params);
+        console.log(req);
         const trx = await db.beginTransaction()
+
+        const PR = await PurchasingRequest.query().where('id', params.id).last()
 
         /** TAMBAH STOK GUDANG **/
         for (const obj of req.items) {
             const barangIn = new MamBarangIn()
             barangIn.fill({
-                request_id: params.id,
+                request_id: PR?.mr_id || null,
                 gudang_id: req.gudang_id,
                 barang_id: obj.barang_id,
                 qty_in: obj.qty_received,

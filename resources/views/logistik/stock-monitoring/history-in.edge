@@ -30,7 +30,7 @@
                         <thead style="border-bottom: 2px solid;">
                             <tr>
                                 <th class="sl text-center" width="20">No</th>
-                                <th class="sl">Lokasi Gudang</th>
+                                <th class="sl">Lokasi</th>
                                 <th class="sl" width="180">Kode</th>
                                 <th class="sl" width="*">Description</th>
                                 <th class="sl" width="*">ReceivedAt</th>
@@ -65,7 +65,11 @@
                                         
                                     </td>
                                     <td>
-                                        <strong>SJ : {{item.purchasingRequest.sj || ''}}</strong> <br>
+                                        @if(item.pr_id)
+                                        <strong>{{item.purchasingRequest.kode || ''}}</strong> <br>
+                                        @else
+                                        <strong>{{item.materialRequest.kode || ''}}</strong> <br>
+                                        @endif
                                         <i class="ti-alarm-clock"></i>
                                         <small class="myDateTimeFormat" data-date="{{item.date}}"></small>
                                     </td>

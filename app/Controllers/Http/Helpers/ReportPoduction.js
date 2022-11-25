@@ -496,7 +496,7 @@ class repPoduction {
                             site_id: el.daily_ritase.site_id,
                             pit_id: el.daily_ritase.pit_id,
                             material: el.daily_ritase.material,
-                            volume: volume || 0
+                            volume: el.volume
                         })
                     }
                 }else{

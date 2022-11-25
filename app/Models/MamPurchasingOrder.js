@@ -8,6 +8,10 @@ class MamPurchasingOrder extends Model {
         return 'mam_purchasing_order'
     }
 
+    author () {
+        return this.belongsTo("App/Models/VUser", "created_by", "id")
+    }
+
     pr () {
         return this.belongsTo("App/Models/MamPurchasingRequest", "request_id", "id")
     }

@@ -220,6 +220,26 @@ class PurchasingOrderController {
         return data
     }
 
+    async printOrder ( { auth, params, view } ) {
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+        const data = await PurchaseOrderHelpers.SHOW(params)
+        console.log(data);
+        return view.render('operation.purchasing-order.print-po', {data: data})
+    }
+
+    async viewPrint ( { auth, params, view } ) {
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+        const data = await PurchaseOrderHelpers.SHOW(params)
+        console.log(data);
+        return view.render('operation.purchasing-order.view-surat-jalan', {data: data})
+    }
+
     async destroyItems ( { auth, params } ) {
         const user = await userValidate(auth)
         if(!user){

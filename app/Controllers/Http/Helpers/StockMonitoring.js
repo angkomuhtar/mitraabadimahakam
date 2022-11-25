@@ -38,6 +38,7 @@ class stockMonitoring {
         const halaman = req.page === undefined ? 1 : parseInt(req.page)
         const data = (
             await MamBarangIn.query()
+            .with('materialRequest')
             .with('purchasingRequest')
             .with('gudang')
             .with('barang')

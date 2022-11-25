@@ -1,11 +1,18 @@
 'use strict'
 
+const Helpers = use('Helpers')
 const _ = require('underscore')
+const moment = use('moment')
 const MasBarang = use("App/Models/MasBarang")
 const MasEquipment = use("App/Models/MasEquipment")
 const MasDepartment = use("App/Models/MasDepartment")
 const utils = use('App/Controllers/Http/customClass/utils')
+const imgPath = Helpers.publicPath('logo-with-text.png')
+const Image64Helpers = use("App/Controllers/Http/Helpers/_EncodingImage")
+
 const MaterialRequestHelpers = use('App/Controllers/Http/Helpers/MaterialRequest')
+
+moment.locale('id')
 
 class MaterialRequestController {
     async index ( { view } ) {
@@ -72,6 +79,236 @@ class MaterialRequestController {
 
         const data = await MaterialRequestHelpers.CHECK(params, user)
         return data
+    }
+
+    async print ( { auth, params } ){
+        const user = await userValidate(auth)
+        if(!user){
+            return view.render('401')
+        }
+
+        const data = await MaterialRequestHelpers.SHOW(params, user)
+        console.log(data);
+        const logo64 = await Image64Helpers.GEN_BASE64(imgPath)
+
+        let body = [
+            [
+                {text: 'No', bold: true, alignment: 'center', fontSize: 10, fillColor: '#ddd'},
+                {text: 'Items Request', bold: true, alignment: 'left', fontSize: 10, fillColor: '#ddd'},
+                {text: 'PartNumber', bold: true, alignment: 'center', fontSize: 10, fillColor: '#ddd'},
+                {text: 'Qty', bold: true, alignment: 'center', fontSize: 10, fillColor: '#ddd'},
+                {text: 'UOM', bold: true, alignment: 'center', fontSize: 10, fillColor: '#ddd'},
+                {text: 'Remarks', bold: true, alignment: 'left', fontSize: 10, fillColor: '#ddd'},
+            ]
+        ]
+        
+        data.items.forEach((elm, i) => {
+            body.push([
+                {text: i + 1, fontSize: 8, alignment: 'center'},
+                {text: [
+                    {text: elm.barang.kode + '\n', fontSize: 8},
+                    {text: elm.barang.descriptions, fontSize: 9, bold: true}
+                ]},
+                {text: elm.barang.partnumber, fontSize: 9, alignment: 'right'},
+                {text: elm.qty, fontSize: 9, alignment: 'right'},
+                {text: elm.barang.uom, fontSize: 9, alignment: 'center'},
+                {text: `${elm.equipment?.kode || ''}`, fontSize: 9}
+            ])
+        });
+
+        var dd = {
+            content: [
+                {
+                    style: 'tableExample',
+                    table: {
+                        widths: [ 'auto', 200, '*'],
+                        body: [
+                            [
+                                {image: logo64, width: 90},
+                                {text: 'Material Request', alignment: 'center', fontSize: 20, margin: [0, 10], bold: true},
+                                {
+                                    style: 'tableExample',
+                                    table: {
+                                        widths: [ 80, '*'],
+                                        body: [
+                                            [
+                                                {text: 'MR No.', fontSize: 8},
+                                                {text: data.kode, fontSize: 8, bold: true, alignment: 'right'},
+                                            ],
+                                            [
+                                                {text: 'Date', fontSize: 8},
+                                                {text: moment(data.date).format('ddd, DD MMM YYYY'), fontSize: 8, alignment: 'right'},
+                                            ],
+                                            [
+                                                {text: 'Dept', fontSize: 8},
+                                                {text: data.department.nama, fontSize: 8, alignment: 'right'},
+                                            ],
+                                        ]
+                                    }
+                                }
+                            ],
+                        ]
+                    },
+                    layout: 'noBorders'
+                },
+                {text: '\n'},
+                {
+                    style: 'tableExample',
+                    table: {
+                        headerRows: 1,
+                        widths: ['*'],
+                        body: [
+                            [
+                                {
+                                    text: [
+                                        {text: "Descriptions\n", fontSize: 9, bold: true},
+                                        {text: data.narasi, fontSize: 8, italics: true}
+                                    ]
+                                }
+                            ]
+                        ]
+                    },
+                },
+                {text: '\n'},
+                {
+                    style: 'tableExample',
+                    table: {
+                        headerRows: 1,
+                        widths: [ 30, 'auto', 'auto', 30, 'auto', '*'],
+                        body: body
+                    },
+                    layout: 'lightHorizontalLines'
+                },
+                {text: '\n'},
+                
+                {text: '\n\n\n'},
+                {
+                    columns: [
+                        {
+                            alignment: 'justify',
+                            width: '35%',
+                            margin: [30, 2, 10, 2],
+                            style: 'tableExample',
+                            table: {
+                                headerRows: 1,
+                                widths: ['*'],
+                                body: [
+                                    [
+                                        {
+                                            text: 'Request By', 
+                                            alignment: 'center', 
+                                            fontSize: 9
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: '\n\n\n\n\n', 
+                                            alignment: 'center', 
+                                            fontSize: 9,
+                                            border: [true, false, true, false]
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: data.author.nm_lengkap, 
+                                            alignment: 'center', 
+                                            fontSize: 8,
+                                            border: [true, false, true, false]
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: moment(data.approved_at).format('ddd, DD MMM YYYY'), 
+                                            alignment: 'center', 
+                                            fontSize: 8
+                                        }
+                                    ]
+                                ]
+                            },
+                        },
+                        {
+                            alignment: 'justify',
+                            width: '30%',
+                            margin: [10, 2],
+                            style: 'tableExample',
+                            table: {
+                                headerRows: 1,
+                                widths: ['*'],
+                                body: [
+                                    [
+                                        {
+                                            text: 'Approved By', 
+                                            alignment: 'center', 
+                                            fontSize: 9
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: '\n\n\n\n\n', 
+                                            alignment: 'center', 
+                                            fontSize: 9,
+                                            border: [true, false, true, false]
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: data.approved.nm_lengkap, 
+                                            alignment: 'center', 
+                                            fontSize: 8,
+                                            border: [true, false, true, false]
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: moment(data.approved_at).format('ddd, DD MMM YYYY') + '\n', 
+                                            alignment: 'center', 
+                                            fontSize: 8
+                                        }
+                                    ]
+                                ]
+                            },
+                        },
+                        {
+                            alignment: 'justify',
+                            width: '30%',
+                            margin: [10, 2],
+                            style: 'tableExample',
+                            table: {
+                                headerRows: 1,
+                                widths: ['*'],
+                                body: [
+                                    [
+                                        {
+                                            text: 'Accept By', 
+                                            alignment: 'center', 
+                                            fontSize: 9
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: '\n\n\n\n\n', 
+                                            alignment: 'center', 
+                                            fontSize: 9,
+                                            border: [true, false, true, false]
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: '\n', 
+                                            alignment: 'center', 
+                                            fontSize: 8,
+                                            border: [true, false, true, false]
+                                        }
+                                    ],
+                                    [{text: '\n', alignment: 'center', fontSize: 8}]
+                                ]
+                            },
+                        },
+                    ]
+                }
+            ]
+        }
+        return dd
     }
 
     async show ( { auth, params, view } ) {

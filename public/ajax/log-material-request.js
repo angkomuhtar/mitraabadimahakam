@@ -71,6 +71,24 @@ $(function(){
         })
     })
 
+    $('body').on('click', 'button.bt-print-data', function(e){
+        var id = $(this).data('id')
+        console.log('...');
+        $.ajax({
+            async: true,
+            url: 'material-request/'+id+'/print',
+            method: 'GET',
+            dataType: 'json',
+            success: function(result){
+                console.log(result);
+                pdfMake.createPdf(result).print();
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
+
     $('body').on('submit', 'form#form-create', function(e){
         e.preventDefault()
         var data = new FormData(this)

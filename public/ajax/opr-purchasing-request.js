@@ -50,12 +50,6 @@ $(function(){
         deleteRowItems(elm)
     })
 
-    // $('body').on('hidden.bs.modal', 'div.modal', function(){
-    //     console.log('....');
-    //     console.log('....', $(this).find('input[id="kd-replace"]').val(''));
-    //     console.log('....', $(this).find('input[id="kd-replace"]').val());
-    // })
-
     $('body').on('click', 'button.select-item', function(){
         var uom = $(this).data('uom')
         var id = $(this).data('barangid')

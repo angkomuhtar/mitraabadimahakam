@@ -20,8 +20,12 @@ class MamBarangIn extends Model {
         return this.belongsTo("App/Models/MasGudang", "gudang_id", "id")
     }
 
+    materialRequest () {
+        return this.belongsTo("App/Models/LogMaterialRequest", "request_id", "id")
+    }
+
     purchasingRequest () {
-        return this.belongsTo("App/Models/MamPurchasingRequest", "request_id", "id")
+        return this.belongsTo("App/Models/MamPurchasingRequest", "pr_id", "id")
     }
 }
 

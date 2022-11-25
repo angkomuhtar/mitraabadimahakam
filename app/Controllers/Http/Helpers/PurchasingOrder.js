@@ -7,6 +7,7 @@ const PurchasingOrder = use("App/Models/MamPurchasingOrder")
 const PurchasingOrderItem = use("App/Models/MamPurchasingOrderItem")
 const PurchasingRequest = use("App/Models/MamPurchasingRequest")
 const PurchasingRequestItem = use("App/Models/MamPurchasingRequestItem")
+const MaterialRequestItem = use("App/Models/LogMaterialRequestItem")
 
 
 class mamPurchasingOrder {
@@ -31,6 +32,7 @@ class mamPurchasingOrder {
         .with('pr')
         .with('vendor')
         .with('gudang')
+        .with('author')
         .with('items', i => {
             i.with('barang')
             i.with('barang_alt')
@@ -50,8 +52,31 @@ class mamPurchasingOrder {
         req.site_id = purcRequest.site_id
         req.gudang_id = purcRequest.gudang_id
 
-        
+        /** GANTI MATERIAL REQUEST ITEMS DENGAN ITEMS REPLACE DARI HO **/
+        for (const val of req.items) {
+            if(val.replace_with){
+                const materialRequestItem = await MaterialRequestItem.query().where( w => {
+                    w.where('material_req_id', req.mr_id)
+                    w.where('barang_id', val.barang_id)
+                }).last()
 
+                materialRequestItem.merge({ barang_id: val. replace_with})
+
+                try {
+                    await materialRequestItem.save(trx)
+                } catch (error) {
+                    console.log(error);
+                    await trx.rollback()
+                    return {
+                        success: false,
+                        message: 'Failed replace items with new items...'
+                    }
+                }
+            }
+            
+        }
+
+        /** GROUPING VENDOR SESUAI ITEMNYA **/
         let groupVendor = _.groupBy(req.items, 'vendor_id')
         groupVendor = Object.keys(groupVendor).map(key => {
             return {
@@ -195,8 +220,8 @@ class mamPurchasingOrder {
         // console.log(req);
         for (const obj of req.items) {
             const items = await PurchasingOrderItem.query().where('id', obj.id).last()
-            console.log((items.receive + parseFloat(obj.receive)));
-            console.log(items.qty);
+            // console.log((items.receive + parseFloat(obj.receive)));
+            // console.log(items.qty);
             if((items.receive + parseFloat(obj.receive)) > items.qty){
                 await trx.rollback()
                 return {

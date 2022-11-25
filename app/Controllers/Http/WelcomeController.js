@@ -7,6 +7,7 @@ const moment = require('moment')
 
 class WelcomeController {
     async index ({view, auth, response}) {
+        
         let usr
         try {
             await auth.check()

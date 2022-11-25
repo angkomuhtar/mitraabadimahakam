@@ -2,6 +2,7 @@
 
 const { async } = require('crypto-random-string')
 const _ = require('underscore')
+const SysOption = use("App/Models/SysOption")
 const MasBarang = use("App/Models/MasBarang")
 const MasEquipment = use("App/Models/MasEquipment")
 const MasDepartment = use("App/Models/MasDepartment")
@@ -10,6 +11,7 @@ const MamPurchasingRequest = use("App/Models/MamPurchasingRequest")
 const LogMaterialRequestItem = use("App/Models/LogMaterialRequestItem")
 const MamPurchasingRequestItem = use("App/Models/MamPurchasingRequestItem")
 const MaterialRequestCheckHelpers = use('App/Controllers/Http/Helpers/MaterialRequestCheck')
+
 
 class CheckMaterialRequestController {
     async index ( { view } ) {

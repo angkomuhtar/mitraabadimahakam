@@ -1,0 +1,82 @@
+{{ script('ajax/index') }}
+{{ script('script/opt-gudang') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="white-box printableArea">
+                        <h3><b>SURAT JALAN</b> <span class="pull-right">#{{data.spj}}</span></h3>
+                        <hr>
+                        <div class="row">
+                            <div>
+                                <img src="../mam-transparant-lg.png" alt="user" class="col-md-3 col-xs-12" style="position: absolute;">
+                            </div>
+                            <div class="col-md-12">
+                                <div class="pull-left">
+                                    &nbsp;
+                                </div>
+                                <div class="pull-right text-right">
+                                    <address>
+                                        <h4>{{data.pr.kode || ''}}</h4>
+                                        <p class="text-muted m-l-30">
+                                            <br> Kurir : {{data.delman}}
+                                            <br> Tujuan : {{data.gudang.nama}}
+                                            <br> Keterangan : {{data.narasi || ''}}
+                                        </p>
+                                    </address>
+                                    <small>Tanggal Purchasing Request : <span class="myDateFormat" data-date="{{data.pr.date}}"></span></small>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="table-responsive m-t-40" style="clear: both;">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr class="bg-light">
+                                                <th class="text-center">#</th>
+                                                <th>Item Order</th>
+                                                <th>Item Replace</th>
+                                                <th class="text-right">Qty</th>
+                                                <th class="text-right">UOM</th>
+                                                <th class="text-right">Equipment</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @each(item in data.items)
+                                                <tr>
+                                                    <td class="text-center">
+                                                        {{$loop.index + 1}}
+                                                    </td>
+                                                    <td>
+                                                        <strong>{{item.barang.descriptions}}</strong> <br>
+                                                        <small><code>[{{item.barang.partnumber || 'x'}}]</code> {{item.barang.kode}}</small>
+                                                    </td>
+                                                    <td>
+                                                        <strong>{{item.barang_alt.descriptions || ''}}</strong>
+                                                        @if(item.replace_with)
+                                                        <br>
+                                                        <small><code>[{{item.barang_alt.partnumber || 'x'}}]</code> {{item.barang_alt.kode}}</small>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-right">{{item.qty}}</td>
+                                                    <td class="text-right">{{item.barang.uom}}</td>
+                                                    <td class="text-right">{{item.equipment.kode || ''}}</td>
+                                                </tr>
+                                            @endeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="text-right">
+                                    <button id="print" class="btn btn-default btn-outline" type="button"> <span><i class="fa fa-print"></i> Print</span> </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

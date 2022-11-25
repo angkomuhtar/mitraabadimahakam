@@ -44,7 +44,11 @@
                                 <tr>
                                     <td style="">{{$loop.index + 1}}</td>
                                     <td style="">
+                                        @if(item.status === 'done')
+                                        <button class="btn btn-outline btn-default btn-xs" style="width: 58px;height:50px">finish</button>
+                                        @else
                                         <button class="btn btn-outline btn-warning btn-xs bt-view-data" data-id="{{item.id}}" style="width: 58px;height:50px">check</button>
+                                        @endif
                                     </td>
                                     <td class="single-line" style="">
                                         <strong>
@@ -70,13 +74,7 @@
                                         </small>
                                     </td>
                                     <td style="">
-                                        @if(item.priority === 'NORMAL')
-                                            <span class="text-warning">Normal</span>
-                                        @elseif(item.priority === 'URGENT')
-                                            <span class="text-danger">Urgent</span>
-                                        @else
-                                            <span class="text-info">Stock</span>
-                                        @endif
+                                        <small class="text-muted">{{item.priority}}</small>
                                     </td>
                                     <td class="" style="">
                                         @if(item.status === 'waiting')
