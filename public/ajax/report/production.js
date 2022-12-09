@@ -498,23 +498,22 @@ $(function(){
             plotOptions: {
                 series: {
                     dataLabels: {
-                      enabled: true,
-                      animation: {
-                        defer: 3000
-                      },
-                      crop: false,
-                      overflow: 'none',
-                      fontSize: '16px',
-                    //   style: {
-                    //     textShadow: false,
-                    //     textOutline: true,
-                    //   },
-                      formatter: function() {
-                        console.log(this);
-                        if(this.y > 0){
-                            return `<span>${this.y} BCM</span>`
-                        }
-                      }
+                        enabled: true,
+                        animation: {
+                            defer: 3000
+                        },
+                        crop: false,
+                        overflow: 'none',
+                        fontSize: '16px',
+                        //   style: {
+                        //     textShadow: false,
+                        //     textOutline: true,
+                        //   },
+                        // formatter: function() {
+                        //     if(this.y > 0){
+                        //         return `<span>${this.y}</span>`
+                        //     }
+                        // }
                     }
                 },
                 column: {
