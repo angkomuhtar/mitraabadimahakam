@@ -29,7 +29,7 @@ class ProductionReportController {
 
     async applyFilter ( { request } ) {
         const req = request.all()
-        console.log('REQUEST ::::', req);
+        // console.log('REQUEST ::::', req);
 
         let site = null
         let pit = null
@@ -138,6 +138,18 @@ async function MONTHLY_WISE(req){
     }
 
     if(req.filterType === 'HOURLY'){
+        req.start_date = req.start_hours
+        req.end_date = req.end_hours
+        
+        var a = moment(req.end_hours)
+        var b = moment(req.start_hours)
+        var duration = a.diff(b, 'hours')
+
+        let arrHours = []
+        for (let i = 0; i <= duration; i++) {
+            arrHours.push(moment(req.start_hours).startOf('h').add(i, 'h').format('HH:[00]'))
+        }
+
         const data = await ReportPoductionHelpers.MW_HOURLY(req)
         return data
     }
@@ -178,9 +190,6 @@ async function PERIODE_WISE(req){
 
         let result = []
         let data = await ReportPoductionHelpers.PW_HOURLY(req)
-        console.log('====================================');
-        console.log(data.data[0]);
-        console.log('====================================');
         for (const obj of data.data) {
             let details = []
             for (const val of obj.items) {

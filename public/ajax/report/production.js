@@ -385,7 +385,7 @@ $(function(){
                 // data: el.items?.map( val => val.volume)
                 data: el.items?.map( val => {
                     return {
-                        y: parseFloat((val.volume).toFixed(0)),
+                        y: parseFloat((val.volume)?.toFixed(0) || 0),
                         name:  val.kd_pit,
                         dataLabels: {
                             color: el.color

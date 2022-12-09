@@ -4,6 +4,7 @@ const moment = require("moment")
 const _ = require('underscore')
 const DailyFleet = use("App/Models/DailyFleet")
 const DailyRitase = use("App/Models/DailyRitase")
+const DailyRitaseCoal = use("App/Models/DailyRitaseCoal")
 const DailyRitaseDetail = use("App/Models/DailyRitaseDetail")
 const MonthlyPlan = use("App/Models/MonthlyPlan")
 const DailyPlan = use("App/Models/DailyPlan")
@@ -452,6 +453,7 @@ class repPoduction {
         let result = []
         let color = req.colorGraph
         req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
+        console.log('HELPERS :::', req);
 
         var getHoursArray = function(start, end) {
             var arr = new Array();
@@ -466,123 +468,165 @@ class repPoduction {
         let startHour = moment(req.start_date).format('YYYY-MM-DD HH:mm')
         let endHour = moment(req.end_date).format('YYYY-MM-DD HH:mm')
         var arrHours = getHoursArray(startHour, endHour)
-        
-        
-        let arrRitaseId = (await DailyRitase.query().where( w => {
-            w.where('pit_id', req.pit_id)
-            w.where('date', moment(req.start_date).format('YYYY-MM-DD'))
-        }).fetch()).toJSON().map(el => el.id)
-        
-        
 
-        let data = []
-        for (const obj of arrHours) {
-            for (const val of arrRitaseId) {
-                let dailyRitaseDetail = (
-                    await DailyRitaseDetail.query().with('daily_ritase').where( w => {
-                        w.where('dailyritase_id', val)
-                        w.where('check_in', '>=', moment(obj).startOf('hour').format('YYYY-MM-DD HH:mm'))
-                        w.where('check_in', '<=', moment(obj).endOf('hour').format('YYYY-MM-DD HH:mm'))
-                    }).fetch()).toJSON() || []
+        if(req.production_type === "COAL"){
+            /** JIKA PRODUCTION COAL **/
+
+            for (const h of arrHours) {
+                const data = await DailyRitaseCoal.query().where( w => {
+                    if(req.pit_id){
+                        w.where('pit_id', req.pit_id)
+                    }
+                    w.where('date', '>=', moment(h).startOf('hour').format('YYYY-MM-DD HH:mm'))
+                    w.where('date', '<=', moment(h).endOf('hour').format('YYYY-MM-DD HH:mm'))
+                }).getSum('sum_vol') || 0
+                result.push({
+                    date: h,
+                    volume: data
+                })
+            }
+
+            let xAxis = result.map(el => moment(el.date).format('HH:mm'))
+            let resultx = [
+                {
+                    name: 'Actual',
+                    type: req.typeChart, 
+                    stack: 'act', 
+                    color: color[0],
+                    items: result.map(el => ({volume: el.volume}))
+                },
+                {
+                    name: 'Trands', 
+                    type: 'spline', 
+                    stack: 'act', 
+                    color: color[2],
+                    items: result.map(el => ({volume: el.volume}))
+                },
+            ]
                 
-                if(dailyRitaseDetail.length > 0){
-                    for (const el of dailyRitaseDetail) {
-                        const equipment = await MasEquipment.query().where('id', el.hauler_id).last()
-                        const material = await MasMaterial.query().where('id', el.daily_ritase.material).last()
-                        var volume = equipment.tipe === 'hauler truck' ? material.vol : equipment.qty_capacity
+            return {
+                xAxis: xAxis,
+                data: resultx
+            }
+        }else{
+            /** JIKA PRODUCTION OB **/
+
+            let arrRitaseId = (await DailyRitase.query().where( w => {
+                w.where('pit_id', req.pit_id)
+                w.where('date', moment(req.start_date).format('YYYY-MM-DD'))
+            }).fetch()).toJSON().map(el => el.id)
+    
+            let data = []
+            for (const obj of arrHours) {
+                for (const val of arrRitaseId) {
+                    let dailyRitaseDetail = (
+                        await DailyRitaseDetail.query().with('daily_ritase').where( w => {
+                            w.where('dailyritase_id', val)
+                            w.where('check_in', '>=', moment(obj).startOf('hour').format('YYYY-MM-DD HH:mm'))
+                            w.where('check_in', '<=', moment(obj).endOf('hour').format('YYYY-MM-DD HH:mm'))
+                        }).fetch()).toJSON() || []
+                    
+                    if(dailyRitaseDetail.length > 0){
+                        for (const el of dailyRitaseDetail) {
+                            const equipment = await MasEquipment.query().where('id', el.hauler_id).last()
+                            const material = await MasMaterial.query().where('id', el.daily_ritase.material).last()
+                            var volume = equipment.tipe === 'hauler truck' ? material.vol : equipment.qty_capacity
+                            data.push({
+                                hour: moment(obj).format('HH'),
+                                hauler_id: el.hauler_id,
+                                site_id: el.daily_ritase.site_id,
+                                pit_id: el.daily_ritase.pit_id,
+                                material: el.daily_ritase.material,
+                                volume: el.volume
+                            })
+                        }
+                    }else{
                         data.push({
                             hour: moment(obj).format('HH'),
-                            hauler_id: el.hauler_id,
-                            site_id: el.daily_ritase.site_id,
-                            pit_id: el.daily_ritase.pit_id,
-                            material: el.daily_ritase.material,
-                            volume: el.volume
+                            hauler_id: null,
+                            site_id: null,
+                            pit_id: null,
+                            material: null,
+                            volume: 0
                         })
                     }
-                }else{
-                    data.push({
-                        hour: moment(obj).format('HH'),
-                        hauler_id: null,
-                        site_id: null,
-                        pit_id: null,
-                        material: null,
-                        volume: 0
-                    })
                 }
             }
-        }
-        
-        let joinData = _.flatten(data)
-        joinData = _.groupBy(joinData, 'hour')
-        joinData = Object.keys(joinData).map(key => {
+            
+            let joinData = _.flatten(data)
+            joinData = _.groupBy(joinData, 'hour')
+            joinData = Object.keys(joinData).map(key => {
+                return {
+                    jamx: `${key}:00`,
+                    sum_volume: joinData[key].reduce((a, b) => { return a + b.volume }, 0),
+                    items: joinData[key]
+                }
+            })
+    
+            joinData = _.sortBy(joinData, 'jamx')
+                    
+            let xAxis = joinData.map(el => el.jamx)
+            
+            
+    
+            /** GET TARGET PERJAM **/
+            const dailyPlan = await DailyPlan.query().where( w => {
+                w.where('tipe', req.production_type)
+                w.where('current_date', moment(req.start_date).format('YYYY-MM-DD'))
+                w.where('pit_id', req.pit_id)
+            }).last()
+            
+            let target = parseFloat((dailyPlan.toJSON().estimate / 22)?.toFixed(2))
+    
+            result = joinData.map(el => {
+                return {
+                    ...el,
+                    name: el.jamx,
+                    target: target
+                }
+            })
+    
+            
+            // console.log('zzzz', result.data);
+            let resultx = [
+                {
+                    name: 'Target', 
+                    type: req.typeChart, 
+                    stack: 'tgt', 
+                    color: color[0], 
+                    items: xAxis.map(el => target)
+                },
+                {
+                    name: 'Actual', 
+                    type: req.typeChart, 
+                    stack: 'act', 
+                    color: color[1], 
+                    items: result.map(el => {
+                        return {
+                            volume: el.sum_volume
+                        }
+                    })
+                },
+                {
+                    name: 'Trands', 
+                    type: 'spline', 
+                    stack: 'act', 
+                    color: color[2], 
+                    items: result.map(el => {
+                        return {
+                            volume: el.sum_volume
+                        }
+                    })
+                }
+            ]
+            
+            console.log('xxx', resultx[1]);
             return {
-                jamx: `${key}:00`,
-                sum_volume: joinData[key].reduce((a, b) => { return a + b.volume }, 0),
-                items: joinData[key]
+                xAxis: xAxis,
+                data: resultx
             }
-        })
-
-        joinData = _.sortBy(joinData, 'jamx')
-                
-        let xAxis = joinData.map(el => el.jamx)
-        
-        
-
-        /** GET TARGET PERJAM **/
-        const dailyPlan = await DailyPlan.query().where( w => {
-            w.where('tipe', req.production_type)
-            w.where('current_date', moment(req.start_date).format('YYYY-MM-DD'))
-            w.where('pit_id', req.pit_id)
-        }).last()
-        
-        let target = parseFloat((dailyPlan.toJSON().estimate / 22)?.toFixed(2))
-
-        result = joinData.map(el => {
-            return {
-                ...el,
-                name: el.jamx,
-                target: target
-            }
-        })
-
-        
-        // console.log('zzzz', result.data);
-        let resultx = [
-            {
-                name: 'Target', 
-                type: req.typeChart, 
-                stack: 'tgt', 
-                color: color[0], 
-                items: xAxis.map(el => target)
-            },
-            {
-                name: 'Actual', 
-                type: req.typeChart, 
-                stack: 'act', 
-                color: color[1], 
-                items: result.map(el => {
-                    return {
-                        volume: el.sum_volume
-                    }
-                })
-            },
-            {
-                name: 'Trands', 
-                type: 'spline', 
-                stack: 'act', 
-                color: color[2], 
-                items: result.map(el => {
-                    return {
-                        volume: el.sum_volume
-                    }
-                })
-            }
-        ]
-        // console.log('xxx', resultx);
-        return {
-            xAxis: xAxis,
-            data: resultx
         }
+
     }
 
     async PW_MONTHLY (req) {
