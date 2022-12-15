@@ -113,8 +113,6 @@ class MasSiteController {
   }
 
   async getAllSite({ params, request, auth }) {
-    console.log('is this work ?')
-    const usr = auth.getUser()
     const site = await Site.query().where('status', 'Y').fetch()
     return {
       data: site.toJSON(),

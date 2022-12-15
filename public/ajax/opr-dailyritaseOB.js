@@ -194,6 +194,7 @@ $(function(){
                         })
                         swal("Okey!", result.message, "success");
                         $('body').find('button[type="submit"]').removeAttr('disabled', 'disabled')
+                        window.location.reload()
                     }else{
                         alert(result.message)
                     }

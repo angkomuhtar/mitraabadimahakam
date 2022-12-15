@@ -535,7 +535,7 @@ class RitaseCoal {
             keterangan: 'back date upload',
             checker_jt: usr.id,
             stockpile: null,
-            coal_tipe: null,
+            coal_tipe: null
           })
 
           /**

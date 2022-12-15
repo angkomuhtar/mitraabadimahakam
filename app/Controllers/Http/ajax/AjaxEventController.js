@@ -6,6 +6,8 @@ class AjaxEventController {
     async getALL ({ request }) {
         const req = request.all()
         let result
+
+        console.log(';event req >> ', req);
         try {
             const data = (await EventHelpers.ALL(req)).toJSON()
             if(req.selected){

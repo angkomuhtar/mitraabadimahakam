@@ -279,7 +279,7 @@ class Ritase {
     const dailyPlans = await DailyPlans.query().where('current_date', date).andWhere('monthlyplans_id', monthlyPlansOB.id).first()
 
     /**
-     * the number 22 is 24 hour minus by 2 hour (rest time 1 hour for both shift)
+     * the number 22 is 24 hour subtract by 2 hour (rest time 1 hour for both shift)
      */
     const hourlyTarget = parseInt((parseInt(dailyPlans.estimate) / 22).toFixed(2))
     return hourlyTarget
@@ -365,7 +365,6 @@ class Ritase {
           haulers.push(obj)
         }
 
-        console.log('haulers >> ', haulers)
 
         for (const item of haulers) {
           const excaNameFromExcel = (await MasEquipment.query().where('kode', item.excaName).first()).toJSON()
@@ -381,21 +380,25 @@ class Ritase {
                   wh.andWhere('distance', req.distance)
                   wh.andWhere('date', req.date)
                 })
-                .first()
+                .last()
+
+                // wh.where('date', reqx.date)
+                // wh.andWhere('exca_id', excaID)
+                // wh.andWhere('distance', reqx.distance)
+                // wh.andWhere('material', reqx.material)
+                // wh.andWhere('dailyfleet_id', reqx.dailyfleet_id)
 
               let dailyRitase = null
               if (dailyRitaseCheck) {
-                console.log('does this true')
                 dailyRitase = dailyRitaseCheck
               } else {
-                console.log('or false ')
                 dailyRitase = new DailyRitase()
                 dailyRitase.fill({
                   dailyfleet_id: req.dailyfleet_id,
                   exca_id: req.exca_id,
                   material: 12,
                   distance: req.distance,
-                  date: req.date,
+                  date: req.date  
                 })
 
                 await dailyRitase.save()

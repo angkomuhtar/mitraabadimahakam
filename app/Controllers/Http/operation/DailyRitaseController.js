@@ -926,7 +926,6 @@ class DailyRitaseController {
 
         if (checkDailyFleetExca) {
           const excaID = dailyFleetEquip.filter(v => v.equipment.tipe === 'excavator')[0]?.equip_id
-
           const checkIfExist = await DailyRitase.query()
             .where(wh => {
               wh.where('date', reqx.date)
@@ -939,12 +938,9 @@ class DailyRitaseController {
 
           if (checkIfExist) {
             xDailyRitase = checkIfExist
-
-            console.log('this runs')
+            console.log('use existing')
           } else {
-            console.log('this runs two')
             xDailyRitase = new DailyRitase()
-
             xDailyRitase.fill({
               dailyfleet_id: reqx.dailyfleet_id,
               exca_id: excaID,
@@ -952,11 +948,10 @@ class DailyRitaseController {
               distance: reqx.distance,
               date: reqx.date,
             })
-
             await xDailyRitase.save()
+            console.log('use new')
           }
 
-          console.log('new equipment >> ', newEquipment)
           if (newEquipment.length > 0) {
             for (const equip of newEquipment) {
               const dailyFleetEquip = new DailyFleetEquip()
@@ -980,9 +975,10 @@ class DailyRitaseController {
                   check_in: moment(reqx.date).format('YYYY-MM-DD') + ' ' + obj.check_in,
                   checker_id: obj.checker_id,
                   spv_id: obj.spv_id,
-                  dailyritase_id: xDailyRitase.id,
+                  dailyritase_id: xDailyRitase.id
                 })
                 await xRitaseDetail.save()
+                console.log('success save daily ritase detail >> , ', xRitaseDetail.id)
               }
             }
           }
@@ -990,7 +986,6 @@ class DailyRitaseController {
           let xresult = null
 
           if (checkIfExist) {
-            console.log('is exist ? yes')
             xresult = (
               await DailyRitaseDetail.query()
                 .with('daily_ritase', wh => {
@@ -1006,7 +1001,6 @@ class DailyRitaseController {
                 .fetch()
             ).toJSON()
           } else {
-            console.log('is exist ? no, lets create one')
             xresult = (
               await DailyRitaseDetail.query()
                 .with('daily_ritase', wh => {

@@ -25,7 +25,6 @@ Route.post('/profile', 'AuthController.updatePassword').as('auth.upd-pass')
 Route.get('/:token/logout', 'AuthController.loggingOutToken').as('auth.loggingOutToken')
 Route.get('/profile/:id', 'AuthController.profile').as('auth.profile').middleware(['auth'])
 Route.post('/profile/:id/update-avatar', 'AuthController.updateAvatar').as('auth.updateAvatar').middleware(['auth'])
-
 Route.get('/test/user-group', 'TestingDatumController.userGroup')
 Route.get('/test/user-module', 'TestingDatumController.userModule')
 
@@ -99,6 +98,8 @@ Route.group(() => {
 
   Route.post('/pit/:id/delete', 'MasPitController.delete').as('mas.pit.delete').middleware('D')
 
+  Route.get('/pit/all', 'MasPitController.getAllPit').as('mas.pit.all').middleware('R')
+
   // Shift Schedule
   Route.get('/shift', 'MasShiftController.index').as('mas.shift.index').middleware('R')
 
@@ -111,6 +112,8 @@ Route.group(() => {
   Route.post('/shift/:id/update', 'MasShiftController.update').as('mas.shift.update').middleware('U')
 
   Route.post('/shift/:id/delete', 'MasShiftController.delete').as('mas.shift.delete').middleware('D')
+
+  Route.get('/shift/all', 'MasShiftController.getAllShift').as('mas.shift.all').middleware('R')
 
   // Activity
   Route.get('/activity', 'MasActivityController.index').as('mas.activity.index').middleware('R')
@@ -152,6 +155,8 @@ Route.group(() => {
   Route.post('/event/:id/update', 'MasEventController.update').as('mas.event.update').middleware('U')
 
   Route.post('/event/:id/delete', 'MasEventController.delete').as('mas.event.delete').middleware('D')
+
+  Route.get('/event/all', 'MasEventController.getAllEvent').as('mas.event.all').middleware('R')
 
   // Seam
   Route.get('/seam', 'MasSeamController.index').as('mas.seam.index').middleware('R')
@@ -689,6 +694,21 @@ Route.group(() => {
 
   Route.delete('/daily-issue/:id/destroy', 'DailyIssueController.destroy').as('opr.daily-issue.destroy').middleware('D')
 
+   // Daily Stoppage Issue
+  Route.get('/daily-stoppage-issue', 'DailyStoppageIssueController.index').as('opr.daily-stoppage-issue.index').middleware('R')
+
+  Route.post('/daily-stoppage-issue', 'DailyStoppageIssueController.store').as('opr.daily-stoppage-issue.store').middleware('R')
+ 
+  Route.get('/daily-stoppage-issue/list', 'DailyStoppageIssueController.list').as('opr.daily-stoppage-issue.list').middleware('R')
+ 
+  Route.get('/daily-stoppage-issue/create', 'DailyStoppageIssueController.create').as('opr.daily-stoppage-issue.create').middleware('R')
+ 
+  Route.get('/daily-stoppage-issue/:id/show', 'DailyStoppageIssueController.show').as('opr.daily-stoppage-issue.show').middleware('R')
+ 
+  Route.post('/daily-stoppage-issue/:id/update', 'DailyStoppageIssueController.update').as('opr.daily-stoppage-issue.update').middleware('U')
+ 
+  Route.delete('/daily-stoppage-issue/:id/destroy', 'DailyStoppageIssueController.destroy').as('opr.daily-stoppage-issue.destroy').middleware('D')
+   
   // Purchasing Request Request
   Route.get('/purchasing-request', 'PurchasingRequestController.index').as('opr.purchasing-request.index')
 
@@ -703,7 +723,7 @@ Route.group(() => {
   Route.get('/purchasing-request/:id/view', 'PurchasingRequestController.view').as('opr.purchasing-request.view')
 
   Route.post('/purchasing-request/:id/destroy', 'PurchasingRequestController.destroy').as('opr.purchasing-request.destroy')
-
+  
   // Purchasing Request Order
   Route.get('/purchasing-order', 'PurchasingOrderController.index').as('opr.purchasing-order.index')
 
@@ -730,7 +750,6 @@ Route.group(() => {
   Route.post('/purchasing-order/:id/delivered', 'PurchasingOrderController.delivered').as('opr.purchasing-order.delivered')
 
   Route.post('/purchasing-order/:id/update', 'PurchasingOrderController.update').as('opr.purchasing-order.update')
-
 
   Route.post('/purchasing-order/item/:id/destroy-items', 'PurchasingOrderController.destroyItems').as('log.purchasing-order.destroyItems')
 
@@ -1440,6 +1459,7 @@ Route.group(() => {
   Route.get('/', 'ReportIssueController.index')
   Route.get('/today', 'ReportIssueController.today')
   Route.get('/log/hourly', 'ReportIssueController.issueHourly')
+  Route.get('/log/ranges', 'ReportIssueController.byRanges')
 })
   .prefix('api/v2/issues')
   .namespace('api/v2')

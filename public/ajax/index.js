@@ -555,7 +555,9 @@ $(function(){
     })
 
     $('body select.select2event').each(function(){
-        var selected = $(this).data('check')
+        var selected = $(this).data('check') || $(this).val()
+
+        console.log('selected >> ', selected)
         var elm = $(this)
         elm.children().remove()
         $.ajax({
@@ -565,8 +567,11 @@ $(function(){
             success: function(data){
                 if(data.length > 0){
                     const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.engine+' | '+nod.narasi+'</option>')
-                    elm.append('<option value="" selected>Pilih</option>')
-                    elm.append(list)
+                    elm.html(list)
+                    var selectDefault = list.filter(item => item.selected)
+                    if(selectDefault.length === 0){
+                        elm.prepend('<option value="" selected>Pilih</option>')
+                    }
                 }else{
                     elm.prepend('<option value="">Belum ada data pilihan...</option>')
                 }

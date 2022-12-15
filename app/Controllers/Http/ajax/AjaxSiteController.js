@@ -22,6 +22,13 @@ class AjaxSiteController {
         site = {...site, pit: site.pit.filter(el => el.sts === 'Y')}
         return site
     }
+
+    async getAllSites({ request }) {
+
+        const data = (await Sites.query().where('status', 'Y').fetch()).toJSON();
+
+        return data;
+    }
 }
 
 module.exports = AjaxSiteController

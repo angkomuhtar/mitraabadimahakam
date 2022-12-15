@@ -132,10 +132,10 @@ class DailyRitaseCoalController {
 
     let datetime
     if (req.model === 'radioroom') {
-      let dataRadioRoom = []
-      let dailyFleet
-      for (const obj of selectSheet.details) {
+      let dataRadioRoom = [];
+      let dailyFleet;
 
+      for (const obj of selectSheet.details) {
         // JIKA UNIT EXCAVATOR TERISI
         if(obj.C){
           datetime = moment(req.date).hour(obj.B).format('YYYY-MM-DD HH:mm')
@@ -279,8 +279,6 @@ class DailyRitaseCoalController {
                 message: 'Failed created daily fleet...\n'+JSON.stringify(error)
               }
             }
-  
-            
           } else {
             dailyFleet = await DailyFleet.query()
               .where(w => {

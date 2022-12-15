@@ -1,7 +1,6 @@
 'use strict'
 
 const Loggerx = use("App/Controllers/Http/customClass/LoggerClass")
-
 const Eventhelpers = use("App/Controllers/Http/Helpers/Event")
 
 class MasEventController {
@@ -90,6 +89,12 @@ class MasEventController {
               }
         }
     }
+    async getAllEvents({ params, request, auth }) {
+        const site = await Site.query().where('status', 'Y').fetch()
+        return {
+          data: site.toJSON(),
+        }
+      }
     
 }
 

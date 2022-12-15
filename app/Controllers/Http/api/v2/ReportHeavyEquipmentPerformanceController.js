@@ -36,7 +36,6 @@ class ReportHeavyEquipmentPerformanceController {
 		} else {
 			const get_diff = moment(end_of_week).diff(start_of_week, 'days') + 1 // week
 			const arrDate = Array.from({ length: get_diff }, (x, i) => moment(start_of_week).startOf('week').add(i, 'days').format('YYYY-MM-DD'))
-
 			let start_of_week_array = []
 			for (const value of arrDate) {
 				const week_start = moment(value).startOf('week').format('YYYY-MM-DD')
@@ -373,6 +372,19 @@ class ReportHeavyEquipmentPerformanceController {
 			equips = [req.equip_id]
 		}
 
+		let eqCode = null
+		if (equips.length === 1) {
+			const GET_EQUIPMENT_CODE = await MasEquipment.query().where('id', equips[0]).last()
+
+			if (!GET_EQUIPMENT_CODE) {
+				return {
+					success: false,
+					message: 'Equipment ID Not Found!',
+				}
+			}
+			eqCode = GET_EQUIPMENT_CODE.toJSON().kode
+		}
+
 		if (req.report_type === 'unit model') {
 			const equipmentsModel = (
 				await MasEquipment.query()
@@ -419,8 +431,8 @@ class ReportHeavyEquipmentPerformanceController {
 			req.start_date = req.start
 			req.end_date = req.end
 
-			const dateStart = moment(req.start_date).format('YYYY-MM-DD')
-			const dateEnd = moment(req.end_date).format('YYYY-MM-DD')
+			let dateStart = moment(req.start_date).format('YYYY-MM-DD')
+			let dateEnd = moment(req.end_date).format('YYYY-MM-DD')
 
 			const final_data = []
 			const stoppages_duration_all = []
@@ -445,7 +457,7 @@ class ReportHeavyEquipmentPerformanceController {
 				}
 			}
 
-			const ep_details = (
+			let ep_details = (
 				await EquipmentPerformanceDetails.query()
 					.where((wh) => {
 						wh.where('date', '>=', dateStart)
@@ -457,7 +469,22 @@ class ReportHeavyEquipmentPerformanceController {
 					.fetch()
 			).toJSON()
 
-			const daily_downtime = (
+			if (!ep_details || ep_details.length <= 0) {
+				const details = (
+					await EquipmentPerformanceDetails.query()
+						.where((wh) => {
+							wh.where('site_id', req.site_id)
+							wh.whereIn('equip_id', equips)
+						})
+						.orderBy('date', 'asc')
+						.fetch()
+				).toJSON()
+				ep_details = details.slice(details.length - 7, details.length)
+				dateStart = ep_details[0].date
+				dateEnd = ep_details[ep_details.length - 1].date
+			}
+
+			let daily_downtime = (
 				await DailyDowntimeEquipment.query()
 					.where((wh) => {
 						wh.where('breakdown_start', '>=', dateStart)
@@ -468,6 +495,21 @@ class ReportHeavyEquipmentPerformanceController {
 					.orderBy('urut', 'asc')
 					.fetch()
 			).toJSON()
+
+			if (!daily_downtime || daily_downtime.length <= 0) {
+				const daily_downtime1 = (
+					await DailyDowntimeEquipment.query()
+						.where((wh) => {
+							wh.whereIn('equip_id', equips)
+							wh.where('component_group', '!=', 'Kosong')
+						})
+						.orderBy('urut', 'asc')
+						.fetch()
+				).toJSON()
+				daily_downtime = daily_downtime1.slice(daily_downtime1.length - 7, daily_downtime1.length)
+				dateStart = daily_downtime[0].breakdown_start
+				dateEnd = daily_downtime[daily_downtime.length - 1].breakdown_start
+			}
 
 			const arrComponent = `
             ENG	Engine
@@ -557,33 +599,33 @@ class ReportHeavyEquipmentPerformanceController {
 
 					const date = moment(data.date).format('DD/MM')
 					// if (ctx % 2 === 0) {
-					obj1 = { value: (data?.actual_pa || 0), frontColor: '#0096FF', desc: 'PA Actual', label: date, spacing: 20 }
-					obj2 = { value: (data?.work_hours || 0), frontColor: '#fc0303', desc: 'Work Hours', spacing: 3 }
-					obj4 = { value: (data?.breakdown_ratio_unscheduled || 0), frontColor: '#0096FF', desc: 'BD Ratio UNS', spacing: 3 }
-					obj5 = { value: (data?.actual_mttr || 0), frontColor: '#0096FF', desc: 'Actual MTTR', spacing: 3 }
-					obj6 = { value: (data?.actual_mtbs || 0), frontColor: '#0096FF', desc: 'Actual MTBS', spacing: 3 }
+					obj1 = { value: data?.actual_pa || 0, frontColor: '#0096FF', desc: 'PA Actual', label: date, spacing: 20 }
+					obj2 = { value: data?.work_hours || 0, frontColor: '#fc0303', desc: 'Work Hours', spacing: 3 }
+					obj4 = { value: data?.breakdown_ratio_unscheduled || 0, frontColor: '#0096FF', desc: 'BD Ratio UNS', spacing: 3 }
+					obj5 = { value: data?.actual_mttr || 0, frontColor: '#0096FF', desc: 'Actual MTTR', spacing: 3 }
+					obj6 = { value: data?.actual_mtbs || 0, frontColor: '#0096FF', desc: 'Actual MTBS', spacing: 3 }
 					// } else {
 					obj1_1 = {
-						value: (data?.budget_pa || 0),
+						value: data?.budget_pa || 0,
 						frontColor: '#fc0303',
 						desc: 'PA Budget',
 						spacing: 3,
 					}
 					obj2_1 = {
-						value: (data?.standby_hours || 0),
+						value: data?.standby_hours || 0,
 						label: date,
 						frontColor: '#0096FF',
 						desc: 'Standby Hours',
 						spacing: 20,
 					}
-					obj4_1 = { value: (data?.breakdown_ratio_scheduled || 0), frontColor: '#fc0303', label: date, desc: 'BD Ratio SCH', spacing: 20 }
-					obj5_1 = { value: (data?.target_mttr || 0), label: date, frontColor: '#fc0303', desc: 'Target MTTR', spacing: 20 }
-					obj6_1 = { value: (data?.target_mtbs || 0), label: date, frontColor: '#fc0303', desc: 'Target MTBS', spacing: 20 }
+					obj4_1 = { value: data?.breakdown_ratio_scheduled || 0, frontColor: '#fc0303', label: date, desc: 'BD Ratio SCH', spacing: 20 }
+					obj5_1 = { value: data?.target_mttr || 0, label: date, frontColor: '#fc0303', desc: 'Target MTTR', spacing: 20 }
+					obj6_1 = { value: data?.target_mtbs || 0, label: date, frontColor: '#fc0303', desc: 'Target MTBS', spacing: 20 }
 					// }
 					obj3.stacks = [
-						{ value: (data?.breakdown_hours_unscheduled || 0), color: '#e3fc03', desc: 'BD UNS' },
-						{ value: (data?.breakdown_hours_scheduled || 0), color: '#0096FF', desc: 'BD SCH', marginBottom: 2 },
-						{ value: (data?.breakdown_hours_accident || 0), color: '#3103fc', desc: 'BD ACD', marginBottom: 2 },
+						{ value: data?.breakdown_hours_unscheduled || 0, color: '#e3fc03', desc: 'BD UNS' },
+						{ value: data?.breakdown_hours_scheduled || 0, color: '#0096FF', desc: 'BD SCH', marginBottom: 2 },
+						{ value: data?.breakdown_hours_accident || 0, color: '#3103fc', desc: 'BD ACD', marginBottom: 2 },
 					]
 
 					obj3['label'] = date
@@ -700,7 +742,7 @@ class ReportHeavyEquipmentPerformanceController {
 				})
 			}
 
-			const equip_performance_details = await EquipmentPerformanceDetails.query()
+			let equip_performance_details = await EquipmentPerformanceDetails.query()
 				.where((wh) => {
 					wh.where('date', '>=', dateStart)
 					wh.where('date', '<=', dateEnd)
@@ -725,14 +767,51 @@ class ReportHeavyEquipmentPerformanceController {
 				.avg('breakdown_hours_scheduled')
 				.avg('breakdown_hours_unscheduled')
 
+			if (!equip_performance_details || equip_performance_details.length <= 0) {
+				const details = await EquipmentPerformanceDetails.query()
+					.where((wh) => {
+						wh.where('site_id', req.site_id)
+						wh.whereIn('equip_id', equips)
+					})
+					.orderBy('date', 'asc')
+					.avg('actual_pa')
+					.avg('budget_pa')
+					.avg('actual_eu')
+					.avg('actual_ma')
+					.avg('actual_ua')
+					.avg('actual_mttr')
+					.avg('actual_mtbs')
+					.avg('target_mttr')
+					.avg('target_mtbs')
+					.avg('breakdown_ratio_unscheduled')
+					.avg('breakdown_ratio_scheduled')
+					.avg('work_hours')
+					.avg('standby_hours')
+					.avg('breakdown_hours_accident')
+					.avg('breakdown_hours_scheduled')
+					.avg('breakdown_hours_unscheduled')
+
+				equip_performance_details = details.slice(details.length - 7, details.length)
+				dateStart = equip_performance_details[0].date
+				dateEnd = equip_performance_details[equip_performance_details.length - 1].date
+			}
 			const data = equip_performance_details[0]
 
 			return {
 				data: final_data,
 				stoppages: {
-					period: moment(req.start_date).format('DD MMM') + ' - ' + moment(req.end_date).format('DD MMM'),
+					period: moment(dateStart).format('DD MMM') + ' - ' + moment(dateEnd).format('DD MMM'),
 					duration: stoppages_duration_all,
-					totalEvent: stoppages_event_all,
+					totalEvent: stoppages_event_all
+				},
+				date: {
+					start: moment(dateStart).format('DD MMM'),
+					end: moment(dateEnd).format('DD MMM'),
+					date1: dateStart,
+					date2: dateEnd
+				},
+				equipmentDetails: {
+					code: eqCode,
 				},
 				summary: {
 					avgActualPA: parseFloat(data['avg(`actual_pa`)']?.toFixed(2) || 0),
@@ -1147,55 +1226,60 @@ class ReportHeavyEquipmentPerformanceController {
 						.avg('breakdown_ratio_unscheduled')
 						.avg('breakdown_ratio_scheduled')
 
-					const work_hours_total_in_a_week = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', week.start)
-							wh.where('date', '<=', week.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('work_hours') || 0
+					const work_hours_total_in_a_week =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', week.start)
+								wh.where('date', '<=', week.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('work_hours')) || 0
 
-					const standby_hours_total_in_a_week = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', week.start)
-							wh.where('date', '<=', week.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('standby_hours') || 0
+					const standby_hours_total_in_a_week =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', week.start)
+								wh.where('date', '<=', week.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('standby_hours')) || 0
 
-					const breakdown_hours_accident_total_in_a_week = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', week.start)
-							wh.where('date', '<=', week.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('breakdown_hours_accident') || 0
+					const breakdown_hours_accident_total_in_a_week =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', week.start)
+								wh.where('date', '<=', week.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('breakdown_hours_accident')) || 0
 
-					const breakdown_hours_scheduled_total_in_a_week = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', week.start)
-							wh.where('date', '<=', week.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('breakdown_hours_scheduled') || 0
+					const breakdown_hours_scheduled_total_in_a_week =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', week.start)
+								wh.where('date', '<=', week.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('breakdown_hours_scheduled')) || 0
 
-					const breakdown_hours_unscheduled_total_in_a_week = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', week.start)
-							wh.where('date', '<=', week.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('breakdown_hours_unscheduled') || 0
+					const breakdown_hours_unscheduled_total_in_a_week =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', week.start)
+								wh.where('date', '<=', week.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('breakdown_hours_unscheduled')) || 0
 
 					const daily_downtime = (
 						await DailyDowntimeEquipment.query()
@@ -1511,7 +1595,7 @@ class ReportHeavyEquipmentPerformanceController {
 
 			// todo
 
-			const months = await this.monthCheck(req.start_month, req.end_month);
+			const months = await this.monthCheck(req.start_month, req.end_month)
 
 			const final_data = []
 			const stoppages_duration_all = []
@@ -1548,67 +1632,73 @@ class ReportHeavyEquipmentPerformanceController {
 						.avg('breakdown_ratio_unscheduled')
 						.avg('breakdown_ratio_scheduled')
 
-					const work_hours_total_in_a_month= await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', month.start)
-							wh.where('date', '<=', month.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('work_hours') || 0
-
-					const standby_hours_total_in_a_month = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', month.start)
-							wh.where('date', '<=', month.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('standby_hours') || 0
-
-					const breakdown_hours_accident_total_in_a_month = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', month.start)
-							wh.where('date', '<=', month.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('breakdown_hours_accident') || 0
-
-					const breakdown_hours_scheduled_total_in_a_month = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', month.start)
-							wh.where('date', '<=', month.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('breakdown_hours_scheduled') || 0
-
-					const breakdown_hours_unscheduled_total_in_a_month = await EquipmentPerformanceDetails.query()
-						.where((wh) => {
-							wh.where('date', '>=', month.start)
-							wh.where('date', '<=', month.end)
-							wh.where('site_id', req.site_id)
-							wh.whereIn('equip_id', equips)
-						})
-						.orderBy('date', 'asc')
-						.getSum('breakdown_hours_unscheduled') || 0
-
-					const daily_downtime = (
-						await DailyDowntimeEquipment.query()
+					const work_hours_total_in_a_month =
+						(await EquipmentPerformanceDetails.query()
 							.where((wh) => {
-								wh.where('breakdown_start', '>=', month.start)
-								wh.where('breakdown_start', '<=', month.end)
+								wh.where('date', '>=', month.start)
+								wh.where('date', '<=', month.end)
+								wh.where('site_id', req.site_id)
 								wh.whereIn('equip_id', equips)
-								wh.where('component_group', '!=', 'Kosong')
 							})
-							.orderBy('urut', 'asc')
-							.fetch()
-					).toJSON() || []
+							.orderBy('date', 'asc')
+							.getSum('work_hours')) || 0
+
+					const standby_hours_total_in_a_month =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', month.start)
+								wh.where('date', '<=', month.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('standby_hours')) || 0
+
+					const breakdown_hours_accident_total_in_a_month =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', month.start)
+								wh.where('date', '<=', month.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('breakdown_hours_accident')) || 0
+
+					const breakdown_hours_scheduled_total_in_a_month =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', month.start)
+								wh.where('date', '<=', month.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('breakdown_hours_scheduled')) || 0
+
+					const breakdown_hours_unscheduled_total_in_a_month =
+						(await EquipmentPerformanceDetails.query()
+							.where((wh) => {
+								wh.where('date', '>=', month.start)
+								wh.where('date', '<=', month.end)
+								wh.where('site_id', req.site_id)
+								wh.whereIn('equip_id', equips)
+							})
+							.orderBy('date', 'asc')
+							.getSum('breakdown_hours_unscheduled')) || 0
+
+					const daily_downtime =
+						(
+							await DailyDowntimeEquipment.query()
+								.where((wh) => {
+									wh.where('breakdown_start', '>=', month.start)
+									wh.where('breakdown_start', '<=', month.end)
+									wh.whereIn('equip_id', equips)
+									wh.where('component_group', '!=', 'Kosong')
+								})
+								.orderBy('urut', 'asc')
+								.fetch()
+						).toJSON() || []
 
 					// event stoppages
 					if (daily_downtime.length > 0) {

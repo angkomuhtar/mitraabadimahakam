@@ -1,0 +1,147 @@
+
+    {{ script('ajax/opr-daily-stoppage-issue-show') }}
+    {{ script('script/opt-event') }}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+                <div class="white-box p-b-0">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form action="" class="" id="fm-update-stoppage-issue">
+                                <div class="panel panel-default">
+                                    <div class="panel-wrapper collapse in">
+                                        <div class="panel-body">
+                                            {{ csrfField() }}
+                                            <div class="row b-all p-t-20 m-b-20" id="div-row-form">
+                                                <div class="col-md-4">
+                                                    <label for="tgl">Waktu Awal</label>
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                            <input type="datetime-local" class="form-control initDate" data-date-start="{{data.start_at}}" value="{{data.start_at}}" name="date_start" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="tgl">Waktu Akhir</label>
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                            <input type="datetime-local" class="form-control initDate" value="{{data.end_at}}" data-date-end="{{data.end_at}}" name="date_end" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="sheet-section" class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Pit</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="icon-layers"></i></div>
+                                                            <select class="form-control xselect2pit" type="text" name="pit_id" value="{{data.pit_id}}" id="pit_id" required></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="sheet-section" class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Event</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-cloud"></i></div>
+                                                            <select class="form-control xselect2event" data-check="{{data.event_id ? data.event_id:null}}" name="event_id"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="sheet-section" class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Shift</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="icon-layers"></i></div>
+                                                            <select class="form-control xselect2shift" type="text" name="shift_id" id="shift_id" required></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="">Description</label>
+                                                    <div class="form-group">
+                                                        <textarea class="form-control" name="description" id="description" rows="5">{{data.description}}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    &nbsp;
+                                                </div>
+                                                <div class="col-md-6 text-right">
+                                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                                    </button>
+                                                    <button type="submit" class="btn btn-success waves-effect waves-light"> 
+                                                        <i class="fa fa-save"></i> <span>Save</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    $(function(){
+       // do nothing
+    })
+</script>
+
+<style>
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(83 230 157);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+</style>
