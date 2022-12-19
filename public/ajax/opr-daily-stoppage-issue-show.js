@@ -49,10 +49,7 @@ $(function(){
         e.preventDefault()
         var data = new FormData(this)
         var id = $(this).data('id')
-        console.log(data);
-
-
-        return;
+        
         $.ajax({
             async: true,
             url: '/operation/daily-stoppage-issue/'+id+'/update',

@@ -53,8 +53,7 @@ class DailyStoppageIssueHelpers {
 				data: data.toJSON().data.map((v) => {
 					return {
 						...v,
-						date: moment(v.date).format('DD MMM YYYY'),
-						time: v.end_at ? `${moment(v.start_at).format('HH:mm')} - ${moment(v.end_at).format('HH:mm')} - (${v.duration} hrs)` : `${moment(v.start_at).format('HH:mm')} - Ongoing`,
+						time: v.end_at ? `${moment(v.start_at).format('DD/MM HH:mm')} - ${moment(v.end_at).format('DD/MM HH:mm')} - (${v.duration} hrs)` : `${moment(v.start_at).format('DD/MM/YY HH:mm')} - Ongoing`,
 					}
 				}),
 			}
@@ -77,7 +76,7 @@ class DailyStoppageIssueHelpers {
 			}
 
 			const dateStartReplace = date_start.replace('T', ' ')
-			const dateEndReplace = date_end.replace('T', ' ')
+			const dateEndReplace = date_end ? date_end.replace('T', ' ') : null
 			const start = moment(dateStartReplace).format('YYYY-MM-DD HH:mm:ss')
 			const end = moment(dateEndReplace).format('YYYY-MM-DD HH:mm:ss')
 			const issue = new DailyStoppageIssue()
@@ -94,13 +93,13 @@ class DailyStoppageIssueHelpers {
 					wh.where('duration', moment(end).diff(start, 'hours'))
 					wh.where('user_id', user.id)
 				})
-				.first()
+			.first()
 
 			if (check_existing_issue) {
 				return {
 					success: false,
 					message: 'Data is already Exist, please try another one!',
-					data: [],
+					data: []
 				}
 			}
 
@@ -132,9 +131,13 @@ class DailyStoppageIssueHelpers {
 	}
 
 	async SHOW(params) {
-		const data = (await DailyStoppageIssue.query().with('pit').with('shift').with('user').with('event').where('id', params.id).last()).toJSON()
+		let data = (await DailyStoppageIssue.query().with('pit').with('shift').with('user').with('event').where('id', params.id).last()).toJSON()
 
-		console.log('data >> ', data);
+		data = {
+			...data,
+			start_at: moment(data.start_at).format('YYYY-MM-DDTHH:mm'),
+			end_at: moment(data.end_at).format('YYYY-MM-DDTHH:mm'),
+		}
 		return data
 	}
 
@@ -215,6 +218,47 @@ class DailyStoppageIssueHelpers {
 				message: err.message,
 			}
 		}
+	}
+
+	async UPDATE(params, req) {
+		const check = await DailyStoppageIssue.query().where('id', params.id).last()
+
+		console.log('check >> ', check, params)
+		if (!check) {
+			return {
+				success: false,
+				message: 'Daily Stoppage Issue not found with this id... Try again',
+			}
+		};
+
+
+		/**
+		 * check if the end at are below start at
+		 */
+
+
+		const end_at = moment(req.end_at).format('YYYY-MM-DD HH:mm:ss');
+		const diff = moment(end_at).diff(check.start_at, 'hours');
+
+
+		if(new Date(end_at) <= new Date(check.start_at)) {
+			return {
+				success : false,
+				message : 'END AT cannot be lower than START AT'
+			}
+		};
+
+		check.merge({
+			...req,
+			duration : diff
+		});
+
+		await check.save()
+		return {
+			success : true,
+			message : 'Success update daily stoppage issue',
+			data : check
+		};
 	}
 
 	// async DELETE(params){

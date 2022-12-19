@@ -866,7 +866,7 @@ class DailyRitaseController {
         console.log(error)
         return {
           success: false,
-          message: error,
+          message: error
         }
       }
     } else {

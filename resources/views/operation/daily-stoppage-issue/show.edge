@@ -8,7 +8,7 @@
                 <div class="white-box p-b-0">
                     <div class="row">
                         <div class="col-md-12">
-                            <form action="" class="" id="fm-update-stoppage-issue">
+                            <form action="" class="" id="fm-update-stoppage-issue" data-id="{{data.id}}">
                                 <div class="panel panel-default">
                                     <div class="panel-wrapper collapse in">
                                         <div class="panel-body">
@@ -19,7 +19,7 @@
                                                     <div class="form-group">
                                                         <div class="input-group">
                                                             <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                            <input type="datetime-local" class="form-control initDate" data-date-start="{{data.start_at}}" value="{{data.start_at}}" name="date_start" required>
+                                                            <input type="datetime-local" class="form-control" data-date-start="{{data.start_at}}" value="{{data.start_at}}" name="start_at" required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -28,7 +28,7 @@
                                                     <div class="form-group">
                                                         <div class="input-group">
                                                             <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                            <input type="datetime-local" class="form-control initDate" value="{{data.end_at}}" data-date-end="{{data.end_at}}" name="date_end" required>
+                                                            <input type="datetime-local" class="form-control" value="{{data.end_at}}" data-date-end="{{data.end_at}}" name="end_at" required>
                                                         </div>
                                                     </div>
                                                 </div>

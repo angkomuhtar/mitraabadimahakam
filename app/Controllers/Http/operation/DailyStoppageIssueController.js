@@ -53,11 +53,11 @@ class DailyStoppageIssueController {
 		}
 	}
 
-	async show({ auth, params, view }) {
+	async show({ auth, params, view, request }) {
 		await auth.getUser()
+		const req = request.all();
 		const data = await DailyStoppageIssueHelpers.SHOW(params)
 
-		console.log('data >> ', data);
 		return view.render('operation.daily-stoppage-issue.show', {
 			data: data,
 		})
@@ -65,10 +65,29 @@ class DailyStoppageIssueController {
 
 	async update({ auth, params, request, view }) {
 		let user = await auth.getUser()
-		const req = request.all()
-		return {
-			success: true,
-			message: 'Success save data...',
+		const req = request.except('_csrf')
+
+
+		if(!user){
+			return {
+				success : false,
+				message : 'You are not authorized to access this route!'
+			}
+		}
+
+		try {
+		  const { success, message, data } = await DailyStoppageIssueHelpers.UPDATE(params, req);
+		  return {
+			success: success,
+			message: message,
+			data : data
+		  }
+		} catch (error) {
+		  console.log(error)
+		  return {
+			success: false,
+			message: error.message,
+		  }
 		}
 	}
 
