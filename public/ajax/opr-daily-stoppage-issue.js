@@ -1,8 +1,8 @@
 $(function () {
     initDefault()
-    getAllPit()
-    getAllEvent();
-    getAllShift()
+    // getAllPit()
+    // getAllEvent();
+    // getAllShift()
   
     $('body').on('click', 'button#bt-back', function () {
       initDefault()
@@ -10,9 +10,9 @@ $(function () {
   
     $('body').on('click', 'button#create-form', function () {
       initCreate()
-      getAllPit()
-      getAllEvent();
-      getAllShift()
+      // getAllPit()
+      // getAllEvent();
+      // getAllShift()
     })
   
     $('body').on('click', 'button#bt-cancel-update', function (e) {
@@ -219,14 +219,19 @@ $(function () {
     }
   
     function getAllPit() {
+
+      var elm = $(this)
       $.ajax({
         async: true,
         url: '/ajax/pit',
         method: 'GET',
         success: function (result) {
-          $('body')
-            .find('select[name="pit_id"]')
-            .html(result.map(s => '<option value="' + s.id + '">' + s.name + '</option>'))
+          if(result.length > 0){
+            elm.children().remove()
+            elm.html(result.map(s => '<option value="' + s.id + '">' + s.name + '</option>'))
+            }else{
+            elm.prepend('<option value="">Belum ada data pilihan...</option>')
+            }
         },
         error: function (err) {
           console.log(err)

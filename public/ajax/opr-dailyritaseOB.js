@@ -167,7 +167,6 @@ $(function(){
         const spv = $('body').find('select#spv_id').val();
         const sheet = $('body').find('select#sheet').val();
         const dataJson = $('body').find('textarea[name="dataJson"]').val();
-
        
 
         var isUploadFile = $('body input[name="metodeInput"]').is(':checked')

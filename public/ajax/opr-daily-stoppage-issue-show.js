@@ -43,8 +43,6 @@ $(function(){
         })
     })
 
-    
-
     $('form#fm-update-stoppage-issue').on('submit', function(e){
         e.preventDefault()
         var data = new FormData(this)
