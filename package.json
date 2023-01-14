@@ -43,7 +43,7 @@
     "request": "^2.88.2",
     "systeminformation": "^5.11.8",
     "uid": "^2.0.0",
-    "underscore": "^1.12.0",
+    "underscore": "^1.13.6",
     "xlsx": "^0.17.2"
   },
   "autoload": {
