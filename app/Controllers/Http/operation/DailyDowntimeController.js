@@ -139,6 +139,7 @@ class DailyDowntimeController {
 
 				for (const data of dataX) {
 					console.log(data.start_smu)
+
 					if (data.start_smu) {
 						var key =
 							_.findKey(unit, function (e) {
@@ -147,6 +148,7 @@ class DailyDowntimeController {
 							_.findKey(unit, function (e) {
 								return e === data.id_number.replace(' ', '')
 							})
+						throw new Error(`${key} tidak ditemukan pada master equipment`)
 						var date = moment(data.date).add(8, 'hours').format('YYYY-MM-DD')
 
 						console.log(date, key, data.shift == 'DS' ? 1 : 2)
