@@ -154,6 +154,8 @@ class DailyDowntimeController {
 								return e === data.id_number.replace(' ', '')
 							})
 						var date = moment(data.date).add(8, 'hours').format('YYYY-MM-DD')
+
+						console.log(date, key, data.shift == 'DS' ? 1 : 2)
 						var check = await DailyChecklist.query()
 							.where((trx) => {
 								trx.where('tgl', date)
