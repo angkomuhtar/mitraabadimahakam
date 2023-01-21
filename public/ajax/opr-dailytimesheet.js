@@ -12,7 +12,7 @@ $(function () {
 
 	$('body').on('click', 'button#create-form', function () {
 		initCreate()
-	})	
+	})
 
 	$('body').on('click', 'button#bt-cancel-update', function (e) {
 		e.preventDefault()
@@ -44,7 +44,7 @@ $(function () {
 	})
 
 	// $('#hm-unit-list tr'). click(function (event) {
-	// 	 var elID = $(this). attr('id'); alert(elID); 
+	// 	 var elID = $(this). attr('id'); alert(elID);
 
 	// 	});
 
@@ -98,7 +98,7 @@ $(function () {
 		})
 	}
 
-    // function getUnitLastHM() {
+	// function getUnitLastHM() {
 	// 	const site_id = parseInt($('select[name="site_id').val())
 	// 	$.ajax({
 	// 		async: true,

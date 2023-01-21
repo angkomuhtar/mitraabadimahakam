@@ -24,13 +24,12 @@
                             <tr>
                                 <td class=" text-center" width="20">No</td>
                                 <td class=" text-center" width="20">ACT</td>
-                                <td class="" width="250">Description</td>
-                                <td class="" width="600">Activity</td>
                                 <td class="" width="*">Date</td>
+                                <td class="text-center">Equipment</td>
                                 <td class="text-right" width="250">START HM</td>
                                 <td class="text-right" width="250">END HM</td>
                                 <td class="text-right" width="250">USED HM</td>
-                                <td class="text-center" width="200">Equipment</td>
+                                <td class="">Shift</td>
                                 <td class="text-center" width="200">Checker/SPV</td>
                             </tr>
                         </thead>
@@ -44,25 +43,18 @@
                                     <td>
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                     </td>
-                                    <td class="single-line" width="400">
-                                        <strong>{{item.dailyFleet.fleet.name || 'unkown fleet'}} </strong> <br>
-                                        <small class="text-success">{{item.dailyFleet.pit.name || 'unknown pit'}}</small><br>
-                                        <small class="text-info">{{item.dailyFleet.shift.name || item.shift.name || 'unknown shift'}}</small>
-                                    </td>
-                                    <td class="">
-                                        <strong>{{item.dailyFleet.activities.name || 'unknown activity'}}</strong><br>
-                                        <small>{{item.description}}</small><br>
-                                    </td>
-                                    <td class="myDateFormat single-line" width="400" data-date="{{item.approved_at}}" data-elm="p">
+                                    <td class="myDateFormat single-line" width="400" data-date="{{item.tgl}}" data-elm="p">
                                         <p class="text-black"></p>
-                                        <small class="text-warning nomor-berkas" data-id="{{item.id}}"></small>
+                                    </td>
+                                    <td>
+                                        <strong class="text-warning">{{item.equipment.kode}}</strong> <br>
+                                        <small>{{item.equipment.tipe}}</small>
                                     </td>
                                     <td class="text-right single-line">{{item.begin_smu}}</td>
                                     <td class="text-right single-line">{{item.end_smu ? item.end_smu : 0}}</td>
                                     <td class="text-right single-line">{{item.used_smu ? item.used_smu : 0}}</td>
-                                    <td>
-                                        <strong class="text-warning">{{item.equipment.kode}}</strong> <br>
-                                        <small>{{item.equipment.tipe}}</small>
+                                    <td class="single-line" width="400">
+                                        <small class="text-info">{{item.dailyFleet.shift.name || item.shift.name || 'unknown shift'}}</small>
                                     </td>
                                     <td class="text-center">
                                         {{item.userCheck.username.toUpperCase()}} <br>

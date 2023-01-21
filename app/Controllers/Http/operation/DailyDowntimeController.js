@@ -133,50 +133,55 @@ class DailyDowntimeController {
 					},
 				})
 
-				var data = xlsx[Object.keys(xlsx)[0]]
+				var dataX = xlsx[Object.keys(xlsx)[0]]
+
 				//  remove blanks
-				var Xdata = _.reject(data, (e) => {
-					return e.id_number == ''
-				})
+				// var Xdata = _.reject(data, (e) => {
+				// 	return e.id_number == ''
+				// })
+
 				var unit = await MasEquipment.pair('id', 'kode')
 				var inputData = []
 
-				for (const data of Xdata) {
-					var key =
-						_.findKey(unit, function (e) {
-							return e === data.id_number
-						}) ||
-						_.findKey(unit, function (e) {
-							return e === data.id_number.replace(' ', '')
-						})
-					var date = moment(data.date).add(8, 'hours').format('YYYY-MM-DD')
-					var check = await DailyChecklist.query()
-						.where((trx) => {
-							trx.where('tgl', date)
-							trx.where('unit_id', key)
-							trx.where('shift_id', data.shift == 'DS' ? 1 : 2)
-						})
-						.first()
-					var test = {
-						user_chk: user.id,
-						unit_id: key,
-						shift_id: data.shift == 'DS' ? 1 : 2,
-						tgl: date,
-						description: 'hm upload from daily downtime',
-						begin_smu: data.start_smu,
-						end_smu: data.end_smu,
-						used_smu: parseFloat(data.end_smu - data.start_smu).toFixed(2),
-						approved_at: data.shift == 'DS' ? date + ' 07:01:00' : date + ' 19:01:00',
-						finish_at: data.shift == 'DS' ? date + ' 19:00:00' : moment(date).add(1, 'days').format('YYYY-MM-DD') + ' 07:00:00',
-						created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
-					}
+				for (const data of dataX) {
+					console.log(data.start_smu)
+					if (data.id_number != '' && data.start_smu != undefined) {
+						var key =
+							_.findKey(unit, function (e) {
+								return e === data.id_number
+							}) ||
+							_.findKey(unit, function (e) {
+								return e === data.id_number.replace(' ', '')
+							})
+						var date = moment(data.date).add(8, 'hours').format('YYYY-MM-DD')
+						var check = await DailyChecklist.query()
+							.where((trx) => {
+								trx.where('tgl', date)
+								trx.where('unit_id', key)
+								trx.where('shift_id', data.shift == 'DS' ? 1 : 2)
+							})
+							.first()
+						var test = {
+							user_chk: user.id,
+							unit_id: key,
+							shift_id: data.shift == 'DS' ? 1 : 2,
+							tgl: date,
+							description: 'hm upload from daily downtime',
+							begin_smu: data.start_smu,
+							end_smu: data.end_smu,
+							used_smu: parseFloat(data.end_smu - data.start_smu).toFixed(2),
+							approved_at: data.shift == 'DS' ? date + ' 07:01:00' : date + ' 19:01:00',
+							finish_at: data.shift == 'DS' ? date + ' 19:00:00' : moment(date).add(1, 'days').format('YYYY-MM-DD') + ' 07:00:00',
+							created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+						}
 
-					// duplicate data will update
-					if (check) {
-						// check.merge(test)
-						// await check.save()
-					} else {
-						inputData.push(test)
+						// duplicate data will update
+						if (check) {
+							// check.merge(test)
+							// await check.save()
+						} else {
+							inputData.push(test)
+						}
 					}
 				}
 
