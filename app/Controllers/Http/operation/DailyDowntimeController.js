@@ -134,18 +134,12 @@ class DailyDowntimeController {
 				})
 
 				var dataX = xlsx[Object.keys(xlsx)[0]]
-
-				//  remove blanks
-				// var Xdata = _.reject(data, (e) => {
-				// 	return e.id_number == ''
-				// })
-
 				var unit = await MasEquipment.pair('id', 'kode')
 				var inputData = []
 
 				for (const data of dataX) {
 					console.log(data.start_smu)
-					if (data.id_number != '' && data.start_smu != undefined) {
+					if (data.start_smu) {
 						var key =
 							_.findKey(unit, function (e) {
 								return e === data.id_number
