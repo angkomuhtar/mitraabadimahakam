@@ -122,8 +122,8 @@ class DailyDowntimeController {
 			try {
 				const xlsx = excelToJson({
 					sourceFile: filePath,
-					header: { rows: 2 },
-					sheets: [req.sheet],
+					header: { rows: 1 },
+					sheets: ['Data'],
 					columnToKey: {
 						B: 'date',
 						C: 'shift',
@@ -134,6 +134,8 @@ class DailyDowntimeController {
 				})
 
 				var dataX = xlsx[Object.keys(xlsx)[0]]
+				console.log(dataX)
+
 				var unit = await MasEquipment.pair('id', 'kode')
 				var inputData = []
 
@@ -148,7 +150,13 @@ class DailyDowntimeController {
 							_.findKey(unit, function (e) {
 								return e === data.id_number.replace(' ', '')
 							})
-						throw new Error(`${key} tidak ditemukan pada master equipment`)
+						if (!key) {
+							return {
+								success: false,
+								type: 'warning',
+								message: `kode equipment ${data.id_number} tidak ditemukan`,
+							}
+						}
 						var date = moment(data.date).add(8, 'hours').format('YYYY-MM-DD')
 
 						console.log(date, key, data.shift == 'DS' ? 1 : 2)
@@ -203,7 +211,7 @@ class DailyDowntimeController {
 				return {
 					success: false,
 					type: 'warning',
-					message: 'all data your input already exist',
+					message: 'semua data telah diinput sebelumnya, pastikan data tgl dan data benar.!',
 				}
 			} catch (err) {
 				return {
