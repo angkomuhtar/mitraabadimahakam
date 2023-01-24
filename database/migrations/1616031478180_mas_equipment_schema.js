@@ -12,7 +12,7 @@ class MasEquipmentSchema extends Schema {
       table.string('tipe').notNullable().comment('sys-options jenis-unit')
       table.string('brand').notNullable().comment('sys-options brand-unit')
       table.string('unit_model').notNullable()
-      table.string('qty_capacity').defaultTo(null).comment('Jumlah kapasitas produksi')
+      table.float('qty_capacity').defaultTo(null).comment('Jumlah kapasitas produksi')
       table.string('fuel_capacity').defaultTo(null).comment('Jumlah kapasitas bbm')
       table.string('satuan').notNullable().comment('sys-options stn_capacity_equipment')
       table.string('engine_model').defaultTo(null)
@@ -27,6 +27,7 @@ class MasEquipmentSchema extends Schema {
       table.integer('dealer_id').unsigned().references('id').inTable('mas_dealers').onDelete('RESTRICT').onUpdate('CASCADE')
       table.integer('created_by').unsigned().references('id').inTable('users').onDelete('RESTRICT').onUpdate('CASCADE')
       table.enu('aktif', ['Y', 'N']).defaultTo('Y').comment('status data')
+      table.integer('urut').defaultTo(null)
       table.timestamps()
     })
   }

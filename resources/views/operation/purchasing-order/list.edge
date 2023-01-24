@@ -1,0 +1,112 @@
+{{ script('ajax/index') }}
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Purchasing Order</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" class="form-control" value="{{list.perPage}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="100">ACT</th>
+                                <th class="sl" width="180">Kode</th>
+                                <th class="sl" width="190">CreatedAt</th>
+                                <th class="sl" width="200">Vendor</th>
+                                <th class="sl" width="*">Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                                <tr>
+                                    <td class="v-middle">{{$loop.index + 1}}</td>
+                                    <td class="v-middle">
+                                        @if(item.status === 'editable')
+                                            <button class="m-b-5 btn btn-outline btn-warning btn-xs btn-edit-data" data-id="{{item.id}}" style="width:70px;">
+                                                <i class="ti-write"></i> edit
+                                            </button>
+                                            <button class="btn btn-outline btn-inverse btn-xs btn-print-data" data-id="{{item.id}}" style="width:70px;">
+                                                <i class="ti-printer"></i> print
+                                            </button>
+                                        @elseif(item.status === 'waiting')
+                                            <button class="m-b-5 btn btn-outline btn-success btn-receive-data btn-xs" data-id="{{item.id}}" style="width:70px;height:50px;">
+                                                <i class="ti-import"></i>
+                                                Terima
+                                            </button>
+                                        @else
+                                            <button class="m-b-5 btn btn-outline btn-primary btn-deliver-data btn-xs" data-id="{{item.id}}" {{item.spj ? 'disabled':''}} style="width:70px;">
+                                                <i class="ti-truck"></i> SPJ
+                                            </button>
+                                            <button class="btn btn-outline btn-default btn-view-data btn-xs" data-id="{{item.id}}" style="width:70px;">
+                                                <i class="ti-eye"></i> view
+                                            </button>
+                                        @endif
+
+                                        @if(!item.mr_id)
+                                            <button class="btn btn-outline btn-danger btn-delete-data btn-xs m-t-5" data-id="{{item.id}}">
+                                                <i class="fa fa-trash"></i> Remove
+                                            </button>
+                                        @endif
+                                    </td>
+                                    <td class="v-middle">
+                                        <strong>{{item.kode}}</strong> <br>
+                                        @if(item.request_id)
+                                            <span>{{item.pr.kode}}</span>
+                                        @endif
+                                    </td>
+                                    <td class="v-middle">
+                                        <p class="m-b-0">
+                                            <i class="ti-calendar m-r-5"></i><strong class="myDateFormat" data-date="{{item.date}}"></strong>
+                                            <i class="ti-alarm-clock m-r-5"></i><strong class="myTimeFormat" data-date="{{item.date}}"></strong>
+                                        </p>
+                                        @if(item.status === 'editable')
+                                            <small class="text-muted">STATUS - EDITBALE</small>
+                                        @endif
+                                        @if(item.status === 'waiting')
+                                            <small class="text-warning">STATUS - WAITING</small>
+                                        @endif
+                                        @if(item.status === 'received')
+                                            <small class="text-muted">STATUS - RECEIVED</small>
+                                        @endif
+                                    </td>
+                                    <td class="v-middle">
+                                        <small>{{item.vendor.kode}}</small> <br>
+                                        <span>{{item.vendor.name}}</span>
+                                    </td>
+                                    <td class="v-middle">
+                                        <small>{{item.narasi || 'Tidak ada keterangan tambahan'}}</small> <br>
+                                        <small>{{item.gudang.nama}}</small>
+                                    </td>
+                                </tr>
+                              
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,144 @@
+{{ script('ajax/index') }}
+{{ script('script/opt-equipment') }}
+{{ script('script/opt-event') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> 
+            <i class="ti-arrow-left"></i> 
+            <span>Back</span>
+        </button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-issue-upd" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Daily Issue</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Event</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-cloud"></i></div>
+                                                    <select class="form-control xselect2event" data-check="{{data.dailyevent ? data.dailyevent.event.id:null}}" name="event_id"></select>
+                                                    <input class="form-control" type="hidden" name="dailyevent_id" id="dailyevent_id" value="{{data.dailyevent_id}}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Waktu Mulai</label>
+                                                <input class="form-control set-datetime" type="datetime-local" name="start_at" id="start_at" data-datetime="{{data.report_at}}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Waktu Selesai</label>
+                                                @if(data.end_at)
+                                                    <input class="form-control set-datetime" type="datetime-local" name="end_at" id="end_at" data-datetime="{{data.end_at ? data.end_at:''}}">
+                                                @else
+                                                    <input class="form-control init-datetime" type="datetime-local" name="end_at" id="end_at">
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">PIT Area</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-map"></i></div>
+                                                    <select class="form-control select2pit" data-check="" name="pit_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Equipment Unit</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control xselect2equipment" data-check="{{data.unit_id ? data.unit_id:''}}" name="equip_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Keterangan</label>
+                                                <textarea class="form-control" name="description" id="description" rows="5">{{data.issue ? data.issue:''}}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <div class="row">
+                                        <div class="col-sm-6 text-left">
+                                            <button class="btn btn-danger waves-effect waves-light" id="bt-delete-data" type="button" data-id="{{data.id}}"> 
+                                                <i class="fa fa-trash"></i> <span>Delete</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                                <i class="fa fa-save"></i> <span>Save</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(83 230 157);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+</style>

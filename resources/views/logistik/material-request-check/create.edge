@@ -1,0 +1,130 @@
+{{ script('./ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="form-create">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-gift" style="margin-right: 10px;"></i> Form Create Material Request</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Project</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-location-arrow"></i></div>
+                                                    <select class="form-control select2site" data-title="department" data-check="" name="site_id" required></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">PIT</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-location-arrow"></i></div>
+                                                    <select class="form-control select2pit" data-title="department" data-check="" name="pit_id" required></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="">Department</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-location-arrow"></i></div>
+                                                    <select class="form-control" name="department_id" required>
+                                                        <option value="">Pilih Department</option>
+                                                        @each(item in list)
+                                                            <option value="{{item.id}}">[ {{item.kode}} ] - {{item.nama}}</option>
+                                                        @endeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Priority</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-cubes"></i></div>
+                                                    <select class="form-control custom-option" data-title="priority-scale" data-check="" name="priority" required></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="form-group">
+                                                <label for="">Narasi</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control" name="narasi" placeholder="Description material request..."> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="panel panel-inverse">
+                                                <div class="panel-heading bg-warning"> 
+                                                    Description Items Request
+                                                    <div class="pull-right">
+                                                        <a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a> 
+                                                    </div>
+                                                </div>
+                                                <div class="panel-wrapper collapse in" aria-expanded="true" style="padding: 0px 20px;">
+                                                    <div class="panel-body" style="padding: 0px 10px;">
+                                                        <div class="row">
+                                                            <div class="table-responsive">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th width="30">No</th>
+                                                                            <!--<th width="150">Type</th>-->
+                                                                            <th width="*">Item Request</th>
+                                                                            <th width="10%">Qty</th>
+                                                                            <th width="20%">Equipment Reff</th>
+                                                                            <th width="7%" class="text-center">Act</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="list-items">
+                                                                        <code id="keterangan-row">Untuk menambah material item, silahkan klik tombol <strong>+items</strong> dibawah...</code>
+                                                                    </tbody>
+                                                                    <tfoot>
+                                                                        <tr>
+                                                                            <td colspan="2">
+                                                                                <div class="input-group" style="max-width: 30%;">
+                                                                                    <input class="form-control" type="number" name="add-items" min="1" max="20" value="1">
+                                                                                    <span class="input-group-btn"> 
+                                                                                        <button id="add-items" class="btn btn-warning" type="button"><i class="ti-plus"></i> Items</button> 
+                                                                                    </span>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td colspan="3"></td>
+                                                                        </tr>
+                                                                    </tfoot>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-pit" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

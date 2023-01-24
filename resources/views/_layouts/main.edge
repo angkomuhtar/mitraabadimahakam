@@ -11,8 +11,11 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <title>Mitra Abadi Mahakam</title>
     {{--  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />  --}}
+   
     
+    {{ style('plugins/bower_components/jquery-asColorPicker-master/css/asColorPicker') }}
     
+
     <!-- Bootstrap Core CSS -->
     {{ style('bootstrap/dist/css/bootstrap.min') }}
     <!-- Menu CSS -->
@@ -22,7 +25,13 @@
     <!-- Custom CSS -->
     {{ style('css/style') }}
     <!-- color CSS -->
-    {{ style('css/colors/blue-dark') }}
+    {{ style('css/colors/black') }}
+
+    {{ style('plugins/bower_components/flaticon/font/flaticon.css') }}
+
+    {{--  <link href="../plugins/bower_components/summernote/dist/summernote.css" rel="stylesheet" />  --}}
+    {{ style('plugins/bower_components/summernote/dist/summernote.css') }}
+
     {{--  <link href="../plugins/bower_components/custom-select/custom-select" rel="stylesheet" type="text/css" />  --}}
     {{ style('plugins/bower_components/custom-select/custom-select') }}
     {{--  <link href="../plugins/bower_components/bootstrap-select/bootstrap-select.min" rel="stylesheet" />  --}}
@@ -37,6 +46,7 @@
     {{ style('plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min') }}
     {{--  <link href="../plugins/bower_components/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">  --}}
     {{ style('plugins/bower_components/bootstrap-daterangepicker/daterangepicker') }}
+    {{ style('plugins/bower_components/html5-editor/bootstrap-wysihtml5') }}
     <!-- morris CSS -->
     {{ style('plugins/bower_components/morrisjs/morris') }}
     <!-- jquery.toast -->
@@ -44,15 +54,30 @@
     <!-- chartist CSS -->
     {{ style('plugins/bower_components/chartist-js/dist/chartist.min') }}
     {{ style('plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip') }}
+    {{ style('plugins/bower_components/chartist-plugin-legend/chartist-plugin-legend') }}
+
+    {{ style('plugins/bower_components/jquery-datatables-editable/datatables') }}
 
     {{ style('plugins/bower_components/Minimal-Gauge-chart/css/cmGauge') }}
+
+    <!-- switchery -->
+    {{ style('plugins/bower_components/switchery/dist/switchery.min') }}
 
     <!-- SweetAlert CSS -->
     {{ style('plugins/bower_components/bootstrap-sweetalert/dist/sweetalert') }}
 
+    {{--  {{ style('plugins/bower_components/awesome-notifications/style') }}  --}}
+
     {{ style('https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min') }}
 
+    <!-- Select2 -->
+    {{ style('plugins/bower_components/select2/dist/css/select2.min') }}
 
+    <!-- switcher -->
+    {{ style('plugins/bower_components/jquery.switcher/dist/switcher.min') }}
+
+    <!-- Slider -->
+    
     
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -62,7 +87,17 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    
+    <!--<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script> 
+
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+            appId: "b677f7c0-6042-4cfe-a99a-a7034ae6d4b3",
+            });
+        });
+    </script> -->
     
 </head>
 
@@ -82,24 +117,70 @@
         @include('_layouts.navbar')
         @include('_layouts.sidebar')
         <div id="page-wrapper">
-            <div class="container-fluid">
+            <div class="">
                 @!section('content')
                 @include('_layouts.sidebar_setting')
             </div>
-            <footer class="footer" style="padding-left: 80px;">
-                <div class="pull-right hidden-xs">
-                    &copy; 2021 develop by <span class="text-primary">Ayat Ekapoetra</span> 
-                    <br>
-                    <i class="ti-email"></i> ayat.ekapoetra@gmail.com
-                </div>
-                <div class="pull-left">
-                    <h5>
-                        <span class="text-danger">PT. Mitra Abadi Mahakam</span> Personal license
-                    </h5>
+            <footer class="footer" style="padding-left: 30px;">
+                <div class="runtext-container">
+                    <div class="main-runtext">
+                        <marquee direction="" onmouseover="this.stop();" onmouseout="this.start();">
+                        
+                        <div class="holder" id="container-runningtext"></div>
+                        
+                        </marquee>
+                    </div>
                 </div>
             </footer>
         </div>
     </div>
+
+    <style>
+        marquee {
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .runtext-container {
+        overflow-x: hidden;
+        overflow-y: visible;
+        padding-bottom: 5px;
+        /* margin: 0 60px 0 30px; */
+        /* padding:0 3px 0 3px; */
+        }
+
+        .main-runtext {margin: 0 auto;
+        overflow: visible;
+        position: relative;
+        height: 20px;
+        }
+
+        .runtext-container .holder {
+        position: relative;
+        overflow: visible;
+        display:inline;
+        float:left;
+
+        }
+
+        .runtext-container .holder .text-container {
+            display:inline;
+        }
+
+        .runtext-container .holder a{
+            text-decoration: none;
+            /* font-weight: bold; */
+            color:#ff0000;
+            text-shadow:0 -1px 0 rgba(0,0,0,0.25);
+            line-height: -0.5em;
+            /* font-size:16px; */
+        }
+
+        .runtext-container .holder a:hover{
+            text-decoration: none;
+            color:#6600ff;
+        }
+    </style>
 
     
 
@@ -133,6 +214,7 @@
     {{ script('js/validator') }}
     <!-- Mask -->
     {{ script('js/mask') }}
+    {{ script('js/style-custom') }}
     <!--script Switcher -->
     {{ script('plugins/bower_components/styleswitcher/jQuery.style.switcher') }}
     <!--script dropify -->
@@ -140,6 +222,7 @@
     <!--script moment -->
     {{--  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js" integrity="sha512-LGXaggshOkD/at6PFNcp2V2unf9LzFq6LE+sChH7ceMTDP0g2kn6Vxwgg7wkPP7AAtX+lmPqPdxB47A0Nz0cMQ==" crossorigin="anonymous"></script>  --}}
     {{ script('plugins/bower_components/moment/moment') }}
+    {{ script('plugins/bower_components/moment/locale/id') }}
     <!--script jquery.magnific-popup -->
     {{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup-init') }}
     {{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min') }}
@@ -147,48 +230,88 @@
     {{ script('plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min') }}
     <!--JS daterangepicker -->
     {{ script('plugins/bower_components/bootstrap-daterangepicker/daterangepicker') }}
+    {{ script('plugins/bower_components/html5-editor/wysihtml5-0.3.0') }}
+    {{ script('plugins/bower_components/html5-editor/bootstrap-wysihtml5') }}
     <!--Morris JavaScript -->
     {{ script('plugins/bower_components/raphael/raphael-min') }}
     {{ script('plugins/bower_components/morrisjs/morris') }}
     <!-- chartist chart -->
     {{ script('plugins/bower_components/chartist-js/dist/chartist.min') }}
     {{ script('plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min') }}
+    {{ script('plugins/bower_components/chartist-plugin-pointlabels/dist/chartist-plugin-pointlabels') }}
+    {{ script('plugins/bower_components/chartist-plugin-barlabels/dist/chartist-plugin-barlabels') }}
+    {{ script('plugins/bower_components/chartist-plugin-legend/chartist-plugin-legend') }}
     {{ script('plugins/bower_components/Minimal-Gauge-chart/js/cmGauge') }}
+    <!-- knob chart -->
+    {{ script('plugins/bower_components/knob/jquery.knob') }}
+    <!-- chartjs chart -->
+    {{--  {{ script('plugins/bower_components/Chart.js/chartjs.init') }}  --}}
+    {{ script('plugins/bower_components/Chart.js/Chart.min') }}
 
     <!-- SweetAlert JS -->
     {{ script('plugins/bower_components/bootstrap-sweetalert/dist/sweetalert') }}
     <!-- jquery.toast -->
     {{ script('plugins/bower_components/toast-master/js/jquery.toast') }}
+    <!-- jquery datatable-editable -->
+    {{ script('plugins/bower_components/jquery-datatables-editable/jquery.dataTables') }}
+    {{ script('plugins/bower_components/datatables/dataTables.bootstrap') }}
+    {{ script('plugins/bower_components/tiny-editable/mindmup-editabletable') }}
+    {{ script('plugins/bower_components/tiny-editable/numeric-input-example') }}
+
+    <!-- switcher -->
+    {{ script('plugins/bower_components/styleswitcher/jQuery.style.switcher') }}
+    <!-- summernote -->
+    {{ script('plugins/bower_components/summernote/dist/summernote.min') }}
+    
     {{ script('js/toastr') }}
+
+    {{--  <!-- {{ script('plugins/bower_components/awesome-notifications/index.var') }} -->  --}}
     
     {{ script('https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min') }}
 
-    {{--  <script src="js/dashboard3.js"></script>  --}}
+    <!-- Table Freeze -->
+    {{ script('plugins/bower_components/jquery-freeze-table/dist/js/freeze-table') }}
+
+    <!-- Select2 -->
+    {{ script('plugins/bower_components/select2/dist/js/select2.min') }}
+
+    <!-- switcher -->
+    {{ script('plugins/bower_components/jquery.switcher/dist/switcher.min') }}
+
+    <!-- Color Picker Plugin JavaScript
+    <script src="../plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
+    <script src="../plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
+    <script src="../plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+    Date Picker Plugin JavaScript -->
+
+    {{ script('plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asColor') }}
+    {{ script('plugins/bower_components/jquery-asColorPicker-master/libs/jquery-asGradient') }}
+    {{ script('plugins/bower_components/jquery-asColorPicker-master/dist/jquery-asColorPicker.min') }}
 
     
     
     <script>
         var options = {
-        url: '../favicon.ico', // default
-        timeout: 3000, // default 3 seconds
-        sleep_delay: 5000, // default 5 seconds
-      };
-      var js_network_monitor = new JsNetworkMonitor(options);
-      js_network_monitor.on('online', function() {
-          console.log('you are online.');
-          $.toast({
+            url: '../favicon.ico', // default
+            timeout: 3000, // default 3 seconds
+            sleep_delay: 5000, // default 5 seconds
+        };
+
+        var js_network_monitor = new JsNetworkMonitor(options);
+        js_network_monitor.on('online', function() {
+              $.toast({
                   heading: 'Okey,,,',
                   text: 'Anda sedang online.',
                   position: 'top-right',
                   loaderBg: '#FFF',
                   icon: 'info',
+                  bgColor: '#5bc6f5',
                   hideAfter: 3500,
                   stack: 6
               });
-        });
-        js_network_monitor.on('offline', function() {
-            console.log('you are offline.');
-            $.toast({
+          });
+          js_network_monitor.on('offline', function() {
+              $.toast({
                   heading: 'Peringatan',
                   text: 'Jaringan internet anda sedang offline.',
                   position: 'top-right',
@@ -197,8 +320,32 @@
                   hideAfter: 3500,
                   stack: 6
               });
+          }
+        );
+        js_network_monitor.start();
+
+        var runningText = $('#container-runningtext')
+        GET_ISSUE()
+
+        function GET_ISSUE(){
+            $.ajax({
+                async: true,
+                url: '/ajax/running-text',
+                method: 'GET',
+                success: function(data){
+                    // console.log(data);
+                    if(data.length > 0){
+                        runningText.html(
+                            data.map( el => '<div class="text-container m-r-30"><span><i class="ti-alarm-clock"></i></span>'+el.items[0].report_time+' || <span class="text-danger">'+ el.issue +'</span> <strong>[ '+el.items.map(el => el.unit)+' ]</strong> <i class="ti-user"></i> <small>Report By: '+el.items[0].reportby+'</small></div>')
+                        )
+                    }
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
         }
-      );
-      js_network_monitor.start();
+      
     </script>
+    
 </body>

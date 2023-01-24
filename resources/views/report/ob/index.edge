@@ -1,0 +1,23 @@
+
+@layout('_layouts.main')
+@section('content')
+    {{ script('https://code.highcharts.com/highcharts') }}
+    {{ script('https://code.highcharts.com/modules/exporting') }}
+    {{ script('https://code.highcharts.com/modules/export-data') }}
+    {{ script('https://code.highcharts.com/modules/drilldown') }}
+    {{ script('https://code.highcharts.com/modules/accessibility') }}
+    {{ script('ajax/index') }}
+    {{ script('ajax/report/rep-truck-count-ob') }}
+    <div class="container-fluid">
+        <div class="row bg-title">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <h4 class="page-title">OVER BORDEN REPORT</h4> 
+            </div>
+        </div>
+        @include('report.ob.filter')
+        <div class="content-module" id="list-content" style="display:inline;">
+           <h3>Wait,,, </h3>
+           <p>Preparing data to display....</p>
+        </div>
+    </div>
+@endsection

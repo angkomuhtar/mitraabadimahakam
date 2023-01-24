@@ -1,0 +1,115 @@
+{{ script('ajax/index') }}
+{{ style('plugins/bower_components/datatables/jquery.dataTables.min.css') }}
+<link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-purchasing-request">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-calendar" style="margin-right: 10px;"></i> Create Purchasing Request</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Request Date</label>
+                                                <input type="datetime-local" class="form-control req-items init-datetime" name="date"> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Site</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-location-arrow"></i></div>
+                                                    <select class="form-control req-items select2site" data-title="site" data-check id="site_id" name="site_id"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Priority</label>
+                                                <select class="form-control req-items custom-option" data-title="priority-scale" name="priority"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Department</label>
+                                                <select class="form-control req-items" name="department">
+                                                    <option value="">Pilih</option>
+                                                    @each(item in department)
+                                                        <option value="{{item.id}}">[ {{item.nama}} ] - {{item.description}}</option>
+                                                    @endeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Description</label>
+                                                <textarea name="description" class="form-control req-items" rows="5"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead style="border-bottom: 2px solid;">
+                                                        <tr class="bg-light">
+                                                            <th class="sl text-center" width="20" style="border-right: 1px #ddd solid;vertical-align: middle;">No</th>
+                                                            <th class="sl" width="*" style="vertical-align: middle;">
+                                                                List of Items
+                                                            </th>
+                                                            <th width="150"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="item-details"></tbody>
+                                                    <tfoot>
+                                                        <tr class="bg-light">
+                                                            <th class="sl text-right" colspan="2" width="20" style="border-right: 1px #ddd solid;vertical-align: middle;">Jumlah Rows</th>
+                                                            <th width="150">
+                                                                <div class="input-group">
+                                                                    <input type="number" name="add-rows" class="form-control" placeholder="Add Rows" value="1"> 
+                                                                    <span class="input-group-btn"> 
+                                                                        <button class="btn btn-success btn-add-rows" type="button" style="border: 1px solid #e4e7ea;">
+                                                                            <i class="fa fa-plus"></i>
+                                                                        </button> 
+                                                                    </span>
+                                                                </div>
+                                                            </th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-pit" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ script('plugins/bower_components/datatables/jquery.dataTables.min.js') }}
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>

@@ -4,17 +4,29 @@
         <div class="white-box">
             <div class="" id="content-list">
                 <div class="row sales-report">
-                    <div class="col-md-9 col-sm-9 col-xs-12">
+                    <div class="col-md-7 col-sm-7 col-xs-12">
                         <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
                             <i class="fa fa-plus m-r-5"></i> <span>Add New Equipment</span>
                         </button>
                     </div>
-                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
-                        <div class="input-group">
-                            <input id="inpKeyword" class="form-control" placeholder="Search for...">
-                            <span class="input-group-btn"> 
-                                <button class="btn btn-info" type="button">Go!</button> 
-                            </span>
+                    <div class="col-md-5 col-sm-5 col-xs-12 text-right">
+                        <div class="row">
+                            <div class="col-md-4">
+                                &nbsp;
+                            </div>
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        Limit
+                                    </span>
+                                    <input id="inpLimit" type="number" class="form-control" placeholder="Limit data..." value="{{limit}}">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                            <i class="fa fa-filter"></i> Filter Data
+                                        </button> 
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -22,58 +34,64 @@
                     <table class="table table-hover table-bordered">
                         <thead style="border-bottom: 2px solid;">
                             <tr>
-                                <th class="sl text-center">No</th>
-                                <th class="sl text-center">ACT</th>
-                                <th class="sl">Kode Unit</th>
-                                <th class="sl">No.Serial</th>
-                                <th class="sl">Model</th>
-                                <th class="sl">Brand</th>
-                                <th class="sl">Qty.Cap</th>
-                                <th class="sl">Fuel.Cap</th>
-                                <th class="sl">Engine Model</th>
-                                <th class="sl">Engine Number</th>
-                                <th class="sl">Recived Date</th>
-                                <th class="sl" width="100px">Recived HM</th>
-                                <th class="sl">is Owned</th>
-                                <th class="sl text-center">Warranty</th>
+                                <th class="sl v-middle text-center">No</th>
+                                <th class="sl v-middle text-center">ACT</th>
+                                <th class="sl v-middle">Kode Equipment</th>
+                                <th class="sl v-middle">No.Serial</th>
+                                <th class="sl v-middle">Model</th>
+                                <th class="sl v-middle">Brand</th>
+                                <th class="sl v-middle">Qty.Cap</th>
+                                <th class="sl v-middle">Fuel.Cap</th>
+                                <th class="sl v-middle">Engine Model</th>
+                                <th class="sl v-middle">Engine Number</th>
+                                <th class="sl v-middle">Recived At</th>
+                                <th class="sl v-middle" width="100px">Recived HM</th>
+                                <th class="sl v-middle">is Owned</th>
+                                <th class="sl v-middle text-center">Warranty</th>
+                                <th class="sl v-middle text-center">Photo</th>
                             </tr>
                         </thead>
                         <tbody>
                             @each(item in list.data)
                                 <tr>
-                                    <td>{{$loop.index + 1}}</td>
-                                    <td>
+                                    <td class="padd-vertical-5 text-center">
+                                        {{{ '<h3>'+($loop.index+1)+'</h3>' }}}
+                                    </td>
+                                    <td class="padd-vertical-5 v-middle">
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                     </td>
-                                    <td class="single-line">
+                                    <td class="padd-vertical-5 single-line v-middle">
                                         {{item.kode}} <br>
                                         <small>{{item.tipe}}</small>
                                     </td>
-                                    <td>{{item.unit_sn ? item.unit_sn : 'unset'}}</td>
-                                    <td>{{item.unit_model}}</td>
-                                    <td class="text-uppercase font-bold">
+                                    <td class="padd-vertical-5 v-middle">
+                                        {{item.unit_sn ? item.unit_sn : 'unset'}} <br>
+                                        <small>{{item.site.name}}</small>
+                                    </td>
+                                    <td class="padd-vertical-5 v-middle">{{item.unit_model}}</td>
+                                    <td class="padd-vertical-5 text-uppercase font-bold v-middle">
                                         {{item.brand}}
                                     </td>
-                                    <td class="text-right">
+                                    <td class="padd-vertical-5 text-right v-middle">
                                         @if(item.qty_capacity)
-                                            {{item.qty_capacity}} {{item.satuan}}
+                                            {{item.qty_capacity}} {{ upperCase(item.satuan) }}
                                         @endif
                                     </td>
-                                    <td class="text-right">
+                                    <td class="padd-vertical-5 text-right v-middle">
                                         {{item.fuel_capacity}} Liter
                                     </td>
-                                    <td>{{item.engine_model}}</td>
-                                    <td>{{item.engine_sn}}</td>
-                                    <td class="myDateFormat" data-date="{{item.received_date}}" data-elm="span">
-                                        <span></span>
+                                    <td class="padd-vertical-5 v-middle">{{item.engine_model}}</td>
+                                    <td class="padd-vertical-5 v-middle">{{item.engine_sn}}</td>
+                                    <td class="padd-vertical-5 myDateFormat v-middle" data-date="{{item.received_date}}" data-elm="span">
+                                        <small><span></span></small>
                                     </td>
-                                    <td class="text-right single-line">
+                                    <td class="padd-vertical-5 text-right single-line v-middle">
                                         {{item.received_hm}} hourMeter
                                     </td>
-                                    <td class="text-center">
+                                    <td class="padd-vertical-5 text-center v-middle">
                                         {{item.is_owned}}
                                     </td>
-                                    <td class="text-center single-line">
+                                    <td class="padd-vertical-5 text-center single-line v-middle">
                                         @if(item.is_warranty != 'N')
                                             warranty at 
                                             <small>
@@ -82,6 +100,17 @@
                                             </small>
                                           @else
                                             -
+                                        @endif
+                                    </td>
+                                    <td class="padd-vertical-5 v-middle">
+                                        @if(item.img_uri)
+                                            <a class="image-popup-vertical-fit" href="{{item.img_uri}}" title="{{ upperCase(item.brand) }}"> 
+                                                <img src="{{item.img_uri}}" alt="{{item.kode}}" class="img-responsive">
+                                            </a>
+                                        @else
+                                            <a class="image-popup-vertical-fit" href="{{ assetsUrl('img-notfound.png') }}" title="{{ upperCase(item.brand) }}"> 
+                                                <img src="{{ assetsUrl('img-notfound.png') }}" alt="{{item.kode}}" class="img-responsive">
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>
@@ -94,3 +123,5 @@
         </div>
     </div>
 </div>
+{{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup.min') }}
+{{ script('plugins/bower_components/Magnific-Popup-master/dist/jquery.magnific-popup-init') }}

@@ -1,0 +1,28 @@
+@each(item in list)
+    <tr class="item-p2h" data-id="{{$loop.index + 1}}" style="background-color: #2f323e">
+        <td class="text-center" style="vertical-align: middle;">
+            <h1>{{$loop.index + 1}}</h1>
+            <input type="hidden" class="inp-p2h" data-id="{{$loop.index + 1}}" id="p2h_idp2h{{$loop.index + 1}}" name="p2h_id" value="{{item.id}}">
+        </td>
+        <td>
+            <p class="text-warning">{{item.task}}</p>
+            <label>Keterangan & Informasi</label>
+            <div class="form-group m-b-0" style="width: -webkit-fill-available;">
+                <textarea 
+                    class="form-control inp-p2h" 
+                    name="description" 
+                    id="descriptionp2h{{$loop.index + 1}}" 
+                    rows="3" 
+                    data-id="{{$loop.index + 1}}" 
+                    style="width: -webkit-fill-available;">{{item.description ? item.description : ''}}</textarea>
+            </div>
+        </td>
+        <td style="vertical-align: middle;">
+            Status
+            <select class="form-control input-sm check-status-p2h inp-p2h" name="is_check" id="is_checkp2h{{$loop.index + 1}}" data-id="{{$loop.index + 1}}" style="width: -webkit-fill-available;">
+                <option value="Y" {{item.is_check === 'Y' ? 'selected' : ''}}>OK</option>
+                <option value="N" {{item.is_check === 'N' ? 'selected' : ''}}>NO</option>
+            </select>
+        </td>
+    </tr>
+@endeach

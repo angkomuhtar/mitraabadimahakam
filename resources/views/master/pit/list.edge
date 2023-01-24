@@ -24,6 +24,8 @@
                                 <th class="sl text-center" width="20">No</th>
                                 <th class="sl text-center" width="20">ACT</th>
                                 <th class="sl" width="150">Nama Site</th>
+                                <th class="sl" width="100">OB Plan</th>
+                                <th class="sl" width="100">Coal Plan</th>
                                 <th class="sl">Description</th>
                                 <th class="sl text-center" width="20">Status</th>
                             </tr>
@@ -41,6 +43,20 @@
                                     <td class="single-line">
                                         {{item.kode}} <br>
                                         <small>{{item.name}}</small>
+                                    </td>
+                                    <td>
+                                        @if(item.ob_plan != null)
+                                            <strong class="text-warning">{{(item.ob_plan).toLocaleString('id-ID')}} MT</strong>
+                                        @else
+                                            0.00 MT
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if(item.coal_plan != null)
+                                            <strong class="text-warning">{{(item.coal_plan).toLocaleString('id-ID')}} MT</strong>
+                                        @else
+                                            0.00 MT
+                                        @endif
                                     </td>
                                     <td>{{item.location}}</td>
                                     <td class="text-center">{{item.sts}}</td>

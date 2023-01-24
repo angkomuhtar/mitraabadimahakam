@@ -1,0 +1,89 @@
+{{ script('ajax/index') }}
+{{ script('ajax/opr-dailytimesheet-create') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" class="" id="fm-timesheeet" data-id="">
+                        <div class="panel panel-default">
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="col-md-3">
+                                            <label for="tgl">Date Document</label>
+                                            <div class="form-group">
+                                                <input type="date" class="form-control initDate inp-timesheet" name="tgl" id="tgl">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Shift</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2shift inp-timesheet" name="shift_id" id="shift_id" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Site</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2site inp-timesheet" name="site_id" id="site_id" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div     class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="9">
+                                                                <h5>MECHINE SMU RECORD / JAM KERJA ALAT</h5>
+                                                                <small>
+                                                                    <em>
+                                                                        ( Diisi dari awal sampai akhir shift )
+                                                                    </em>
+                                                                </small>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" colspan="10">SMU Jam Kerja</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" width="100">Equipment</th>
+                                                            <th class="text-center" width="100">HM Awal</th>
+                                                            <th class="text-center" width="100">HM Akhir</th>
+                                                            <th class="text-center" width="100">HM Used</th>
+                                                            <th class="text-center" width="100">Operator</th>
+                                                            <th class="text-center" width="100">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="hm-unit-list">
+                                                    </tbody>
+                                                </table>
+                                                <button type="button" id="hm-add-unit" class="btn btn-primary ">Add Unit +</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-12 text-right">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button type="submit" class="btn btn-success waves-effect waves-light" id="bt-update-data"> 
+                                                <i class="fa fa-save"></i> <span>Save</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

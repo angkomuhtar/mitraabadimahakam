@@ -11,6 +11,8 @@ class MasPitSchema extends Schema {
       table.string('kode', 5).notNullable()
       table.string('name', 100).notNullable()
       table.string('location', 100).defaultTo(null)
+      table.float('ob_plan', 8, 2).defaultTo(null)
+      table.float('coal_plan', 8, 2).defaultTo(null)
       table.enu('sts', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })

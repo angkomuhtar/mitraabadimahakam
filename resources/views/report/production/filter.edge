@@ -1,0 +1,392 @@
+
+{{ script('ajax/index') }}
+{{ script('ajax/report/production-filter') }}
+
+{{ script('plugins/bower_components/dom-to-image/src/dom-to-image') }}
+{{ script('plugins/bower_components/dom-to-image/dist/dom-to-image.min') }}
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form class="form-horizontal" action="" id="filter-data">
+                            <div class="panel panel-default m-b-0">
+                                <div class="panel-heading">
+                                    <i class="ti-filter" style="margin-right: 10px;"></i> Filter Data
+                                    <span class="pull-right">
+                                        
+                                    </span>
+                                </div>
+                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title" id="myModalLabel">Color Picker</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row" id="row-bar">
+                                                    <div class="col-md-3 m-r-20">
+                                                        <div class="example">
+                                                            <label id="txt-label-color1" for="color1">Color Graph 1</label>
+                                                            <input type="text" name="colorGraph" id="color1" class="colorpicker form-control" value="#7ab2fa" /> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 m-r-20">
+                                                        <div class="example">
+                                                            <label id="txt-label-color2" for="color2">Color Graph 2</label>
+                                                            <input type="text" name="colorGraph" id="color2" class="colorpicker form-control" value="#1074f7" /> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="example">
+                                                            <label id="txt-label-color3" for="color3">Color Graph 3</label>
+                                                            <input type="text" name="colorGraph" id="color3" class="colorpicker form-control" value="#0451b6" /> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row m-t-30">
+                                                    <div class="col-md-3 m-r-20">
+                                                        <div class="example">
+                                                            <label id="txt-label-color4" for="color4">Custom 1</label>
+                                                            <input type="text" name="colorGraph" id="color4" class="colorpicker form-control" value="#fa7a82" /> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 m-r-20">
+                                                        <div class="example">
+                                                            <label id="txt-label-color5" for="color5">Custom 2</label>
+                                                            <input type="text" name="colorGraph" id="color5" class="colorpicker form-control" value="#fa1524" /> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="example">
+                                                            <label id="txt-label-color6" for="color6">Custom 3</label>
+                                                            <input type="text" name="colorGraph" id="color6" class="colorpicker form-control" value="#a40510" /> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-wrapper collapse in">
+                                    <div class="panel-body">
+                                        {{ csrfField() }}
+                                        <div class="row" style="padding: 50px 10px 10px;border: 1px solid #ddd;">
+                                            <div class="form-group m-b-10">
+                                                <div class="col-sm-3 col-sm-offset-2">
+                                                    <strong for="" class="p-l-10">Project Name*</strong>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-direction-alt"></i>
+                                                        </div>
+                                                        <select class="form-control inp-filter select2site" name="site_id" id="site_id"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group m-b-10" id="select-production-type" style="display:none">
+                                                <div class="col-sm-3 col-sm-offset-2">
+                                                    <strong for="" class="">Production Type*</strong>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-shopping-cart-full"></i>
+                                                        </div>
+                                                        <select class="form-control select2production_type" name="production_type">
+                                                            <option value="">Pilih</option>
+                                                            <option value="OB">Over Burden (OB)</option>
+                                                            <option value="BB">Coal</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group m-b-10" id="select-range-type" style="display:none">
+                                                <div class="col-sm-3 col-sm-offset-2">
+                                                    <strong for="" class="">Group By*</strong>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-infinite"></i>
+                                                        </div>
+                                                        <select class="form-control select2range_type" name="range_type" id="range_type">
+                                                            <option value="">Pilih</option>
+                                                            <option value="MW">Pit Wise</option>
+                                                            <option value="PW">Periode Wise</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group m-b-10" id="select-pit"></div>
+
+                                            <div class="form-group m-b-10" id="select-duration-type" style="display:none">
+                                                <div class="col-sm-3 col-sm-offset-2">
+                                                    <strong for="" class="">Range By*</strong>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="ti-pin-alt"></i>
+                                                        </div>
+                                                        <select class="form-control inp-filter" name="filterType" id="filterType">
+                                                            <option value="">Pilih</option>
+                                                            <option value="MONTHLY">By Monthly</option>
+                                                            <option value="WEEKLY">By Weekly</option>
+                                                            <option value="DATE">By Date</option>
+                                                            <option value="SHIFT">By Shift Schedules</option>
+                                                            <option value="HOURLY">By Hourly</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group m-b-10" id="box-daily" style="display:none">
+                                                <div class="form-group m-b-20">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">Starting Time</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-timer"></i>
+                                                            </div>
+                                                            <input type="datetime-local" class="form-control inp-filter initDate" name="start_hours" id="time">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group m-b-10">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">Finish Time</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-timer"></i>
+                                                            </div>
+                                                            <input type="datetime-local" class="form-control inp-filter initDate" name="end_hours" id="time">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-monthly" style="display:none">
+                                                <div class="form-group m-b-20">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">From Month</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-forward"></i>
+                                                            </div>
+                                                            <input type="month" class="form-control inp-filter" name="month_begin" id="month_begin">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group m-b-20">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">To Month</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-backward"></i>
+                                                            </div>
+                                                            <input type="month" class="form-control inp-filter" name="month_end" id="month_end">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="container-type" id="box-weekly" style="display:none">
+                                                <div class="form-group m-b-20">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">From Week</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-forward"></i>
+                                                            </div>
+                                                            <input type="week" class="form-control inp-filter" name="week_begin" id="week_begin">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group m-b-20">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">To Week</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-backward"></i>
+                                                            </div>
+                                                            <input type="week" class="form-control inp-filter" name="week_end" id="week_end">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-date" style="display:none">
+                                                <div class="form-group m-b-20">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">From Date</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-forward"></i>
+                                                            </div>
+                                                            <input type="date" class="form-control inp-filter range_begin" name="start_date" id="start_date">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group m-b-20">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">To Date</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-control-skip-backward"></i>
+                                                            </div>
+                                                            <input type="date" class="form-control inp-filter range_end" name="end_date" id="end_date">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-shift" style="display:none">
+                                                <div class="form-group m-b-20">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">Shift Name</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-reload"></i>
+                                                            </div>
+                                                            <select class="form-control inp-filter select2shift" name="shift_id" id="shift_id"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-type-chart" style="display:none">
+                                                <div class="form-group m-b-10">
+                                                    <div class="col-sm-3 col-sm-offset-2">
+                                                        <strong for="" class="p-l-10">Chart Type</strong>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon">
+                                                                <i class="ti-stats-up"></i>
+                                                            </div>
+                                                            <select class="form-control inp-filter" name="typeChart" id="typeChart">
+                                                                <option value="column">BAR CHART</option>
+                                                               <option value="spline">LINE CHART</option>
+                                                                <option value="areaspline">AREA CHART</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="container-type" id="box-apply-chart" style="display:none">
+                                                <div class="form-group m-t-20">
+                                                    <div class="col-sm-5 col-sm-offset-2">
+                                                        <label for="" class="">&nbsp;</label>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <button type="button" class="btn btn-outline btn-default pull-right" data-toggle="modal" data-target="#myModal">
+                                                            <i class="ti-settings"></i> Color Picker
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-center" id="text-loading" style="display:none">
+                                                <h3 class="text-center">Please wait,</h3>
+                                                <small>Sedang melakukan pengambilan data...</small>
+                                            </div>
+                                        </div>
+                                        <div class="row text-center p-t-20">
+                                            <div class="container-type" id="box-apply-chart" style="display:none">
+                                                <button class="btn btn-info waves-effect waves-light" type="submit"> 
+                                                    <i class="fa fa-bar-chart-o"></i> <span>Apply Chart</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="box-chart" class="row" style="display:none">
+    <div class="white-box">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="container" class="text-center"></div>
+                <div id="xxx" class="text-center"></div>
+            </div>
+            <div class="panel-footer text-center">
+                <button type="button" class="btn btn-default waves-effect waves-light btn-sm pull-left" id="bt-back"> 
+                    <i class="fa fa-angle-left"></i> <span>Back</span>
+                </button>
+                <span class="mytooltip tooltip-effect-1">
+                    <span class="tooltip-item" style="background: none;">
+                        <button class="btn btn-success waves-effect waves-light" type="button" id="bt-generate-xls">
+                            <span class="btn-label">
+                                <i class="ti-download"></i>
+                            </span>
+                            XLS Files
+                        </button>
+                    </span> 
+                    <span class="tooltip-content clearfix">
+                        <img src="{{ assetsUrl('images/xls.png')}}" width="100">
+                        <span class="tooltip-text">
+                            Download data berformat EXCEL sesuai dengan filtering data yang telah di tentukan.
+                        </span> 
+                    </span>
+                </span>
+                <span class="mytooltip tooltip-effect-1">
+                    <span class="tooltip-item" style="background: none;">
+                        <button class="btn btn-inverse waves-effect waves-light" type="button" id="bt-generate-pdf">
+                            <span class="btn-label">
+                                <i class="ti-download"></i>
+                            </span>
+                            PDF Files
+                        </button>
+                    </span> 
+                    <span class="tooltip-content clearfix">
+                      <img src="{{ assetsUrl('images/pdf.png')}}">
+                      <span class="tooltip-text">
+                        Download data berformat PDF sesuai dengan filtering data yang telah di tentukan.
+                      </span> 
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Colorpicker
+    $(".colorpicker").asColorPicker();
+    $(".complex-colorpicker").asColorPicker({
+        mode: 'complex'
+    });
+    $(".gradient-colorpicker").asColorPicker({
+        mode: 'gradient'
+    });
+</script>

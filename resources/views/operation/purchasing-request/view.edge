@@ -1,0 +1,383 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="tab-pane active" id="profile">
+                        <div class="row">
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Location</strong>
+                                <br>
+                                @if(data.site)
+                                    <p class="text-muted">{{data.site.name}}</p>
+                                @else
+                                    <p class="text-muted">Head Offices Administration</p>
+                                @endif
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Kode Purchasing</strong>
+                                <br>
+                                <p class="text-muted">{{data.kode}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Priority Scale</strong>
+                                <br>
+                                @if(data.priority === 'URGENT PRIORITY')
+                                    <small class="label label-danger">
+                                        {{data.priority}}
+                                    </small>
+                                @endif
+                                @if(data.priority === 'NORMAL PRIORITY')
+                                    <small class="label label-warning">
+                                        {{data.priority}}
+                                    </small>
+                                @endif
+                                @if(data.priority === 'LOW PRIORITY')
+                                    <small class="label label-info">
+                                        {{data.priority}}
+                                    </small>
+                                @endif
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Created At</strong>
+                                <br>
+                                <i class="ti-calendar m-r-10"></i><small class="myDateTimeFormat" data-date="{{data.date}}"></small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Author</strong>
+                                <br>
+                                <p class="text-muted">{{data.author.nm_lengkap}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Department</strong>
+                                <br>
+                                <p class="text-muted">{{data.dept.nama}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Status</strong>
+                                <br>
+                                <p class="text-muted">{{data.status}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Accept</strong>
+                                <br>
+                                <p class="text-muted m-b-0">
+                                    {{data.mengetahui.nm_lengkap||''}}
+                                </p>
+                                @if(data.acceptAt)
+                                    <span><i class="ti-calendar m-r-10"></i><small class="myDateTimeFormat" data-date="{{data.acceptAt}}"></small></span>
+                                @endif
+                            </div>
+                        </div>
+                        <hr>
+                        
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                @if(data.description)
+                                    <h4 class="font-bold m-t-30">Description</h4>
+                                    <p class="m-t-10">{{data.description}}</p>
+                                @endif
+                            </div>
+                            <div class="panel-body">
+                                <ul class="nav nav-pills m-b-30 pull-right">
+                                    <li class="active"> 
+                                        <a href="#navpills-11" data-toggle="tab" aria-expanded="true">Approval</a> 
+                                    </li>
+                                    <li class=""> 
+                                        <a href="#navpills-21" data-toggle="tab" aria-expanded="false">Purchasing Order</a> 
+                                    </li>
+                                </ul>
+                                <div class="tab-content br-n pn">
+                                    <div id="navpills-11" class="tab-pane active">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover dataTable" id="myTable">
+                                                        <thead style="border-bottom: 2px solid #ccc;">
+                                                            <!--<tr class="bg-light">-->
+                                                            <tr class="bg-warning">
+                                                                <th class="sl text-white">ACT</th>
+                                                                <th class="sl text-white">Original Order</th>
+                                                                <th class="sl text-white">Manufacture</th>
+                                                                <th class="sl text-white">Uom</th>
+                                                                <th class="sl text-white">Part Number</th>
+                                                                <th class="sl text-white">Equipment</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="request-items">
+                                                            @each(item in data.items)
+                                                                <tr>
+                                                                    <td>
+                                                                        <button type="button" 
+                                                                            class="btn btn-warning select-item btn-{{item.id}}" data-toggle="modal" data-target="#modal{{item.id}}">
+                                                                            <i class="ti-check-box"></i> 
+                                                                        </button>
+                                                                        @include('operation.purchasing-request.modal')
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>{{item.descriptions}}</strong> <br>
+                                                                        <small>{{item.kode}}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>{{item.manufactur || ''}}</strong> <br>
+                                                                        <small>{{item.equiptype || ''}}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>{{item.qty}}</strong> 
+                                                                        <small>{{item.satuan}}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        <strong>{{item.partnumber || ''}}</strong> <br>
+                                                                        <small>{{item.parttype || ''}}</small>
+                                                                    </td>
+                                                                    <td>
+                                                                        {{item.equipment.kode || ''}} <br/>
+                                                                        <small>{{item.equipment.brand || ''}} - {{item.equipment.unit_model || ''}}</small>
+                                                                    </td>
+                                                                </tr>
+                                                            @endeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="navpills-21" class="tab-pane">
+                                        <div class="row">
+                                            <div class="col-md-12"> 
+                                                <code>Note :</code> System secara otomatis akan membuat <strong>purchasing order baru</strong> untuk setiap vendor atau pemasok yang ditentukan di setiap pesanan / order items nya. 
+                                                Kode purchasing order akan dibuat sementara dan dapat di ubah pada kesempatan lain
+                                                <div class="table-responsive">
+                                                    <form action="#" data-id="{{data.id}}" id="form-save-purchasing-order">
+                                                        {{ csrfField() }}
+                                                        <table class="table table-hover dataTable" id="myTable">
+                                                            <thead style="border-bottom: 2px solid;">
+                                                                <tr class="bg-light">
+                                                                    <th class="sl">ACT</th>
+                                                                    <th class="sl">Original Order</th>
+                                                                    <th class="sl">Replace With</th>
+                                                                    <th class="sl">Qty</th>
+                                                                    <th class="sl">Pemasok</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="list-purchasing-order"></tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td colspan="5">
+                                                                        <button class="btn btn-success waves-effect waves-light" type="submit" id="save-purchasing-order" style="display: none">
+                                                                            <span class="btn-label"><i class="fa fa-check"></i></span>
+                                                                            Buat Purchasing Order
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('select').select2()
+
+        $('body').on('click', 'button.delete-item', function(e){
+            e.preventDefault()
+            var id = $(this).data('id')
+            var elm = $(this).parents('div.tab-content').find('.row > div > div > table > tbody > tr:first > td:first > button')
+            elm.toggleClass('btn-warning', 'btn-default').removeAttr('disabled')
+            $(this).parents('tr').remove()
+            visibleButtonSavePurchasingOrder()
+        })
+
+        $('select[name="barang_replace"]').on('change', function(){
+            var value = $(this).val()
+            var elm = $(this).parents('div.modal-content')
+            if(value){
+                $.ajax({
+                    async: false,
+                    url: '/ajax/barang/'+value,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(result){
+                        console.log(result);
+                        elm.find('input[id="partnumber-replace"]').val(result.partnumber || '')
+                        elm.find('input[id="kd-replace"]').val(result.kode)
+                        elm.find('input[id="nm-replace"]').val(result.descriptions)
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+            }else{
+                $(this).val('')
+                elm.find('input[id="partnumber-replace"]').val('')
+                elm.find('input[id="kd-replace"]').val('')
+                elm.find('input[id="nm-replace"]').val('')
+            }
+        })
+
+        $('select[name="vendor_id"]').on('change', function(){
+            var value = $(this).val()
+            if(value){
+                $.ajax({
+                    async: false,
+                    url: '/ajax/vendor/'+value,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(result){
+                        console.log(result);
+                        $('input[id="kd-vendor"]').val(result.kode)
+                        $('input[id="nm-vendor"]').val(result.name)
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                })
+            }else{
+                $('input[id="kd-vendor"]').val('')
+                $('input[id="nm-vendor"]').val('')
+            }
+        })
+
+        $('button#send-keranjang-po').on('click', function(e){
+            e.preventDefault()
+            var elm = $(this).parents('div.modal-content')
+            var id = $(this).data('id')
+            var idbarang = elm.find('input[id="id-barang"]').val()
+            var nmbarang = elm.find('input[id="nm-barang"]').val()
+            var kdbarang = elm.find('input[id="kd-barang"]').val()
+            var partnumber = elm.find('input[id="part-barang"]').val()
+            var idequipment = elm.find('input[id="id-equipment"]').val()
+            var replaceWith = elm.find('select[name="barang_replace"]').val()
+            var replaceWithKode = elm.find('input[id="kd-replace"]').val() || ''
+            var replaceWithNama = elm.find('input[id="nm-replace"]').val() || ''
+            var replaceWithPartNumber = elm.find('input[id="partnumber-replace"]').val() || ''
+            var vendor_id = elm.find('select[name="vendor_id"]').val()
+            var nmvendor = elm.find('input[id="nm-vendor"]').val()
+            var kdvendor = elm.find('input[id="kd-vendor"]').val()
+            var qty = elm.find('input[name="qty"]').val()
+
+            if(!vendor_id){
+                alert('Pemasok belum ditentukan...')
+            }else{
+                $(this).parents('div.modal').modal('hide')
+                $(this).parents('td').find('button.select-item').toggleClass('btn-warning', 'btn-default').attr('disabled', 'true')
+    
+                $('tbody#list-purchasing-order').append(
+                    '<tr class="po-items">'+
+                    '   <td>'+
+                    '       <button type="button" data-id="'+id+'" class="btn btn-danger btn-circle delete-item">'+
+                    '           <i class="ti-trash"></i>'+
+                    '       </button>'+
+                    '       <input type="hidden" class="inp-value" name="barang_id" value="'+idbarang+'"/>'+
+                    '       <input type="hidden" class="inp-value" name="replace_with" value="'+(replaceWith || 'null')+'"/>'+
+                    '       <input type="hidden" class="inp-value" name="qty" value="'+qty+'"/>'+
+                    '       <input type="hidden" class="inp-value" name="vendor_id" value="'+vendor_id+'"/>'+
+                    '       <input type="hidden" class="inp-value" name="equipment_id" value="'+idequipment+'"/>'+
+                    '   </td>'+
+                    '   <td>'+
+                    '       <strong>'+nmbarang+'</strong><br><small>'+kdbarang+' - '+partnumber+'</small>'+
+                    '   </td>'+
+                    '   <td>'+
+                    '       <strong>'+replaceWithNama+'</strong><br><small>'+replaceWithKode+' - '+replaceWithPartNumber+'</small>'+
+                    '   </td>'+
+                    '   <td>'+
+                    '       <strong>'+qty+'</strong>'+
+                    '   </td>'+
+                    '   <td>'+
+                    '       <strong>'+nmvendor+'</strong><br><small>'+kdvendor+'</small>'+
+                    '   </td>'+
+                    '</tr>'
+                )
+            }
+            
+            visibleButtonSavePurchasingOrder()
+        })
+
+        $('form#form-save-purchasing-order').on('submit', function(e){
+            e.preventDefault()
+            var items = formDataValue('po-items', 'inp-value')
+            var request_id = $(this).data('id')
+            const dataForm = new FormData()
+            dataForm.append('request_id', request_id)
+            dataForm.append('items', JSON.stringify(items))
+            swal({
+                title: "Descriptions!",
+                text: "Write something descriptions:",
+                type: "input",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                inputPlaceholder: "Write something"
+            }, function (inputValue) {
+                dataForm.append('narasi', inputValue)
+                if (inputValue === false) return false;
+                $.ajax({
+                    async: true,
+                    url: '/operation/purchasing-order',
+                    method: 'POST',
+                    data: dataForm,
+                    dataType: 'json',
+                    processData: false,
+                    mimeType: "multipart/form-data",
+                    contentType: false,
+                    success: function(result){
+                        console.log(result)
+                        if(result.success){
+                            swal("Okey,,,!", result?.message, "success")
+                            window.location.reload()
+                        }else{
+                            swal("Opps,,,!", result?.message, "warning")
+                        }
+                    },
+                    error: function(err){
+                        console.log(err)
+                        const { message } = err.responseJSON
+                        swal("Opps,,,!", message, "warning")
+                    },
+                    complete: function(){
+                        swal("Nice!", "You wrote: " + inputValue, "success");
+                    }
+                })
+            });
+        })
+    
+        function visibleButtonSavePurchasingOrder(){
+            var len = $('tbody#list-purchasing-order').children().length
+            if(len >= 1){
+                $('button#save-purchasing-order').css('display', 'inline')
+            }else{
+                $('button#save-purchasing-order').css('display', 'none')
+            }
+        }
+    
+        function formDataValue(trClass, elmClass){
+            let items = []
+            $('tr.'+trClass).each(function(){
+                var elm = $(this)
+    
+                var props = []
+                var vals = []
+                elm.find('input.'+elmClass).each(function(){
+                    props.push($(this).attr('name'))
+                    vals.push($(this).val())
+                })
+    
+                const obj = props.reduce((acc, element, i) => {
+                    return {...acc, [element]: vals[i]};
+                }, {});
+                
+                items.push(obj)
+            })
+            console.log(items);
+            return items
+        }
+    })
+
+</script>

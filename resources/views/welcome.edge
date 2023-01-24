@@ -2,6 +2,7 @@
 @layout('_layouts.main')
 @section('content')
 {{ script('https://code.highcharts.com/highcharts') }}
+
     <div class="container-fluid">
         <div class="row bg-title">
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
@@ -47,7 +48,7 @@
                     <h3 class="box-title">NEW SITE</h3>
                     <ul class="list-inline two-part">
                         <li><i class="icon-people text-info"></i></li>
-                        <li class="text-right"><span class="counter">3</span></li>
+                        <li class="text-right"><span class="counter">2</span></li>
                     </ul>
                 </div>
             </div>
@@ -56,7 +57,7 @@
                     <h3 class="box-title">TOT FLEET</h3>
                     <ul class="list-inline two-part">
                         <li><i class="icon-folder text-purple"></i></li>
-                        <li class="text-right"><span class="counter">16</span></li>
+                        <li class="text-right"><span class="counter">7</span></li>
                     </ul>
                 </div>
             </div>
@@ -80,315 +81,51 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-6 col-md-6">
-                <div class="white-box">
-                    <h3 class="box-title"><small class="pull-right m-t-10 text-success"><i class="fa fa-sort-asc"></i> 18% High then last month</small> Monthly Site Productivity</h3>
-                    <div class="stats-row">
-                        <div class="stat-item">
-                            <h6>Overall Growth</h6> <b>80.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Montly</h6> <b>15.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Day</h6> <b>5.50%</b></div>
-                    </div>
-                    <div id="sparkline8" class="grafik-chartis"></div>
-                </div>
-                <div class="white-box">
-                    <h3 class="box-title"><small class="pull-right m-t-10 text-danger"><i class="fa fa-sort-desc"></i> 18% High then last month</small>Monthly Fuel Consumtions</h3>
-                    <div class="stats-row">
-                        <div class="stat-item">
-                            <h6>Overall Growth</h6> <b>80.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Montly</h6> <b>15.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Day</h6> <b>5.50%</b></div>
-                    </div>
-                    <div id="sparkline9" class="grafik-chartis"></div>
-                </div>
+            <div class="col-lg-12 col-md-12"> 
+                @include('chart.monthly.ob-chart')
+                @include('chart.monthly.coal-chart')
             </div>
             <div class="col-lg-6 col-md-6">
-                <div class="white-box">
-                    <h3 class="box-title"><small class="pull-right m-t-10 text-success"><i class="fa fa-sort-asc"></i> 18% High then last month</small> Last Day Productivity</h3>
-                    <div class="stats-row">
-                        <div class="stat-item">
-                            <h6>Overall Growth</h6> <b>80.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Montly</h6> <b>15.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Day</h6> <b>5.50%</b></div>
-                    </div>
-                    <div id="sparkline10" class="grafik-chartis">
-                    </div>
-                </div>
-                <div class="white-box">
-                    <h3 class="box-title"><small class="pull-right m-t-10 text-danger"><i class="fa fa-sort-desc"></i> 18% High then last month</small>Last Day Fuel Consumtions</h3>
-                    <div class="stats-row">
-                        <div class="stat-item">
-                            <h6>Overall Growth</h6> <b>80.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Montly</h6> <b>15.40%</b></div>
-                        <div class="stat-item">
-                            <h6>Day</h6> <b>5.50%</b></div>
-                    </div>
-                    <div id="sparkline11" class="grafik-chartis"></div>
-                </div>
+                @include('chart.monthly.fuel-chart')
+                @include('chart.monthly.exp-vs-prod')
+                
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 col-lg-6">
-                <div class="white-box bg-theme-alt m-b-0">
-                    <h3 class="box-title text-white">Coal Production / Hours</h3>
-                    <div class="demo-container" style="height:300px;">
-                        <div id="placeholder" class="demo-placeholder"></div>
-                    </div>
-                </div>
-                <div class="white-box">
-                    <h4 class="font-bold text-center">Site RPU</h4>
-                    <div class="row text-center m-t-30">
-                        <div class="col-xs-4 b-r">
-                            <h2>2</h2>
-                            <h4>FLEET</h4>
-                        </div>
-                        <div class="col-xs-4 b-r">
-                            <h2>3</h2>
-                            <h4>EXA</h4></div>
-                        <div class="col-xs-4">
-                            <h2>6</h2>
-                            <h4>OHT</h4>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-lg-6 col-md-6">
+                @include('chart.current.ritase-ob-chart')
             </div>
-            <div class="col-md-6 col-lg-6">
-                <div class="white-box">
-                    <h3 class="box-title">
-                        Retase OB Removal By Current Shift
-                    </h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <small>Material Lumpur Padat</small><br>
-                            <small>Jarak 800 Meter</small>
-                        </div>
-                        <div class="col-md-6">
-                            <select class="form-control">
-                                <option>Pilih Lokasi</option>
-                                <option>RPU 1</option>
-                                <option>RPU 2</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="diagram" style="width:100%;height:100%;padding-top:0px;padding-bottom:57px"></div>
-                </div>
+            <div class="col-lg-6 col-md-6">
+                @include('chart.monthly.event-chart')
             </div>
-            <!-- col-md-3 -->
         </div>
     </div>
+    <script>
+        OneSignal.push(function() {
+            /* These examples are all valid */
+            OneSignal.getUserId(function(userId) {
+                console.log("OneSignal User ID:", userId);
+                // (Output) OneSignal User ID: 270a35cd-4dda-4b3f-b04e-41d7463a2316    
+            });
+        });
+    </script>
+    <script>
+        $(function() {
+            $('[data-plugin="knob"]').knob();
+        });
+    </script>
     <script>
         $(document).ready(function () {
             "use strict";
 
-            const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-
-            const random = Math.floor(Math.random() * months.length);
-            console.log(random*random, months[random]-random, random, months[random], random+random, months[random]+random);
-            var data1 = [random*random, months[random]-random, random, months[random], random+random, months[random]+random]
-            var data2 = [random*random+1, months[random]*random, random-3, months[random-2], random+random, months[random-7]+random]
-            var data3 = [random*random+3, months[random-2]*random, random-1, months[random-5], random+random, months[random+7]+random]
-            var data4 = [random*random+8, months[random-3]*random, random-9, months[random-1], random+random, months[random+5]+random]
-
             $('.vcarousel').carousel({
                 interval: 3000
             })
-
-            new Chartist.Line('#sparkline8', {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8],
-                series: [
-                    data1
-                ]
-                }, {
-                low: 0,
-                showArea: true
-            });
-            new Chartist.Line('#sparkline9', {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8],
-                series: [
-                    data2
-                ]
-                }, {
-                low: 0,
-                showArea: true
-            });
-            new Chartist.Line('#sparkline10', {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8],
-                series: [
-                    data3
-                ]
-                }, {
-                low: 0,
-                showArea: true
-            });
-            new Chartist.Line('#sparkline11', {
-                labels: [1, 2, 3, 4, 5, 6, 7, 8],
-                series: [
-                    data4
-                ]
-                }, {
-                low: 0,
-                showArea: true
-            });
-
-            Highcharts.chart('diagram', {
-                chart: {
-                    type: 'pie',
-                    backgroundColor: '#2f323e',
-                    options3d: {
-                        enabled: true,
-                        alpha: 45,
-                        beta: 0
-                    }
-                },
-                title: {
-                    text: 'Browser market shares at a specific website, 2014',
-                },
-                accessibility: {
-                    point: {
-                        valueSuffix: '%'
-                    }
-                },
-                tooltip: {
-                    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        depth: 35,
-                        dataLabels: {
-                            enabled: true,
-                            format: '{point.name}'
-                        }
-                    }
-                },
-                series: [{
-                    type: 'pie',
-                    name: 'Browser share',
-                    data: [
-                        {
-                            name: 'OHT-01',
-                            y: Math.random() * 10,
-                            sliced: true,
-                            selected: true
-                        },
-                        {
-                            name: 'OHT-02',
-                            y: Math.random() * 10
-                        },
-                        {
-                            name: 'OHT-03',
-                            y: Math.random() * 10
-                        },
-                        {
-                            name: 'OHT-04',
-                            y: Math.random() * 10
-                        },
-                    ]
-                }]
-            });
-    
-            Highcharts.chart('placeholder', {
-                chart: {
-                    type: 'spline',
-                    backgroundColor: '#ff7676',
-                    animation: Highcharts.svg, // don't animate in old IE
-                    marginRight: 10,
-                    events: {
-                        load: function () {
-                            // set up the updating of the chart each second
-                            var series = this.series[0];
-                            setInterval(function () {
-                                var x = (new Date()).getTime(), // current time
-                                    y = Math.random();
-                                series.addPoint([x, y], true, true);
-                            }, 1000);
-                        }
-                    }
-                },
-    
-                time: {
-                    useUTC: false
-                },
-                title: {
-                    text: '',
-                    style: {
-                        color: '#FFF',
-                        font: 'bold 16px "Trebuchet MS", Verdana, sans-serif'
-                    }
-                },
-                accessibility: {
-                    announceNewData: {
-                        enabled: true,
-                        minAnnounceInterval: 15000,
-                        announcementFormatter: function (allSeries, newSeries, newPoint) {
-                            if (newPoint) {
-                                return 'New point added. Value: ' + newPoint.y;
-                            }
-                            return false;
-                        }
-                    }
-                },
-    
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150
-                },
-    
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-    
-                tooltip: {
-                    headerFormat: '<b>{series.name}</b><br/>',
-                    pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
-                },
-    
-                legend: {
-                    enabled: false
-                },
-    
-                exporting: {
-                    enabled: false
-                },
-                plotOptions: {
-                    series: {
-                        color: '#FFF'
-                    }
-                },
-    
-                series: [{
-                    name: 'Random data',
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                            time = (new Date()).getTime(),
-                            i;
-    
-                        for (i = -19; i <= 0; i += 1) {
-                            data.push({
-                                x: time + i * 1000,
-                                y: Math.random()
-                            });
-                        }
-                        return data;
-                    }())
-                }]
-            });
-        })
+    })
     </script>
+    <style>
+        /* text.ct-label {
+            font-size: 12px;
+            font-weight: 400;
+        } */
+
+    </style>
 @endsection

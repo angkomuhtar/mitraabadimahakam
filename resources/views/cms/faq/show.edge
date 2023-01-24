@@ -1,0 +1,96 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-8">
+                    <form action="" id="form-update" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Update Fact</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Bahasa</label>
+                                                <select class="form-control" name="lang" required>
+                                                    <option value="">Pilih...</option>
+                                                    <option value="id" {{data.lang == 'id' && 'selected'}}>Indonesia</option>
+                                                    <option value="en" {{data.lang == 'en' && 'selected'}}>Inggris</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Urut</label>
+                                                <input type="number" class="form-control" name="urut" placeholder="Urutan dari kiri ke kanan" value="{{data.urut}}" required> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Question</label>
+                                                <input type="text" class="form-control" name="faq_subtitle" placeholder="faq question" value="{{data.faq_subtitle}}" required> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Answer</label>
+                                                <textarea class="form-control" name="faq_description" placeholder="faq answer" rows="3" required>{{data.faq_description}}</textarea> 
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-update" type="reset"> 
+                                            <i class="fa fa-close"></i> <span>Cancel</span>
+                                        </button>
+                                        <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                            <i class="fa fa-save"></i> <span>Update</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <img src="../../../images/cms/sample-fact.png" height="500" class="img-fluid" alt="...">
+                    <div class="box-image">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('select[name="img_url"]').on('change', function(){
+            var value = $(this).val()
+            if(value){
+                $('i#icon-preview').attr('class', '')
+                $('i#icon-preview').attr('class', value)
+            }
+        })
+    })
+</script>
+<style>
+    div.box-image {
+        position: absolute;
+        bottom: 0px;
+        margin: 10px 5px;
+        border: 3px red dashed;
+        height: 125px;
+        background-color: transparent;
+        width: 80%;
+        max-width: 303px;
+        min-height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+    }
+</style>

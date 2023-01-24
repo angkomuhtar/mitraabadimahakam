@@ -1,7 +1,5 @@
 'use strict'
 $(function(){
-    $('.dropify').dropify();
-
     initDeafult()
 
     $('td.rand').each(function(){

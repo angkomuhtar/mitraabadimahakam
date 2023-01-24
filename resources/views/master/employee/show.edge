@@ -15,6 +15,67 @@
                                         <div class="col-md-12">
                                             <div class="col-md-4">
                                                 <div class="form-group">
+                                                    <label for="">NIK Lama</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                                                        <input type="text" class="form-control field-add" name="old_nik" value="{{data.old_nik ? data.old_nik : ''}}" required> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Registrasi Pekerja</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
+                                                        <input type="text" class="form-control field-add" name="nrp" value="{{data.nrp || ''}}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Status Employee</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
+                                                        <select class="form-control select2 field-add" data-title="sts-employee" data-check="{{data.sts_employee}}" id="sts_employee" name="sts_employee"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="">Status Aktif</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
+                                                        <select class="form-control field-add" name="aktif">
+                                                            <option value="Y" {{data.aktif === 'Y' ? 'selected': ''}}>Aktif</option>
+                                                            <option value="N" {{data.aktif === 'N' ? 'selected': ''}}>Resign</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="isKontrak" style="display:{{data.awal_kontrak ? 'block':'none'}}">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="">Tanggal Mulai Kontrak</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                            <input type="date" class="form-control myDateFormat field-add" name="awal_kontrak" data-date="{{data.awal_kontrak}}" value="{{data.awal_kontrak}}"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Tanggal Akhir Kontrak</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                            <input type="date" class="form-control myDateFormat field-add" name="akhir_kontrak" value="{{data.akhir_kontrak}}"> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
                                                     <label for="">Nama Lengkap</label>
                                                     <div class="input-group">
                                                         <div class="input-group-addon"><i class="fa fa-user"></i></div>
@@ -139,7 +200,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
+                                            <!--<div class="col-md-3">
                                                 <div class="form-group">
                                                     <label for="">Status Employee</label>
                                                     <div class="input-group">
@@ -147,13 +208,25 @@
                                                         <select class="form-control select2 field-add" data-title="sts-employee" data-check id="sts_employee" name="sts_employee"></select>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-5">
+                                            </div> -->
+                                            <div class="col-md-3">
                                                 <div class="form-group">
                                                     <label for="">Tipe Employee</label>
                                                     <div class="input-group">
                                                         <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
                                                         <select class="form-control select2 field-add" data-title="tipe-employee" data-check id="tipe_employee" name="tipe_employee"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Operator</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-check-square-o"></i></div>
+                                                        <select class="form-control field-add" name="is_operator">
+                                                            <option value="N">Non Operator</option>
+                                                            <option value="Y">Is Operator</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>

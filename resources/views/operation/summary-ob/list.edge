@@ -1,0 +1,301 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="btn-group m-r-10">
+                        <button aria-expanded="false" data-toggle="dropdown" class="btn btn-info dropdown-toggle waves-effect waves-light" type="button">Filter Data <span class="caret"></span></button>
+                        <ul role="menu" class="dropdown-menu animated flipInX">
+                            <li><a class="bt-filter-data" data-filter="filter-date" href="#">By Range Date</a></li>
+                            <li><a class="bt-filter-data" data-filter="filter-shift" href="#">By Shift Schedule</a></li>
+                            <li><a class="bt-filter-data" data-filter="filter-unit" href="#">By Equipment Unit</a></li>
+                            <li class="divider"></li>
+                            <li><a class="bt-filter-data" id="filter-reset" href="#">Reset Filter</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 filter pull-right" id="filter-date" style="display:none;">
+                    <div class="row b-all p-t-10">
+                        <div class="col-md-5">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Mulai Filter</small></span>
+                                <input type="date" class="form-control input-sm range_begin" id="range_begin" name="range_begin">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Akhir Filter</small></span>
+                                <input type="date" class="form-control input-sm range_end" id="range_end" name="range_end">
+                            </div>
+                        </div>
+                        <div class="col-md-2 p-t-20">
+                            <div class="form-group m-b-5">
+                                <button class="btn btn-outline btn-info waves-effect waves-light btn-sm" id="bt-filter-date"> 
+                                    <i class="ti-filter m-r-5"></i> 
+                                    <span>Filter</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8 pull-right filter" id="filter-shift" style="display:none;">
+                    <div class="row b-all p-t-10">
+                        <div class="col-md-3">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Mulai Filter</small></span>
+                                <input type="date" class="form-control input-sm range_begin" id="shift_begin" name="shift_begin">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Akhir Filter</small></span>
+                                <input type="date" class="form-control input-sm range_end" id="shift_end" name="shift_end">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group m-b-10">
+                                <span class="text-warning"><small>Tipe Shift</small></span>
+                                <select type="text" id="shift-filter" name="shift-filter" class="form-control input-sm select2shift"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 p-t-20">
+                            <div class="form-group m-b-5">
+                                <button class="btn btn-outline btn-info waves-effect waves-light btn-sm" id="bt-filter-shift"> 
+                                    <i class="ti-filter m-r-5"></i> 
+                                    <span>Filter</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8 pull-right filter" id="filter-unit" style="display:none;">
+                    <div class="row b-all p-t-10">
+                        <div class="col-md-3">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Mulai Filter</small></span>
+                                <input type="date" class="form-control input-sm range_begin" id="unit_begin" name="unit_begin">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group m-b-5">
+                                <span class="text-warning"><small>Tanggal Akhir Filter</small></span>
+                                <input type="date" class="form-control input-sm range_end" id="unit_end" name="unit_end">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group m-b-10">
+                                <span class="text-warning"><small>Tipe Shift</small></span>
+                                <select type="text" id="unit-filter" name="unit-filter" class="form-control input-sm select2equipmentx" data-live-search="true" multiple></select>
+                            </div>
+                        </div>
+                        <div class="col-md-2 p-t-20">
+                            <div class="form-group m-b-5">
+                                <button class="btn btn-outline btn-info waves-effect waves-light btn-sm" id="bt-filter-unit"> 
+                                    <i class="ti-filter m-r-5"></i> 
+                                    <span>Filter</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr style="margin-bottom: 5px;border-color:#2f323e;">
+            <div class="" id="content-list">
+                <div class="table-responsive" id="table-freeze">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">No </th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Date </th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SHIFT</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">ID NUMBER</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Tipe Equipment</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Functions</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">Material Name</th>
+                                <th class="sl f12w300G text-center text-center" rowspan="2" style="border-bottom: 2px solid;">
+                                    Production <br>
+                                    <small class="f12w300">(Bcm/Ton)</small>
+                                </th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">PDTVY</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Awal</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">HM Akhir</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">SMU TOT</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">RIT OB</th>
+                                <th class="sl f12w300G text-center" rowspan="2" style="border-bottom: 2px solid;">
+                                    <strong>Activity Description</strong>
+                                </th>
+                                <th class="sl f12w300G text-center bg-inverse" colspan="{{event.length}}" style="border-bottom: 2px solid;">
+                                    <strong>Equipment Time</strong>
+                                </th>
+                                <th class="sl text-center f12w300 bg-info" rowspan="2" style="border-bottom: 2px solid;">
+                                    Total Time<br>Idle
+                                </th>
+                                <th class="sl text-center f12w300 bg-warning" rowspan="2" style="border-bottom: 2px solid;">
+                                    Total Time<br>Delay
+                                </th>
+                                <th class="sl text-center f12w300 bg-primary" rowspan="2" style="border-bottom: 2px solid;">
+                                    Total Other<br>SMU
+                                </th>
+                                <th class="sl text-center f12w300 bg-inverse" rowspan="2" style="border-bottom: 2px solid;">
+                                    Keterangan/Deskripsi TimeSheet
+                                </th>
+                            </tr>
+                            <tr>
+                                @each(item in event)
+                                    <th class="sl text-center f12w300 bg-inverse" style="border-bottom: 2px solid;">
+                                        {{item.narasi}}
+                                    </th>
+                                @endeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data <= 0)
+                              <tr>
+                                  <td colspan="45">
+                                      <code>Data not found...</code>
+                                  </td>
+                              </tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr class="row-data" data-id="{{item.id}}">
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td class="" style="white-space:nowrap;">{{item.tgl}}</td>
+                                    <td>{{item.shift.kode}}</td>
+                                    <td>{{item.unit.kode}}</td>
+                                    <td>{{item.unit.unit_model}}</td>
+                                    <td class="text-uppercase">{{item.unit.tipe}}</td>
+                                    <td class="rand">
+                                        <small>{{item.material_nm}}</small>
+                                    </td>
+                                    <td class="rand text-right">
+                                        {{item.volume_ob ? item.volume_ob : '-'}}
+                                    </td>
+                                    <td class="rand text-right text-success">
+                                        {{item.pdtvy ? item.pdtvy : '-'}}
+                                    </td>
+                                    <td class="rand text-right">{{item.begin_smu}}</td>
+                                    <td class="rand text-right">{{item.end_smu}}</td>
+                                    <td class="rand text-right">{{item.used_smu}}</td>
+                                    <td class="rand text-right">{{item.ritase_ob}}</td>
+                                    <td class="rand">
+                                        <small>{{item.activity.name}}</small>
+                                    </td>
+                                    @each(data in item.record_event)
+                                        @if(data.status === 'idle')
+                                            <td class="text-right" style="color:#fff;background-color: #547da052!important;">
+                                                <strong class="idle">{{data.time_duration}}</strong>
+                                            </td>
+                                        @elseif(data.status === 'inactive')
+                                            <td class="text-right" style="color:#fff;background-color: #b79b7252!important;">
+                                                <strong class="standby">{{data.time_duration}}</strong>
+                                            </td>
+                                            @else
+                                            <td class="text-right" style="color:#fff;background-color: #43486d6b!important;">
+                                                <strong class="running">{{data.time_duration}}</strong>
+                                            </td>
+                                        @endif
+                                    @endeach
+                                    <td class="rand text-right bg-info" style="color:#fff;background-color: #2babe382!important;">
+                                        <strong id="tot-idle{{item.id}}">Tot.idle</strong>
+                                    </td>
+                                    <td class="rand text-right" style="color:#fff;background-color: #ffc26c8a!important;">
+                                        <strong id="tot-standby{{item.id}}">Tot.delay</strong>
+                                    </td>
+                                    <td class="rand text-right" style="color:#fff;background-color: #6f7cd287!important;">
+                                        <strong id="tot-running{{item.id}}">Tot.delay</strong>
+                                    </td>
+                                    <td>
+                                        <small>{{item.description ? item.description : '-'}}</small>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        setTotalTime()
+        $("#table-freeze").freezeTable({
+            'columnNum': 6,
+            'scrollable': true,
+            // 'shadow': true,
+            'backgroundColor': '#2f323e'
+        })
+
+        $('body select.select2equipmentx').each(function(){
+            var selected = $(this).data('check')
+            var elm = $(this)
+            elm.children().remove()
+            $.ajax({
+                async: true,
+                url: '/ajax/equipment?selected='+selected,
+                method: 'GET',
+                success: function(data){
+                    if(data.length > 0){
+                        const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.kode+' ('+nod.unit_model+') - '+(nod.brand).toUpperCase()+'</option>')
+                        elm.html(list)
+                        elm.prepend('<option value="">Pilih</option>')
+                        elm.selectpicker('render')
+                    }else{
+                        elm.prepend('<option value="">Belum ada data pilihan...</option>')
+                    }
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+
+        $('a.bt-filter-data').on('click', function(e){
+            e.preventDefault()
+            var filter = $(this).data('filter')
+            $('div.filter').css('display', 'none')
+            $('div#'+filter).show()
+        })
+
+        function setTotalTime(){
+            var inactiveTime = []
+            var runningTime = []
+            $('div.table-responsive table:first').children().find('.row-data').each(function(){
+                var id = $(this).data('id')
+
+                $(this).find('td strong.idle').removeClass('idle').addClass('idle'+id)
+                var idleTime = []
+                $(this).find('strong.idle'+id).each(function(){
+                    var idle = $(this).html()
+                    idleTime.push(parseFloat(idle))
+                })
+
+                $(this).find('td strong.standby').removeClass('standby').addClass('standby'+id)
+                var standbyTime = []
+                $(this).find('strong.standby'+id).each(function(){
+                    var standby = $(this).html()
+                    standbyTime.push(parseFloat(standby))
+                })
+
+                $(this).find('td strong.running').removeClass('running').addClass('running'+id)
+                var runningTime = []
+                $(this).find('strong.running'+id).each(function(){
+                    var running = $(this).html()
+                    runningTime.push(parseFloat(running))
+                })
+
+                var totIdleTime = idleTime.reduce((x, y) => {return x + y}, 0) || 0.00
+                var totStandByTime = standbyTime.reduce((x, y) => {return x + y}, 0) || 0.00
+                var totRunningTime = runningTime.reduce((x, y) => {return x + y}, 0) || 0.00
+                // console.log((totIdleTime).toFixed(1));
+                // console.log((totStandByTime).toFixed(1));
+                // console.log((totRunningTime).toFixed(1));
+                $('strong#tot-idle'+id).html(totIdleTime.toFixed(2))
+                $('strong#tot-standby'+id).html(totStandByTime.toFixed(2))
+                $('strong#tot-running'+id).html(totRunningTime.toFixed(2))
+            })
+        }
+    })
+</script>

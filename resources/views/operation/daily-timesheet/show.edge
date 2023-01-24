@@ -1,0 +1,368 @@
+{{ script('ajax/index') }}
+{{ script('ajax/opr-dailytimesheet-show') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" class="" id="fm-timesheeet-upd" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="col-md-2">
+                                            <label for="tgl">Date Document</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control setDate input-sm inp-timesheet" data-date="{{data.tgl}}" name="tgl" id="tgl">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Equipment Unit</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                    <select class="form-control input-sm select2equipment inp-timesheet" name="unit_id" id="unit_id" data-check="{{data.unit_id}}"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--
+                                        <div class="col-md-3">
+                                            <label for="tgl">Approved At</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="datetime-local" class="form-control set-datetime input-sm inp-timesheet" data-datetime="{{data.approved_at}}" name="approved_at" id="approved_at">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="tgl">Close Document</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="datetime-local" class="form-control set-datetime input-sm inp-timesheet" data-datetime="{{data.finish_at}}" name="finish_at" id="finish_at">
+                                                </div>
+                                            </div>
+                                        </div>-->
+                                    </div>
+                                    <div class="row b-all">
+                                        <div class="col-md-10 p-20">
+                                            <h5>DAILY CHECK LIST OPERATOR</h5>
+                                            <small>
+                                                Perikasa saat P2H unit pada posisi aman dan rata 
+                                                ( Rem parkir terpasang, Transmisi Netral/Hydraulic lock ON implament berada dilandasan ) <br>
+                                                Beri tanda check bila tidak normal / ada kerusakan dan jelaskan dalam kolom "keterangan"
+                                            </small>
+                                        </div>
+                                        <div class="col-md-2 p-20 text-right">
+                                            <h1 class="text-muted m-b-0" id="noberkas" data-berkas="{{data.id}}">NOMOR</h1>
+                                            <span class="text-white">{{data.dailyFleet.shift.name}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered" id="">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>No</th>
+                                                            <th>Tugas tugas pemeriksaan</th>
+                                                            <th class="text-center">Check Point</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="list-p2h"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th colspan="9">
+                                                            <h5>UNIT REFUEL / PENGISIAN BAHAN BAKAR</h5>
+                                                            <small>
+                                                                <em>
+                                                                    ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                </em>
+                                                            </small>
+                                                        </th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center" width="200">
+                                                            <label for="">Jumlah Fuel yang diisi</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control inp-dailyrefuel" name="topup" id="topup" placeholder="Satuan Liter"  value="{{data.dailyRefueling != null ? data.dailyRefueling.topup : ''}}">
+                                                                <span class="input-group-addon" id="basic-addon2">Lt</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center" width="200">
+                                                            <label for="">SMU</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control inp-dailyrefuel" name="smu" id="smu" value="{{data.dailyRefueling != null ? data.dailyRefueling.smu : ''}}">
+                                                                <span class="input-group-addon">HM</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center" width="250">
+                                                            <label for="">Waktu</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="datetime-local" class="form-control {{data.dailyRefueling.fueling_at ? 'set-datetime': 'init-datetime'}} inp-dailyrefuel" data-datetime="{{data.dailyRefueling.fueling_at}}" name="fueling_at" id="fueling_at">
+                                                                <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center" width="200">
+                                                            <label for="">Nama Operator</label>
+                                                            <select class="form-control select2operator inp-dailyrefuel" data-check="{{data.operator}}" name="operator" id="operator_onfuel" required></select>
+                                                        </td>
+                                                        <td class="text-center" width="*">
+                                                            <label for="">Fuelman</label>
+                                                            <select type="text" class="form-control select2fuelman inp-dailyrefuel" name="fuelman" id="fuelman" data-check="{{data.dailyRefueling.fuelman}}" value="{{data.dailyRefueling != null ? data.dailyRefueling.fuelman : '' }}" required></select>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>-->
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="9">
+                                                                <h5>MECHINE SMU RECORD / JAM KERJA ALAT</h5>
+                                                                <small>
+                                                                    <em>
+                                                                        ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                    </em>
+                                                                </small>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center v-middle" width="200" rowspan="2">Operator Unit</th>
+                                                            <th class="text-center" colspan="4">SMU Jam Kerja</th>
+                                                            <th class="text-center v-middle" width="100" rowspan="2">Pencapaian <br> SMU</th>
+                                                            <th class="text-center v-middle" width="150" rowspan="2">Lokasi</th>
+                                                            <th class="text-center v-middle" width="250" rowspan="2">Kegiatan</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" width="100">SMU Mulai</th>
+                                                            <th class="text-center" width="100">SMU Akhir</th>
+                                                            <th class="text-center" width="80">Waktu Mulai</th>
+                                                            <th class="text-center" width="80">Waktu Akhir</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <select class="form-control select2operator inp-timesheet" data-check="{{data.operator}}" name="operator" id="operator" required></select>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control inp-timesheet" name="begin_smu" id="begin_smu" placeholder="HM" value="{{data.begin_smu}}">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control inp-timesheet" name="end_smu" id="end_smu" placeholder="HM" value="{{data.end_smu != null ? data.end_smu : '-'}}">
+                                                            </td>
+                                                            <td>
+                                                                <input type="datetime-local" class="form-control {{data.approved_at ? 'set-datetime' : 'init-datetime'}} inp-timesheet" name="approved_at" id="approved_at" data-datetime="{{data.approved_at}}">
+                                                            </td>
+                                                            <td>
+                                                                <input type="datetime-local" class="form-control {{data.finish_at ? 'set-datetime' : 'init-datetime'}} inp-timesheet" name="finish_at" id="finish_at" data-datetime="{{data.finish_at ? data.finish_at : data.approved_at}}">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control inp-timesheet" placeholder="HM" name="used_smu" id="used_smu" value="{{data.used_smu != null ? data.used_smu : '-'}}">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control" placeholder="Lokasi" value="{{data.dailyFleet.pit.name}}" readonly>
+                                                            </td>
+                                                            <td>
+                                                                <select class="form-control select2activities inp-timesheet" data-check="{{data.dailyFleet.activities.id}}" name="activity_id"></select>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="9">
+                                                                <h5>
+                                                                    BREAKDOWN / STAND BY
+                                                                    <span class="pull-right">
+                                                                        <button class="fcbtn btn btn-warning btn-outline btn-1f" id="bt-add-event">Tambah Event</button>
+                                                                </h5>
+                                                                <small>
+                                                                    <em>
+                                                                        ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                    </em>
+                                                                </small>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" width="50">No</th>
+                                                            <th class="text-center" width="150">Waktu</th>
+                                                            <th class="text-center" width="250">SMU</th>
+                                                            <th class="text-center" width="*">Keterangan / Event</th>
+                                                            <th class="text-center" width="50">ACT</th>
+                                                        </tr>
+                                                    </thead>
+                                                    @if(data.dailyEvent.length > 0)
+                                                        <tbody class="item-event">
+                                                            @each(item in data.dailyEvent)
+                                                            <tr class="item-event" id="TR{{$loop.index + 1}}" data-id="{{$loop.index + 1}}">
+                                                                <td class="text-center">
+                                                                    <h1>{{$loop.index + 1}}</h1>
+                                                                    <input type="hidden" class="form-control inp-dailyevent" id="id{{$loop.index + 1}}" name="id" value="{{item.id}}">
+                                                                </td>
+                                                                <td>
+                                                                    <label for="tgl">Waktu Mulai</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <input type="datetime-local" class="form-control set-datetime inp-dailyevent" data-id="{{$loop.index + 1}}" id="start_at{{$loop.index + 1}}" name="start_at" data-datetime="{{item.start_at}}">
+                                                                    </div>
+                                                                    <label for="tgl">Waktu Akhir</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <input type="datetime-local" class="form-control {{item.end_at ? 'set-datetime' : ''}} inp-dailyevent" data-id="{{$loop.index + 1}}" id="end_at{{$loop.index + 1}}" name="end_at" data-datetime="{{item.end_at}}">
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <label for="tgl">Used</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <input type="text" class="form-control text-right inp-dailyevent" data-id="{{$loop.index + 1}}" id="smu_event{{$loop.index + 1}}" value="{{item.total_smu}}" disabled>
+                                                                    </div>
+                                                                    <label for="tgl">CreatedBy</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <select class="form-control select2user inp-dailyevent" data-id="{{$loop.index + 1}}" data-check="{{item.user_id}}" name="user_id" id="user_id{{$loop.index + 1}}" data-id="{{$loop.index + 1}}" required></select>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <label for="tgl">Pilih Event</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <select class="form-control select2event inp-dailyevent" data-id="{{$loop.index + 1}}" data-check="{{item.event_id}}" name="event_id" id="event_id{{$loop.index + 1}}" data-id="{{$loop.index + 1}}" required></select>
+                                                                    </div>
+                                                                    <label for="tgl">Penjelasan</label>
+                                                                    <div class="form-group">
+                                                                        <input type="text" class="form-control inp-dailyevent" data-id="{{$loop.index + 1}}" id="description{{$loop.index + 1}}" name="description" value="{{item.description ? item.description : ''}}">
+                                                                    </div>
+                                                                </td>
+                                                                <td style="vertical-align: middle;">
+                                                                    <button class="btn btn-danger btn-sm bt-remove-event" data-id="{{$loop.index + 1}}">
+                                                                        <i class="ti-close"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                            @endeach
+                                                        </tbody>
+                                                    @else
+                                                        <tbody class="item-event">
+                                                            <tr class="item-event" id="TR1" data-id="1">
+                                                                <td class="text-center">
+                                                                    <h1>1</h1>
+                                                                    <input type="hidden" class="form-control inp-dailyevent" id="id1" name="id">
+                                                                </td>
+                                                                <td>
+                                                                    <label for="tgl">Waktu Mulai</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="1" id="start_at1" name="start_at" data-datetime="{{item.start_at}}">
+                                                                    </div>
+                                                                    <label for="tgl">Waktu Akhir</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <input type="datetime-local" class="form-control init-datetime inp-dailyevent" data-id="1" id="end_at1" name="end_at" data-datetime="{{item.end_at}}">
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <label for="tgl">Used</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <input type="text" class="form-control text-right inp-dailyevent" data-id="1" id="smu_event1" disabled>
+                                                                    </div>
+                                                                    <label for="tgl">CreatedBy</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <select class="form-control select2user inp-dailyevent" data-id="1" data-check="" name="user_id" id="user_id1" data-id="1" required></select>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <label for="tgl">Pilih Event</label>
+                                                                    <div class="form-group m-b-5">
+                                                                        <select class="form-control select2event inp-dailyevent" data-id="1" data-check="{{item.event_id}}" name="event_id" id="event_id1" data-id="1" required></select>
+                                                                    </div>
+                                                                    <label for="tgl">Penjelasan</label>
+                                                                    <div class="form-group">
+                                                                        <input type="text" class="form-control inp-dailyevent" data-id="1" id="description1" name="description">
+                                                                    </div>
+                                                                </td>
+                                                                <td style="vertical-align: middle;">
+                                                                    <button class="btn btn-danger btn-sm bt-remove-event" data-id="1">
+                                                                        <i class="ti-close"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    @endif
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row b-all p-t-20 m-t-20">
+                                        <div class="col-md-8">
+                                            <label for="">Catatan Tambahan</label>
+                                            <div class="form-group">
+                                                <textarea class="form-control inp-timesheet" name="description" id="description" rows="5">{{data.description}}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="">Tanda Tangan</label>
+                                            <div class="row p-t-10">
+                                                <div class="col-md-12">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <th class="text-center">Nama Operator</th>
+                                                            <th class="text-center">Nama Pengawas</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="text-center">{{data.operator_unit.fullname}}</td>
+                                                                <td class="text-center">{{data.spv.profile.nm_depan}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button class="btn btn-danger waves-effect waves-light bt-delete" data-id="{{data.id}}" id="bt-delete-data"> 
+                                                <i class="fa fa-trash-o"></i> <span>Remove</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button type="submit" class="btn btn-warning waves-effect waves-light" id="bt-update-data"> 
+                                                <i class="fa fa-save"></i> <span>Update</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

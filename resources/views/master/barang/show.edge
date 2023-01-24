@@ -1,0 +1,113 @@
+{{ script('./ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" id="fm-barang-upd" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><i class="ti-gift" style="margin-right: 10px;"></i> Form Update Barang</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <label for="">Kode</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control" name="kode" value="{{data.kode}}" required> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Part Number</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control" name="partnumber" value="{{data.partnumber}}" required> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Part Type</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control custom-option" data-title="part-type" data-check="{{data.parttype || ''}}" name="parttype"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="form-group">
+                                                <label for="">Nama Barang</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control" name="descriptions" value="{{data.descriptions}}" required> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Manufactur</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control custom-option" data-title="brand-unit" data-check="{{data.manufactur || ''}}" name="manufactur"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">Equipment Type</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control custom-option" data-title="part-group" data-check="{{data.equiptype || ''}}" name="equiptype"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Plan Model</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <input type="text" class="form-control" name="planmodel" value="{{data.planmodel || ''}}"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="">UOM</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                    <select class="form-control custom-option" data-title="uom" data-check="{{data.uom || ''}}" name="uom"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Remark</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="ti-info-alt"></i></div>
+                                                    <input type="text" class="form-control" name="remark" value="{{data.remark || ''}}"> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-right">
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create" type="reset"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button class="btn btn-warning waves-effect waves-light" id="bt-save-pit" type="submit"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

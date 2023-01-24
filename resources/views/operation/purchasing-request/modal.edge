@@ -1,0 +1,93 @@
+<div class="modal fade" id="modal{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+          <h4 class="modal-title" id="myModalLabel">Pindahkan ke keranjang purchasing order</h4>
+        </div>
+        <div class="modal-body">
+            <form action="#" id="add-po">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="">Original Order</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-gift"></i></div>
+                                <input type="text" class="form-control" id="nm-barang" value="{{item.barang.descriptions}}" style="background-color:#ccc" readonly>
+                                <input type="hidden" class="form-control" id="id-barang" name="inpbarang-id" value="{{item.barang_id}}">
+                                <input type="hidden" class="form-control" id="id-equipment" name="equipment_id" value="{{item.equipment_id || ''}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="">Kode Items</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                <input type="text" class="form-control" id="kd-barang" value="{{item.barang.kode}}" style="background-color:#ccc" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="">Part Number</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-barcode"></i></div>
+                                <input type="text" class="form-control" id="part-barang" value="{{item.barang.partnumber || ''}}" style="background-color:#ccc" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="">Replace Order</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-magnet"></i></div>
+                                <select class="form-control" name="barang_replace">
+                                    <option value="">Pilih</option>
+                                    @each(brg in barang)
+                                        <optgroup label="{{brg.itemType}}">
+                                            @each(item in brg.items)
+                                                <option value="{{item.id}}">{{item.kode}} - {{item.descriptions}}</option>
+                                            @endeach
+                                        </optgroup>
+                                    @endeach
+                                </select>
+                                <input type="hidden" class="form-control" id="kd-replace" name="replace_kd">
+                                <input type="hidden" class="form-control" id="nm-replace" name="replace_nm">
+                                <input type="hidden" class="form-control" id="partnumber-replace" name="replace_partnumber">
+                            </div>
+                            <span class="text-danger"><small>Item pengganti yang sesuai dengan item pesanan</small></span>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <label for="">Vendor</label>
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="ti-user"></i></div>
+                                <select class="form-control" name="vendor_id" id="">
+                                    <option value="">Pilih</option>
+                                    @each(item in vendor)
+                                        <option value="{{item.id}}">{{item.kode}} - {{item.name}}</option>
+                                    @endeach
+                                </select>
+                                <input type="hidden" class="form-control" id="kd-vendor" name="vendor_kd">
+                                <input type="hidden" class="form-control" id="nm-vendor" name="vendor_nm">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="">Qty</label>
+                            <input type="text" class="form-control" id="qty-order" name="qty" value="{{item.qty}}">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-warning" id="send-keranjang-po" data-id="{{item.id}}">Save</button>
+        </div>
+      </div>
+    </div>
+</div>

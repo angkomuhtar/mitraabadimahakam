@@ -1,0 +1,115 @@
+<div class="row">
+    {{ script('ajax/index') }}
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add New Coal Exposed</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <button class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#filterModal">
+                            <span>Filter Data</span> 
+                            <i class="ti-filter m-l-5"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          
+                        <h4 class="modal-title" id="filterModalLabel">Filter Data</h4>
+                        </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Mulai Tanggal</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                        <input type="date" class="form-control initDate inp-filter" name="begin_date" value=""> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Hingga Tanggal</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                        <input type="date" class="form-control initDate inp-filter" name="end_date" value=""> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="">Pilih PIT</label>
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-location-arrow"></i></div>
+                                        <select class="form-control select2pit inp-filter" data-ckeck="" name="idpit"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="checkbox checkbox-danger">
+                                    <input id="inp-filter" name="inp-filter" type="checkbox">
+                                    <label for="inp-filter"> Filter Aktif </label>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="150">Tanggal</th>
+                                <th class="sl" width="250">PIT</th>
+                                <th class="sl">Volume</th>
+                                <th class="sl" width="150">Created By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="6">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>
+                                        {{$loop.index + 1}}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td>
+                                        <strong class="myDateFormat" data-date="{{item.tgl}}"></strong>
+                                    </td>
+                                    <td>
+                                        {{item.pit.name}}
+                                    </td>
+                                    <td>
+                                        {{item.volume}}
+                                    </td>
+                                    <td>
+                                        {{item.createdby.nm_lengkap}}
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>

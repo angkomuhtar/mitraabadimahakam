@@ -1,0 +1,29 @@
+{{ script('/ajax/chart/FUEL_MTD_CHART') }}
+<div class="white-box">
+    <h3 class="box-title">
+        <div class="form-group col-sm-4 pull-right">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </span> 
+                <select class="form-control input-sm" id="opt-chart4">
+                    @each(item in monthItem)
+                        <option value="{{item.values}}" {{item.selected}}>{{item.name}}</option>
+                    @endeach
+                </select>
+            </div>
+        </div>
+        Monthly Fuel Consumtions
+    </h3>
+    <div class="stats-row">
+        <div class="stat-item">
+            <h6>Total Consumtions</h6> 
+            <b id="tot_fuel">80.40%</b>
+        </div>
+        <div class="stat-item">
+            <h6>Average per day</h6> 
+            <b id="avg_day">15.40%</b>
+        </div>
+    </div>
+    <div id="sparkline11" class="grafik-chartis"></div>
+</div>

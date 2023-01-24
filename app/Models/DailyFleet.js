@@ -27,6 +27,10 @@ class DailyFleet extends Model {
     details () {
         return this.hasMany("App/Models/DailyFleetEquip", "id", "dailyfleet_id")
     }
+
+    ritase () {
+        return this.hasMany("App/Models/DailyRitase", "id", "dailyfleet_id")
+    }
 }
 
 module.exports = DailyFleet

@@ -1,0 +1,88 @@
+<div class="row">
+    <div class="col-md-12">
+        <!--<button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button> -->
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well">
+                        <form action="" id="fm-subcont-upd" data-id="{{data.id}}">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="ti-arrow-left" id="bt-back" style="margin-right: 10px;"></i> 
+                                    Edit Subcontractor
+                                </div>
+                                <div class="panel-wrapper collapse in">
+                                    <div class="panel-body">
+                                        {{ csrfField() }}
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="">Kode</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                        <input type="text" class="form-control" name="kode" value="{{data.kode}}" required> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">Nama Subcontractor</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-rss-square"></i></div>
+                                                        <input type="text" class="form-control" name="name" value="{{data.name}}" required> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="">Email</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-envelope"></i></div>
+                                                        <input type="email" class="form-control" name="email" value="{{data.email}}"> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="">Phone</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-phone"></i></div>
+                                                        <input type="text" class="form-control" name="phone" value="{{data.phone}}"> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <div class="form-group">
+                                                    <label for="">Address</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-road"></i></div>
+                                                        <input type="text" class="form-control" name="address" value="{{data.address}}"> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer">
+                                        <div class="col-md-6">
+                                            <button class="btn btn-danger waves-effect waves-light bt-cancel" id="bt-delete-data" type="button" data-id="{{data.id}}"> 
+                                                <i class="fa fa-trash-o"></i> <span>Delete</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-back" type="button"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                                <i class="fa fa-save"></i> <span>Update</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

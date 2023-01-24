@@ -11,6 +11,17 @@
                                 <div class="panel-body">
                                     {{ csrfField() }}
                                     <div class="row">
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <label for="">Site Project</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-map-marker"></i></div>
+                                                    <select class="form-control input-sm select2site" name="site_id" data-check="{{list.site_id}}"></select> 
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="">Kode</label>
@@ -52,7 +63,7 @@
                                                 <label for="">Reciving HM</label>
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-dashboard"></i></div>
-                                                    <input type="number" class="form-control input-sm" name="received_hm"> 
+                                                    <input type="text" class="form-control input-sm" name="received_hm" step="any"> 
                                                 </div>
                                             </div>
                                         </div>
@@ -104,25 +115,25 @@
                                                     <div class="panel-body">
                                                         <div class="col-md-4">
                                                             <div class="form-group">
-                                                                <label for="">Transmission Serial Number</label>
+                                                                <label for="">S/N Chassis</label>
                                                                 <input type="text" class="form-control input-sm input-sm" name="unit_sn"> 
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="form-group">
-                                                                <label for="">Unit Model</label>
+                                                                <label for="">Machine Model</label>
                                                                 <input type="text" class="form-control input-sm input-sm" name="unit_model"> 
                                                             </div>
                                                         </div>
                                                         <div class="col-md-3">
                                                             <div class="form-group">
-                                                                <label for="">Engine Serial Number</label>
+                                                                <label for="">S/N Engine</label>
                                                                 <input type="text" class="form-control input-sm input-sm" name="engine_sn"> 
                                                             </div>
                                                         </div>
                                                         <div class="col-md-2">
                                                             <div class="form-group">
-                                                                <label for="">Engine Model</label>
+                                                                <label for="">S/N Engine Model</label>
                                                                 <input type="text" class="form-control input-sm input-sm" name="engine_model"> 
                                                             </div>
                                                         </div>
@@ -140,7 +151,7 @@
                                                                 <label for="">Equipment Bucket Capacity</label>
                                                                 <div class="input-group">
                                                                     <div class="input-group-addon"><i class="fa fa-truck"></i></div>
-                                                                    <input type="number" class="form-control input-sm" name="qty_capacity"> 
+                                                                    <input type="text" class="form-control input-sm" name="qty_capacity"> 
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -153,11 +164,21 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group">
+                                                                <label for="">Upload Photo</label>
+                                                                <div class="input-group">
+                                                                    <input type="file" class="form-control input-sm" name="photo"> 
+                                                                    <div class="input-group-addon">Photo</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <!--
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="panel panel-default">
@@ -199,6 +220,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    -->
                                 </div>
                                 <div class="panel-footer text-right">
                                     <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 

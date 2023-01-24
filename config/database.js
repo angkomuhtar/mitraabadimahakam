@@ -56,7 +56,7 @@ module.exports = {
       password: Env.get('DB_PASSWORD', ''),
       database: Env.get('DB_DATABASE', 'adonis')
     },
-    pool: { min: 0, max: 200 },
+    pool: { min: 0, max: 500 },
     // debug: true
   },
 

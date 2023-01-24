@@ -1,0 +1,87 @@
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-8">
+                    <form action="" id="form-update" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Update Carousel</div>
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="">Bahasa</label>
+                                                <select class="form-control" name="lang">
+                                                    <option value="id" {{data.lang === 'id' && 'selected'}}>Indonesia</option>
+                                                    <option value="en" {{data.lang === 'en' && 'selected'}}>Inggris</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="">Title</label>
+                                                <input type="text" class="form-control" name="title" value="{{data.title}}"> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Subtitle</label>
+                                                <input type="text" class="form-control" name="subtitle" value="{{data.subtitle}}"> 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Descriptions</label>
+                                                <textarea class="form-control" name="details" id="details" rows="5">{{data.details}}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-update" type="reset"> 
+                                            <i class="fa fa-close"></i> <span>Cancel</span>
+                                        </button>
+                                        <button class="btn btn-warning waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                            <i class="fa fa-save"></i> <span>Update</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <img src="../../../images/cms/sample-carousel.png" height="500" class="img-fluid" alt="...">
+                    <div class="box-image">
+                        <input type="file" id="input-file-now-custom-1" class="dropify" data-default-file="{{data.img_url}}" data-height="128" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('.dropify').dropify();
+    })
+</script>
+<style>
+    div.box-image {
+        position: absolute;
+        top: 70px;
+        margin: 10px 5px;
+        border: 3px red dashed;
+        height: 150px;
+        background-color: aliceblue;
+        width: 80%;
+        max-width: 303px;
+        min-height: 170px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>

@@ -1,0 +1,96 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl" width="200">Current Date</th>
+                                <th class="sl text-right" width="250">BreakDown Daily</th>
+                                <th class="sl text-right" width="250">Actual Daily</th>
+                                <th class="sl text-center" width="50">Satuan</th>
+                                <th class="sl text-center" width="*">Persentase</th>
+                                <!--<th class="sl text-center" width="50">Status</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="10">Data not found or data is not exsist</td></tr>
+                            @else
+                                @each(item in list.data)
+                                    <tr class="persentase" data-actual="{{item.actual}}" data-estimate="{{item.estimate}}">
+                                        <td><h5>{{$loop.index + 1}}</h5></td>
+                                        <td class="single-line myDateFormat" data-date="{{item.current_date}}" data-elm="strong">
+                                            <h5>
+                                                <strong class="text-mute"></strong>
+                                            </h5>
+                                        </td>
+                                        <td class="single-line text-right">
+                                            <h5><strong class="text-warning">{{item.estimate}} </strong></h5>
+                                        </td>
+                                        <td class="text-right">
+                                            <h5><strong class="{{item.actual > item.estimate ? 'text-success' : 'text-warning'}}">{{item.actual}} </strong></h5>
+                                        </td>
+                                        <td>
+                                            <h5>{{item.monthly_plan.satuan}}</h5>
+                                        </td>
+                                        <td class="persentase">
+                                            <h5>
+                                                <div class="progress progress-lg">
+                                                    <div class="progress-bar progress-bar-success" role="progressbar" style="" role="progressbar"> 75% </div>
+                                                </div>
+                                            </h5>
+                                        </td>
+                                        <!--
+                                        <td class="single-line text-center">
+                                            <h5>{{item.status}}</h5>
+                                        </td>-->
+                                    </tr>
+                                @endeach
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('tr.persentase').each(function(){
+            var act = $(this).data('actual')
+            var est = $(this).data('estimate')
+            var persen = (parseFloat(act)/parseFloat(est))*100
+            $(this).find('div.progress-bar-success').attr('style', 'width: '+persen.toFixed(2)+'%').html(persen.toFixed(2)+'%')
+        })
+
+        $('body').on('click', 'a.btn-pagging', function(e){
+            e.preventDefault()
+            var page = $(this).data('page')
+            var url = window.location.pathname+'/list-daily?page='+page
+            $.ajax({
+                async: true,
+                url: url,
+                method: 'GET',
+                success: function(result){
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+    })
+</script>

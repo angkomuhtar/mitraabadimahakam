@@ -1,0 +1,96 @@
+{{ script('ajax/index') }}
+{{ script('plugins/bower_components/pdfmake/build/pdfmake.min') }}
+{{ script('plugins/bower_components/pdfmake/build/vfs_fonts') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Upload Fuel Usage Summary</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" name="limit-data" class="form-control" value="{{list.perPage}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <td class="text-center" width="20" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">No</td>
+                                <td class="text-center" width="20" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">ACT</td>
+                                <td class="" width="200" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">Date</td>
+                                <td class="" width="*" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">Site</td>
+                                <td class="" width="*" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">PIT Name</td>
+                                <td class="text-center" width="*" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">OB Actual</td>
+                                <td class="text-center" width="150" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">Coal (MT)</td>
+                                <td class="text-center" width="150" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">Coal (BCM)</td>
+                                <td class="text-center" width="150" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">Fuel Used (Liter)</td>
+                                <td class="text-center" width="150" rowspan="2" style="border: 1px solid #ddd;vertical-align: middle;">Fuel Ratio</td>
+                                <td class="text-center" width="150" colspan="3" style="border: 1px solid #ddd;vertical-align: middle;">CUMULATIVE</td>
+                                
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #ddd;vertical-align: middle;background-color: #e5e7e9">Production</td>
+                                <td style="border: 1px solid #ddd;vertical-align: middle;background-color: aliceblue;">Used Fuel</td>
+                                <td style="border: 1px solid #ddd;vertical-align: middle;background-color: antiquewhite;">Ratio</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list.data)
+                              <tr>
+                                  <td>{{$loop.index + 1}}</td>
+                                  <td>
+                                    <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id={{item.id}}>edit</button>
+                                  </td>
+                                  <td>
+                                      {{item.date || ''}}
+                                  </td>
+                                  <td>
+                                    {{item.pit.site.kode || ''}}
+                                </td>
+                                <td>
+                                    {{item.pit.name || ''}}
+                                </td>
+                                  <td>
+                                      {{item.ob}}
+                                  </td>
+                                  <td class="text-right">
+                                      {{item.coal_mt}}
+                                  </td>
+                                  <td class="text-right">
+                                    {{item.coal_bcm}}
+                                </td>
+                                <td class="text-right">
+                                    {{item.fuel_used}}
+                                </td>
+                                <td class="text-right" style="background-color: antiquewhite;">
+                                    {{item.fuel_ratio}}
+                                </td>
+                                <td class="text-right" style="background-color: #e5e7e9">
+                                    {{item.cum_production}}
+                                </td>
+                                <td class="text-right" style="background-color: aliceblue;">{{item.cum_fuel_used}}</td>
+                                <td class="text-right" style="background-color: antiquewhite;">{{item.cum_fuel_ratio}}</td>
+                              </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.simple-pagination')
+            </div>
+        </div>
+    </div>
+</div>

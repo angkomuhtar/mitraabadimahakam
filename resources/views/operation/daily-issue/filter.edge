@@ -1,0 +1,53 @@
+<div class="modal fade" id="filtermodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Filter Data Ritase</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="mulai_tanggal">Tanggal Report</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control inp-filter input-sm setDate" data-date="{{data.date}}" name="mulai_tanggal" id="mulai_tanggal">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="hingga_tanggal">Hingga Tanggal</label>
+                        <div class="form-group">
+                            <input type="date" class="form-control inp-filter input-sm setDate" data-date="{{data.date}}" name="hingga_tanggal" id="hingga_tanggal">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="mulai_tanggal">Pilih Pit Area</label>
+                        <div class="form-group">
+                            <select class="form-control inp-filter input-sm select2pit" name="find_pit_id" id="pit_id"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="mulai_tanggal">Pilih Equipment</label>
+                        <div class="form-group">
+                            <select class="form-control select2x inp-filter input-sm select2equipment" name="find_equip_id" multiple="multiple"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="reset-filter" class="btn btn-default" data-dismiss="modal">Reset Filter</button>
+                <button type="button" id="apply-filter" class="btn btn-info" data-dismiss="modal">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .select2-container {
+        height: auto;
+    }
+</style>
+<script>
+    $(function(){
+        $('select.select2x').select2()
+    })
+</script>

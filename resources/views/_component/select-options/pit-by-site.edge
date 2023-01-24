@@ -1,0 +1,19 @@
+<div class="col-sm-3 col-sm-offset-2">
+    <strong for="" class="">Pit Name*</strong>
+</div>
+<div class="col-sm-4">
+    <div class="input-group">
+        <div class="input-group-addon">
+            <i class="ti-location-pin"></i>
+        </div>
+        <select class="form-control select2pit" name="pit_id">
+            @if(list.length > 0)
+            @each(item in list)
+                <option value="{{item.id}}" {{item.selected ? 'selected':''}}>{{item.name}}</option>
+                @endeach
+            @else 
+                <option value="">Data tidak ditemukan</option>
+            @endif
+        </select>
+    </div>
+</div>

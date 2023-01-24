@@ -1,0 +1,87 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well">
+                        <form action="" id="fm-equipment-upd" data-id="{{data.id}}">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <i class="ti-arrow-left" id="bt-back" style="margin-right: 10px;"></i> 
+                                    Update Subcontractor Equipment Unit
+                                </div>
+                                <div class="panel-wrapper collapse in">
+                                    <div class="panel-body">
+                                        {{ csrfField() }}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">Nama Subcontractor <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-rss-square"></i></div>
+                                                        <select class="form-control select2subcon" data-check="{{data.subcont_id}}" name="subcont_id" id="subcont_id"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="">Kode <span class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-qrcode"></i></div>
+                                                        <input type="text" class="form-control" name="kode" value="{{data.kode}}" required> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="">Brand</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-hashtag"></i></div>
+                                                        <select class="form-control custom-option" data-title="brand-unit" data-check="{{data.brand}}" name="brand" id="brand" required></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">Type Unit</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                        <select class="form-control show" data-check="{{data.tipe}}" name="tipe" id="tipe" required>
+                                                            <option value="">Pilih</option>
+                                                            <option value="HAULER">HAULER</option>
+                                                            <option value="DIGGER">DIGGER</option>
+                                                            <option value="LV">LV</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-footer text-right">
+                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-back" type="button"> 
+                                            <i class="fa fa-close"></i> <span>Cancel</span>
+                                        </button>
+                                        <button class="btn btn-success waves-effect waves-light" id="bt-save-data" type="submit"> 
+                                            <i class="fa fa-save"></i> <span>Update</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('select.show').each(function(){
+            var values = $(this).data('check')
+            if(values){
+                $(this).find('option[value="'+values+'"]').attr('selected', 'selected')
+            }
+        })
+    })
+</script>

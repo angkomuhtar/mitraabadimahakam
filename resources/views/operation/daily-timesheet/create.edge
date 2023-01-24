@@ -1,0 +1,265 @@
+{{ script('ajax/index') }}
+{{ script('ajax/opr-dailytimesheet-create') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" class="" id="fm-timesheeet" data-id="">
+                        <div class="panel panel-default">
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="col-md-3">
+                                            <label for="tgl">Date Document</label>
+                                            <div class="form-group">
+                                                <input type="date" class="form-control initDate inp-timesheet" name="tgl" id="tgl">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Equipment Unit</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                    <select class="form-control select2x select2equipment inp-timesheet" name="unit_id" id="unit_id" data-check="" required></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Lokasi</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2pit inp-timesheet" name="pit_id" id="pit_id" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="tgl">Shift</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2shift inp-timesheet" name="shift_id" id="shift_id" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="tgl">Kegiatan</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2activities inp-timesheet" name="activity_id" id="activity_id" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label for="tgl">Operator</label>
+                                            <div class="form-group">
+                                                <select class="form-control select2x select2operator inp-timesheet" name="operator" id="operator" data-check="" required></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--
+                                    <div class="row b-all">
+                                        <div class="col-md-10 p-20">
+                                            <h5>DAILY CHECK LIST OPERATOR</h5>
+                                            <small>
+                                                Perikasa saat P2H unit pada posisi aman dan rata 
+                                                ( Rem parkir terpasang, Transmisi Netral/Hydraulic lock ON implament berada dilandasan ) <br>
+                                                Beri tanda check bila tidak normal / ada kerusakan dan jelaskan dalam kolom "keterangan"
+                                            </small>
+                                        </div>
+                                        <div class="col-md-2 p-20 text-right"></div>
+                                    </div>
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered" id="">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>No</th>
+                                                            <th>Tugas tugas pemeriksaan</th>
+                                                            <th class="text-center">Check Point</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="list-p2h"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div> 
+
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <th colspan="9">
+                                                            <h5>UNIT REFUEL / PENGISIAN BAHAN BAKAR</h5>
+                                                            <small>
+                                                                <em>
+                                                                    ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                </em>
+                                                            </small>
+                                                        </th>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="text-center" width="200">
+                                                            <label for="">Jumlah Fuel yang diisi</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control inp-dailyrefuel" name="topup" id="topup" placeholder="Satuan Liter"  value="{{data.dailyRefueling != null ? data.dailyRefueling.topup : ''}}">
+                                                                <span class="input-group-addon" id="basic-addon2">Lt</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center" width="200">
+                                                            <label for="">SMU</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="text" class="form-control inp-dailyrefuel" name="smu" id="smu" value="{{data.dailyRefueling != null ? data.dailyRefueling.smu : ''}}">
+                                                                <span class="input-group-addon">HM</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center" width="250">
+                                                            <label for="">Waktu</label>
+                                                            <div class="input-group m-b-30">
+                                                                <input type="datetime-local" class="form-control init-datetime inp-dailyrefuel" name="fueling_at" id="fueling_at">
+                                                                <span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-center" width="200">
+                                                            <label for="">Nama Operator</label>
+                                                            <select class="form-control select2x select2operator inp-dailyrefuel" data-check="" name="operator" id="operator_onfuel" required></select>
+                                                        </td>
+                                                        <td class="text-center" width="*">
+                                                            <label for="">Fuelman</label>
+                                                            <select type="text" class="form-control select2x select2fuelman inp-dailyrefuel" name="fuelman" id="fuelman" data-check="{{data.dailyRefueling.fuelman}}" value="{{data.dailyRefueling != null ? data.dailyRefueling.fuelman : '' }}" required></select>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div> -->
+                                   
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="9">
+                                                                <h5>MECHINE SMU RECORD / JAM KERJA ALAT</h5>
+                                                                <small>
+                                                                    <em>
+                                                                        ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                    </em>
+                                                                </small>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" colspan="4">SMU Jam Kerja</th>
+                                                            <th class="text-center v-middle" width="100" rowspan="2">Pencapaian <br> SMU</th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" width="100">SMU Mulai</th>
+                                                            <th class="text-center" width="100">SMU Akhir</th>
+                                                            <th class="text-center" width="80">Waktu Mulai</th>
+                                                            <th class="text-center" width="80">Waktu Akhir</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <input type="text" class="form-control inp-timesheet" name="begin_smu" id="begin_smu" placeholder="HM" value="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control inp-timesheet" name="end_smu" id="end_smu" placeholder="HM" value="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="datetime-local" class="form-control init-datetime inp-timesheet" name="approved_at" id="approved_at" data-datetime="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="datetime-local" class="form-control inp-timesheet" name="finish_at" id="finish_at" data-datetime="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" class="form-control inp-timesheet" placeholder="HM" name="used_smu" id="used_smu" value="">
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <!--
+                                    <div class="row b-all">
+                                        <div class="white-box">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="9">
+                                                                <h5>
+                                                                    BREAKDOWN / STAND BY
+                                                                    <span class="pull-right">
+                                                                        <button class="fcbtn btn btn-warning btn-outline btn-1f" id="bt-add-event">Tambah Event</button>
+                                                                </h5>
+                                                                <small>
+                                                                    <em>
+                                                                        ( Diisi dari awal sampai akhir shift 1 copy diserahkan Operator Department )
+                                                                    </em>
+                                                                </small>
+                                                            </th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th class="text-center" width="50">No</th>
+                                                            <th class="text-center" width="150">Waktu</th>
+                                                            <th class="text-center" width="250">SMU</th>
+                                                            <th class="text-center" width="*">Keterangan / Event</th>
+                                                            <th class="text-center" width="50">ACT</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="item-event"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    -->
+                                    <div class="row b-all p-t-20 m-t-20">
+                                        <div class="col-md-6">
+                                            <label for="">Catatan Tambahan</label>
+                                            <div class="form-group">
+                                                <textarea class="form-control inp-timesheet" name="description" id="description" rows="5"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="">Tanda Tangan</label>
+                                            <div class="row p-t-10">
+                                                <div class="col-md-12">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <th class="text-center">Nama Pengawas</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="text-center">
+                                                                    <span class="m-t-20 m-b-30">ttd</span>
+                                                                    <select class="form-control m-t-30 select2x select2userForeman inp-timesheet" data-check="" name="spv_id" id="spv_id" required></select>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-12 text-right">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button type="submit" class="btn btn-success waves-effect waves-light" id="bt-update-data"> 
+                                                <i class="fa fa-save"></i> <span>Save</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

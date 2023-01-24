@@ -4,7 +4,7 @@ $(function(){
     $('.dropify').dropify();
     initDeafult()
 
-    $('#create-form').on('click', function(){
+    $('body').on('click', 'button#create-form', function(){
         initCreate()
     })
     $('body').on('click', 'button#bt-back', function(){
@@ -41,8 +41,20 @@ $(function(){
     })
 
     function initDeafult(){
-        $('div.content-module').each(function(){ $(this).hide() })
-        $('div#list-content').show()
+        $('div.content-module').css('display', 'none')
+        $.ajax({
+            async: true,
+            url: '/master/equipment/list?limit=25&keyword=',
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+        
     }
     function initCreate(){
         $('div.content-module').each(function(){ $(this).hide() })
@@ -101,10 +113,20 @@ $(function(){
     $('body').on('click', 'a.btn-pagging', function(e){
         e.preventDefault()
         var page = $(this).data('page')
-        var url = window.location.pathname+'/list?page='+page
-        $.get(url, function(data){
-            $('div#list-content').children().remove()
-            $('div#list-content').append(data)
+        var keyword = $('#inpKeyword').val()
+        var limit = $('input#inpLimit').val()
+        var url = window.location.pathname+'/list?page='+page+'&limit='+limit+'&keyword='+keyword
+        $.ajax({
+            async: true,
+            url: url,
+            method: 'GET',
+            success: function(result){
+                $('div#list-content').children().remove()
+                $('div#list-content').html(result).show()
+            },
+            error: function(err){
+                console.log(err);
+            }
         })
     })
 

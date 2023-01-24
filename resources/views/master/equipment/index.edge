@@ -8,9 +8,8 @@
                 <h4 class="page-title">Master Equipment</h4> 
             </div>
         </div>
-        <div class="content-module" id="list-content">
-            @include('master.equipment.list')
-        </div>
+        @include('master.equipment.filter')
+        <div class="content-module" id="list-content"></div>
         <div class="content-module" id="form-create" style="display:none;">
             @include('master.equipment.create')
         </div>

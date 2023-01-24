@@ -1,0 +1,283 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" class="form-summary" id="fm-upload-fuel-summary">
+                        <div class="panel panel-default">
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="col-md-4">
+                                            <label for="tgl">Tanggal</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                    <input type="date" class="form-control initDate" data-date="{{data.date}}" name="date" id="date_2" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="tgl">Metode</label>
+                                            <div class="form-group">
+                                                <select class="form-control" id="metode" name="metode">
+                                                    <option value="upload" selected>Upload</option>
+                                                    <option value="entry">Entry</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div id="sheet-section" class="col-md-3 methode-upload">
+                                            <div class="form-group">
+                                                <label for="">Tipe Upload</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="icon-layers"></i></div>
+                                                    <select class="form-control" type="text" name="fuel_usage_upload_type" id="fuel-usage-upload-type">
+                                                        <option>Daily</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="entry">
+                                            <div class="col-md-3 methode-entry" style="display:none;">
+                                                <label for="tgl">Site</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-map"></i></div>
+                                                        <select class="form-control select2site" data-title="site" data-check id="site_id" name="site_id"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 methode-entry box-pit" style="display:none;">
+                                                <label for="tgl">PIT</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-map-marker"></i></div>
+                                                        <select class="form-control select2pit" data-check id="pit_id" name="pit_id"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 methode-entry" style="display:none;">
+                                                <label for="tgl">Volume OB</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="ti-shopping-cart-full"></i></div>
+                                                        <input type="number" step="any" class="form-control" name="ob" value="0.00"> 
+                                                        <div class="input-group-addon"><strong>BCM</strong></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 methode-entry" style="display:none;">
+                                                <label for="tgl">Volume COAL</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="ti-shopping-cart-full"></i></div>
+                                                        <input type="number" step="0.01" class="form-control" name="coal_mt" value="0.00"> 
+                                                        <div class="input-group-addon"><strong>MT</strong></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 methode-entry" style="display:none;">
+                                                <label for="tgl">Volume COAL</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="ti-shopping-cart-full"></i></div>
+                                                        <input type="number" step="any" class="form-control" name="coal_bcm" readonly style="background-color:#d5d6da" value="0.00"> 
+                                                        <div class="input-group-addon"><strong>BCM</strong></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 methode-entry" style="display:none;">
+                                                <label for="tgl">Fuel Used</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="ti-paint-bucket"></i></div>
+                                                        <input type="number" step="any" class="form-control" name="fuel_used" value="0.00"> 
+                                                        <div class="input-group-addon"><strong>Liter</strong></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 methode-entry" style="display:none;">
+                                                <label for="tgl">Fuel Ratio</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="ti-ruler-pencil"></i></div>
+                                                        <input type="number" step="any" class="form-control" name="fuel_ratio" value="0.00"> 
+                                                        <div class="input-group-addon"><strong>Ratio</strong></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12 methode-upload">
+                                                <textarea class="form-control hidden" name="dataJson" rows="5"></textarea>
+                                                <input type="hidden" name="current_file_name" value="" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 methode-upload" id="upload-file">
+                                            <label for="tgl">Upload File</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="fa fa-file-excel-o"></i></span>
+                                                    <input type="file" class="form-control" name="fuel_usage_summary" id="fuel_usage_summary" required/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            &nbsp;
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button type="submit" class="btn btn-success waves-effect waves-light"> 
+                                                <i class="fa fa-save"></i> <span>Save</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+
+        $('input[name="tipeInput"]').switcher();
+
+        $('body').find('input#date_2').attr('data-date', moment().format('YYYY-MM-DD'))
+
+        $('input[name="date"]').on('change', function(){
+            var date = $(this).val() || moment().format('YYYY-MM-DD')
+        })
+
+        $('select[name="metode"]').on('change', function(){
+            var val = $(this).val()
+            if(val === 'entry'){
+                $('.methode-entry').css('display', 'inline')
+                $('.methode-upload').css('display', 'none')
+                $('body').find('form').attr('id', 'fm-upload-fuel-summary-entry')
+                $('input[name="fuel_usage_summary"]').removeAttr('required')
+            }else{
+                $('.methode-entry').css('display', 'none')
+                $('.methode-upload').css('display', 'inline')
+                $('body').find('form').attr('id', 'fm-upload-fuel-summary')
+                $('input[name="fuel_usage_summary"]').attr('required', 'required')
+            }
+        })
+
+        $('select[name="site_id"]').on('change', function(e){
+            e.preventDefault()
+            var elm = $(this)
+            var val = elm.val()
+            console.log(val);
+            var elmPit = elm.parents('form').find('select[name="pit_id"]')
+            elmPit.html('')
+            $.ajax({
+                async: true,
+                url: '/ajax/site/'+val,
+                method: 'GET',
+                success: function(data){
+                    console.log(data.pit);
+                    const list = data.pit?.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
+                    elmPit.html(list)
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+
+        $('input[name="coal_mt"]').on('keyup', function(){
+            var val = $(this).val()
+            var ob = $('input[name="ob"]').val()
+            var fuel = $('input[name="fuel_used"]').val()
+            var coalBCM = (parseFloat(val) / 1.3).toFixed(2)
+            
+            $('input[name="coal_bcm"]').val(parseFloat(coalBCM))
+            var ratio = parseFloat(fuel) / (parseFloat(ob) + (parseFloat(val) / 1.3))
+            $('input[name="fuel_ratio"]').val(ratio)
+        })
+
+        $('input[name="ob"]').on('keyup', function(){
+            var ob = $(this).val()
+            var val = $('input[name="coal_mt"]').val()
+            var fuel = $('input[name="fuel_used"]').val()
+            var coalBCM = (parseFloat(val) / 1.3).toFixed(2)
+            
+            $('input[name="coal_bcm"]').val(parseFloat(coalBCM))
+            var ratio = parseFloat(fuel) / (parseFloat(ob) + (parseFloat(val) / 1.3))
+            $('input[name="fuel_ratio"]').val(ratio)
+        })
+
+        $('input[name="fuel_used"]').on('keyup', function(){
+            var fuel = $(this).val()
+            var val = $('input[name="coal_mt"]').val()
+            var ob = $('input[name="ob"]').val()
+            var coalBCM = (parseFloat(val) / 1.3).toFixed(2)
+            
+            $('input[name="coal_bcm"]').val(parseFloat(coalBCM))
+            var ratio = parseFloat(fuel) / (parseFloat(ob) + (parseFloat(val) / 1.3))
+            $('input[name="fuel_ratio"]').val(ratio)
+        })
+
+    })
+</script>
+
+<style>
+.material-switch > input[type="checkbox"] {
+    display: none;   
+}
+
+.material-switch > label {
+    cursor: pointer;
+    height: 0px;
+    position: relative; 
+    width: 40px;  
+}
+
+.material-switch > label::before {
+    background: rgb(0, 0, 0);
+    box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    content: '';
+    height: 16px;
+    margin-top: -8px;
+    position:absolute;
+    opacity: 0.3;
+    transition: all 0.4s ease-in-out;
+    width: 40px;
+}
+.material-switch > label::after {
+    background: rgb(83 230 157);
+    border-radius: 16px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    content: '';
+    height: 24px;
+    left: -4px;
+    margin-top: -8px;
+    position: absolute;
+    top: -4px;
+    transition: all 0.3s ease-in-out;
+    width: 24px;
+}
+.material-switch > input[type="checkbox"]:checked + label::before {
+    background: inherit;
+    opacity: 0.5;
+}
+.material-switch > input[type="checkbox"]:checked + label::after {
+    background: inherit;
+    left: 20px;
+}
+</style>

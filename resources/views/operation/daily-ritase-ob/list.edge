@@ -1,0 +1,165 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add Ritase</span>
+                        </button>
+                        
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12 text-right">
+                        <div class="input-group">
+                            <input id="limit" type="number" class="form-control text-right" name="limit" value="{{limit}}">
+                            <span class="input-group-addon" id="bt-search-keyword">Limit</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-2 col-xs-12 text-right">
+                        <button class="btn btn-info" type="button" id="open-filter" data-toggle="modal" data-target="#filtermodal">
+                            <i class="fa fa-filter"></i>
+                            Filter Data
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="150">PIT Name</th>
+                                <th class="sl" width="150">Fleet Name</th>
+                                <th class="sl">Description</th>
+                                <th class="sl" width="100">Date</th>
+                                <th class="sl text-right" width="100">Distance</th>
+                                <th class="sl text-right" width="100">Total Ritase</th>
+                                <th class="sl text-center" width="100">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                    </td>
+                                    <td class="single-line">
+                                        <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.pit.id}}" data-search="pit">
+                                            <span class="text-mute">{{item.daily_fleet.pit.name}} </span>
+                                        </a><br>
+                                        <small>
+                                            <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.shift.id}}" data-search="shift">
+                                                <span class="text-info">{{item.daily_fleet.shift.name}} </span>
+                                            </a>
+                                        </small>
+                                    </td>
+                                    <td class="single-line">
+                                        <a href="#" class="find-by" data-id="{{item.id}}" data-item="{{item.daily_fleet.fleet.id}}" data-search="fleet">
+                                            <span>{{item.daily_fleet.fleet.name}} </span>
+                                        </a>
+                                    </td>
+                                    <td class="single-line">
+                                        <strong>{{item.material_details.kode}}</strong> -
+                                        <span>{{item.material_details.name}}</span>
+                                    </td>
+                                    <td class="myDateFormat" data-date="{{item.date}}">{{item.date}}</td>
+                                    <td class="text-right">{{item.distance}} Mtr</td>
+                                    <td class="text-right">{{item.tot_ritase}} Rit</td>
+                                    <td class="text-center">
+                                        <button type="button" id="open-details" class="btn btn-default btn-circle" data-id="{{item.id}}">
+                                            <i class="ti-control-shuffle"></i> 
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.simple-pagination')
+            </div>
+        </div>
+    </div>
+    <!-- MODALS CONTENT DETAILS -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border: 0px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-hover">
+                            <thead>
+                                <th class="text-center">No</th>
+                                <th>Checker</th>
+                                <th>Hauler Unit</th>
+                                <th>Operator</th>
+                                <th>Check In</th>
+                            </thead>
+                            <tbody id="body-details">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border: 0px">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+      
+</div>
+<script>
+    $(function(){
+        $('.myDateFormat').each(function(){
+            var date = $(this).data(date)
+            var elm = $(this).data('elm')
+            var dateString = moment(date.date).format('DD-MM-YYYY')
+            // console.log(date.date);
+            if(elm != undefined){
+                $(this).find(elm).html(dateString)
+            }else{
+                $(this).html(dateString)
+            }
+        })
+
+        $('button#open-details').on('click', function(){
+            var id = $(this).data('id')
+            $.ajax({
+                async: true,
+                url: '/operation/daily-ritase-ob/'+id+'/list-detail',
+                dataType: 'json',
+                method: 'GET',
+                beforeSend: function(){
+                    $('#myModal').modal('show')
+                    $('tbody#body-details').html('<tr><td colspan="5"><i class="fa fa-spinner fa-spin fa-2x"></i> Loading data...</td></tr>')
+                },
+                success: function(data){
+                    console.log(data);
+                    $('tbody#body-details').html(
+                        data.map( (v, i) => 
+                            '<tr>'+
+                            '    <td class="text-center v-middle">'+(i + 1)+'</td>'+
+                            '    <td class="v-middle"><h3>'+v.checker.profile.nm_depan+'</h3></td>'+
+                            '    <td class="v-middle">'+v.hauler.kode+'<br/><small>'+v.hauler.brand+'</small></td>'+
+                            '    <td class="v-middle">'+v.operator.fullname+'<br/><small>Ritase '+v.urut+'</small></td>'+
+                            '    <td class="v-middle"><i class="ti-timer"></i> '+v.check_in+'<br/><small>'+v.duration+' menit</small></td>'+
+                            '</tr>'
+                        )
+                    )
+                    
+                },
+                error: function(err){
+                    console.log(err);
+                    $('tbody#body-details').html('<tr><td class="text-danger" colspan="5"><i class="fa fa-spinner fa-spin fa-2x"></i> Error data...</td></tr>')
+                }
+            })
+        })
+
+    })
+</script>

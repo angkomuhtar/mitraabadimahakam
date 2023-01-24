@@ -1,0 +1,25 @@
+<div>
+    <label for="" class="col-sm-4 control-label" style="margin-top: 5px;">Pilih Lokasi Pit</label>
+    <div class="col-sm-8 m-b-20">
+        <section>
+            @if(!list.length > 0)
+                <div>
+                    <h4>Data tidak ditemukan...</h4>
+                </div>
+            @else
+                @each(item in list)
+                    <div>
+                        <input type="radio" class="list-pit" id="{{item.id}}" name="pit_id" value="{{item.id}}">
+                        <label class="text-center" for="{{item.id}}">
+                            <i class="ti-direction" style="font-size: xxx-large;text-align: center;"></i>
+                            <p class="text-white m-b-0">{{item.kode}}</p>
+                            <small style="font-size:10px">{{item.name}}</small>
+                        </label>
+                    </div>
+                    <div>&nbsp;</div>
+                @endeach
+            @endif
+            
+        </section>
+    </div>
+</div>

@@ -5,7 +5,7 @@ const SysOption = use("App/Models/SysOption")
 class SysOptionController {
     async index ({ auth, view, request }) {
         const req = request.all()
-        const limit = 10
+        const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let data
         if(!req.keyword){
@@ -22,7 +22,7 @@ class SysOptionController {
 
     async list ({ auth, view, request }) {
         const req = request.all()
-        const limit = 10
+        const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let data
         if(!req.keyword){

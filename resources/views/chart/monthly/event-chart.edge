@@ -1,0 +1,22 @@
+{{ script('/ajax/chart/EVENT_MTD_CHART') }}
+<div class="white-box">
+    <h3 class="box-title m-b-0">
+        <div class="form-group col-sm-4 pull-right">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <i class="fa fa-calendar"></i>
+                </span> 
+                <select class="form-control input-sm" id="opt-chart5">
+                    @each(item in monthItem)
+                        <option value="{{item.values}}" {{item.selected}}>{{item.name}}</option>
+                    @endeach
+                </select>
+            </div>
+        </div>
+        Monthly Average Duration Event
+    </h3>
+    <small>Rata rata durasi event perjam dalam sebulan</small>
+    <div>
+        <canvas id="chart5" height="200"></canvas>
+    </div>
+</div>

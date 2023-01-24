@@ -37,7 +37,7 @@ class PitApiController {
                     .fetch()
         }else{
             pit = 
-                await Pit.query().with('site').where({sts: 'Y'}).fetch()
+                await Pit.query().with('site').with('seam').where({sts: 'Y'}).fetch()
         }
 
         let durasi = await diagnoticTime.durasi(t0)

@@ -1,0 +1,74 @@
+
+<tr class="advance-table-row">
+    <td class="urut text-center" width="50" style="font-size:large">1</td>
+    <td width="*">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="tgl">Hauler Unit</label>
+                <div class="form-group">
+                    <select class="form-control select2Hauler" name="hauler_id" id="hauler_id" data-check="" required></select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="tgl">Operator Hauler</label>
+                <div class="form-group">
+                    <select class="form-control select2operator" name="opr_id" id="opr_id" data-check="" required></select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label for="tgl">Waktu/Jam</label>
+                <div class="form-group">
+                    <select class="form-control" name="check_in" id="check_in" required>
+                        <option value="">Pilih Jam</option>
+                        <optgroup label="Shift Pagi">
+                            <option value="07:59">Pukul 07 pagi</option>
+                            <option value="08:59">Pukul 08 pagi</option>
+                            <option value="09:59">Pukul 09 pagi</option>
+                            <option value="10:59">Pukul 10 pagi</option>
+                            <option value="11:59">Pukul 11 pagi</option>
+                            <option value="12:59">Pukul 12 siang</option>
+                            <option value="13:59">Pukul 13 siang</option>
+                            <option value="14:59">Pukul 14 siang</option>
+                            <option value="15:59">Pukul 15 siang</option>
+                            <option value="16:59">Pukul 16 sore</option>
+                            <option value="17:59">Pukul 17 sore</option>
+                            <option value="18:59">Pukul 18 sore</option>
+                        </optgroup>
+                        <optgroup label="Shift Malam">
+                            <option value="19:59">Pukul 19 malam</option>
+                            <option value="20:59">Pukul 20 malam</option>
+                            <option value="21:59">Pukul 21 malam</option>
+                            <option value="22:59">Pukul 22 malam</option>
+                            <option value="23:59">Pukul 23 malam</option>
+                            <option value="00:59">Pukul 00 tengah malam</option>
+                            <option value="01:59">Pukul 01 dini hari</option>
+                            <option value="02:59">Pukul 02 dini hari</option>
+                            <option value="03:59">Pukul 03 dini hari</option>
+                            <option value="04:59">Pukul 04 dini hari</option>
+                            <option value="05:59">Pukul 05 dini hari</option>
+                            <option value="06:59">Pukul 06 pagi</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label for="tgl">Jumlah</label>
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="qty">
+                        <span class="input-group-addon">Ritase</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+    <td width="10">
+        <div class="form-group" style="margin-bottom: 0px;">
+            <button type="button" class="btn btn-success btn-circle bt-add-items"><i class="fa fa-plus"></i> </button>
+            <button type="button" class="btn btn-danger btn-circle bt-delete-items"><i class="fa fa-trash"></i> </button>
+        </div>
+
+    </td>
+</tr>
+{{ script('ajax/opt-hauler') }}
+{{ script('ajax/opt-operator') }}

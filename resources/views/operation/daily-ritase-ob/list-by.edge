@@ -1,0 +1,108 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        Filtered By <span id="filtered" class="text-uppercase" data-filter="{{filtered}}" data-id="{{id}}">{{filtered}}</span>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl" width="150">PIT/FLEET</th>
+                                <th class="sl" width="150">Hauler Unit</th>
+                                <th class="sl" width="150">Work Shift</th>
+                                <th class="sl">Description</th>
+                                <th class="sl" width="150">Date</th>
+                                <th class="sl" width="100">Check-In</th>
+                                <th class="sl text-right" width="100">Distance</th>
+                                <th class="sl text-center" width="100" style="background-color: black;">Ritase</th>
+                                <th class="sl text-center" width="150">Checker</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="10">Data not found or data is not exsist</td></tr>
+                            @endif
+                              
+                            @if(!list.data[0].daily_ritase.daily_fleet)
+                              <tr><td colspan="10">Data not found or data is not exsist</td></tr>
+                            @else
+                                @each(item in list.data)
+                                    <tr>
+                                        <td>{{$loop.index + 1}}</td>
+                                        <td class="single-line">
+                                            <span class="text-mute">{{item.daily_ritase.daily_fleet.pit.name}} </span><br>
+                                            <span>{{item.daily_ritase.daily_fleet.fleet.name}} </span>
+                                        </td>
+                                        <td class="single-line">
+                                            <span>{{item.hauler.kode}} </span><br>
+                                            <strong class="text-uppercase">{{item.hauler.brand}} </strong>
+                                        </td>
+                                        <td class="">
+                                            <span class="text-info">{{item.daily_ritase.daily_fleet.shift.name}} </span>
+                                        </td>
+                                        <td class="single-line">
+                                            <strong>{{item.daily_ritase.material_details.kode}}</strong> -
+                                            <span>{{item.daily_ritase.material_details.name}}</span>
+                                        </td>
+                                        <td class="myDateFormat" data-date="{{item.check_in}}" data-elm="strong">
+                                            <i class="text-warning fa fa-calendar-o"></i> <strong class="text-warning"></strong> 
+                                        </td>
+                                        <td class="myTimeFormat" data-date="{{item.check_in}}" data-elm="strong">
+                                            <i class="text-warning icon-speedometer"></i> <strong class="text-warning"></strong>
+                                             <h5 class="text-danger">
+                                                <i class="text-danger ti-timer"></i>
+                                                {{item.duration >= 0 ? item.duration+' Menit' : ''}}
+                                            </h5>
+                                            
+                                        </td>
+                                        <td class="text-right">{{item.daily_ritase.distance}} Meter</td>
+                                        <td class="text-right" style="background-color: black;">RIT {{item.urut}}</td>
+                                        <td class="text-center">
+                                            {{item.checker.profile.nm_depan}} 
+                                            {{item.checker.profile.nm_belakang ? item.checker.profile.nm_belakang : ''}}
+                                        </td>
+                                    </tr>
+                                @endeach
+                            @endif
+
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        var filterData = $('span#filtered').data('filter')
+        var idData = $('span#filtered').data('id')
+        $('body').on('click', 'a.btn-pagging', function(e){
+            e.preventDefault()
+            var page = $(this).data('page')
+            
+            var url = window.location.pathname+'/list/'+filterData+'/'+idData+'?page='+page
+            $.ajax({
+                async: true,
+                url: url,
+                method: 'GET',
+                success: function(result){
+                    $('div#list-content').children().remove()
+                    $('div#list-content').html(result).show()
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+    })
+</script>

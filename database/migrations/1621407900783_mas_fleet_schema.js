@@ -9,6 +9,7 @@ class MasFleetSchema extends Schema {
       table.increments()
       table.string('kode', 10).notNullable()
       table.string('name').notNullable()
+      table.enu('tipe', ['OB', 'CO']).defaultTo('OB')
       table.enu('status', ['Y', 'N']).defaultTo('Y')
       table.timestamps()
     })

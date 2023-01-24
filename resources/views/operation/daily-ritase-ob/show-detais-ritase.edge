@@ -1,0 +1,54 @@
+{{ script('ajax/index') }}
+<div class="table-responsive p-10">
+    <table class="table table-hover">
+        <thead style="border-bottom: 2px solid;">
+            <tr>
+                <th class="sl text-center" width="20">No</th>
+                <th class="text-center" width="8%">ACT</th>
+                <th class="sl">Checker</th>
+                <th class="sl">Pengawas / SPV</th>
+                <th class="sl">Operator</th>
+                <th class="sl">Hauler</th>
+                <th class="sl text-center">Check-In</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(list.length < 1)
+              <tr><td class="text-danger" colspan="7">Data not found or data is not exsist</td></tr>
+            @endif
+            @each(item in list)
+                <tr>
+                    <td>
+                        {{$loop.index + 1}}
+                        <div id="modal-update">
+                            @include('operation.daily-ritase-ob.show-detais-ritase-upd')
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-outline btn-danger btn-xs bt-delete-data" data-id="{{item.id}}">
+                            <i class="icon-trash"></i>
+                        </button>
+                        <button class="btn btn-outline btn-warning btn-xs" data-id="{{item.id}}" data-toggle="modal" data-target="#modals{{item.id}}" class="model_img img-responsive">
+                            <i class="icon-pencil"></i>
+                        </button>
+                    </td>
+                    <td class="single-line">
+                        {{item.checker.profile.nm_depan}}
+                    </td>
+                    <td class="single-line">
+                        {{item.spv.profile.nm_depan}}
+                    </td>
+                    <td>
+                        <span class="{{item.operator != 'not set' ? 'text-success': ''}}">{{item.operator}}</span>
+                    </td>
+                    <td class="">
+                        <span class="text-warning">{{item.hauler.kode}}</span> - <span class="text-uppercase"><strong>{{item.hauler.brand}}</strong></span>
+                    </td>
+                    <td class="single-line text-center">
+                        <strong class="myDateTimeFormat" data-date="{{item.check_in}}"></strong>
+                    </td>
+                </tr>
+            @endeach
+        </tbody>
+    </table>
+</div>

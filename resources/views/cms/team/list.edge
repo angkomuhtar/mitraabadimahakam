@@ -1,0 +1,75 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Add Team</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <!--
+                        <div class="input-group">
+                            <input id="inpKeywordSite" class="form-control" placeholder="Search for...">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" id="bt-search-keyword">Go!</button> 
+                            </span>
+                        </div>-->
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="250">Name<br>JobTitle</th>
+                                <th class="sl" width="*">Group</th>
+                                <th class="sl" width="100">Images</th>
+                                <th class="sl text-center" width="20">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @each(item in list)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        <p>
+                                            <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">update</button> 
+                                        </p>
+                                        <p>
+                                            <button class="btn btn-outline btn-danger btn-xs bt-delete-data" data-id="{{item.id}}">remove</button>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        {{item.name}} <br>
+                                        <small>{{item.title}}</small> 
+                                    </td>
+                                    <td>
+                                        {{item.group}}<br>
+                                        @if(item.lang == 'id')
+                                            <strong class="text-warning">Bahasa Indonesia</strong>
+                                        @else
+                                            <strong class="text-info">Bahasa Inggris</strong>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <img src="{{item.img_url}}" width="100" height="100" alt="user" class="img-circle" style="max-width:100px;max-height:100px">
+                                    </td>
+                                    <td>
+                                        @if(item.aktif == 'Y')
+                                            <strong class="text-success">Active</strong>
+                                        @else
+                                            <strong class="text-danger">Inactive</strong>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

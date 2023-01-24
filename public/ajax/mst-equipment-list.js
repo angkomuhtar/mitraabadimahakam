@@ -1,31 +1,55 @@
 'use strict'
 $(function(){
-    $('input#inpKeyword').on('keydown', function(e){
+    setDateString()
+
+    $('input#inpKeyword').on('keydown', async function(e){
+        var limit = $('input#inpLimit').val()
         if(e.keyCode === 13){
             var search = $(this).val()
-            $.get('/master/equipment/search?keyword='+search, function(data){
-                $('div#list-content').children().remove()
-                $('div#list-content').html(data)
-                setDateString()
-            })
+            await dataAjax(limit, search)
         }
+    })
+
+    $('button#bt-go').on('click', async function(e){
+        var limit = $('input#inpLimit').val()
+        var search = $('input#inpKeyword').val()
+        await dataAjax(limit, search)
     })
 
     $('button.bt-edit-data').on('click', function(){
         var id = $(this).data('id')
-        $.get('/master/equipment/'+id, function(data){
+        $.get('/master/equipment/'+id+'/show', function(data){
             $('div#list-content').hide()
             $('div#form-show').html(data)
             $('div#form-show').show()
         })
     })
 
+    async function dataAjax(limit, search){
+        console.log(search);
+        $.ajax({
+            async: true,
+            url: '/master/equipment/list?keyword='+search+'&limit='+limit,
+            method: 'GET',
+            success: function(data){
+                // console.log(data);
+                $('div#list-content').children().remove()
+                $('div#list-content').html(data)
+                setDateString()
+            },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    }
+    
+
     function setDateString() {
         $('.myDateFormat').each(function(){
             var date = $(this).data(date)
             var elm = $(this).data('elm')
             var dateString = moment(date.date).format('DD-MM-YYYY')
-            console.log(date.date);
+            // console.log(date.date);
             if(elm != undefined){
                 $(this).find(elm).html(dateString)
             }else{

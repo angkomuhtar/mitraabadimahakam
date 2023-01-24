@@ -11,7 +11,7 @@ class MasFleetController {
 
     async list ({ request, view }) {
         const req = request.only(['keyword', 'page'])
-        const limit = 10
+        const limit = 25
         const halaman = req.page === undefined ? 1:parseInt(req.page)
         let data
         if(req.keyword != ''){
@@ -19,16 +19,17 @@ class MasFleetController {
             whe.where('kode', 'like', `%${req.keyword}%`)
             whe.orWhere('name', 'like', `%${req.keyword}%`)
         }).andWhere('status', 'Y')
+        .orderBy('kode', 'asc')
         .paginate(halaman, limit)
         }else{
-        data = await Fleet.query().where('status', 'Y').paginate(halaman, limit)
+        data = await Fleet.query().where('status', 'Y').orderBy('kode', 'asc').paginate(halaman, limit)
         }
         // console.log(data);
         return view.render('master.fleet.list', {list: data.toJSON()})
     }
 
     async store ({ auth, request }) {
-        const req = request.only(['kode', 'name'])
+        const req = request.only(['kode', 'name', 'tipe'])
         const usr = await auth.getUser()
         const fleet = new Fleet()
         fleet.fill(req)
@@ -60,7 +61,7 @@ class MasFleetController {
     async update ({ auth, params, request }) {
         const usr = await auth.getUser()
         const { id } = params
-        const req = request.only(['kode', 'name'])
+        const req = request.only(['kode', 'name', 'tipe'])
         const fleet = await Fleet.findOrFail(id)
         fleet.merge(req)
         try {

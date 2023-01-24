@@ -14,3 +14,13 @@ database/*.sqlite
 # VSCode & Webstorm history directories
 .history
 .idea
+
+# Upload Data Excel
+public/upload
+# Template Excel
+public/template-xls/*.*
+
+
+log.txt
+log1.txt
+log2.txt

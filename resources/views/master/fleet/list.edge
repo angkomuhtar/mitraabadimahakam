@@ -25,6 +25,7 @@
                                 <th class="sl text-center" width="20">ACT</th>
                                 <th class="sl" width="150">Kode</th>
                                 <th class="sl">Fleet Name</th>
+                                <th class="sl" width="150">Fleet Type</th>
                                 <th class="sl text-center" width="20">Status</th>
                             </tr>
                         </thead>
@@ -44,6 +45,9 @@
                                     </td>
                                     <td>
                                         <p><strong>{{item.name}}</strong>
+                                    </td>
+                                    <td>
+                                        <p>{{item.tipe === 'OB' ? 'OB':'COAL' }}</p>
                                     </td>
                                     <td class="text-center">{{item.status}}</td>
                                 </tr>

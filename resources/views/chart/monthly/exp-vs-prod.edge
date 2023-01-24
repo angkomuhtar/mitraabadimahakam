@@ -1,0 +1,100 @@
+<div class="white-box" style="min-height: 480px;">
+    <h3 class="box-title m-b-0">
+        <div class="form-group col-sm-4 pull-right">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    YEAR
+                </span> 
+                <input type="number" class="form-control input-sm text-right" type="text" name="tahun" id="tahun">
+            </div>
+        </div>
+        Summary Expended Vs COAL
+    </h3>
+    <canvas id="chart6" class="grafik-chartis"></canvas> 
+    <br>
+    <p class="m-b-0"><strong>NOTE :</strong></p>
+    <small>SMU data adalah total akumulasi HM semua unit perbulan</small> <br>
+    <small>Fuel data adalah total akumulasi konsumsi fuel semua unit perbulan</small> <br>
+    <small>Coal data adalah total akumulasi produksi coal perbulan</small>
+    <!--  
+        <canvas id="chart6" width="400" height="400"></canvas>
+        <a href="https://api.whatsapp.com/send?phone=628114107717&text=sy%20ingin%0Amelakukan%20%2Atesting%2A">WHATAPPS</a>
+    -->
+</div>
+<script>
+    $(function(){
+        $('input[name="tahun"]').val(moment().format('YYYY'))
+        G6_MTD_COST_VS_PROD()
+
+
+        function G6_MTD_COST_VS_PROD(){
+            var periode = $('input[name="tahun"]').val()
+            $.ajax({
+                async: true,
+                url: '/ajax/grafik6?periode='+periode,
+                method: 'GET',
+                success: function(result){
+                    console.log('result::', result);
+                    const data = {
+                        labels: moment.monthsShort(),
+                        datasets: [
+                            {
+                                label: "Fuel",
+                                backgroundColor: "#FFD41B",
+                                borderWidth: 0.5,
+                                borderColor: "#fff",
+                                data: result.fuel
+                            },
+                            {
+                                label: "SMU",
+                                backgroundColor: "#d70205",
+                                // backgroundColor: "#c4c4c4",
+                                borderWidth: 0.5,
+                                borderColor: "#fff",
+                                data: result.smu
+                            },
+                            {
+                                label: "OB",
+                                backgroundColor: "#6d2b04",
+                                borderWidth: 0.5,
+                                borderColor: "#fff",
+                                data: result.ob
+                            },
+                            {
+                                label: "Coal",
+                                backgroundColor: "#000",
+                                borderWidth: 0.5,
+                                borderColor: "#fff",
+                                data: result.coal
+                            }
+                        ]
+                    }
+                    const config = {
+                        type: 'bar',
+                        data: data,
+                        options: {
+                            barValueSpacing: 10,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        min: 0 
+                                    }
+                                }],
+                                xAxes: [{
+                                    // categoryPercentage: 1.0,
+                                    barPercentage: 1.0
+                                }],
+                            }
+                        }
+                    };
+                    new Chart($('#chart6'), config);
+                    
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+            
+        }
+    });
+</script>

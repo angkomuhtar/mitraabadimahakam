@@ -17,6 +17,8 @@ body {
   padding: 0;
 }
 
+
+
 section {
   height: 100%;
   display: flex;
@@ -75,6 +77,12 @@ a {
 
 p {
   margin: 0.83rem 0;
+}
+
+.noborder input[type=number] {
+  border-width: 0px;
+  width: -webkit-fill-available;
+  text-align: center;
 }
 
 @keyframes slideUp {

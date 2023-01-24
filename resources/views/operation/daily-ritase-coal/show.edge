@@ -1,0 +1,175 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <div class="white-box p-b-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="" class="" id="fm-ritase-coal-upd" data-id="{{data.id}}">
+                        <div class="panel panel-default">
+                            <!--<div class="panel-heading"><i class="ti-user" style="margin-right: 10px;"></i> Form Update Time Sheet</div>-->
+                            <div class="panel-wrapper collapse in">
+                                <div class="panel-body">
+                                    {{ csrfField() }}
+                                    <div class="row b-all p-t-20 m-b-20">
+                                        <div class="col-md-3">
+                                            <label for="">Check Out From PIT</label>
+                                            <div class="form-group">
+                                                <input type="datetime-local" class="form-control set-datetime inp-coal-ritase" data-datetime="{{data.checkout_pit}}" name="tgl" id="tgl" disabled>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="">Checker PIT</label>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control inp-coal-ritase" value="{{data.ritase_coal.checker.nm_lengkap}}" disabled>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 pull-right">
+                                            <strong class="text-white pull-right">
+                                                Nomor Kupon :
+                                                <h1 class="m-t-0">{{data.kupon}}</h1>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row p-t-20 m-b-20 b-all">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i> Check In Date <span class="text-danger">*</span></div>
+                                                </div>
+                                                <input type="datetime-local" class="form-control {{data.checkin_jt ? 'set':'init'}}-datetime inp-coal-ritase" data-datetime="{{data.checkin_jt}}" name="checkin_jt">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i> Check Out Date <span class="text-danger">*</span></div>
+                                                </div>
+                                                <input type="datetime-local" class="form-control {{data.checkout_jt ? 'set':'init'}}-datetime inp-coal-ritase" data-datetime="{{data.checkout_jt}}" name="checkout_jt">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-ticket"></i> Nomor Ticket<span class="text-danger">*</span></div>
+                                                </div>
+                                                <input type="text" class="form-control inp-coal-ritase" name="ticket" value="{{data.ticket ? data.ticket:''}}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="fa fa-map-marker"></i> Lokasi PIT<span class="text-danger">*</span></div>
+                                                </div>
+                                                <input type="text" class="form-control inp-coal-ritase" value="{{data.ritase_coal.daily_fleet.pit.name}}" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row p-t-20 p-b-10 b-all">
+                                        <div class="col-md-1">
+                                            <label class="text-danger" for="">Quality</label>
+                                            <div class="form-group">
+                                                <input type="text" class="form-control text-right inp-coal-ritase" name="stockpile" value="{{data.stockpile ? data.stockpile:''}}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="text-danger" for="">Tipe</label>
+                                            <div class="form-group">
+                                                <select class="form-control text-right inp-coal-ritase" name="coal_tipe" id="coal_tipe">
+                                                    <option value="CC">CC</option>
+                                                    <option value="DCN">DCN</option>
+                                                    <option value="DCO">DCO</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="text-danger" for="">Weight Gross</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="mdi mdi-scale"></i></div>
+                                                    <input type="number" class="form-control text-right init-datetime inp-coal-ritase" name="w_gross" value="{{data.w_gross}}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="text-danger" for="">Weight Tare</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon"><i class="mdi mdi-scale"></i></div>
+                                                    <input type="number" class="form-control text-right init-datetime inp-coal-ritase" name="w_tare" value="{{data.w_tare}}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="">Weight Netto</label>
+                                            <div class="form-group">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control text-right inp-coal-ritase" name="w_netto" value="{{data.w_netto}}" style="background-color: whitesmoke;" readonly>
+                                                    <span class="input-group-addon" id="basic-addon2">KG</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if(data.transporter_subcon)
+                                            <div class="col-md-6">
+                                                <label for="">Sub Contractor</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="mdi mdi-bank"></i></div>
+                                                        <span class="input-group-addon" id="basic-addon2">{{data.transporter_subcon.subcon.kode}}</span>
+                                                        <input type="text" class="form-control text-uppercase inp-coal-ritase" value="{{data.transporter_subcon.subcon.name}}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="">Vehicle</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="mdi mdi-truck"></i></div>
+                                                        <span class="input-group-addon" id="basic-addon2">{{data.transporter_subcon.kode}}</span>
+                                                        <input type="text" class="form-control inp-coal-ritase" value="{{data.opr_subcon.fullname || ''}}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div class="col-md-6">
+                                                <label for="">Vehicle</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="mdi mdi-truck"></i></div>
+                                                        <span class="input-group-addon" id="basic-addon2">{{data.transporter.kode}}</span>
+                                                        <input type="text" class="form-control inp-coal-ritase" value="{{data.opr.fullname || ''}}" disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        <div class="col-md-12">
+                                            <label for="">Keterangan</label>
+                                            <textarea class="form-control" rows="3" name="keterangan">{{data.keterangan ? data.keterangan : ''}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                            </button>
+                                            <button type="submit" class="btn btn-warning waves-effect waves-light" id="bt-update-data"> 
+                                                <i class="fa fa-save"></i> <span>Update</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

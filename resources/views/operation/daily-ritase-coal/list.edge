@@ -1,0 +1,169 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Upload Coal Production</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 col-sm-4 col-xs-12 text-right">
+                        <div class="input-group">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-default" type="button" id="bt-limit">Limit</button> 
+                            </span>
+                            <input type="number" id="limit-data" class="form-control" value="{{limit}}" style="text-align:right;">
+                            <span class="input-group-btn"> 
+                                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#openFilter">
+                                    <i class="fa fa-filter"></i> Filter Data
+                                </button> 
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th class="sl text-center" width="20">No</th>
+                                <th class="sl text-center" width="20">ACT</th>
+                                <th class="sl" width="150">PIT Name</th>
+                                <th class="sl" width="*">OUT PIT</th>
+                                <th class="sl" width="150">No.Kupon - Ticket</th>
+                                <th class="sl" width="150">Description</th>
+                                <th class="sl" width="200">Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                              <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                            @endif
+                            @each(item in list.data)
+                                <tr>
+                                    <td>{{$loop.index + 1}}</td>
+                                    <td>
+                                        @if(item.w_netto > 0)
+                                            <button class="btn btn-outline btn-success btn-xs bt-view-data" data-id="{{item.id}}">view</button>
+                                        @else
+                                            <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
+                                        @endif
+                                    </td>
+                                    <td class="single-line">
+                                        <strong class="text-warning">{{item.ritase_coal.daily_fleet.pit.name}} </strong> <br>
+                                        <span class="text-red">BLOCK {{item.ritase_coal.block}} </span> <br>
+                                        <small class="text-info">{{item.ritase_coal.shift.name}} </small> <br>
+                                        <small class="text-info">{{item.transporter_subcon ? item.transporter_subcon.kode : item.transporter.kode}} </small> <br>
+                                        <small class="text-black myDateFormat" data-date="{{item.checkout_pit}}"></small>
+                                    </td>
+                                    <td>
+                                        <i class="ti-user"></i> <span>PIT CHECKER</span> 
+                                        <span class="text-black pull-right">{{item.ritase_coal.checker ? item.ritase_coal.checker.nm_lengkap : ''}}</span> <br>
+                                        @if(item.opr_subcon)
+                                            <i class="ti-truck"></i> <span>Driver Subcon</span> 
+                                            <span class="text-black pull-right">{{item.opr_subcon.fullname}}</span>
+                                        @else
+                                            <i class="ti-truck"></i> <span>Driver MAM</span> 
+                                            <span class="text-black pull-right">{{item.opr.fullname || ''}}</span>
+                                        @endif
+                                        <br>
+                                        <span class="myTimeFormat" data-date="{{item.checkout_pit}}" data-elm="span">
+                                            <i class="ti-share"></i><small> CHECK OUT PIT </small>
+                                            <i class="ti-timer"></i> 
+                                            <span></span>
+                                        </span>
+                                        <br>
+                                        <span class="" style="font-size:10px">
+                                            {{item.keterangan ? item.keterangan : ''}}
+                                        </span>
+                                    </td>
+                                    <td class="single-line">
+                                        <i class="ti-receipt"></i>
+                                        <strong class="text-black">{{item.kupon}}</strong>
+                                        <span>
+                                            @if(item.ticket != null)
+                                            -
+                                            <strong class="text-black">{{item.ticket}}</strong>
+                                            @endif
+                                        </span>
+                                        <p>
+                                            <i class="icon-user-following"></i> {{item.checkerJT != null ? item.checkerJT.nm_lengkap : 'blum ditentukan'}} <br>
+                                            <i class="mdi mdi-alarm-plus"></i> <small class="myTimeFormat" data-date="{{item.checkin_jt}}"></small>
+                                            <i class="mdi mdi-arrow-right"></i>
+                                            <i class="mdi mdi-alarm-check"></i> <small class="myTimeFormat" data-date="{{item.checkout_jt}}"></small>
+                                        </p>
+                                    </td>
+                                    <td class="text-black">
+                                        <p class="m-b-0">Tipe {{item.coal_tipe}}</p>
+                                        <p class="m-b-0">Seam {{item.seam.kode}}</p>
+                                        <p class="m-b-0">
+                                            @if(item.coal_tipe === 'CC')
+                                              Stockpile {{item.stockpile}}/cc
+                                            @else
+                                                Stockpile {{item.stockpile}}/dcn
+                                            @endif
+                                        </p>
+                                    </td>
+                                    <td class="">
+                                        <i class="mdi mdi-weight-kilogram"></i> GROSS <span class="pull-right m-t-3">
+                                            <strong class="text-black w_gross" data-value="{{item.w_gross}}">
+                                                {{(item.w_gross).toLocaleString('ID')}}
+                                            </strong> KG
+                                        </span> <br>
+                                        <i class="mdi mdi-weight-kilogram"></i> TARE <span class="pull-right m-t-3">
+                                            <strong class="text-black w_tare" data-value="{{item.w_tare}}">
+                                                {{(item.w_tare).toLocaleString('ID')}}
+                                            </strong> KG
+                                        </span> <br>
+                                        <i class="mdi mdi-weight-kilogram"></i> NET  <span class="pull-right m-t-3">
+                                            <strong class="text-black w_netto" data-value="{{item.w_netto}}">
+                                                {{(item.w_netto).toLocaleString('ID')}}
+                                            </strong> KG
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">Total summary per pages</td>
+                                <td id="sumGross">GROSS :</td>
+                                <td id="sumTare">TARE :</td>
+                                <td id="sumNetto">NETTO :</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                @include('_component.pagination')
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        var arrGross = []
+        var arrTare = []
+        var arrNetto = []
+        $('strong.w_gross').each(function(){
+            var x = $(this).data('value')
+            arrGross.push(x)
+        })
+        $('strong.w_tare').each(function(){
+            var x = $(this).data('value')
+            arrTare.push(x)
+        })
+        $('strong.w_netto').each(function(){
+            var x = $(this).data('value')
+            arrNetto.push(x)
+        })
+
+        var sumGross = arrGross.reduce((a, b) => { return a + b }, 0)
+        var sumTare = arrTare.reduce((a, b) => { return a + b }, 0)
+        var sumNetto = arrNetto.reduce((a, b) => { return a + b }, 0)
+
+        $('td#sumGross').html("<span class='text-right'>G : " + sumGross.toLocaleString('ID') + " KG</span>")
+        $('td#sumTare').html("<span class='text-right'>T : " + sumTare.toLocaleString('ID') + " KG</span>")
+        $('td#sumNetto').html("<span class='text-right'>N : " + sumNetto.toLocaleString('ID') + " KG</span>")
+    })
+</script>

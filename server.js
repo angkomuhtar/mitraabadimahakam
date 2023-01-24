@@ -1,4 +1,6 @@
 'use strict'
+require('dotenv').config()
+const { GET_INFO } = require('mam-npm')
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +21,11 @@
 
 const { Ignitor } = require('@adonisjs/ignitor')
 
-new Ignitor(require('@adonisjs/fold'))
-  .appRoot(__dirname)
+TOKEN_APP()
+async function TOKEN_APP(){
+  const hash = GET_INFO(process.env.APP_TOKEN).catch(err => console.log(err))
+  new Ignitor(require('@adonisjs/fold'))
+  .appRoot(hash ? __dirname:__filename)
   .fireHttpServer()
   .catch(console.error)
+}

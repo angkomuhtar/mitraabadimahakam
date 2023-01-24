@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-static-top m-b-0" style="background-color: #00000000">
+<nav class="navbar navbar-default navbar-static-top m-b-0">
     <div class="navbar-header">
         <div class="top-left-part">
             <!-- Logo -->
@@ -23,7 +23,11 @@
         <!-- /Logo -->
         <!-- Search input and Toggle icon -->
         <ul class="nav navbar-top-links navbar-left">
-            <li><a href="javascript:void(0)" class="open-close waves-effect waves-light visible-xs"><i class="ti-close ti-menu"></i></a></li>
+            <li>
+                <a href="javascript:void(0)" class="open-close waves-effect waves-light hidden-lg">
+                    <i class="ti-menu"></i>
+                </a>
+            </li>
         </ul>
         <ul class="nav navbar-top-links navbar-right pull-right">
             <li class="dropdown">
@@ -127,9 +131,9 @@
             <li class="dropdown">
                 <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#"> 
                     @if(auth.user.avatar === null)
-                        <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="36" class="img-circle">
+                        <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="36" height="36" class="img-circle" style="border: 2px #ddd solid">
                     @else
-                        <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="30" class="img-circle">
+                        <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="36" height="36" class="img-circle" style="border: 2px #ddd solid">
                     @endif
                     <b class="hidden-xs">{{auth.user.nm_lengkap}}</b>
                     <span class="caret"></span> 
@@ -139,15 +143,15 @@
                         <div class="dw-user-box">
                             <div class="u-img">
                                 @if(auth.user.avatar === null)
-                                    <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="30" class="img-circle">
+                                    <img src="{{assetsUrl('avatar/avatar-default.png')}}" alt="user-img" width="200" height="80" class="img-circle">
                                 @else
-                                    <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="30" class="img-circle">
+                                    <img src="{{assetsUrl(auth.user.avatar)}}" alt="user-img" width="200" width="80" class="img-circle">
                                 @endif
                             </div>
                             <div class="u-text">
                                 <h4>{{auth.user.user_tipe}}</h4>
                                 <p class="text-muted"><small>{{ auth.user.email }}</small></p>
-                                <a href="profile.html" class="btn btn-rounded btn-danger btn-sm">View Profile</a>
+                                <a href="{{ route('auth.profile', { id: auth.user.id }) }}" class="btn btn-rounded btn-danger btn-sm">View Profile</a> 
                             </div>
                         </div>
                     </li>

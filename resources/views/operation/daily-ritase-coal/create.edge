@@ -1,0 +1,235 @@
+{{ script('ajax/index') }}
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+        <!--<button class="btn btn-outline btn-warning waves-effect waves-light btn-sm pull-right" id="bt-download"> <i class="fa fa-file-excel-o"></i> <span>Download Template</span></button>-->
+        <div class="white-box p-b-0">
+            <div class="row b-all p-t-20 m-b-20">
+                <div class="col-md-1">
+                    <div class="form-group" style="margin-top: 10px">
+                        <div class="material-switch">
+                            <input id="metodeInput" name="metodeInput" type="checkbox" />
+                            <label for="metodeInput" class="label-default"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label id="teks-metode-input" class="m-t-10">Metode Input <span class="text-warning">Radio Room Aktif</span> </label>
+                </div>
+            </div>
+            <!-- START FORM UPLOAD RADIO ROOM -->
+            <div class="panel panel-default" id="radioroom-form" style="display:inline">
+                <div class="panel-wrapper collapse in">
+                    <div class="panel-body">
+                        <form action="" class="" id="fm-ritase-coal-radioroom">
+                            {{ csrfField() }}
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="tgl">Tanggal</label>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                            <input type="datetime-local" class="form-control initDatetime" data-date="{{data.date}}" name="date" id="date" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="">Upload Radio Room File</label>
+                                    <div class="form-group">
+                                        <input type="file" class="form-control" name="uploadfiles" id="uploadfiles" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="">&nbsp;</label>
+                                    <div class="form-group">
+                                        <button class="fcbtn btn btn-info btn-outline btn-1d" id="bt-check-excel-radio-room">Validate File</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 selectSheet" id="selectSheet">
+                                    <label for="tgl">Select Sheet</label>
+                                    <div class="form-group">
+                                        <select class="form-control" name="nm_sheet" id="nm_sheet" required></select>
+                                        <span class="text-warning" style="font-size:10px;font-style:italic;">
+                                            Pilih nama sheet pada file excel anda untuk di upload data nya
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="">&nbsp;</label>
+                                    <div class="form-group">
+                                        <textarea class="form-control hidden" name="jsonData" id="jsonData" rows="10"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-right">
+                                    <hr>
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button type="submit" class="btn btn-warning waves-effect waves-light"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- END FORM UPLOAD RADIO ROOM -->
+            
+            <!-- START FORM UPLOAD JETTY -->
+            <div class="panel panel-default" id="jetty-form" style="display:none">
+                <div class="panel-wrapper collapse in">
+                    <div class="panel-body">
+                        <form action="" class="" id="fm-ritase-coal">
+                        {{ csrfField() }}
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="tgl">Tanggal</label>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                            <input type="date" class="form-control initDate" data-date="{{data.date}}" name="date" id="date" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="tgl">Nama PIT</label>
+                                    <div class="form-group">
+                                        <select class="form-control select2pit" name="pit_id" id="pit_id" required></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="tgl">Nama Fleet</label>
+                                    <div class="form-group">
+                                        <select class="form-control select2fleetByPit" name="fleet_id" id="fleet_id" required></select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="">Upload Jetty File</label>
+                                    <div class="form-group">
+                                        <input type="file" class="form-control" name="uploadfiles" id="uploadfiles" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="">&nbsp;</label>
+                                    <div class="form-group">
+                                        <button class="fcbtn btn btn-info btn-outline btn-1d" id="bt-check-excel">Check File</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" id="progressbar-upload" style="display:none;">
+                                    <div class="progress progress-lg">
+                                        <div class="progress-bar progress-bar-success" id="myBar" role="progressbar" style="width: 1%">Proscessing</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 selectSheet" id="selectSheet" style="display:none;">
+                                    <label for="tgl">Select Sheet</label>
+                                    <div class="form-group">
+                                        <select class="form-control" name="nm_sheet" id="nm_sheet" required></select>
+                                        <span class="text-warning" style="font-size:10px;font-style:italic;">
+                                            Pilih nama sheet pada file excel anda untuk di upload data nya
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 selectSheet" style="display:none;">
+                                    <div class="form-group">
+                                        <textarea class="form-control" name="jsonData" id="jsonData" rows="10" readonly></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 text-right">
+                                    <hr>
+                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                        <i class="fa fa-close"></i> <span>Cancel</span>
+                                    </button>
+                                    <button type="submit" class="btn btn-danger waves-effect waves-light"> 
+                                        <i class="fa fa-save"></i> <span>Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- END FORM UPLOAD JETTY -->
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('select[name="pit_id"]').on('change', function(){
+            var pit_id = $(this).val()
+            var elm = $('select[name="fleet_id"]')
+            $.ajax({
+                async: true,
+                url: '/ajax/fleet-by-pit',
+                data: {
+                    pit_id: pit_id,
+                    tipe: 'CO'
+                },
+                method: 'GET',
+                success: function(data){
+                    if(data.length > 0){
+                        const list = data.map(nod => '<option value="'+nod.id+'" '+nod.selected+'>'+nod.name+'</option>')
+                        elm.html(list)
+                        var selectDefault = data.filter(item => item.selected)
+                        if(selectDefault.length === 0){
+                            elm.prepend('<option value="" selected>Pilih</option>')
+                        }
+                    }else{
+                        elm.html('<option value="">Belum ada data pilihan...</option>')
+                    }
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            })
+        })
+    })
+</script>
+
+<style>
+    .material-switch > input[type="checkbox"] {
+        display: none;   
+    }
+    
+    .material-switch > label {
+        cursor: pointer;
+        height: 0px;
+        position: relative; 
+        width: 40px;  
+    }
+    
+    .material-switch > label::before {
+        background: rgb(0, 0, 0);
+        /* background: red; */
+        box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+        content: '';
+        height: 16px;
+        margin-top: -8px;
+        position:absolute;
+        opacity: 0.3;
+        transition: all 0.4s ease-in-out;
+        width: 40px;
+    }
+    .material-switch > label::after {
+        background: #ffbb43;
+        border-radius: 16px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+        content: '';
+        height: 24px;
+        left: -4px;
+        margin-top: -8px;
+        position: absolute;
+        top: -4px;
+        transition: all 0.3s ease-in-out;
+        width: 24px;
+    }
+    .material-switch > input[type="checkbox"]:checked + label::before {
+        background: inherit;
+        opacity: 0.5;
+    }
+    .material-switch > input[type="checkbox"]:checked + label::after {
+        background: inherit;
+        left: 20px;
+    }
+    </style>

@@ -52,6 +52,10 @@ class User extends Model {
     return this.belongsToMany("App/Models/SysMenuDetail", "user_id", "submenu_id").pivotTable('usr_menu_details')
   }
 
+  deviceId(){
+    return this.hasOne('App/Models/UserDevice', 'id', 'user_id')
+  }
+
   // sysgroup_user () {
   //   return this.belongsToMany("App/Models/UsersGroup", "user_id", "group_id").pivotTable('sys_users_groups')
   // }

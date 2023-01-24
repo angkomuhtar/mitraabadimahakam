@@ -1,0 +1,332 @@
+
+@layout('_layouts.main')
+@section('content')
+    <div class="container-fluid">
+        <div class="row bg-title">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <h4 class="page-title">My Profile</h4> 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-xs-12">
+                <div class="white-box">
+                    <div class="user-bg" style="height:350px"> 
+                        <img width="100%" height="100%" alt="user" src="../plugins/images/background-1.png">
+                        <div class="overlay-box">
+                            <div class="user-content" style="margin-top: 60px;">
+                                @if(user.avatar === null)
+                                <label for="">
+                                    <img id="bt-upd-avatar" data-id="{{user.user.id}}" src="{{assetsUrl('avatar/avatar-default.png')}}" class="img-circle" width="150" height="150" alt="img" style="border: 2px #ddd solid">
+                                    <input id="fileUpload" data-id="{{user.user.id}}" type="file" style="display:none">
+                                </label>
+                                @else
+                                <label for="">
+                                    <img id="bt-upd-avatar" data-id="{{user.user.id}}" src="{{assetsUrl(auth.user.avatar)}}" class="img-circle" alt="img" width="150" height="150" style="border: 2px #ddd solid">
+                                    <input id="fileUpload" data-id="{{user.user.id}}" type="file" style="display:none">
+                                </label>
+                                @endif
+                                <h4 class="text-white">{{user.user.username}}</h4>
+                                <h5 class="text-white">{{user.user.email}}</h5> </div>
+                        </div>
+                    </div>
+                    {{--    --}}
+                    <div class="white-box">
+                        <ul class="nav nav-tabs tabs customtab">
+                            <li class="tab active">
+                                <a href="#profile" data-toggle="tab" aria-expanded="true"> <span class="visible-xs"><i class="fa fa-home"></i></span> <span class="hidden-xs">Profile</span> </a>
+                            </li>
+                            <li class="tab">
+                                <a href="#setting" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-user"></i></span> <span class="hidden-xs">Setting</span> </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="profile">
+                                <div class="row">
+                                    <div class="col-md-3 col-xs-6 b-r"> <strong>Full Name</strong>
+                                        <br>
+                                        <p class="text-muted">{{user.employee.fullname}}</p>
+                                    </div>
+                                    <div class="col-md-3 col-xs-6 b-r"> <strong>Mobile</strong>
+                                        <br>
+                                        <p class="text-muted">{{user.employee.phone}}</p>
+                                    </div>
+                                    <div class="col-md-3 col-xs-6 b-r"> <strong>User Type</strong>
+                                        <br>
+                                        <p class="text-muted">{{user.user.user_tipe}}</p>
+                                    </div>
+                                    <div class="col-md-3 col-xs-6"> <strong>Address</strong>
+                                        <br>
+                                        <p class="text-muted">{{user.employee.alamat != 'null' ? user.employee.alamat : "Belum terdefenisikan..."}}</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="comment-center">
+                                    <div class="comment-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>NIK</strong>
+                                                    <h5>{{user.employee.nik}}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>Tipe Employee</strong>
+                                                    @if(user.employee.tipe_employee === '01')
+                                                        <h5>Head Offices</h5>
+                                                    @elseif(user.employee.tipe_employee === '02')
+                                                        <h5>Site Division</h5>
+                                                    @elseif(user.employee.tipe_employee === '03')
+                                                        <h5>Stavedoring Division</h5>
+                                                    @else
+                                                        <h5>General</h5>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>Tempat Lahir</strong>
+                                                    <h5>{{user.employee.t4_lahir}}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>Tanggal Lahir</strong>
+                                                    <h5 class="myDateFormatLong" data-date="{{user.employee.tgl_lahir}}"></h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>ID Card</strong>
+                                                    <h5>{{user.employee.tipe_idcard}} {{user.employee.no_idcard}}</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>Warganegara</strong>
+                                                    <h5>{{user.employee.warganegara}}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>Tinggi Badan</strong>
+                                                    <h5>{{user.employee.tinggi_bdn}} cm</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>Berat Badan</strong>
+                                                    <h5>{{user.employee.berat_bdn}} kg</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="comment-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>Tanggal Bergabung</strong>
+                                                    <h5 class="myDateFormatLong" data-date="{{user.employee.join_date}}"></h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mail-contnet">
+                                                    <strong>Employee Status</strong>
+                                                    <h5>{{user.employee.sts_employee}}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h4 class="font-bold m-t-30">Skill Set</h4>
+                                <hr>
+                                <h5>Admin <span class="pull-right">80%</span></h5>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width:80%;"> <span class="sr-only">50% Complete</span> </div>
+                                </div>
+                                <h5>Operator Equipment <span class="pull-right">90%</span></h5>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-custom" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width:90%;"> <span class="sr-only">50% Complete</span> </div>
+                                </div>
+                                <h5>Mechanic <span class="pull-right">50%</span></h5>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%;"> <span class="sr-only">50% Complete</span> </div>
+                                </div>
+                                <h5>Mine Knowledge Engineer <span class="pull-right">40%</span></h5>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:40%;"> <span class="sr-only">50% Complete</span> </div>
+                                </div>
+                                <h5>IT Knowledge <span class="pull-right">30%</span></h5>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-inverse" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width:30%;"> <span class="sr-only">50% Complete</span> </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="setting">
+                                <form action="#" id="fm_update_password">
+                                    <div class="panel panel-default">
+                                        <div class="panel-wrapper collapse in">
+                                            <div class="panel-body">
+                                                {{ csrfField() }}
+                                                <h3>Change Password</h3>
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <input type="password" placeholder="old password..." class="form-control" name="old_pass" value=""> 
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <input type="password" placeholder="new password..." class="form-control" name="new_pass" value=""> 
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <input type="password" placeholder="retype new password..." class="form-control" name="retype_pass" value=""> 
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label for="">&nbsp;</label>
+                                                        <button class="btn btn-warning waves-effect waves-light" id="bt-update-pass" type="button"> 
+                                                            <i class="fa fa-save"></i> <span>Update Password </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            $('body').on('click', 'button#bt-update-pass', function(e){
+                e.preventDefault()
+                var isValid = cekPasswordIndentik()
+                if(isValid.status){
+                    var data = {
+                        oldpass: $('input[name="old_pass"]').val(),
+                        newpass: $('input[name="new_pass"]').val(),
+                        retypepass: $('input[name="retype_pass"]').val()
+                    }
+                    $.ajax({
+                        async: true,
+                        headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                        url: "/profile",
+                        method: 'POST',
+                        data: JSON.stringify(data),
+                        dataType: 'json',
+                        processData: false,
+                        mimeType: "multipart/form-data",
+                        contentType: false,
+                        success: function(result){
+                            if(result.success){
+                                swal("Okey,,,!", result.message, "success")
+                                window.location.href = result.red_uri
+                            }
+                        },
+                        error: function(err){
+                            console.log(err)
+                        }
+                    })
+                    
+                }else{
+                    alert('Opss,,,'+isValid.message)
+                }
+                window.location = window.location
+            })
+
+            $('img#bt-upd-avatar').on('click', function(e){
+                e.preventDefault()
+                var id = $(this).data('id')
+                $("#fileUpload").trigger('click');
+                // fileUpload
+                // $.ajax({
+                //     async: true,
+                //     headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                //     url: "/profile/"+id+"/update-avatar",
+                //     method: 'POST',
+                //     data: JSON.stringify(data),
+                //     dataType: 'json',
+                //     processData: false,
+                //     mimeType: "multipart/form-data",
+                //     contentType: false,
+                //     success: function(result){
+                //         if(result.success){
+                //             swal("Okey,,,!", result.message, "success")
+                //             window.location.href = result.red_uri
+                //         }
+                //     },
+                //     error: function(err){
+                //         console.log(err)
+                //     }
+                // })
+            })
+            $('#fileUpload').change(function() {
+                var id = $(this).data('id')
+                var data = new FormData()
+                data.append('avatar', $(this)[0].files[0])
+                data.append('id', id)
+                $.ajax({
+                    async: true,
+                    headers: {'x-csrf-token': $('[name=_csrf]').val()},
+                    url: "/profile/"+id+"/update-avatar",
+                    method: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    processData: false,
+                    mimeType: "multipart/form-data",
+                    contentType: false,
+                    success: function(result){
+                        if(result.success){
+                            swal("Okey,,,!", result.message, "success")
+                            window.location.href = result.red_uri
+                        }
+                    },
+                    error: function(err){
+                        console.log(err)
+                    }
+                })
+            });
+
+            $('.myDateFormatLong').each(function(){
+                moment.locale("id")
+                var date = $(this).data(date)
+                var elm = $(this).data('elm')
+                var dateString = moment(date.date).format('dddd, Do MMMM YYYY')
+                var weekly = moment(date.date).week()
+                if(elm != undefined){
+                    $(this).find(elm).html(dateString)
+                }else{
+                    $(this).html(dateString)
+                }
+            })
+    
+            function cekPasswordIndentik(){
+                var newpass = $('input[name="new_pass"]').val()
+                var retypepass = $('input[name="retype_pass"]').val()
+                if(newpass != ''){
+                    if(newpass === retypepass){
+                        return {status: true}
+                    }else{
+                        return {status: false, message: 'Password tidak identik'}
+                    }
+                }else{
+                    return {status: false, message: 'Password baru belum ditentukan'}
+                }
+            }
+        })
+    </script>
+@endsection

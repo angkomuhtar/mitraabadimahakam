@@ -20,10 +20,14 @@ class AksesResourceUpdate {
     if(usr.user_tipe === 'administrator'){
       await next()
     }else{
+      console.log(usr.user_tipe);
+      console.log(name);
       const akses = await v_Akses.query().where({usertipe: usr.user_tipe, nm_module: name, method: 'U'}).first()
       if(akses){
+        console.log('HAK AKSES DITEMUKAN');
         await next()
       }else{
+        console.log('HAK AKSES TIDAK DITEMUKAN');
         // response.redirect('back')
         response.status(404).json({success: false, message: 'You not authorized....'})
       }
