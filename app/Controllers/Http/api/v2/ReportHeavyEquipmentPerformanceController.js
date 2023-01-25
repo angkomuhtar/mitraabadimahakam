@@ -369,22 +369,42 @@ class ReportHeavyEquipmentPerformanceController {
 
 		// report type checks
 		if (req.report_type === 'single unit') {
+			/**
+			 * if report type is single unit then, put the unit id in array 
+			 */
 			equips = [req.equip_id]
 		}
 
 		let eqCode = null
+
+		/**
+		 * if equips are ONE or length of unit id array is 1
+		 */
 		if (equips.length === 1) {
+
+			/**
+			 * then get the single data from equipment table
+			 */
 			const GET_EQUIPMENT_CODE = await MasEquipment.query().where('id', equips[0]).last()
 
+			/**
+			 * check if data is exist
+			 */
 			if (!GET_EQUIPMENT_CODE) {
 				return {
 					success: false,
 					message: 'Equipment ID Not Found!',
 				}
 			}
+			/**
+			 * else, put the equipment code into eqCode variable
+			 */
 			eqCode = GET_EQUIPMENT_CODE.toJSON().kode
 		}
 
+		/**
+		 * if report type is unit model
+		 */
 		if (req.report_type === 'unit model') {
 			const equipmentsModel = (
 				await MasEquipment.query()
@@ -400,6 +420,9 @@ class ReportHeavyEquipmentPerformanceController {
 			}
 		}
 
+		/**
+		 * if report type is unit type
+		 */
 		if (req.report_type === 'unit type') {
 			const equipmentsModel = (
 				await MasEquipment.query()
@@ -414,6 +437,10 @@ class ReportHeavyEquipmentPerformanceController {
 				equips = equipmentsModel.map((v) => v.id)
 			}
 		}
+
+		/**
+		 * Validate User
+		 */
 		// console.log(req);
 		const user = await userValidate(auth)
 		if (!user) {
@@ -1184,6 +1211,9 @@ class ReportHeavyEquipmentPerformanceController {
 			}
 		}
 
+		/**
+		 * WEEKLY REPORT EQUIPMENT
+		 */
 		if (req.inp_ranges === 'WEEKLY') {
 			req.start_week = moment(req.start).format('YYYY-MM-DD')
 			req.end_week = moment(req.end).format('YYYY-MM-DD')
@@ -1589,6 +1619,9 @@ class ReportHeavyEquipmentPerformanceController {
 			}
 		}
 
+		/**
+		 * MONTHLY REPORT EQUIPMENT
+		 */
 		if (req.inp_ranges === 'MONTHLY') {
 			req.start_month = moment(req.start).startOf('month').format('YYYY-MM-DD')
 			req.end_month = moment(req.end).endOf('month').format('YYYY-MM-DD')

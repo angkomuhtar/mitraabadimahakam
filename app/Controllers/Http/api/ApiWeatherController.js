@@ -10,7 +10,6 @@ const axios = require('axios').default;
 class ApiWeatherController {
     async getWeather () {
         const uri = 'https://api.openweathermap.org/data/2.5/weather?q=samarinda&appid=c47c30511efe1a9cd1131af21d913aea'
-        
         async function formatIcon(ico){
             let icons
             switch (ico) {
@@ -65,7 +64,7 @@ class ApiWeatherController {
 
         axios.get(uri)
         .then(async function (response) {
-            const {data} = response
+            const {data} = response;
             console.log(response.data);
             try {
                 const mamWeather = new MamWeather()
@@ -91,7 +90,7 @@ class ApiWeatherController {
     async getWeatherCity ({ auth, request, response }) {
         var t0 = performance.now()
         const req = request.only(['city'])
-        let durasi
+        let durasi;
         try {
             await auth.authenticator('jwt').getUser()
         } catch (error) {
@@ -105,7 +104,7 @@ class ApiWeatherController {
                 },
                 data: {}
             })
-        }
+        };
 
         try {
             const data = await WeatherHelpers.LAST(req)

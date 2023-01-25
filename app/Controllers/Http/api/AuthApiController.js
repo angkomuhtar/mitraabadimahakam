@@ -5,7 +5,6 @@ const Env = use('Env')
 const Hash = use('Hash')
 const nodemailer = require('nodemailer')
 const { performance } = require('perf_hooks')
-const UserApiController = require('./UserApiController')
 const diagnoticTime = use("App/Controllers/Http/customClass/diagnoticTime")
 const moment = require('moment');
 const User = use("App/Models/User")
@@ -94,7 +93,6 @@ class AuthApiController {
                 req.old_password,
                 user.password
             )
-
             if (!verifyPassword) {
                 durasi = await diagnoticTime.durasi(t0)
                 return response.status(400).json({
@@ -105,7 +103,6 @@ class AuthApiController {
                     }
                 })
             }
-
             const usr = await User.findOrFail(user.id)
             usr.password = req.new_password
             await usr.save()
@@ -117,7 +114,6 @@ class AuthApiController {
                     message: 'Password updated!'
                 }
             })
-
         } catch (error) {
             console.log(error)
             durasi = await diagnoticTime.durasi(t0)
@@ -149,7 +145,6 @@ class AuthApiController {
         }
 
         try {
-
             const usr = await User.findOrFail(req.user_id)
             usr.password = req.new_password
             await usr.save()
@@ -161,7 +156,6 @@ class AuthApiController {
                     message: 'Password updated!'
                 }
             })
-
         } catch (error) {
             console.log(error)
             durasi = await diagnoticTime.durasi(t0)

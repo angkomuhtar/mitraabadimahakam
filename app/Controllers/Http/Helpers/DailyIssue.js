@@ -50,7 +50,6 @@ class dailyIssue {
 				.orderBy('report_at', 'desc')
 				.paginate(halaman, limit)
 		}
-
 		return data
 	}
 
@@ -87,7 +86,11 @@ class dailyIssue {
 	}
 
 	async SHOW_TODAY() {
-		console.log('>> ', moment().startOf('day').format('YYYY-MM-DD HH:mm'))
+
+		console.log('show today >> ');
+		/**
+		 * Get Today's Issue
+		 */
 		const data = (
 			await Issue.query()
 				.with('user')
@@ -98,13 +101,14 @@ class dailyIssue {
 					w.where('report_at', '<=', moment('2022-11-25 00:00').endOf('day').format('YYYY-MM-DD HH:mm'))
 				})
 				.orderBy('report_at', 'desc')
-				.paginate(1, 10)
+				.paginate(1, 6)
 		).toJSON()
 
-		console.log('data >> ', data.data)
-
 		let result = []
-
+		
+		/**
+		 * Destructure and Put it into new array
+		 */
 		for (const obj of data.data) {
 			if (obj.unit) {
 				const site = await MasSite.query().where('id', obj.unit.site_id).last()
@@ -189,6 +193,8 @@ class dailyIssue {
 	}
 
 	async SHOW_LOG_HOURLY(req) {
+
+		console.log('show hourly >>')
 		const { pit_id, start_at, end_at } = req
 
 		const data = (

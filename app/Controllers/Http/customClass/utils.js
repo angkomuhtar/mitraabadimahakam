@@ -8,7 +8,7 @@ const SysOption = use('App/Models/SysOption')
 const UserDevice = use('App/Models/UserDevice')
 const MasDepartment = use('App/Models/MasDepartment')
 const LogMaterialRequest = use('App/Models/LogMaterialRequest')
-const _ = require('underscore');
+const _ = require('underscore')
 
 class Utils {
 	async infinityCheck(num) {
@@ -360,6 +360,22 @@ class Utils {
 			}
 		}
 		return week_arr || []
+	}
+
+	async removeDuplicate(array, key) {
+		const seen = new Set()
+		const arr = array;
+		const filteredArr = arr.filter((el) => {
+
+			if(el.hasOwnProperty(key)) {
+				const duplicate = seen.has(el[key])
+				seen.add(el[key])
+				return !duplicate
+			} else {
+				return 'There has no object key avaiable with this key'
+			}
+		});
+		return filteredArr;
 	}
 }
 

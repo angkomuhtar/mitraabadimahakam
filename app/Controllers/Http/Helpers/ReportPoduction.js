@@ -221,14 +221,14 @@ class repPoduction {
     }
 
     async MW_DAILY (req) {
-        let result = []
-        let color = req.colorGraph
+        let result = [];
+        let color = req.colorGraph;
         let startDate = null;
         let endDate = null;
 
         req.production_type = req.production_type != 'OB' ? 'COAL' : 'OB'
 
-        let planDaily 
+        let planDaily
         try {
             planDaily = (await DailyPlan.query().where( w => {
                 if(req.production_type){
@@ -339,8 +339,6 @@ class repPoduction {
                 items: arrTrands[key]
             }
         })
-
-        console.log(arrActual);
 
         return {
             xAxis: xAxis,

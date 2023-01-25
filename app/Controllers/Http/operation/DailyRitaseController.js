@@ -13,7 +13,7 @@ const DailyRitaseDetail = use('App/Models/DailyRitaseDetail')
 const DailyRitaseHelpers = use('App/Controllers/Http/Helpers/DailyRitase')
 const DailyRitaseCoalHelpers = use('App/Controllers/Http/Helpers/DailyRitaseCoal')
 const InventoryHelpers = use('App/Controllers/Http/Helpers/Inventory')
-const { sendMessage, numberFormatter } = use('App/Controllers/Http/customClass/utils')
+const { sendMessage, numberFormatter, removeDuplicate } = use('App/Controllers/Http/customClass/utils')
 const UserDevice = use('App/Models/UserDevice')
 const User = use('App/Models/User')
 const MasEquipment = use('App/Models/MasEquipment')
@@ -22,7 +22,8 @@ const DailyPlan = use('App/Models/DailyPlan')
 const MasMaterial = use('App/Models/MasMaterial')
 const NotificationsHelpers = use('App/Controllers/Http/Helpers/Notifications')
 const EmployeeHelpers = use('App/Controllers/Http/Helpers/Employee')
-
+const MasShift = use('App/Models/MasShift');
+const MasFleet = use('App/Models/MasFleet')
 const DailyFleetEquip = use('App/Models/DailyFleetEquip')
 
 const diagnoticTime = use('App/Controllers/Http/customClass/diagnoticTime')
@@ -211,7 +212,7 @@ class DailyRitaseController {
   async storeUploadExcel({ request, auth }) {
     // const trx = await db.beginTransaction()
     const req = request.all()
-    let xuser
+    let xuser;
     try {
       xuser = await auth.getUser()
     } catch (error) {
@@ -691,6 +692,314 @@ class DailyRitaseController {
     return {
       success: true,
       message: 'Berhasil menyimpan data...',
+    }
+  }
+
+  async storeUploadExcel_v2({ request, auth }) {
+
+    const req = request.all();
+
+    let xuser;
+    try {
+      xuser = await auth.getUser()
+    } catch (error) {
+      console.log(error)
+    }
+
+    var pathData = Helpers.publicPath(`/upload/`)
+    const convertJSON = excelToJson({
+      sourceFile: `${pathData}${req.current_file_name.replace(/["|']+/g, '')}`,
+      header: {
+        rows: 2,
+      },
+      sheets: [req.sheet],
+    });
+
+    let selectedHour = req.check_in;
+
+    if(!selectedHour) {
+      return {
+        success : false,
+        message : 'Pastikan jam ritasenya dipilih lebih dahulu'
+      }
+    } else {
+      selectedHour = parseInt(req.check_in.split(':')[0]);
+    }
+    let dataSheet = convertJSON[req.sheet]
+
+    try {
+    // const haulers = [];
+    const excaArray = [];
+    const excas = [];
+    if(dataSheet.length > 0) {        
+      for(const [i, value] of dataSheet.entries()) {
+        const blasting = value.C || 0;
+        const ob = value.D || 0;
+        const soil = value.E || 0;
+        const mud = value.F || 0;
+        const exca = value.A;
+        const haulerName = value.B;
+        const startRitase = value.H;
+        const endRitase = value.I;
+        const distance = value.J;
+        const operatorName = value.G || null;
+        const pitName = value.K || null;
+        const fleetName = value.L || null;
+        const shiftName = value.M || null;
+
+          if(ob > 0) {
+            excas.push(`${exca} - ${startRitase} - ${endRitase} - ${distance} - ${pitName} - ${fleetName} - ${shiftName} - OB - ${i}`);
+            excaArray.push(`${exca} - ${haulerName} - ${startRitase} - ${endRitase} - ${distance} - ${ob} - ${operatorName} - ${pitName} - ${fleetName} - ${shiftName} - OB`);
+          };
+  
+          if(soil > 0) {
+            excas.push(`${exca} - ${startRitase} - ${endRitase} - ${distance} - ${pitName} - ${fleetName} - ${shiftName} - Soil - ${i}`);
+            excaArray.push(`${exca} - ${haulerName} - ${startRitase} - ${endRitase} - ${distance} - ${soil} - ${operatorName} - ${pitName} - ${fleetName} - ${shiftName} - Soil`);
+          }
+          
+          if(mud > 0) {
+            excas.push(`${exca} - ${startRitase} - ${endRitase} - ${distance} - ${pitName} - ${fleetName} - ${shiftName} - Lumpur - ${i}`);
+            excaArray.push(`${exca} - ${haulerName} - ${startRitase} - ${endRitase} - ${distance} - ${mud} - ${operatorName} - ${pitName} - ${fleetName} - ${shiftName} - Lumpur`);
+          }
+  
+          if(blasting > 0) {
+            excas.push(`${exca} - ${startRitase} - ${endRitase} - ${distance} - ${pitName} - ${fleetName} - ${shiftName} - BLASTING - ${i}`);
+            excaArray.push(`${exca} - ${haulerName} - ${startRitase} - ${endRitase} - ${distance} - ${blasting} - ${operatorName} - ${pitName} - ${fleetName} - ${shiftName} - BLASTING`);
+          }
+        
+      };
+    };
+
+    const uniqueExca = _.uniq(excas);
+    // GET Hauler by Exca Name
+
+    // method
+    const GET_HAULERS_BY_EXCA_NAME = async (exca, startRitase, endRitase, distance, materialName) => {
+      const result = [];
+      if(excaArray.length > 0) {
+        for(const value of excaArray) {
+          const data = value.split(' - ');
+          const excaNameData = data[0];
+          const haulerName = data[1];
+          const startRitaseData = parseInt(data[2]);
+          const endRitaseData = parseInt(data[3]);
+          const distanceData = parseInt(data[4]);
+          const ritase = parseInt(data[5]);
+          const material = data[10];
+          const operatorName = data[6];
+
+          if(startRitaseData >= selectedHour && startRitaseData <= selectedHour) {
+            // haulers that carry ob
+          if(excaNameData === exca && startRitaseData === startRitase && endRitaseData === endRitase && distanceData === distance && material === materialName) {
+            result.push({
+              haulerName : haulerName,
+              ritase : ritase,
+              operatorName
+            })
+          }
+          // haulers that carry mud
+          if(excaNameData === exca && startRitaseData === startRitase && endRitaseData === endRitase && distanceData === distance && material === materialName) {
+            result.push({
+              haulerName : haulerName,
+              ritase : ritase,
+              operatorName
+            })
+          }
+
+          // haulers that carry soil
+          if(excaNameData === exca && startRitaseData === startRitase && endRitaseData === endRitase && distanceData === distance && material === materialName) {
+          
+            result.push({
+              haulerName : haulerName,
+              ritase : ritase,
+              operatorName
+            })
+          }
+
+          // haulers that carry blasting
+          if(excaNameData === exca && startRitaseData === startRitase && endRitaseData === endRitase && distanceData === distance && material === materialName) {
+            result.push({
+              haulerName : haulerName,
+              ritase : ritase,
+              operatorName
+            })
+          };
+          }
+        };
+      };
+      const data = await removeDuplicate(result, 'haulerName');
+      return data;
+    };
+
+    const GET_MATERIAL_ID = async (name) => {
+      let id = null;
+      
+      const materialQuery = await MasMaterial.query().where(wh => {
+        wh.where('name', name)
+        wh.where('aktif', 'Y')
+      }).first()
+
+      if(materialQuery) {
+        id = materialQuery.id
+      };
+      return id;
+    };
+
+    const GET_HAULER_ID = async (name) => {
+      let id = null;
+      const equipmentQuery = await MasEquipment.query().where(wh => {
+        wh.where('kode', 'like', `%${name}%`)
+        wh.where('aktif', 'Y')
+      }).first();
+      if(equipmentQuery) {
+        id = equipmentQuery.id
+      };
+      return id;
+    }
+
+    const excaData = [];
+    for(const value of uniqueExca) {
+      const data = value.split(' - ');
+      const excaName = data[0];
+      const startRitase = parseInt(data[1] || 0);
+      const endRitase = parseInt(data[2] || 0);
+      const distance = parseInt(data[3] || 0);
+      const pitName = data[4];
+      const fleetName = data[5];
+      const shiftName = data[6];
+      const materialName = data[7];
+      const index = data[8];
+      const obj = {
+        index : index,
+        excaName,
+        distance,
+        startRitase,
+        endRitase,
+        pitName,
+        fleetName,
+        shiftName,
+        material : materialName,
+        haulers : await GET_HAULERS_BY_EXCA_NAME(excaName,startRitase, endRitase, distance, materialName)
+      };
+      excaData.push(obj);
+    };
+
+    // loop through all daily fleet array
+    if(excaData.length > 0) {
+      let excelTotal = null;
+      let dbTotal = null;
+      for(const data of excaData) {
+        const getPitID = await MasPit.query().where(wh => {
+          wh.where('kode', data.pitName);
+          wh.where('sts', 'Y')
+        }).last();
+        const getFleetID = await MasFleet.query().where(wh => {
+          wh.where('name', 'like', `%${data.fleetName}%`);
+          wh.where('status', 'Y')
+          wh.where('tipe', 'OB')
+        }).last();
+        const getShiftID = await MasShift.query().where(wh => {
+          wh.where('kode', data.shiftName)
+        }).last();
+
+        const checkDailyFleet = await DailyFleet.query().where(wh => {
+          wh.where('pit_id', getPitID.id);
+          wh.where('fleet_id', getFleetID.id);
+          wh.where('shift_id', getShiftID.id)
+          wh.where('activity_id', 11) // loading ob
+          wh.where('date', req.date)
+        }).first();
+        
+        if(checkDailyFleet) {
+          const getExcaID = await MasEquipment.query().where('kode', data.excaName).first();
+          let excaID = null;
+          if(getExcaID) {
+            excaID = getExcaID.id;
+          } else {
+            throw new Error('Daily Fleet ini tidak memiliki Exca, harap untuk ditambahkan dahulu!')
+          };
+          const MATERIAL_ID = await GET_MATERIAL_ID(data.material);
+          let checkDailyRitaseOB = await DailyRitase.query().where(wh => {
+            wh.where('dailyfleet_id', checkDailyFleet.id)
+            wh.where('distance', data.distance);
+            wh.where('shift_id', checkDailyFleet.shift_id);
+            wh.where('date', checkDailyFleet.date);
+            wh.where('material', MATERIAL_ID);
+          }).last();
+          let dailyRitase = null;
+          if(checkDailyRitaseOB) {
+            dailyRitase = checkDailyRitaseOB;
+          } else {
+            const newDailyRitase = new DailyRitase();
+            newDailyRitase.fill({
+              distance : data.distance,
+              dailyfleet_id : checkDailyFleet.id,
+              pit_id : checkDailyFleet.pit_id,
+              shift_id : checkDailyFleet.shift_id,
+              date : checkDailyFleet.date,
+              exca_id : excaID,
+              material : (await GET_MATERIAL_ID(data.material)),
+              tot_ritase : 0,
+              user_id : xuser.id,
+              description : 'upload daily ritase ob mass upload'
+            });
+            await newDailyRitase.save()
+            dailyRitase = newDailyRitase
+          };
+          const dailyRitaseId = dailyRitase.id;
+          if(data.haulers.length > 0) {
+            for(const value of data.haulers) {
+              const haulerId = await GET_HAULER_ID(value.haulerName);
+              const checkDailyRitaseDetail = await DailyRitaseDetail.query().where(wh => {
+                wh.where('dailyritase_id', dailyRitaseId);
+                wh.where('spv_id', 8) // todo, we need actual supervisor id
+                wh.where('hauler_id', haulerId);
+                wh.where('check_in', moment(req.date).hours(parseInt(data.startRitase)).format('YYYY-MM-DD HH:mm'));
+              }).last();
+
+              if(checkDailyRitaseDetail) {
+                throw new Error(`Data Ritase Jam ${data.startRitase} Sudah ada, silahkan coba lagi.`);
+                // if ritase exist then do something
+              } else {
+              for(let i = 0; i < value.ritase; i++) {
+                  excelTotal += 1;
+                    const dailyRitaseDetail = new DailyRitaseDetail();
+                    dailyRitaseDetail.fill({
+                      dailyritase_id : dailyRitaseId,
+                      checker_id : xuser.id,
+                      spv_id : 8, // todo, we need actual supervisor id
+                      hauler_id : await GET_HAULER_ID(value.haulerName),
+                      check_in: moment(req.date).hours(parseInt(data.startRitase)).format('YYYY-MM-DD HH:mm'),
+                      urut: i+1,
+                      duration: 0, // todo, durasi within ritase
+                      satuan: 'menit',
+                      opr_id : 26 // todo, we need actual operator id
+                   });
+                   try{
+                    await dailyRitaseDetail.save();
+                    dbTotal += 1;
+                   } catch(err) {
+                    throw new Error('Failed when inserting hauler ritase to db \n Reason : ', err.message);
+                   }
+                }
+              }
+            };
+          };
+        };
+      };
+      console.log('\n\n total ritase excel : ', excelTotal, '\n');
+      console.log('total ritase db : ', dbTotal)
+
+      return {
+        success: true,
+        message: 'Berhasil menyimpan data...',
+      }
+    }
+    } catch(err) {
+      return {
+        success: false,
+        message: 'Gagal menyimpan data... \n Reason : ' + err.message,
+      }
     }
   }
 

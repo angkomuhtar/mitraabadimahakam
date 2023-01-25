@@ -121,11 +121,12 @@ class ReportProductionController {
             try {
                 let result = await ReportPoductionHelpers.MW_DAILY(req)
                 const { short_xAxist, data } = result
-    
                 let resp = data[1].items?.map((obj, i) => {
                     return {
-                        x: short_xAxist[i],
-                        y: obj.volume
+                        // x: short_xAxist[i], // date with format DD/MM
+                        x : `${obj.volume}`, // make it to show the volume
+                        y: obj.volume,
+                        date : short_xAxist[i]
                     }
                 })
                 durasi = await diagnoticTime.durasi(t0);

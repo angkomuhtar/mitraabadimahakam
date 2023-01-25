@@ -218,58 +218,5 @@ $(function () {
       })
     }
   
-    function getAllPit() {
-
-      var elm = $(this)
-      $.ajax({
-        async: true,
-        url: '/ajax/pit',
-        method: 'GET',
-        success: function (result) {
-          if(result.length > 0){
-            elm.children().remove()
-            elm.html(result.map(s => '<option value="' + s.id + '">' + s.name + '</option>'))
-            }else{
-            elm.prepend('<option value="">Belum ada data pilihan...</option>')
-            }
-        },
-        error: function (err) {
-          console.log(err)
-        },
-      })
-    }
-
-    function getAllShift() {
-        $.ajax({
-          async: true,
-          url: '/ajax/shift',
-          method: 'GET',
-          success: function (result) {
-            $('body')
-              .find('select[name="shift_id"]')
-              .html(result.map(s => '<option value="' + s.id + '">' + s.name + '</option>'))
-          },
-          error: function (err) {
-            console.log(err)
-          },
-        })
-    }
-
-      function getAllEvent() {
-        $.ajax({
-          async: true,
-          url: '/ajax/event',
-          method: 'GET',
-          success: function (result) {
-            $('body')
-              .find('select[name="event_id"]')
-              .html(result.map(s => '<option value="' + s.id + '">' + s.narasi + '</option>'))
-          },
-          error: function (err) {
-            console.log(err)
-          },
-        })
-      }
-  
   })
   

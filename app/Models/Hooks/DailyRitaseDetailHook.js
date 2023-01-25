@@ -32,18 +32,18 @@ DailyRitaseDetailHook.beforeInsertData = async (dailyritasedetail) => {
   dailyritasedetail.duration = lastData
     ? moment.duration(moment().diff(moment(lastData.check_in))).as("minutes")
     : -1;
+  
+  const dailyRitase = await DailyRitase.query().where('id', dailyritasedetail.dailyritase_id).last();
 
-  const dailyRitase = await DailyRitase.findOrFail(
-    dailyritasedetail.dailyritase_id
-  );
+  console.log('daily ritase >> ', dailyRitase, dailyritasedetail.dailyritase_id);
 
   // TOTAL RITASE
   const totalRitase = await DailyRitaseDetail.query()
     .where("dailyritase_id", dailyritasedetail.dailyritase_id)
-    .getCount();
-  dailyRitase.merge({ tot_ritase: totalRitase });
-  await dailyRitase.save();
-};
+    .getCount()
+  dailyRitase.merge({ tot_ritase: totalRitase })
+  await dailyRitase.save()
+}
 
 DailyRitaseDetailHook.afterInsertData = async (dailyritasedetail) => {
   const dailyRitase = await DailyRitase.findOrFail(

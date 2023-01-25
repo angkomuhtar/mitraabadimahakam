@@ -56,6 +56,9 @@ class ReportIssueController {
 		var t0 = performance.now()
 		var req = request.all()
 
+		/**
+		 * User Validation
+		 */
 		const user = await userValidate(auth)
 		if (!user) {
 			return response.status(403).json({
@@ -171,8 +174,6 @@ class ReportIssueController {
 				data: [],
 			})
 		}
-
-
 	}
 }
 

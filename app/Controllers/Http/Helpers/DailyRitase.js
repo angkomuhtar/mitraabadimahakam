@@ -15,7 +15,6 @@ const MasFleet = use('App/Models/MasFleet')
 const MasEquipment = use('App/Models/MasEquipment')
 const DailyFleetEquipment = use('App/Models/DailyFleetEquip')
 const MasMaterial = use('App/Models/MasMaterial')
-const Helpers = use('Helpers')
 const diagnoticTime = use('App/Controllers/Http/customClass/diagnoticTime')
 
 class Ritase {
@@ -340,7 +339,6 @@ class Ritase {
                 distance: x.BJ,
                 totalMaterial: x.BK,
               }
-
               data.push(obj)
             }
           } catch (err) {
@@ -727,9 +725,134 @@ class Ritase {
   async GET_HOURLY_EXCEL_DATA_v3(filePath, req, usr) {
     const xlsx = excelToJson({
       sourceFile: filePath,
-      header: 1,
+      header: 1
     })
-    const sampleSheet = req.sheet || '07-08'
+    const sampleSheet = req.sheet || '07-08';
+
+    // this is section where it is not a rotation data
+    const getCoalRehandleIndex = xlsx[sampleSheet].findIndex(v => v.V === 'COAL REHANDLE')
+
+    const startIndexRotation = 210
+    const spliced = xlsx[sampleSheet].splice(startIndexRotation, getCoalRehandleIndex)
+
+    const shifts = (await MasShift.query().fetch()).toJSON()
+    const currentTime = moment().format('YYYY-MM-DD HH:mm:ss')
+
+    let result = []
+
+    for (let shift of shifts) {
+      const startShift = moment(`${req.date} ${shift.start_shift}`).format('YYYY-MM-DD HH:mm:ss')
+      const endShift = moment(`${req.date} ${shift.start_shift}`).add(shift.duration, 'hour').subtract(1, 'minute').format('YYYY-MM-DD HH:mm:ss')
+
+      if (new Date(currentTime) >= new Date(startShift) && new Date(currentTime) <= new Date(endShift)) {
+        const currentShift = shift.kode
+
+        let data = []
+        for (let x of spliced) {
+          try {
+            if (currentShift === 'DS') {
+              const obj = {
+                excaName: x.V,
+                hauler: x.W,
+                bm: x.X || 0,
+                ob: x.Y || 0,
+                soil: x.Z || 0,
+                mud: x.AA || 0,
+                coal: x.AB || 0,
+                pit: x.BE,
+                distance: x.BF,
+              }
+              data.push(obj)
+            } else {
+              const obj = {
+                excaName: x.AC,
+                hauler: x.AD,
+                bm: x.AE || 0,
+                ob: x.AF || 0,
+                soil: x.AG || 0,
+                mud: x.AH || 0,
+                coal: x.AI || 0,
+                pit: x.BG,
+                distance: x.BH,
+              }
+
+              data.push(obj)
+            }
+          } catch (err) {
+            throw new Error(err)
+          }
+        }
+
+        var date = moment(req.date).format('YYYY-MM-DD')
+
+        const __data__ = data.filter(v => v.excaName && v.excaName !== 'COAL REHANDLE')
+
+        const excaNames = _.uniq(__data__.map(v => v.excaName))
+
+        const haulers = []
+
+        for (const exca of excaNames) {
+          const obj = {
+            excaName: exca,
+            haulers: __data__.filter(x => x.excaName === exca),
+          }
+
+          haulers.push(obj)
+        }
+
+        for (let x of haulers) {
+          const excaNameFromExcel = (await MasEquipment.query().where('kode', x.excaName).first()).toJSON()
+
+          if (req.exca_id === String(excaNameFromExcel.id)) {
+            const tempArr = []
+            for (const y of x.haulers) {
+              if (y.bm) {
+                tempArr.push({
+                  excaName: x.excaName,
+                  materials: 'blasting',
+                  haulers: x.haulers.filter(v => v.bm),
+                })
+              }
+
+              if (y.ob) {
+                tempArr.push({
+                  excaName: x.excaName,
+                  materials: 'ob',
+                  haulers: x.haulers.filter(v => v.ob),
+                })
+              }
+
+              if (y.mud) {
+                tempArr.push({
+                  excaName: x.excaName,
+                  materials: 'mud',
+                  haulers: x.haulers.filter(v => v.mud),
+                })
+              }
+              if (y.coal) {
+                tempArr.push({
+                  excaName: x.excaName,
+                  materials: 'coal',
+                  haulers: x.haulers.filter(v => v.coal),
+                })
+              }
+            }
+          }
+        }
+        return result
+      }
+    }
+  }
+
+  async GET_HOURLY_EXCEL_DATA_V4(filePath, req, usr) {
+    console.log('is this work ? >> ')
+    const xlsx = excelToJson({
+      sourceFile: filePath,
+      header: 1
+    })
+    const sampleSheet = req.sheet;
+
+
     // this is section where it is not a rotation data
     const getCoalRehandleIndex = xlsx[sampleSheet].findIndex(v => v.V === 'COAL REHANDLE')
 

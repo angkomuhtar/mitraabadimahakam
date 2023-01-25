@@ -84,12 +84,18 @@ $(function(){
             initGetHaulerByDailyFleet()
             getHaulerByDailyFleet()
             $('input[type="file"]').removeAttr('required').val(null)
+            $('div#fleet-selection').removeClass('hidden')
+            $('div#material-selection').removeClass('hidden')
+            $('div#distance-input').removeClass('hidden')
         }else{
             $('#sheet-section').removeClass('hidden')
             $('body').find('tbody#item-details').children().remove()
             $('div#manual-input').hide()
             $('div#upload-file').show()
             $('input[type="file"]').prop('required', 'true')
+            $('div#fleet-selection').addClass('hidden')
+            $('div#material-selection').addClass('hidden')
+            $('div#distance-input').addClass('hidden')
         }
     })
 
@@ -160,18 +166,16 @@ $(function(){
         const currentFileName = $('body').find('input[name="current-file-name"]').val()
         const date = $('body').find('input#date_2').attr('data-date')
         const material = $('body').find('select#material_2').attr('data-check')
-        const dailyfleet = $('body').find('select#dailyfleet_id_2').val();
         const exca = $('body').find('select#exca_id_2').val();
-        const distance = $('body').find('input#distance_2').val()
         const checker = $('body').find('select#checker_id').val();
         const spv = $('body').find('select#spv_id').val();
         const sheet = $('body').find('select#sheet').val();
+        const check_in = $('body').find('select#check_in').val();
         const dataJson = $('body').find('textarea[name="dataJson"]').val();
-       
+        
 
         var isUploadFile = $('body input[name="metodeInput"]').is(':checked')
         if(isUploadFile){
-
             data = new FormData(this)
             console.log('input manual....');
             $.ajax({
@@ -206,6 +210,8 @@ $(function(){
                 }
             })
         }else{
+            const dailyfleet = $('body').find('select#dailyfleet_id_2').val();
+            const distance = $('body').find('input#distance_2').val()
             console.log('UPLOAD :::', dataJson);
             data = new FormData()
 
@@ -218,6 +224,7 @@ $(function(){
             data.append('checker_id', checker);
             data.append('spv_id', spv);
             data.append('sheet', sheet);
+            data.append('check_in', check_in)
             data.append('dataJson', JSON.stringify(dataJson));
 
             swal({
@@ -491,7 +498,6 @@ $(function(){
     })
 
     // BACK DATE UPLOAD
-
     $('body').on('submit', 'form#fm-back-date-upload', function(e){
         e.preventDefault()
         $('body').find('button[type="submit"]').attr('disabled', 'disabled')
