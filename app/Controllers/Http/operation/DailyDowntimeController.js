@@ -122,8 +122,8 @@ class DailyDowntimeController {
 			try {
 				const xlsx = excelToJson({
 					sourceFile: filePath,
-					header: { rows: 2 },
-					sheets: [req.sheet],
+					header: { rows: 1 },
+					sheets: ['Data'],
 					columnToKey: {
 						B: 'date',
 						C: 'shift',
@@ -134,18 +134,15 @@ class DailyDowntimeController {
 				})
 
 				var dataX = xlsx[Object.keys(xlsx)[0]]
-
-				//  remove blanks
-				// var Xdata = _.reject(data, (e) => {
-				// 	return e.id_number == ''
-				// })
+				console.log(dataX)
 
 				var unit = await MasEquipment.pair('id', 'kode')
 				var inputData = []
 
 				for (const data of dataX) {
 					console.log(data.start_smu)
-					if (data.id_number != '' && data.start_smu != undefined) {
+
+					if (data.start_smu) {
 						var key =
 							_.findKey(unit, function (e) {
 								return e === data.id_number
@@ -153,7 +150,16 @@ class DailyDowntimeController {
 							_.findKey(unit, function (e) {
 								return e === data.id_number.replace(' ', '')
 							})
+						if (!key) {
+							return {
+								success: false,
+								type: 'warning',
+								message: `kode equipment ${data.id_number} tidak ditemukan`,
+							}
+						}
 						var date = moment(data.date).add(8, 'hours').format('YYYY-MM-DD')
+
+						console.log(date, key, data.shift == 'DS' ? 1 : 2)
 						var check = await DailyChecklist.query()
 							.where((trx) => {
 								trx.where('tgl', date)
@@ -205,7 +211,7 @@ class DailyDowntimeController {
 				return {
 					success: false,
 					type: 'warning',
-					message: 'all data your input already exist',
+					message: 'semua data telah diinput sebelumnya, pastikan data tgl dan data benar.!',
 				}
 			} catch (err) {
 				return {
