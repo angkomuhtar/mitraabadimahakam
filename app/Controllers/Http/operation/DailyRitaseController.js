@@ -252,6 +252,7 @@ class DailyRitaseController {
 			}
 		}
 
+		const trax = await db.beginTransaction()
 		try {
 			let fileName = `${reqFile.clientName.split('.')[0]}-${moment().format('DDMMYYHHmmss')}.${reqFile.extname}`
 			console.log(fileName)
@@ -280,7 +281,7 @@ class DailyRitaseController {
 				},
 			})
 			var ObjectData = ExcelData[Object.keys(ExcelData)[0]]
-			console.log(ObjectData)
+			// console.log(ObjectData)
 			var unit = await MasEquipment.pair('id', 'kode')
 			let array_dr_id = []
 			for (const data of ObjectData) {
@@ -407,7 +408,7 @@ class DailyRitaseController {
 									status: 'Y',
 								})
 							}
-							const insert_details = await db.insert(details).into('daily_ritase_details')
+							const insert_details = await trax.insert(details).into('daily_ritase_details')
 						}
 						if (array_dr_id[array_dr_id.length - 1] != dailyritase_id) {
 							array_dr_id.push(dailyritase_id)
@@ -415,6 +416,7 @@ class DailyRitaseController {
 					}
 				}
 			}
+			await trax.commit()
 
 			for (const data of array_dr_id) {
 				const count = await await db.from('daily_ritase_details').where('dailyritase_id', data).count()
@@ -422,6 +424,7 @@ class DailyRitaseController {
 				const update = await db.table('daily_ritases').where('id', data).update('tot_ritase', total_ritase)
 			}
 		} catch (err) {
+			await trax.rollback()
 			console.log(err.message)
 			return {
 				success: false,
