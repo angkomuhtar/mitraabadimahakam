@@ -380,6 +380,13 @@ class DailyRitaseController {
 
 							dailyritase_id = ritase_i[0]
 						}
+						if (!hauler_id) {
+							throw new ValidationError(`Truck Code ${data.truck_code} tidak ditemukan di master equipment`)
+						}
+
+						if (!dailyritase_id) {
+							throw new ValidationError(`ritase id ${dailyritase_id} tidak ditemukan`)
+						}
 						const cek_daily_ritase = await DailyRitaseDetail.query()
 							.where((w) => {
 								w.where('hauler_id', hauler_id)
@@ -419,7 +426,7 @@ class DailyRitaseController {
 			await trax.commit()
 
 			for (const data of array_dr_id) {
-				const count = await await db.from('daily_ritase_details').where('dailyritase_id', data).count()
+				const count = await db.from('daily_ritase_details').where('dailyritase_id', data).count()
 				const total_ritase = count[0]['count(*)']
 				const update = await db.table('daily_ritases').where('id', data).update('tot_ritase', total_ritase)
 			}
