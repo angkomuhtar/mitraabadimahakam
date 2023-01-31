@@ -254,7 +254,7 @@ class DailyRitaseController {
 
 		try {
 			let fileName = `${reqFile.clientName.split('.')[0]}-${moment().format('DDMMYYHHmmss')}.${reqFile.extname}`
-
+			console.log(fileName)
 			await reqFile.move(Helpers.publicPath(`/upload/dailyOB/`), {
 				name: fileName,
 				overwrite: true,
@@ -280,6 +280,7 @@ class DailyRitaseController {
 				},
 			})
 			var ObjectData = ExcelData[Object.keys(ExcelData)[0]]
+			console.log(ObjectData)
 			var unit = await MasEquipment.pair('id', 'kode')
 			let array_dr_id = []
 			for (const data of ObjectData) {
