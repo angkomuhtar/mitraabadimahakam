@@ -230,6 +230,15 @@ class DailyRitaseController {
 		// => Check if ritase detail already exist (if exist skip else not create details with ritase id)
 
 		let { date, spv_id, checker_id } = request.all()
+
+		if (!checker_id || !spv_id || !date) {
+			return {
+				success: false,
+				message: 'Data Belum Lengkap',
+			}
+		}
+
+		console.log(checker_id)
 		const validationOptions = {
 			types: ['application'],
 			extname: ['xls', 'xlsx'],
@@ -273,7 +282,6 @@ class DailyRitaseController {
 			var ObjectData = ExcelData[Object.keys(ExcelData)[0]]
 			var unit = await MasEquipment.pair('id', 'kode')
 			let array_dr_id = []
-
 			for (const data of ObjectData) {
 				var exca_id = _.findKey(unit, function (e) {
 					return e === data.exc_code.replace(' ', '')
@@ -960,6 +968,8 @@ class DailyRitaseController {
 			types: 'application',
 		}
 
+		const xuser = await auth.getUser()
+		console.log(xuser)
 		const reqFile = request.file('detail-ritase-ob', validateFile)
 		let aliasName
 		if (reqFile) {
