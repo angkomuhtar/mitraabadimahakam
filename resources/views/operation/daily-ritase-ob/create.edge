@@ -9,89 +9,84 @@
                     <form action="" class="" id="fm-upload-ritase-ob">
                         <div class="panel panel-default">
                             <div class="panel-wrapper collapse in">
+                                {{ csrfField() }}
+
+                                <div class="panel-header" style="padding-bottom: 15px">
+                                    <div class="col-xs-12 col-md-4">
+                                        Metode Input <span style="font-weight:600" id="typeText">Form</span>
+                                        <div class="material-switch pull-right">
+                                            <input id="typeInput" name="typeInput" type="checkbox"/>
+                                            <label for="typeInput" class="label-default"></label>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="panel-body">
-                                    {{ csrfField() }}
                                     <div class="row b-all p-t-20 m-b-20">
                                         <div class="col-md-4">
                                             <label for="tgl">Tanggal</label>
                                             <div class="form-group">
                                                 <div class="input-group">
                                                     <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                    <input type="date" class="form-control input-sm initDate" data-date="{{data.date}}" name="date" id="date_2" required>
+                                                    <input type="date" class="form-control input-sm initDate" data-date="{{data.date}}" name="date" id="date_2" >
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <label for="tgl">Nama Fleet</label>
-                                            <div class="input-group"> 
-                                                <span class="input-group-addon">@</span>
-                                                <select class="form-control input-sm select2dailyfleet" name="dailyfleet_id" id="dailyfleet_id_2" required></select>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="col-md-4">
-                                            <label for="tgl">Material</label>
-                                            <div class="form-group">
-                                                <div class="input-group">
-                                                    <div class="input-group-addon"><i class="fa fa-truck"></i></div>
-                                                    <select class="form-control input-sm select2material" name="material" id="material_2" data-check="{{data.material}}" required></select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="tgl">Distance</label>
-                                            <div class="form-group">
-                                                <div class="input-group">
-                                                    <input type="number" class="form-control input-sm select2material text-right" name="distance" id="distance_2" value="{{data.distance}}" required/>
-                                                    <span class="input-group-addon">Meter</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label for="tgl">Checker</label>
-                                            <div class="form-group">
-                                                <select class="form-control input-sm select2userChecker" name="checker_id" id="checker_id" required></select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="tgl">SPV / Foreman</label>
-                                            <div class="form-group">
-                                                <select class="form-control input-sm select2userForeman" name="spv_id" id="spv_id" required></select>
-                                            </div>
-                                        </div>
-                                                <div id="sheet-section" class="col-md-3">
+                                        <div id="form_section">
+                                            <div class="col-md-4">
+                                                <label for="tgl">Nama Fleet</label>
                                                 <div class="form-group">
-                                                    <label for="">Pilih Sheet</label>
-                                                    <div class="input-group">
-                                                        <div class="input-group-addon"><i class="icon-layers"></i></div>
-                                                        <select class="form-control input-sm " type="text" name="sheet" id="sheet"></select>
+                                                    <div class="input-group"> 
+                                                        <span class="input-group-addon">@</span>
+                                                        <select class="form-control input-sm select2dailyfleet" name="dailyfleet_id" id="dailyfleet_id_2" ></select>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                                <div class="col-md-12">
-                                                    <textarea class="form-control hidden" name="dataJson" rows="5"></textarea>
-                                                    <input type="hidden" name="current-file-name" value="" />
+                                            <div class="col-md-4">
+                                                <label for="tgl">Material</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                        <select class="form-control input-sm select2material" name="material" id="material_2" data-check="{{data.material}}" ></select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        <div class="col-md-1">
-                                            <label for="tgl">Metode</label>
-                                            <div class="form-group" style="margin-top: 10px">
-                                                <div class="material-switch">
-                                                    <input id="metodeInput" name="metodeInput" type="checkbox" />
-                                                    <label for="metodeInput" class="label-default"></label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6" id="upload-file">
-                                            <label for="tgl">Upload File</label>
-                                            <div class="form-group">
-                                                <div class="input-group">
-                                                    <span class="input-group-addon"><i class="fa fa-file-excel-o"></i></span>
-                                                    <input type="file" class="form-control" name="detail-ritase-ob" id="detail-ritase-ob" required/>
+                                            <div class="col-md-2">
+                                                <label for="tgl">Distance</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control input-sm select2material text-right" name="distance" id="distance_2" value="{{data.distance}}" />
+                                                        <span class="input-group-addon">Meter</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        
+                                        <div id="sheet_section" >     
+                                            <div class="col-md-2">
+                                                <label for="tgl">Checker</label>
+                                                <div class="form-group">
+                                                    <select class="form-control input-sm select2userChecker" name="checker_id" id="checker_id" ></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="tgl">SPV / Foreman</label>
+                                                <div class="form-group">
+                                                    <select class="form-control input-sm select2userForeman" name="spv_id" id="spv_id" ></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6" id="upload-file">
+                                                <label for="tgl">Upload File</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon"><i class="fa fa-file-excel-o"></i></span>
+                                                        <input type="file" class="form-control" name="detail-ritase-ob" id="detail-ritase-ob" />
+                                                        <input type="hidden" name="current-file-name" value="" />
+                                                    </div>
+                                                    <p class="m-t-5 font-12 text-danger text-right"></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
 
                                         <div class="col-md-12" id="manual-input" style="display:none;">
                                             <h4>Input Ritase Manual</h4>
@@ -134,7 +129,16 @@
 <script>
     $(function(){
 
-        $('input[name="tipeInput"]').switcher();
+        // $('input[name="tipeInput"]').switcher();
+        $("#typeInput").change(()=>{
+            if($("#typeInput").is(':checked')){
+                $("#typeText").html("Excel data")
+            }else{
+                $("#typeText").html("Form")
+            }
+            $("#sheet_section").toggle()
+            $("#form_section").toggle()
+        })
 
         $('body').find('input#date_2').attr('data-date', moment().format('YYYY-MM-DD'))
         selectDailyFleet (moment().format('YYYY-MM-DD'))
@@ -183,6 +187,9 @@
 </script>
 
 <style>
+#sheet_section{
+    display: none;
+}
 .material-switch > input[type="checkbox"] {
     display: none;   
 }
@@ -207,7 +214,7 @@
     width: 40px;
 }
 .material-switch > label::after {
-    background: rgb(83 230 157);
+    background: rgb(255, 255, 255);
     border-radius: 16px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
     content: '';
