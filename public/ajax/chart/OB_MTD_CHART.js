@@ -1,69 +1,98 @@
-$(function(){
+$(function () {
+	const ctx = document.getElementById('chartOb')
 
-    G1_MTD_OB()
+	let ChartOB = new Chart(ctx, {})
 
-    setInterval(() => {
-        G1_MTD_OB()
-    }, 45 * 1000);
+	G1_MTD_OB()
 
-    $('select#opt-chart1').on('change', function(e){
-        e.preventDefault()
-        G1_MTD_OB()
-    })
+	setInterval(() => {
+		G1_MTD_OB()
+	}, 45 * 1000)
 
-    function G1_MTD_OB(){
-        var bulan = $('select#opt-chart1').val()
-        $.ajax({
-            async: true,
-            url: '/ajax/grafik1?periode='+bulan,
-            method: 'GET',
-            success: function(result){
-                // console.log('RESULT OB ::', result);
-                var satuan = 'BCM'
-                var estimasi = result.sum_estimasi
-                var actual = result.sum_actual
-                var persen = (parseFloat(actual) / parseFloat(estimasi)) * 100
-                $('b#ob_plan').html((estimasi).toLocaleString('ID') +' '+satuan)
-                $('b#ob_actual').html((actual).toLocaleString('ID') +' '+satuan)
-                $('b#ob_persen').html((persen).toFixed(2)+'%')
-                new Chartist.Line('#sparkline8', {
-                    labels: result.labels,
-                    series: result.series
-                    }, {
-                    plugins: [
-                        Chartist.plugins.ctPointLabels({
-                            textAnchor: 'right',
-                            labelInterpolationFnc: function(value) {
-                                if(value){
-                                    return ((value/1000)).toFixed(2) + 'K'
-                                }else{
-                                    return 0
-                                }
-                            }
-                        }),
-                        Chartist.plugins.legend({
-                            legendNames: result.series.map(x => x[0].meta),
-                            clickable: true,
-                            position: 'bottom',
-                            className: 'ob-legend',
-                            onClick: function(val){
-                                console.log('VAL :::', val);
-                            }
-                        }),
-                        Chartist.plugins.tooltip({
-                            class: 'class1',
-                            appendToBody: true,
-                            anchorToPoint: true
-                        })
-                    ],
-                    low: 0,
-                    showArea: true,
-                });
-               
-            },
-            error: function(err){
-                console.log(err);
-            }
-        })
-    }
+	$('select#opt-chart1').on('change', function (e) {
+		e.preventDefault()
+		G1_MTD_OB()
+	})
+
+	var options = {
+		series: [],
+		chart: {
+			type: 'line',
+			toolbar: {
+				show: false,
+			},
+			height: 500,
+		},
+		colors: ['#77B6EA', '#545454', '#AAE321', '#F8013B'],
+		dataLabels: {
+			enabled: false,
+		},
+		stroke: {
+			curve: 'smooth',
+			width: 2,
+		},
+		grid: {
+			borderColor: '#e7e7e7',
+			row: {
+				colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+				opacity: 0.5,
+			},
+		},
+		markers: {
+			size: 5,
+			colors: ['#77B6EA', '#545454', '#AAE321', '#F8013B'],
+		},
+		legend: {
+			position: 'top',
+			horizontalAlign: 'right',
+		},
+	}
+
+	var chart = new ApexCharts(document.querySelector('#chart'), options)
+
+	chart.render()
+
+	function G1_MTD_OB() {
+		var bulan = $('select#opt-chart1').val()
+		$.ajax({
+			async: true,
+			url: '/ajax/grafik1?periode=' + bulan,
+			method: 'GET',
+			success: function (result) {
+				// console.log('RESULT OB ::', result);
+				var satuan = 'BCM'
+				var estimasi = result.sum_estimasi
+				var actual = result.sum_actual
+				var persen = (parseFloat(actual) / parseFloat(estimasi)) * 100
+				$('b#ob_plan').html(estimasi.toLocaleString('ID') + ' ' + satuan)
+				$('b#ob_actual').html(actual.toLocaleString('ID') + ' ' + satuan)
+				$('b#ob_persen').html(persen.toFixed(2) + '%')
+				// chart.destroy()
+
+				let dataset = []
+				for (const data of result.series) {
+					let series_data = []
+					let label = ''
+					for (const series of data) {
+						series_data.push(series.value)
+						label = series.meta
+					}
+					dataset.push({
+						name: label,
+						data: series_data,
+						// borderWith: 3,
+					})
+				}
+				chart.updateOptions({
+					xaxis: {
+						categories: result.labels,
+					},
+				})
+				chart.updateSeries(dataset)
+			},
+			error: function (err) {
+				console.log(err)
+			},
+		})
+	}
 })
