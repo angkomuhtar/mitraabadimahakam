@@ -44,12 +44,10 @@
                                         <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">edit</button>
                                     </td>
                                     <td class="myDateFormat single-line" width="400" data-date="{{item.tgl}}" data-elm="p">
-                                        <strong>{{item.pit.name || 'Not Set'}}</strong> 
                                         <p class="text-black"></p>
                                     </td>
                                     <td>
-                                        <strong class="text-warning">{{item.equipment.kode}}</strong> <br>
-                                        <small>{{item.equipment.tipe}}</small>
+                                        <strong class="text-warning">{{item.equipment.kode}}</strong>
                                     </td>
                                     <td class="text-right single-line">{{item.begin_smu}}</td>
                                     <td class="text-right single-line">{{item.end_smu ? item.end_smu : 0}}</td>
@@ -58,8 +56,7 @@
                                         <small class="text-info">{{item.dailyFleet.shift.name || item.shift.name || 'unknown shift'}}</small>
                                     </td>
                                     <td class="text-center">
-                                        {{item.userCheck.username.toUpperCase()}} <br>
-                                        {{item.spv.username || ''}} <br>
+                                        {{item.userCheck.username.toUpperCase()}} 
                                     </td>
                                 </tr>
                             @endeach

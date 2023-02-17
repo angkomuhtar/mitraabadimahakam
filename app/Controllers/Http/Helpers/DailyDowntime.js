@@ -21,6 +21,8 @@ class DailyDowntime {
 		let dailyDowntime = (
 			await DailyDowntimeEquipment.query()
 				.with('equipment')
+				.with('comp_group')
+				.with('type_break')
 				.where((w) => {
 					if (req.site_id) {
 						w.where('site_id', req.site_id)
@@ -36,15 +38,19 @@ class DailyDowntime {
 						w.where('breakdown_finish', '<=', req.breakdown_finish)
 					}
 				})
+				.orderBy('created_at', 'desc')
 				.paginate(halaman, limit)
 		).toJSON()
 		dailyDowntime = {
 			...dailyDowntime,
 			data: dailyDowntime.data.map((v) => {
+				let jam = v.downtime_total > 60 ? Math.round(v.downtime_total / 60) + ' h ' : ''
 				return {
 					...v,
+					downtime_total: v.downtime_total > 0 ? jam + (v.downtime_total % 60) + ' m' : '-',
+					corrective_action: v.corrective_action || '-',
 					breakdown_start: moment(v.breakdown_start).format('YYYY-MM-DD HH:mm'),
-					breakdown_finish: moment(v.breakdown_finish).format('YYYY-MM-DD HH:mm'),
+					breakdown_finish: v.breakdown_finish ? moment(v.breakdown_finish).format('YYYY-MM-DD HH:mm') : '-',
 					person_in_charge: v.person_in_charge || 'Tidak Ada',
 				}
 			}),

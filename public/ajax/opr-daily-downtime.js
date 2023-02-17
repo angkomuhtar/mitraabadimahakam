@@ -101,100 +101,124 @@ $(function () {
 		}
 	})
 	// get the file data
-	$('body').on('change', 'input[name="daily_downtime_upload"]', function () {
-		var data = new FormData()
+	// $('body').on('change', 'input[name="daily_downtime_upload"]', function () {
+	// 	var data = new FormData()
 
-		data.append('daily_downtime_upload', $(this)[0].files[0])
+	// 	data.append('daily_downtime_upload', $(this)[0].files[0])
+	// 	$.ajax({
+	// 		async: true,
+	// 		headers: { 'x-csrf-token': $('[name=_csrf]').val() },
+	// 		url: '/operation/daily-downtime/uploadFile',
+	// 		method: 'POST',
+	// 		data: data,
+	// 		dataType: 'json',
+	// 		processData: false,
+	// 		mimeType: 'multipart/form-data',
+	// 		contentType: false,
+	// 		beforeSend: function () {
+	// 			swal('Please wait!', 'Data sedang di proses...')
+	// 		},
+	// 		success: function (result) {
+	// 			$('body').find('input[name="current_file_name"]').val(JSON.stringify(result.fileName, null, 2))
+	// 			$('body')
+	// 				.find('select[name="sheet"]')
+	// 				.html(result.title.map((s) => '<option value="' + s + '"> Sheet [ ' + s + ' ]</option>'))
+	// 			// $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
+	// 			// console.log();
+
+	// 			swal('Okey!', 'Data Excel Berhasil dibaca ....', 'success')
+
+	// 			$('form#fm-upload-daily-downtime').find('select[name="sheet"]').val($('form#fm-upload-daily-downtime').find('input[type=date]').val().split('-')[2].replace(/^0+/, '')).change()
+	// 			// .val(parseInt('09')).change()
+	// 		},
+	// 		error: function (err) {
+	// 			console.log(err)
+	// 			const { message } = err.responseJSON
+	// 			swal('Opps,,,!', message, 'warning')
+	// 		},
+	// 	})
+	// })
+
+	// /Using Form
+	$('body').on('submit', 'form#fm-daily-downtime', function (e) {
+		e.preventDefault()
+		const formData = new FormData(this)
 		$.ajax({
 			async: true,
 			headers: { 'x-csrf-token': $('[name=_csrf]').val() },
-			url: '/operation/daily-downtime/uploadFile',
+			url: '/operation/daily-downtime',
 			method: 'POST',
-			data: data,
+			data: formData,
 			dataType: 'json',
 			processData: false,
 			mimeType: 'multipart/form-data',
 			contentType: false,
 			beforeSend: function () {
-				swal('Please wait!', 'Data sedang di proses...')
+				$('#loader').show()
 			},
 			success: function (result) {
-				$('body').find('input[name="current_file_name"]').val(JSON.stringify(result.fileName, null, 2))
-				$('body')
-					.find('select[name="sheet"]')
-					.html(result.title.map((s) => '<option value="' + s + '"> Sheet [ ' + s + ' ]</option>'))
-				// $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
-				// console.log();
-
-				swal('Okey!', 'Data Excel Berhasil dibaca ....', 'success')
-
-				$('form#fm-upload-daily-downtime').find('select[name="sheet"]').val($('form#fm-upload-daily-downtime').find('input[type=date]').val().split('-')[2].replace(/^0+/, '')).change()
-				// .val(parseInt('09')).change()
+				if (result.success) {
+					swal(
+						{
+							title: 'Okey!',
+							text: result.message,
+							type: 'success',
+						},
+						(isConfirm) => {
+							if (isConfirm) {
+								window.location.reload()
+							}
+						},
+					)
+				} else {
+					swal('Error', result?.type ? result.message : 'Something went wrong, Try Again.!!', result?.type ? 'warning' : 'error')
+				}
 			},
 			error: function (err) {
-				console.log(err)
+				console.log('error upload >> ', JSON.stringify(err))
 				const { message } = err.responseJSON
-				swal('Opps,,,!', message, 'warning')
+				swal('Opps,,,!', 'error when update data', 'error')
+			},
+			complete: function () {
+				$('#loader').hide()
 			},
 		})
 	})
-
+	// Using Excell
 	$('body').on('submit', 'form#fm-upload-daily-downtime', function (e) {
 		e.preventDefault()
-
 		const formData = new FormData(this)
-
-		swal(
-			{
-				title: 'Apakah anda yakin?',
-				text: 'Pastikan Format yang anda upload sudah benar!',
-				type: 'warning',
-				showCancelButton: true,
-				confirmButtonClass: 'btn-warning',
-				confirmButtonText: 'Okey!',
-				closeOnConfirm: true,
+		formData.append('daily_downtime_upload', $('input[name="daily_downtime_upload"]')[0].files[0])
+		$.ajax({
+			async: true,
+			headers: { 'x-csrf-token': $('[name=_csrf]').val() },
+			url: '/operation/daily-downtime',
+			method: 'POST',
+			data: formData,
+			dataType: 'json',
+			processData: false,
+			mimeType: 'multipart/form-data',
+			contentType: false,
+			beforeSend: function () {
+				$('#loader').show()
 			},
-			function (isConfirm) {
-				if (isConfirm) {
-					$.ajax({
-						async: true,
-						headers: { 'x-csrf-token': $('[name=_csrf]').val() },
-						url: '/operation/daily-downtime',
-						method: 'POST',
-						data: formData,
-						dataType: 'json',
-						processData: false,
-						mimeType: 'multipart/form-data',
-						contentType: false,
-						beforeSend: function () {
-							$('body').find('div#div-row-form').css('display', 'none')
-							$('body').find('div#spinner').toggleClass('hidden')
-						},
-						success: function (result) {
-							$('body').find('div#spinner').toggleClass('hidden')
-							$('body').find('div#div-row-form').css('display', 'block')
-							if (result.success) {
-								swal('Okey!', result.message, 'success')
-								$('body form#fm-upload-daily-downtime').trigger('reset')
-								//   window.location.reload()
-							} else {
-								console.log(result)
-
-								swal('Error', result?.type ? result.message : 'Something went wrong, Try Again.!!', result?.type ? 'warning' : 'error')
-							}
-						},
-						error: function (err) {
-							$('body').find('div#spinner').toggleClass('hidden').html('Please reload pages....')
-							console.log('error upload >> ', JSON.stringify(err))
-							const { message } = err.responseJSON
-							swal('Opps,,,!', message, 'warning')
-						},
-					})
+			success: function (result) {
+				if (result.success) {
+					swal('Okey!', result.message, 'success')
+					$('#form_id').trigger('reset')
 				} else {
-					swal('Okey!', 'you cancel upload data...', 'success')
+					swal('Error', result?.type ? result.message : 'Something went wrong, Try Again.!!', result?.type ? 'warning' : 'error')
 				}
 			},
-		)
+			error: function (err) {
+				console.log('error upload >> ', JSON.stringify(err))
+				const { message } = err.responseJSON
+				swal('Opps,,,!', 'error when update data', 'error')
+			},
+			complete: function () {
+				$('#loader').hide()
+			},
+		})
 	})
 
 	function initDefault() {

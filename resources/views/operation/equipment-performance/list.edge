@@ -73,121 +73,40 @@
                     <table class="table table-hover">
                         <thead style="border-bottom: 2px solid;">
                             <tr>
-                                <th>Action</th>
-                                <th class="sl text-center" width="20">Month</th>
-                                <th width="300">Period</th>
-                                <th class="sl text-center" width="20">Equip Name</th>
-                                <th class="sl" width="150">Budget PA</th>
-                                <th class="sl" width="250">MOHH</th>
-                                <th class="sl">Target Down Monthly</th>
-                                <th class="sl" width="150">HM Reading Start</th>
-                                <th class="sl" width="150">HM Reading End</th>
-                                <th class="sl" width="150">Work Hours</th>
-                                <th class="sl" width="150">Standby Hours</th>
-                                <th class="sl" width="150">Breakdown Hours (SCH)</th>
-                                <th class="sl" width="150">Breakdown Hours (UNS)</th>
-                                <th class="sl" width="150">Breakdown Hours (ACD)</th>
-                                <th class="sl" width="150">Breakdown Hours (Total)</th>
-                                <th class="sl" width="150">Actual PA</th>
-                                <th class="sl" width="150">Actual EU</th>
-                                <th class="sl" width="150">Actual UA</th>
-                                <th class="sl" width="150">Actual MA</th>
-                                <th class="sl" width="150">Breakdown Ratio (SCH)</th>
-                                <th class="sl" width="150">Breakdown Ratio (UNS)</th>
-                                <th class="sl" width="150">Actual MTBS</th>
-                                <th class="sl" width="150">Actual MTTR</th>
-                                <th class="sl" width="150">Target MTBS</th>
-                                <th class="sl" width="150">Target MTTR</th>
+                                <th class="sl" width="20">KODE</th>
+                                <th class="sl" width="20">Equip Name</th>
+                                <th class="sl" width="20">Type</th>
+                                <th class="sl" width="20">Break Down (Hours)</th>
+                                <th class="sl" width="20">Hour Meter</th>
+                                <th class="sl" width="20">PA (%)</th>
+                                <th class="sl" width="20">MA (%)</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if(list.data.length < 1)
                             <tr><td colspan="5">Data not found or data is not exsist</td></tr>
                           @endif
-                          @each(item in list.data)
+                          @each(item in list)
                                 <tr>
                                     <td>
-                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data" data-id="{{item.id}}">Edit</button>
+                                        {{item.kode}}
                                     </td>
                                     <td>
-                                        <strong>{{item.month}}</strong>
+                                        {{item.brand +' '+ item.unit_model}}
                                     </td>
                                     <td>
-                                        <strong>{{item.period}}</strong>
+                                        {{item.tipe}}
                                     </td>
-                                    <td>
-                                      {{item.equipment.kode}}
-                                    </td>
-                                    <td>
-                                       {{item.budget_pa}} %
-                                    </td>
-                                    <td>
-                                       {{item.mohh}}
-                                    </td>
-                                    <td>
-                                        {{item.target_downtime_monthly}}
-                                     </td>
-                                     <td>
-                                        {{item.hm_reading_start}}
-                                     </td>
-                                     <td>
-                                        {{item.hm_reading_end}}
-                                     </td>
-                                     <td>
-                                        {{item.work_hours}}
-                                     </td>
-                                     <td>
-                                        {{item.standby_hours}}
-                                     </td>
-                                     <td>
-                                        {{item.breakdown_hours_scheduled}}
-                                     </td>
-                                     <td>
-                                        {{item.breakdown_hours_unscheduled}}
-                                     </td>
-                                     <td>
-                                        {{item.breakdown_hours_accident}}
-                                     </td>
-                                     <td>
-                                        {{item.breakdown_hours_total}}
-                                     </td>
-                                     <td>
-                                        {{item.actual_pa}} %
-                                     </td>
-                                     <td>
-                                        {{item.actual_eu}} %
-                                     </td>
-                                     <td>
-                                        {{item.actual_ua}} %
-                                     </td>
-                                     <td>
-                                        {{item.actual_ma}} %
-                                     </td>
-                                     <td>
-                                        {{item.breakdown_ratio_scheduled}} %
-                                     </td>
-                                     <td>
-                                        {{item.breakdown_ratio_unscheduled}} %
-                                     </td>
-                                     <td>
-                                        {{item.actual_mtbs}}
-                                     </td>
-                                     <td>
-                                        {{item.actual_mttr}}
-                                     </td>
-                                     <td>
-                                        {{item.target_mtbs}}
-                                     </td>
-                                     <td>
-                                        {{item.target_mttr}}
-                                     </td>
-
+                                    <td>{{item.downtime}}</td>
+                                    <td>{{item.hm}}</td>
+                                    <td>{{item.pa }} %</td>
+                                    <td>{{item.ma }} %</td>
                                 </tr>
                                 @endeach
                         </tbody>
                     </table>
                 </div>
-                @include('_component.pagination')
+                {{--  @include('_component.pagination')  --}}
             </div>
         </div>
     </div>
