@@ -27,8 +27,8 @@ class DailyDowntimeController {
 
 	async create({ view }) {
 		const unit = (await Equipment.query().where('aktif', 'Y').fetch()).toJSON()
-		const comp = await Database.from('sys_options').where('group', 'COMPONENT').where('status', 'Y')
-		const bd_type = await Database.from('sys_options').where('group', 'BD TYPE').where('status', 'Y').orderBy('urut')
+		const comp = await Database.from('sys_options').whereIn('group', ['COMPONENT', 'ALL']).where('status', 'Y')
+		const bd_type = await Database.from('sys_options').whereIn('group', ['BD TYPE', 'ALL']).where('status', 'Y').orderBy('urut')
 		return view.render('operation.daily-downtime-equipment.create', { unit, comp, bd_type })
 	}
 

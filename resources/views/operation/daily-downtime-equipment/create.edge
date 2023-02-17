@@ -31,7 +31,9 @@
                                                             <label for="">Site</label>
                                                             <div class="input-group">
                                                                 <div class="input-group-addon"><i class="icon-layers"></i></div>
-                                                                <select class="form-control select2site" type="text" name="site_id" id="site_id" required></select>
+                                                                <select class="form-control" type="text" name="site_id" id="site_id" required>
+                                                                    <option value="5">Bukit Baiduri Energi</option>
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -202,6 +204,8 @@
         $('#start_time').datetimepicker({
             locale: 'in'
         });
+
+        // $('#id_site').val('5').change()
     
         $('#start_time').datetimepicker();
         $('#end_time').datetimepicker({
@@ -222,6 +226,7 @@
             var hours = diff / 60 | 0; 
             var min = diff % 60 | 0; 
             $('#tot_hours').val(hours + ':' + ('0' + min).slice(-2))
+            $('#status').val('RFU').change()
         });
 
         $("#typeInput").change(()=>{
