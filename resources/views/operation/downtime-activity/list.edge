@@ -17,19 +17,19 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover" id="table-data">
+                    <table class="table table-hover">
                         <thead style="border-bottom: 2px solid;">
                             <tr>
                                 <th>Action</th>
                                 {{--  <th class="sl text-center" width="30">Downtime Code</th>  --}}
                                 <th class="sl text-center" width="20">Equip Name</th>
-                                <th class="sl" width="150">Location</th>
+                                {{--  <th class="sl" width="150">Location</th>  --}}
                                 <th class="sl" width="*">Problem Reported</th>
-                                {{--  <th class="sl">Corrective Action</th>  --}}
+                                <th class="sl">Corrective Action</th>
                                 <th class="sl" width="150">Breakdown Start</th>
                                 <th class="sl" width="150">Breakdown Fisnih</th>
                                 <th class="sl" width="150">Breakdown Time</th>
-                                {{--  <th class="sl" width="150">Component Group</th>  --}}
+                                <th class="sl" width="150">Component Group</th>
                                 <th class="sl" width="150">Status</th>
                                 <th class="sl" width="150">Downtime Status</th>
                                 <th class="sl" width="150">BD Type</th>
@@ -50,15 +50,15 @@
                                     <td>
                                       {{item.equipment.kode}}
                                     </td>
-                                    <td>
-                                       {{item.location}}
-                                    </td>
+                                    {{--  <td>  --}}
+                                       {{--  {{item.location}}  --}}
+                                    {{--  </td>  --}}
                                     <td>
                                        {{item.problem_reported}}
                                     </td>
-                                    {{--  <td>  --}}
-                                        {{--  {{item.corrective_action}}  --}}
-                                     {{--  </td>  --}}
+                                    <td>
+                                        {{item.corrective_action}}
+                                     </td>
                                      <td>
                                         {{item.breakdown_start}}
                                      </td>
@@ -68,9 +68,9 @@
                                      <td>
                                         {{item.downtime_total}}
                                      </td>
-                                     {{--  <td>  --}}
-                                            {{--  {{item.comp_group.nilai}}  --}}
-                                     {{--  </td>  --}}
+                                     <td>
+                                            {{item.comp_group.nilai}}
+                                     </td>
 
                                      <td>
                                         <span class="label label-{{item.status == 'BD' ? 'warning': 'success'}}">
@@ -117,7 +117,6 @@
             var currentPage = body.find('input[name="inp-page"]').val()
             initDefault(currentPage)
         })
-        $('#table-data').dataTable()
 
         function initDefault(pages) {
             var status = $('select[name="status"]').val()

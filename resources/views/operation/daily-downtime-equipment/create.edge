@@ -10,16 +10,16 @@
                         <div class="col-md-12">
                             <div class="panel panel-default">
                                 <div class="panel-wrapper collapse in">
-                                    <div class="panel-header" style="padding-bottom: 15px">
-                                        <div class="col-xs-12 col-md-4" style="display: flex; gap: 12px">
-                                            <span style="font-weight:600" id="form">Input Form</span>
-                                            <div class="material-switch">
-                                                <input id="typeInput" name="typeInput" type="checkbox"/>
-                                                <label for="typeInput" class="label-default"></label>
-                                            </div>
-                                            <span style="font-weight:400; text-decoration: line-through" id="excel">Upload Excel</span>
-                                        </div>
-                                    </div>
+                                    {{--  <div class="panel-header" style="padding-bottom: 15px">  --}}
+                                        {{--  <div class="col-xs-12 col-md-4" style="display: flex; gap: 12px">  --}}
+                                            {{--  <span style="font-weight:600" id="form">Input Form</span>  --}}
+                                            {{--  <div class="material-switch">  --}}
+                                                {{--  <input id="typeInput" name="typeInput" type="checkbox"/>  --}}
+                                                {{--  <label for="typeInput" class="label-default"></label>  --}}
+                                            {{--  </div>  --}}
+                                            {{--  <span style="font-weight:400; text-decoration: line-through" id="excel">Upload Excel</span>  --}}
+                                        {{--  </div>  --}}
+                                    {{--  </div>  --}}
                                     <div class="panel-body">
                                         <div class="row b-all p-t-20 m-b-20" id="div-row-form">
                                             <form action="" class="" id="fm-daily-downtime">
@@ -38,7 +38,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-2">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="">Unit Number</label>
                                                         <select class="form-control" type="text" name="unit_number" id="unit_number">
@@ -48,34 +48,13 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-3">
                                                     <label for="tgl">Breakdown time</label>
                                                     <div class="form-group">
                                                         <div class="input-group">
                                                             <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
                                                             <input type="text" class="form-control" id="start_time" name="start" required>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label for="tgl">Complete time</label>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                            <input type="text" class="form-control" id="end_time" name="end">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <label for="tgl">Total Hours</label>
-                                                    <div class="form-group">
-                                                        <input type="text" class="form-control" id="tot_hours" name="tot_hours" required readonly>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="tgl">HM</label>
-                                                    <div class="form-group">
-                                                        <input type="text" class="form-control" id="hm" name="hm" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
@@ -85,9 +64,18 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <label for="tgl">Correction Action</label>
                                                     <div class="form-group">
-                                                        <input type="text" class="form-control" id="action" name="action">
+                                                        <label for="">Status</label>
+                                                        <select class="form-control" type="text" name="status" id="status">
+                                                            <option value="BD">Break Down</option>
+                                                            <option value="RFU">Ready For Use</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="tgl">HM</label>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" id="hm" name="hm" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
@@ -96,47 +84,62 @@
                                                         <input type="text" class="form-control" id="location" name="location">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="">Status</label>
-                                                        <select class="form-control" type="text" name="status" id="status">
-                                                            <option value="BD">Break Down</option>
-                                                            <option value="RFU">Ready For Use</option>
-                                                            <option value="AD">Accident</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="">Type B/D</label>
-                                                        <select class="form-control" type="text" name="bd_type" id="bd_type">
-                                                            @each(item in bd_type)
-                                                            <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>
-                                                            @endeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="">Comp Group</label>
-                                                        <select class="form-control" type="text" name="comp_group" id="comp_group">
-                                                            @each(item in comp)
-                                                            <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>
-                                                            @endeach
-                                                        </select>
-                                                    </div>
-                                                </div>
+                                                
                                                 <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="">Downtime Code</label>
                                                         <select class="form-control" type="text" name="downtime_code" id="downtime_code">
                                                             <option value="SCH">Scheduled</option>
                                                             <option value="UNS">Unscheduled</option>
+                                                            <option value="AD">Accident</option>
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <div id="toggle" style="display: none">
+                                                    <div class="col-md-3">
+                                                        <label for="tgl">Complete time</label>
+                                                        <div class="form-group">
+                                                            <div class="input-group">
+                                                                <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                                <input type="text" class="form-control" id="end_time" name="end">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label for="tgl">Total Hours</label>
+                                                        <div class="form-group">
+                                                            <input type="text" class="form-control" id="tot_hours" name="tot_hours" required readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {{--  <div class="col-md-3">  --}}
+                                                    {{--  <label for="tgl">Correction Action</label>  --}}
+                                                    {{--  <div class="form-group">  --}}
+                                                        {{--  <input type="text" class="form-control" id="action" name="action">  --}}
+                                                    {{--  </div>  --}}
+                                                {{--  </div>  --}}
+                                                {{--  <div class="col-md-3">  --}}
+                                                    {{--  <div class="form-group">  --}}
+                                                        {{--  <label for="">Type B/D</label>  --}}
+                                                        {{--  <select class="form-control" type="text" name="bd_type" id="bd_type">  --}}
+                                                            {{--  @each(item in bd_type)  --}}
+                                                            {{--  <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>  --}}
+                                                            {{--  @endeach  --}}
+                                                        {{--  </select>  --}}
+                                                    {{--  </div>  --}}
+                                                {{--  </div>  --}}
+                                                {{--  <div class="col-md-3">  --}}
+                                                    {{--  <div class="form-group">  --}}
+                                                        {{--  <label for="">Comp Group</label>  --}}
+                                                        {{--  <select class="form-control" type="text" name="comp_group" id="comp_group">  --}}
+                                                            {{--  @each(item in comp)  --}}
+                                                            {{--  <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>  --}}
+                                                            {{--  @endeach  --}}
+                                                        {{--  </select>  --}}
+                                                    {{--  </div>  --}}
+                                                {{--  </div>  --}}
                                                 <div class="col-md-12 text-right m-b-30 m-t-30">
-                                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                    <button type="reset" class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
                                                         <i class="fa fa-close"></i> <span>Cancel</span>
                                                     </button>
                                                     <button type="submit" class="btn btn-success waves-effect waves-light"> 
@@ -145,6 +148,7 @@
                                                 </div>
                                             </form>
                                         </div>
+                                        {{--
                                         <div class="row b-all p-t-20 m-b-20" id="div-row-upload" style="display:none">
                                             <form action="" class="" id="fm-upload-daily-downtime">
                                                 {{ csrfField() }}
@@ -184,6 +188,7 @@
                                                 </div>
                                             </form>
                                         </div>
+                                        --}}
                                     </div>
                                 </div>
                             </div>
@@ -220,14 +225,20 @@
             $('#tot_hours').val(hours + ':' + ('0' + min).slice(-2))
         });
         $("#end_time").on("dp.change", function (e) {
-            $('#start_time').data("DateTimePicker").maxDate(e.date);
             var end = moment($('#start_time').val(), 'DD/MM/YYYY HH.mm')
             var diff = (e.date).diff(end, 'minutes')
             var hours = diff / 60 | 0; 
             var min = diff % 60 | 0; 
             $('#tot_hours').val(hours + ':' + ('0' + min).slice(-2))
-            $('#status').val('RFU').change()
+            // $('#status').val('RFU').change()
         });
+        $("#status").on('change', function(e){
+            if(e.val == 'RFU'){
+                $("#toggle").fadeIn()
+            }else{
+                $("#toggle").fadeOut()
+            }
+        })
 
         $("#typeInput").change(()=>{
             if($("#typeInput").is(':checked')){

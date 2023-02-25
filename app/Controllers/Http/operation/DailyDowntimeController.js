@@ -20,9 +20,57 @@ class ValidationError extends Error {
 	}
 }
 class DailyDowntimeController {
-	async index({ view }) {
-		const data = (await Equipment.query().where('aktif', 'Y').fetch()).toJSON()
-		return view.render('operation.daily-downtime-equipment.index', { equip: data })
+	async index({ view, auth, request }) {
+		const req = request.all()
+		const unit = (await Equipment.query().where('aktif', 'Y').fetch()).toJSON()
+		const comp = await Database.from('sys_options').whereIn('group', ['COMPONENT', 'ALL']).where('status', 'Y').orderBy('urut')
+		const bd_type = await Database.from('sys_options').whereIn('group', ['BD TYPE', 'ALL']).where('status', 'Y').orderBy('urut')
+		const user = await userValidate(auth)
+		// const data = (await Equipment.query().where('aktif', 'Y').fetch()).toJSON()
+		if (!user) {
+			return view.render('401')
+		}
+
+		if (request.ajax()) {
+			let Page = req.start == 0 ? 1 : req.start / req.length + 1
+			console.log('request>>', req, Page, req.start)
+			const downtime = DailyDowntimeEquipment.query()
+			if (req.unit_number != 0) {
+				downtime.where('equip_id', req.unit_number)
+			}
+			if (req.sts != 0) {
+				downtime.where('status', req.sts)
+			}
+			if (req.bd_sts != 0) {
+				downtime.where('downtime_status', req.bd_sts)
+			}
+			if (req.bd_type != 0) {
+				downtime.where('bd_type', req.bd_type)
+			}
+
+			if (req.start_t) {
+				downtime.where((w) => {
+					w.where('breakdown_start', '>=', moment(req.start_t, 'DD/MM/YYYY').format('YYYY-MM-DD'))
+					w.orWhereNull('breakdown_finish')
+				})
+			}
+
+			if (req.end_t) {
+				downtime.where((e) => {
+					e.where(Database.raw('DATE(breakdown_finish)'), '<=', moment(req.end_t, 'DD/MM/YYYY').format('YYYY-MM-DD'))
+					e.orWhereNull('breakdown_finish')
+				})
+			}
+			const list = (await downtime.with('equipment').with('comp_group').orderBy('created_at', 'desc').paginate(Page, req.length)).toJSON()
+
+			return {
+				draw: req.draw,
+				recordsTotal: list.total,
+				recordsFiltered: list.total,
+				data: list.data,
+			}
+		}
+		return view.render('operation.daily-downtime-equipment.index', { unit, comp, bd_type })
 	}
 
 	async create({ view }) {
@@ -32,55 +80,20 @@ class DailyDowntimeController {
 		return view.render('operation.daily-downtime-equipment.create', { unit, comp, bd_type })
 	}
 
-	async uploadFile({ auth, request }) {
-		const validateFile = {
-			types: ['pdf'],
-			types: 'application',
-		}
-		const reqFile = request.file('daily_downtime_upload', validateFile)
-
-		// if (!reqFile.extname.includes('xlsx')) {
-		// 	return {
-		// 		success: false,
-		// 		message: 'Tipe file yang di upload harus xls / xlsx !',
-		// 	}
-		// }
-
-		let aliasName
-		if (reqFile) {
-			aliasName = `${reqFile.clientName.split('.')[0]}-${moment().format('DDMMYYHHmmss')}.${reqFile.extname}`
-
-			await reqFile.move(Helpers.publicPath(`/upload/`), {
-				name: aliasName,
-				overwrite: true,
+	async uploadFile({ auth, params }) {
+		console.log(params.id)
+		let search = await DailyDowntimeEquipment.query()
+			.where('equip_id', params.id)
+			.where((w) => {
+				w.orWhereNull('breakdown_finish')
 			})
+			.first()
+		console.log(search.toJSON())
 
-			if (!reqFile.moved()) {
-				return reqFile.error()
-			}
-
-			var pathData = Helpers.publicPath(`/upload/`)
-
-			const convertJSON = excelToJson({
-				sourceFile: `${pathData}${aliasName}`,
-				header: {
-					rows: 4,
-				},
-			})
-
-			var arr = Object.keys(convertJSON).map(function (key) {
-				return key
-			})
-
+		if (search) {
 			return {
-				title: arr,
-				data: [],
-				fileName: aliasName,
-			}
-		} else {
-			return {
-				success: false,
-				message: 'Gagal mengupload file Daily Downtime ..., silahkan coba lagi',
+				success: true,
+				data: search.toJSON(),
 			}
 		}
 	}

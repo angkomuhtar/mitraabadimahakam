@@ -1,6 +1,127 @@
+function convertMinutes(minutes) {
+	const days = Math.floor(minutes / 1440)
+	const hours = Math.floor((minutes % 1440) / 60)
+	const remainingMinutes = minutes % 60
+	return `${days > 0 ? days + 'hari, ' : ''} ${hours > 0 ? hours + 'jam, ' : ''} ${remainingMinutes} menit`
+}
+
 $(function () {
-	initDefault()
-	getAllSite()
+	var Table = $('#table-data').DataTable({
+		processing: true,
+		serverSide: true,
+		ordering: false,
+		searching: false,
+		scrollX: true,
+		// scrollCollapse: true,
+		ajax: {
+			headers: { 'x-csrf-token': $('[name=_csrf]').val() },
+			url: '/operation/daily-downtime',
+			data: function (d) {
+				return $.extend({}, d, {
+					unit_number: $('#f_unit_number').val(),
+					sts: $('#f_sts').val(),
+					bd_sts: $('#f_bd_sts').val(),
+					bd_type: $('#f_bd_type').val(),
+					start_t: $('#f_start').val(),
+					end_t: $('#f_end').val(),
+				})
+			},
+		},
+		language: {
+			processing: `Please Wait`,
+		},
+		columns: [
+			{
+				data: 'downtime_code',
+				render: (data, type, row) => {
+					return `
+					<div>
+					<a href="#" class="btn btn-outline btn-xs btn-primary"><i class="ti-receipt"></i> list</a>
+					</div>
+					`
+				},
+			},
+			{
+				data: 'equipment.kode',
+				name: 'equip_name',
+			},
+			{
+				data: 'location',
+			},
+
+			{
+				data: 'problem_reported',
+			},
+			{
+				data: 'breakdown_start',
+				render: function (data) {
+					return moment(data).format('DD-MM-YYYY HH:mm')
+				},
+			},
+			{
+				data: 'breakdown_finish',
+				render: function (data) {
+					return data ? moment(data).format('DD-MM-YYYY HH:mm') : 'Not Set'
+				},
+			},
+			{
+				data: 'downtime_total',
+				render: (data) => {
+					return convertMinutes(data)
+				},
+			},
+			{
+				data: 'downtime_status',
+			},
+			{
+				defaultContent: 'Not Set',
+				data: 'status',
+			},
+			{
+				defaultContent: 'Not Set',
+				data: 'bd_type.nilai',
+			},
+		],
+	})
+	// Table.draw()
+
+	// filter SECTION
+
+	$('select').select2()
+
+	$('body').on('click', 'button#filter', function () {
+		$('#filter-section').toggle('fast')
+	})
+
+	$('#f_unit_number,#f_sts,#f_bd_sts,#f_bd_type').bind('change', function () {
+		Table.draw()
+	})
+
+	$('#f_start,#f_end').bind('dp.change', () => {
+		Table.draw()
+	})
+
+	$('body').on('click', '#clear_filter', function () {
+		$('#f_unit_number,#f_bd_sts,#f_bd_type,#f_sts').val('0').change()
+		$('#f_start,#f_end').val('')
+		Table.draw()
+	})
+
+	$('#f_start').datetimepicker({
+		format: 'L',
+		useCurrent: false, //Important! See issue #f_1075
+	})
+	$('#f_end').datetimepicker({
+		format: 'L',
+		useCurrent: false, //Important! See issue #f_1075
+	})
+	$('#f_start').on('dp.change', function (e) {
+		$('#f_end').data('DateTimePicker').minDate(e.date)
+	})
+	// end filter SECTION
+
+	// initDefault()
+	// getAllSite()
 
 	$('body').on('click', 'button#bt-back', function () {
 		initDefault()
@@ -10,84 +131,6 @@ $(function () {
 		initCreate()
 		getAllSite()
 	})
-
-	$('body').on('click', 'button#create-form-details', function () {
-		initCreateDetails()
-	})
-
-	$('body').on('click', 'button#bt-cancel-update', function (e) {
-		e.preventDefault()
-		initDefault()
-	})
-
-	$('body').on('click', 'button.bt-edit', function (e) {
-		var id = $(this).data('id')
-		initShow(id)
-	})
-
-	$('body').on('click', 'button.bt-edit-data', function (e) {
-		var id = $(this).data('id')
-		initShowDetails(id)
-	})
-
-	$('body').on('change', 'select#fitur_id', function () {
-		var values = $(this).val()
-		var desc = $(this)
-			.find('option[value="' + values + '"]')
-			.data('desc')
-		$('textarea[name="desc"]').val(desc)
-	})
-
-	$('#filterModal').on('hidden.bs.modal', function (e) {
-		var body = $('body')
-		var page = $('input[name="inp-page"]').val()
-		var status = body.find('select[name="status"]').val()
-		var site_id = body.find('select[name="site_id"]').val()
-		var equip_id = body.find('select[name="equip_idx"]').val()
-		var begin_date = body.find('input[name="begin_date"]').val()
-		var end_date = body.find('input[name="end_date"]').val()
-		$.ajax({
-			async: true,
-			url: '/operation/daily-downtime/list',
-			method: 'GET',
-			dataType: 'html',
-			data: {
-				limit: 50,
-				page: page,
-				site_id: site_id,
-				equip_id: equip_id,
-				downtime_status: status,
-				breakdown_start: begin_date,
-				breakdown_finish: end_date,
-			},
-			success: function (result) {
-				$('content-module').css('display', 'none')
-				$('div#list-content').html(result).show()
-			},
-			error: function (err) {
-				console.log(err)
-			},
-		})
-	})
-
-	// $('body').on('click', 'a.btn-pagging', function (e) {
-	//   e.preventDefault()
-	//   var page = $(this).data('page')
-	//   var keyword = $('input#inpKeyworddoc').val()
-	//   var url = window.location.pathname + '/list?page=' + page + '&keyword=' + keyword
-	//   $.ajax({
-	//     async: true,
-	//     url: url,
-	//     method: 'GET',
-	//     success: function (result) {
-	//       $('div#form-content-details').children().remove()
-	//       $('div#list-content').html(result).show()
-	//     },
-	//     error: function (err) {
-	//       console.log(err)
-	//     },
-	//   })
-	// })
 
 	$('body').on('change', 'select[name="sts_approve"]', function () {
 		const value = $(this).val()
@@ -100,44 +143,31 @@ $(function () {
 			$('body').find('div#approved_date_div').removeClass('hidden')
 		}
 	})
-	// get the file data
-	// $('body').on('change', 'input[name="daily_downtime_upload"]', function () {
-	// 	var data = new FormData()
-
-	// 	data.append('daily_downtime_upload', $(this)[0].files[0])
-	// 	$.ajax({
-	// 		async: true,
-	// 		headers: { 'x-csrf-token': $('[name=_csrf]').val() },
-	// 		url: '/operation/daily-downtime/uploadFile',
-	// 		method: 'POST',
-	// 		data: data,
-	// 		dataType: 'json',
-	// 		processData: false,
-	// 		mimeType: 'multipart/form-data',
-	// 		contentType: false,
-	// 		beforeSend: function () {
-	// 			swal('Please wait!', 'Data sedang di proses...')
-	// 		},
-	// 		success: function (result) {
-	// 			$('body').find('input[name="current_file_name"]').val(JSON.stringify(result.fileName, null, 2))
-	// 			$('body')
-	// 				.find('select[name="sheet"]')
-	// 				.html(result.title.map((s) => '<option value="' + s + '"> Sheet [ ' + s + ' ]</option>'))
-	// 			// $('body').find('select[name="sheet"]').prepend('<option value="" selected> Pilih </option>')
-	// 			// console.log();
-
-	// 			swal('Okey!', 'Data Excel Berhasil dibaca ....', 'success')
-
-	// 			$('form#fm-upload-daily-downtime').find('select[name="sheet"]').val($('form#fm-upload-daily-downtime').find('input[type=date]').val().split('-')[2].replace(/^0+/, '')).change()
-	// 			// .val(parseInt('09')).change()
-	// 		},
-	// 		error: function (err) {
-	// 			console.log(err)
-	// 			const { message } = err.responseJSON
-	// 			swal('Opps,,,!', message, 'warning')
-	// 		},
-	// 	})
-	// })
+	// serach downtime
+	$(document).on('change', '#unit_number', (e) => {
+		console.log(e.val)
+		$.ajax({
+			async: true,
+			headers: { 'x-csrf-token': $('[name=_csrf]').val() },
+			url: `/operation/daily-downtime/${e.val}/searchDT`,
+			method: 'GET',
+			beforeSend: () => {
+				$('#loader').show()
+			},
+			success: (res) => {
+				$('#problem').val(res.data.problem_reported)
+				$('#hm').val(res.data.hour_meter)
+				$('#start_time').val(moment(res.data.breakdown_start).format('DD/MM/YYYY HH.mm'))
+				$('#start_time').attr('readonly', true)
+			},
+			error: (err) => {
+				console.log(err)
+			},
+			complete: () => {
+				$('#loader').hide()
+			},
+		})
+	})
 
 	// /Using Form
 	$('body').on('submit', 'form#fm-daily-downtime', function (e) {
@@ -223,18 +253,19 @@ $(function () {
 
 	function initDefault() {
 		$('div.content-module').css('display', 'none')
-		$.ajax({
-			async: true,
-			url: '/operation/daily-downtime/list?limit=',
-			method: 'GET',
-			success: function (result) {
-				$('content-module').css('display', 'none')
-				$('div#list-content').html(result).show()
-			},
-			error: function (err) {
-				console.log(err)
-			},
-		})
+		$('div#list-content').toggle()
+		// $.ajax({
+		// 	async: true,
+		// 	url: '/operation/daily-downtime/list?limit=',
+		// 	method: 'GET',
+		// 	success: function (result) {
+		// 		$('content-module').css('display', 'none')
+		// 		$('div#list-content').html(result).show()
+		// 	},
+		// 	error: function (err) {
+		// 		console.log(err)
+		// 	},
+		// })
 	}
 
 	function initCreate() {
@@ -244,7 +275,7 @@ $(function () {
 			url: '/operation/daily-downtime/create',
 			method: 'GET',
 			success: function (result) {
-				$('div#list-content').children().remove()
+				$('div#list-content').toggle()
 				$('div#form-content').html(result).show()
 			},
 			error: function (err) {
@@ -254,18 +285,18 @@ $(function () {
 	}
 
 	function initShow(id) {
-		$.ajax({
-			async: true,
-			url: '/operation/sop/' + id + '/show',
-			method: 'GET',
-			success: function (result) {
-				$('div#list-content').children().remove()
-				$('div#form-content').html(result).show()
-			},
-			error: function (err) {
-				console.log(err)
-			},
-		})
+		// $.ajax({
+		// 	async: true,
+		// 	url: '/operation/sop/' + id + '/show',
+		// 	method: 'GET',
+		// 	success: function (result) {
+		// 		$('div#list-content').children().remove()
+		// 		$('div#form-content').html(result).show()
+		// 	},
+		// 	error: function (err) {
+		// 		console.log(err)
+		// 	},
+		// })
 	}
 
 	function getAllSite() {

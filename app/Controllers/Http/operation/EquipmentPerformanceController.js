@@ -50,15 +50,16 @@ class EquipmentPerformanceController {
 			})
 			let jam_breakdown = Math.round(tot_hours / 60) <= jam_kerja ? Math.round(tot_hours / 60) : jam_kerja
 			let jam_operasi = hm_unit_group[`${data.id}`]?.HM || 0
+			let total_bd = breakdown_group[`${data.id}`]?.length | 0
 			return {
 				...data,
 				downtime: jam_breakdown,
 				pa: (((jam_kerja - jam_breakdown) / jam_kerja) * 100).toFixed(2),
 				hm: jam_operasi,
 				ma: isNaN(((jam_operasi / (jam_operasi + jam_breakdown)) * 100).toFixed(2)) ? parseFloat(0).toFixed(2) : ((jam_operasi / (jam_operasi + jam_breakdown)) * 100).toFixed(2),
-				ua: '',
-				mttr: '',
-				mtbs: '',
+				ua: ((jam_operasi / (jam_kerja - jam_breakdown)) * 100).toFixed(2),
+				mttr: Math.round(jam_breakdown / total_bd) | 0,
+				mtbs: Math.round(jam_operasi / total_bd) | 0,
 			}
 		})
 

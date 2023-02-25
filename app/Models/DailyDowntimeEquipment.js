@@ -30,6 +30,10 @@ class DailyDowntimeEquipment extends Model {
 	type_break() {
 		return this.belongsTo('App/Models/SysOption', 'bd_type', 'id')
 	}
+
+	activity() {
+		return this.belongsTo('App/Models/DowntimeActivity', 'breakdown_code', 'breakdown_code')
+	}
 }
 
 module.exports = DailyDowntimeEquipment

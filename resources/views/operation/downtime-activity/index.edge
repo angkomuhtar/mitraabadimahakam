@@ -1,13 +1,12 @@
 @layout('_layouts.main')
 @section('content')
-    {{ script('ajax/opr-daily-downtime') }}
+    {{ script('ajax/opr-downtime-activity.js') }}
     <div class="container-fluid">
         <div class="row bg-title">
             <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                <h4 class="page-title">Daily Downtime Equipment</h4>
+                <h4 class="page-title">Downtime Mechanic Activity</h4>
             </div>
         </div>
-        {{--  @include('operation.daily-downtime-equipment.filter')  --}}
         <div class="content-module" id="list-content">
             <div class="row">
                 <div class="col-md-12">
@@ -31,10 +30,10 @@
                                     <div class="panel-body b-b">
                                         {{ csrfField() }}
                                         <div class="row">
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <div class="form-group">
                                                     <label for="">Unit Number</label>
-                                                    <select class="form-control" type="text" name="unit_number" id="f_unit_number">
+                                                    <select class="form-control" type="text" name="unit_number" id="unit_number">
                                                         <option value="0">Select One</option>
                                                         @each(item in unit)
                                                         <option value="{{item.id}}">{{item.kode}}</option>
@@ -43,43 +42,11 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="">BD Status</label>
-                                                    <select class="form-control" type="text" name="bd_sts" id="f_bd_sts">
-                                                        <option value="0">Select One</option>
-                                                        <option value="SCH">Scheduled</option>
-                                                        <option value="UNS">Unscheduled</option>
-                                                        <option value="AC">Accident</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="">status</label>
-                                                    <select class="form-control" type="text" name="sts" id="f_sts">
-                                                        <option value="0">Select One</option>
-                                                        <option value="RFU">RFU</option>
-                                                        <option value="BD">BD</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-group">
-                                                    <label for="">BD Type</label>
-                                                    <select class="form-control" type="text" name="bd_type" id="f_bd_type">
-                                                        <option value="0">Select One</option>
-                                                        @each(item in bd_type)
-                                                        <option value="{{item.id}}">{{item.teks}}</option>
-                                                        @endeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                                <div class="col-md-3">
                                                 <label for="tgl">Start time</label>
                                                 <div class="form-group">
                                                     <div class="input-group">
                                                         <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                        <input type="text" class="form-control" id="f_start" name="start" required>
+                                                        <input type="text" class="form-control" id="start" name="start" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -88,8 +55,30 @@
                                                 <div class="form-group">
                                                     <div class="input-group">
                                                         <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                        <input type="text" class="form-control" id="f_end" name="end" required>
+                                                        <input type="text" class="form-control" id="end" name="end" required>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="">Comp group</label>
+                                                    <select class="form-control" type="text" name="comp" id="comp">
+                                                        <option value="0">Select One</option>
+                                                        @each(item in comp)
+                                                        <option value="{{item.id}}">{{item.teks}}</option>
+                                                        @endeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="">BD Type</label>
+                                                    <select class="form-control" type="text" name="bd_type" id="bd_type">
+                                                        <option value="0">Select One</option>
+                                                        @each(item in bd_type)
+                                                        <option value="{{item.id}}">{{item.teks}}</option>
+                                                        @endeach
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-md-12 text-right">
@@ -108,17 +97,14 @@
                                 <table class="table table-hover" id="table-data">
                                     <thead style="border-bottom: 2px solid;">
                                         <tr>
-                                            {{--  <th>Action</th>  --}}
-                                            <th class="sl text-center" width="30">Action</th>
+                                            <th class="sl text-center" width="20">Downtime Code</th>
                                             <th class="sl text-center" width="20">Equip Name</th>
-                                            <th class="sl" width="150">Location</th>
-                                            <th class="sl" width="*">Problem Reported</th>
-                                            <th class="sl" width="150">Breakdown Start</th>
-                                            <th class="sl" width="150">Breakdown Fisnih</th>
-                                            <th class="sl" width="150">Breakdown Time</th>
+                                            <th class="sl">Corrective Action</th>
+                                            <th class="sl" width="150">Start Time</th>
+                                            <th class="sl" width="150">End Time</th>
+                                            <th class="sl" width="150">Component Group</th>
+                                            {{--  <th class="sl" width="150">BD Type</th>  --}}
                                             <th class="sl" width="150">Status</th>
-                                            <th class="sl" width="150">Downtime Status</th>
-                                            <th class="sl" width="150">BD Type</th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -128,8 +114,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <div class="content-module" id="form-content" style="display:none;"></div>
+
     </div>
 @endsection
