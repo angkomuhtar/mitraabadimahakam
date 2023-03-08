@@ -118,26 +118,26 @@
                                                         {{--  <input type="text" class="form-control" id="action" name="action">  --}}
                                                     {{--  </div>  --}}
                                                 {{--  </div>  --}}
-                                                {{--  <div class="col-md-3">  --}}
-                                                    {{--  <div class="form-group">  --}}
-                                                        {{--  <label for="">Type B/D</label>  --}}
-                                                        {{--  <select class="form-control" type="text" name="bd_type" id="bd_type">  --}}
-                                                            {{--  @each(item in bd_type)  --}}
-                                                            {{--  <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>  --}}
-                                                            {{--  @endeach  --}}
-                                                        {{--  </select>  --}}
-                                                    {{--  </div>  --}}
-                                                {{--  </div>  --}}
-                                                {{--  <div class="col-md-3">  --}}
-                                                    {{--  <div class="form-group">  --}}
-                                                        {{--  <label for="">Comp Group</label>  --}}
-                                                        {{--  <select class="form-control" type="text" name="comp_group" id="comp_group">  --}}
-                                                            {{--  @each(item in comp)  --}}
-                                                            {{--  <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>  --}}
-                                                            {{--  @endeach  --}}
-                                                        {{--  </select>  --}}
-                                                    {{--  </div>  --}}
-                                                {{--  </div>  --}}
+                                                <div class="col-md-3"> 
+                                                    <div class="form-group">
+                                                        <label for="">Type B/D</label>
+                                                        <select class="form-control" type="text" name="bd_type" id="bd_type">
+                                                            @each(item in bd_type)
+                                                            <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>
+                                                            @endeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label for="">Comp Group</label>
+                                                        <select class="form-control" type="text" name="comp_group" id="comp_group">
+                                                            @each(item in comp)
+                                                            <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>
+                                                            @endeach
+                                                        </select>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-12 text-right m-b-30 m-t-30">
                                                     <button type="reset" class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
                                                         <i class="fa fa-close"></i> <span>Cancel</span>

@@ -71,15 +71,22 @@ $(function () {
 				},
 			},
 			{
-				data: 'downtime_status',
-			},
-			{
-				defaultContent: 'Not Set',
 				data: 'status',
 			},
 			{
 				defaultContent: 'Not Set',
-				data: 'bd_type.nilai',
+				data: 'downtime_status',
+			},
+			{
+				// defaultContent: 'Not Set',
+				data: 'type_break',
+				render: (data) => {
+					if (data?.teks) {
+						return data.teks + ' - ' + data.nilai
+					} else {
+						return 'Not Set'
+					}
+				},
 			},
 		],
 	})
@@ -161,7 +168,11 @@ $(function () {
 				$('#start_time').attr('readonly', true)
 			},
 			error: (err) => {
-				console.log(err)
+				console.log('ini error', err)
+				$('#problem').val('')
+				$('#hm').val('')
+				$('#start_time').val('')
+				$('#start_time').attr('readonly', false)
 			},
 			complete: () => {
 				$('#loader').hide()

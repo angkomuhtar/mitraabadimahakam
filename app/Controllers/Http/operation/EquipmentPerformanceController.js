@@ -22,13 +22,14 @@ class EquipmentPerformanceController {
 	}
 
 	async list({ auth, request, view }) {
-		const equip = (await MasEquipment.query().orderBy('kode', 'asc').fetch()).toJSON()
+		const equip = (await MasEquipment.query().whereRaw('kode LIKE "M%"').orWhereRaw('kode LIKE "OHT%"').orderBy('kode', 'asc').fetch()).toJSON()
+		console.log(equip)
 		const get_downtime = (
 			await DailyDowntime.query()
 				.where((e) => {
 					e.where(Database.raw('MONTH(breakdown_start)'), '1').where(Database.raw('YEAR(breakdown_start)'), '2023')
 					e.orWhere(Database.raw('MONTH(breakdown_finish)'), '1').where(Database.raw('YEAR(breakdown_finish)'), '2023')
-					e.orWhere(Database.raw('ISNULL(breakdown_finish)'))
+					e.orWhereNull('breakdown_finish')
 				})
 				.fetch()
 		).toJSON()
@@ -58,6 +59,7 @@ class EquipmentPerformanceController {
 				hm: jam_operasi,
 				ma: isNaN(((jam_operasi / (jam_operasi + jam_breakdown)) * 100).toFixed(2)) ? parseFloat(0).toFixed(2) : ((jam_operasi / (jam_operasi + jam_breakdown)) * 100).toFixed(2),
 				ua: ((jam_operasi / (jam_kerja - jam_breakdown)) * 100).toFixed(2),
+				eu: ((jam_operasi / jam_kerja) * 100).toFixed(2),
 				mttr: Math.round(jam_breakdown / total_bd) | 0,
 				mtbs: Math.round(jam_operasi / total_bd) | 0,
 			}

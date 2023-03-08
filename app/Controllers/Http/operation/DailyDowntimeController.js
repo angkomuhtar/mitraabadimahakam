@@ -61,7 +61,7 @@ class DailyDowntimeController {
 					e.orWhereNull('breakdown_finish')
 				})
 			}
-			const list = (await downtime.with('equipment').with('comp_group').orderBy('created_at', 'desc').paginate(Page, req.length)).toJSON()
+			const list = (await downtime.with('equipment').with('comp_group').with('type_break').orderBy('created_at', 'desc').paginate(Page, req.length)).toJSON()
 
 			return {
 				draw: req.draw,
