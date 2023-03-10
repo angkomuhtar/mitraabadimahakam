@@ -1,91 +1,93 @@
-
-    {{ script('ajax/index') }}
+@layout('_layouts.main')
+@section('content')
+    {{ script('ajax/opr-downtime-activity.js') }}
     <div class="container-fluid">
-        @include('operation.daily-ritase-ob.filter')
-        <div class="row">
-            <div class="col-md-12">
-                <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
-                <div class="white-box p-b-0">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="panel panel-default">
-                                <div class="panel-wrapper collapse in">
-                                    <div class="panel-body" id="create">
-                                        <div class="row b-all p-t-20 m-b-20" id="div-row-form">
-                                            <form action="" class="" id="fm-daily-downtime">
-                                                {{ csrfField() }}
-                                                <input type="hidden" name="type_input" value="form">
-                                                <div class="row col-md-12">
+        <div class="row bg-title">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <h4 class="page-title">Downtime Mechanic Activity</h4>
+            </div>
+        </div>
+        <div class="content-module" id="form-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+                    <div class="white-box p-b-0">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-wrapper collapse in">
+                                        <div class="panel-body" id="create">
+                                            <div class="row b-all p-t-20 m-b-20" id="div-row-form">
+                                                <form action="" class="" id="fm-daily-downtime">
+                                                    {{ csrfField() }}
+                                                    <input type="hidden" name="type_input" value="form">
+                                                    <div class="row col-md-12">
+                                                        <div class="col-md-3">
+                                                            <label for="tgl">Downtime Code</label>
+                                                            <div class="form-group">
+                                                                <input type="text" class="form-control" id="dt_code" name="dt_code" value="{{code}}" style="background: #ededed" readonly required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-3">
-                                                        <label for="tgl">Downtime Code</label>
                                                         <div class="form-group">
-                                                            <input type="text" class="form-control" id="dt_code" name="dt_code" style="background: #ededed" readonly required>
+                                                            <label for="">Unit Number</label>
+                                                            <input type="text" class="form-control" id="unit_number" name="unit_number" value="{{downtime.equipment.kode}}" style="background: #ededed" readonly required>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="">Unit Number</label>
-                                                        <select class="form-control" type="text" name="unit_number" id="unit_number">
-                                                            <option value="">Pilih Unit Number</option>
-                                                            @each(item in unit)
-                                                            <option value="{{item.id}}">{{item.kode}}</option>
-                                                            @endeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="tgl">Start time</label>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                            <input type="text" class="form-control" id="mulai" name="mulai" required>
+                                                    <div class="col-md-3">
+                                                        <label for="tgl">Start time</label>
+                                                        <div class="form-group">
+                                                            <div class="input-group">
+                                                                <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                                <input type="text" class="form-control" id="mulai" name="mulai" required>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="tgl">Complete time</label>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
-                                                            <input type="text" class="form-control" id="selesai" name="selesai" required>
+                                                    <div class="col-md-3">
+                                                        <label for="tgl">Complete time</label>
+                                                        <div class="form-group">
+                                                            <div class="input-group">
+                                                                <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                                <input type="text" class="form-control" id="selesai" name="selesai" required>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label for="tgl">Activity</label>
-                                                    <div class="form-group">
-                                                        <input type="text" class="form-control" id="activity" name="activity" required>
+                                                    <div class="col-md-3">
+                                                        <label for="tgl">Activity</label>
+                                                        <div class="form-group">
+                                                            <input type="text" class="form-control" id="activity" name="activity" required>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="">Comp Group</label>
-                                                        <select class="form-control" type="text" name="comp_group" id="comp_group">
-                                                            @each(item in comp)
-                                                            <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>
-                                                            @endeach
-                                                        </select>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label for="">Comp Group</label>
+                                                            <select class="form-control" type="text" name="comp_group" id="comp_group">
+                                                                @each(item in comp)
+                                                                <option value="{{item.id}}">{{item.teks + " - "+ item.nilai}}</option>
+                                                                @endeach
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <label for="">Status</label>
-                                                        <select class="form-control" type="text" name="status" id="status">
-                                                            <option value="0">Pending</option>
-                                                            <option value="1">Done</option>
-                                                        </select>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label for="">Status</label>
+                                                            <select class="form-control" type="text" name="status" id="status">
+                                                                <option value="0">Pending</option>
+                                                                <option value="1">Done</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-12 text-right m-b-30 m-t-30">
-                                                    <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
-                                                        <i class="fa fa-close"></i> <span>Cancel</span>
-                                                    </button>
-                                                    <button type="submit" class="btn btn-success waves-effect waves-light"> 
-                                                        <i class="fa fa-save"></i> <span>Save</span>
-                                                    </button>
-                                                </div>
-                                            </form>
+                                                    <div class="col-md-12 text-right m-b-30 m-t-30">
+                                                        <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                            <i class="fa fa-close"></i> <span>Cancel</span>
+                                                        </button>
+                                                        <button type="submit" class="btn btn-success waves-effect waves-light"> 
+                                                            <i class="fa fa-save"></i> <span>Save</span>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -95,8 +97,56 @@
                 </div>
             </div>
         </div>
-    </div>
 
+        <div class="content-module" id="list-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="white-box">
+                        <div class="" id="content-list">
+                            <div class="">
+                                <table class="table table-hover">
+                                    <thead style="border-bottom: 2px solid;">
+                                        <tr>
+                                            <th class="sl text-center" width="20">Downtime Code</th>
+                                            <th class="sl">Corrective Action</th>
+                                            <th class="sl" width="150">Start Time</th>
+                                            <th class="sl" width="150">End Time</th>
+                                            <th class="sl" width="150">Component Group</th>
+                                            {{--  <th class="sl" width="150">BD Type</th>  --}}
+                                            <th class="sl" width="150">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if(activity.length < 1)
+                                            <tr><td colspan="6">Data not found or data is not exsist</td></tr>
+                                        @endif
+                                        @each(act in activity)
+                                        <tr>
+                                            <td>{{act.downtime_code}}</td>
+                                            <td>{{act.activity}}</td>
+                                            <td>{{act.start_f}}</td>
+                                            <td>{{act.end_f}}</td>
+                                            <td>{{act.comp_group.nilai}}</td>
+                                            <td>
+                                                @if(act.sts == 1)
+                                                <span class="label label-success">Done</span>
+                                                @else
+                                                <span class="label label-info">Pending</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @endeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            {{--  @include('_component.simple-pagination')  --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
 
 <script>
     $(function(){
@@ -121,3 +171,4 @@
         });
     })
 </script>
+

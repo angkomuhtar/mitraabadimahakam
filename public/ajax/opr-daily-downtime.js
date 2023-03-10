@@ -35,8 +35,9 @@ $(function () {
 				data: 'downtime_code',
 				render: (data, type, row) => {
 					return `
-					<div>
-					<a href="#" class="btn btn-outline btn-xs btn-primary"><i class="ti-receipt"></i> list</a>
+					<div style="display:flex; align-items:center">
+					<a href="/operation/downtime-activity/${row.downtime_code}/activity" class="btn-add"><i class="ti-plus"></i></a>
+					<a href="/operation/downtime-activity/${row.downtime_code}/activity" class="btn-edit"><i class="ti-pencil"></i></a>
 					</div>
 					`
 				},
@@ -265,22 +266,9 @@ $(function () {
 	function initDefault() {
 		$('div.content-module').css('display', 'none')
 		$('div#list-content').toggle()
-		// $.ajax({
-		// 	async: true,
-		// 	url: '/operation/daily-downtime/list?limit=',
-		// 	method: 'GET',
-		// 	success: function (result) {
-		// 		$('content-module').css('display', 'none')
-		// 		$('div#list-content').html(result).show()
-		// 	},
-		// 	error: function (err) {
-		// 		console.log(err)
-		// 	},
-		// })
 	}
 
 	function initCreate() {
-		// $('div.content-module').css('display', 'none')
 		$.ajax({
 			async: true,
 			url: '/operation/daily-downtime/create',

@@ -68,11 +68,20 @@ class DowntimeActivityController {
 		return view.render('operation.downtime-activity.index', { unit, comp, bd_type })
 	}
 
-	async create({ view }) {
-		const unit = (await Equipment.query().where('aktif', 'Y').fetch()).toJSON()
+	async create({ params, view }) {
+		const { code } = params
+		let downtime = (await DailyDowntimeEquipment.query().where('downtime_code', code).with('equipment').first()).toJSON()
+		let act = (await DowntimeActivity.query().where('downtime_code', code).with('comp_group').orderBy('start', 'desc').fetch()).toJSON()
+		let activity = act.map((data) => {
+			return {
+				...data,
+				start_f: moment(data.start).format('DD-MM-YYYY HH:mm:SS'),
+				end_f: moment(data.end).format('DD-MM-YYYY HH:mm:SS'),
+			}
+		})
 		const comp = await Database.from('sys_options').whereIn('group', ['COMPONENT', 'ALL']).where('status', 'Y')
 		const bd_type = await Database.from('sys_options').whereIn('group', ['BD TYPE', 'ALL']).where('status', 'Y').orderBy('urut')
-		return view.render('operation.downtime-activity.create', { unit, comp, bd_type })
+		return view.render('operation.downtime-activity.create', { downtime, comp, bd_type, code, activity })
 	}
 
 	async store({ request, auth }) {

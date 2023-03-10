@@ -84,6 +84,17 @@ $(function () {
 		Table.draw()
 	})
 
+	$('#mulai').datetimepicker({
+		useCurrent: false, //Important! See issue #1075
+	})
+
+	$('#selesai').datetimepicker({
+		useCurrent: false, //Important! See issue #1075
+	})
+	$('#mulai').on('dp.change', function (e) {
+		$('#selesai').data('DateTimePicker').minDate(e.date)
+	})
+
 	$('#start').datetimepicker({
 		format: 'L',
 		useCurrent: false, //Important! See issue #1075
@@ -97,7 +108,7 @@ $(function () {
 	})
 
 	$('body').on('click', 'button#bt-back', function () {
-		initDefault()
+		history.back()
 	})
 
 	$(document).on('change', '#unit_number', (e) => {
@@ -172,9 +183,11 @@ $(function () {
 			},
 		})
 	})
+
 	function initDefault() {
 		$('div.content-module').toggle()
 	}
+
 	function initCreate() {
 		$.ajax({
 			async: true,

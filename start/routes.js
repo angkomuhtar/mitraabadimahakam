@@ -806,7 +806,8 @@ Route.group(() => {
 	Route.get('/downtime-activity', 'DowntimeActivityController.index').as('opr.downtime-activity.index').middleware('R')
 
 	Route.post('/downtime-activity', 'DowntimeActivityController.store').as('opr.downtime-activity.store').middleware('C')
-	Route.get('/downtime-activity/create', 'DowntimeActivityController.create').as('opr.downtime-activity.create').middleware('C')
+	// Route.get('/downtime-activity/create', 'DowntimeActivityController.create').as('opr.downtime-activity.create').middleware('C')
+	Route.get('/downtime-activity/:code/activity', 'DowntimeActivityController.create').as('opr.downtime-activity.create').middleware('C')
 	Route.get('/downtime-activity/:id/code', 'DowntimeActivityController.code').as('opr.downtime-activity.code').middleware('C')
 
 	// Heavy Equipment / Equipment Performance
