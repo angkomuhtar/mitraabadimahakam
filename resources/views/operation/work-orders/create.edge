@@ -10,16 +10,16 @@
                         <div class="col-md-12">
                             <div class="panel panel-default">
                                 <div class="panel-wrapper collapse in">
-                                    <div class="panel-header" style="padding-bottom: 15px">
-                                        <div class="col-xs-12 col-md-4" style="display: flex; gap: 12px">
-                                            <span style="font-weight:600" id="form">Input Form</span>
-                                            <div class="material-switch">
-                                                <input id="typeInput" name="typeInput" type="checkbox"/>
-                                                <label for="typeInput" class="label-default"></label>
-                                            </div>
-                                            <span style="font-weight:400; text-decoration: line-through" id="excel">Upload Excel</span>
-                                        </div>
-                                    </div>
+                                    {{--  <div class="panel-header" style="padding-bottom: 15px">  --}}
+                                        {{--  <div class="col-xs-12 col-md-4" style="display: flex; gap: 12px">  --}}
+                                            {{--  <span style="font-weight:600" id="form">Input Form</span>  --}}
+                                            {{--  <div class="material-switch">  --}}
+                                                {{--  <input id="typeInput" name="typeInput" type="checkbox"/>  --}}
+                                                {{--  <label for="typeInput" class="label-default"></label>  --}}
+                                            {{--  </div>  --}}
+                                            {{--  <span style="font-weight:400; text-decoration: line-through" id="excel">Upload Excel</span>  --}}
+                                        {{--  </div>  --}}
+                                    {{--  </div>  --}}
                                     <div class="panel-body">
                                         <div class="row b-all p-t-20 m-b-20" id="div-row-form">
                                             <form action="" class="" id="fm-daily-downtime">
@@ -148,20 +148,11 @@
                                                 </div>
                                             </form>
                                         </div>
-                                        
+                                        {{--
                                         <div class="row b-all p-t-20 m-b-20" id="div-row-upload" style="display:none">
                                             <form action="" class="" id="fm-upload-daily-downtime">
                                                 {{ csrfField() }}
-                                                @if(auth.user.user_tipe == 'administrator')
-                                                <select name="type_input" id="">
-                                                    <option value="radio">radio</option>
-                                                    <option value="plan">plan</option>
-                                                </select>
-                                                @elseif(auth.user.user_tipe == 'checker')
-                                                <input type="hidden" name="type_input" value="radio">
-                                                @else
-                                                <input type="hidden" name="type_input" value="plan">
-                                                @endif
+                                                <input type="hidden" name="type_input" value="upload">
                                                 <div id="sheet-section" class="col-md-3">
                                                     <div class="form-group">
                                                         <label for="">Site</label>
@@ -171,6 +162,12 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                    <div class="form-group">
+                                                        <div class="col-md-12">
+                                                            <textarea class="form-control hidden" name="dataJson" rows="5"></textarea>
+                                                            <input type="hidden" name="current_file_name" value="" />
+                                                        </div>
+                                                    </div>
                                                 <div class="col-md-6" id="upload-file">
                                                     <label for="tgl">Upload File</label>
                                                     <div class="form-group">
@@ -180,6 +177,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <div class="col-md-12 text-right m-b-30 m-t-30">
                                                     <button class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
                                                         <i class="fa fa-close"></i> <span>Cancel</span>
@@ -190,6 +188,7 @@
                                                 </div>
                                             </form>
                                         </div>
+                                        --}}
                                     </div>
                                 </div>
                             </div>

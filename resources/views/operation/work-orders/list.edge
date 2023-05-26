@@ -1,0 +1,152 @@
+<div class="row">
+    {{ script('ajax/index') }}
+    <div class="col-md-12">
+        <div class="white-box">
+            <div class="" id="content-list">
+                <div class="row sales-report">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                            <i class="fa fa-plus m-r-5"></i> <span>Tambah Data</span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                        <button class="btn btn-info waves-effect waves-light" data-toggle="modal" data-target="#filterModal">
+                            <span>Filter Data</span> 
+                            <i class="ti-filter m-l-5"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="table-data">
+                        <thead style="border-bottom: 2px solid;">
+                            <tr>
+                                <th>Action</th>
+                                {{--  <th class="sl text-center" width="30">Downtime Code</th>  --}}
+                                <th class="sl text-center" width="20">Equip Name</th>
+                                <th class="sl" width="150">Location</th>
+                                <th class="sl" width="*">Problem Reported</th>
+                                {{--  <th class="sl">Corrective Action</th>  --}}
+                                <th class="sl" width="150">Breakdown Start</th>
+                                <th class="sl" width="150">Breakdown Fisnih</th>
+                                <th class="sl" width="150">Breakdown Time</th>
+                                {{--  <th class="sl" width="150">Component Group</th>  --}}
+                                <th class="sl" width="150">Status</th>
+                                <th class="sl" width="150">Downtime Status</th>
+                                <th class="sl" width="150">BD Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(list.data.length < 1)
+                            <tr><td colspan="5">Data not found or data is not exsist</td></tr>
+                          @endif
+                          @each(item in list.data)
+                                <tr>
+                                    <td>
+                                        <button class="btn btn-outline btn-warning btn-xs bt-edit-data"">Edit</button>
+                                    </td>
+                                    {{--  <td>  --}}
+                                        {{--  <strong>{{item.downtime_code}}</strong>  --}}
+                                    {{--  </td>  --}}
+                                    <td>
+                                      {{item.equipment.kode}}
+                                    </td>
+                                    <td>
+                                       {{item.location}}
+                                    </td>
+                                    <td>
+                                       {{item.problem_reported}}
+                                    </td>
+                                    {{--  <td>  --}}
+                                        {{--  {{item.corrective_action}}  --}}
+                                     {{--  </td>  --}}
+                                     <td>
+                                        {{item.breakdown_start}}
+                                     </td>
+                                     <td>
+                                        {{item.breakdown_finish}}
+                                     </td>
+                                     <td>
+                                        {{item.downtime_total}}
+                                     </td>
+                                     {{--  <td>  --}}
+                                            {{--  {{item.comp_group.nilai}}  --}}
+                                     {{--  </td>  --}}
+
+                                     <td>
+                                        <span class="label label-{{item.status == 'BD' ? 'warning': 'success'}}">
+                                            {{item.status}}
+                                        </span>
+                                     </td>
+                                     <td>
+                                        {{item.downtime_status}}
+                                     </td>
+                                     <td>
+                                        {{item.type_break.nilai}}
+                                     </td>
+
+                                </tr>
+                                @endeach
+                        </tbody>
+                    </table>
+                </div>
+                @include('_component.simple-pagination')
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function(){
+        var body = $('body')
+        var uri = window.location.href
+        
+        body.find('a#btPreviousPage').on('click', function(e){
+            e.preventDefault()
+            var page = $(this).data('page') === 1 ? 1 : ($(this).data('page') - 1)
+            initDefault(page)
+        })
+
+        body.find('a#btNextPage').on('click', function(e){
+            e.preventDefault()
+            var page = $(this).data('page') + 1
+            initDefault(page)
+        })
+
+        body.find('button#btGoToPage').on('click', function(e){
+            e.preventDefault()
+            var currentPage = body.find('input[name="inp-page"]').val()
+            initDefault(currentPage)
+        })
+        $('#table-data').dataTable()
+
+        function initDefault(pages) {
+            var status = $('select[name="status"]').val()
+            var site_id = $('select[name="site_id"]').val()
+            var equip_id = $('select[name="equip_idx"]').val()
+            var begin_date = $('input[name="begin_date"]').val()
+            var end_date = $('input[name="end_date"]').val()
+            $('div.content-module').css('display', 'none')
+                $.ajax({
+                async: true,
+                url: '/operation/daily-downtime/list',
+                data: {
+                    limit: 50,
+                    page: pages,
+                    site_id: site_id,
+                    equip_id: equip_id,
+                    downtime_status: status,
+                    breakdown_start: begin_date,
+                    breakdown_finish: end_date
+                },
+                method: 'GET',
+                success: function (result) {
+                    $('content-module').css('display', 'none')
+                    $('div#list-content').html(result).show()
+                },
+                error: function (err) {
+                    console.log(err)
+                },
+            })
+        }
+    })
+</script>

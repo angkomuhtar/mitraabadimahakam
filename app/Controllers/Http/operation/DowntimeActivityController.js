@@ -32,8 +32,8 @@ class DowntimeActivityController {
 		}
 
 		if (request.ajax()) {
-			console.log('request>>', req.unit_number)
-			let Page = req.start == 0 ? 1 : req.start / req.length
+			console.log('request>>', req)
+			let Page = req.start == 0 ? 1 : req.start / req.length + 1
 			const downtime = DowntimeActivity.query()
 			if (req.unit_number != 0) {
 				downtime.whereHas('downtime', (query) => {
@@ -56,7 +56,7 @@ class DowntimeActivityController {
 					.paginate(Page, req.length)
 			).toJSON()
 
-			// console.log(list.data)
+			console.log(list.data)
 			return {
 				draw: req.draw,
 				recordsTotal: list.total,

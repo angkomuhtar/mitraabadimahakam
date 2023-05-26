@@ -591,7 +591,8 @@ Route.group(() => {
 
 	Route.get('/daily-timesheet/list-p2h', 'DailyTimesheetController.listP2H').as('opr.daily-timesheet.listP2H').middleware('R')
 
-	Route.get('/daily-timesheet/create', 'DailyOperatorTimesheetController.create').as('opr.daily-timesheet.create').middleware('R') // changed to version 2
+	Route.post('/daily-timesheet/create', 'DailyTimesheetController.upload').as('opr.daily-timesheet.upload').middleware('R') // changed to version 2
+	// Route.get('/daily-timesheet/create', 'DailyOperatorTimesheetController.create').as('opr.daily-timesheet.create').middleware('R') // changed to version 2
 
 	Route.get('/daily-timesheet/create/addItems', 'DailyOperatorTimesheetController.addItems').as('opr.daily-timesheet.addItems').middleware('R')
 
@@ -822,6 +823,10 @@ Route.group(() => {
 	Route.get('/equipment-performance/:id/show', 'EquipmentPerformanceController.show').as('opr.equipment-performance.show')
 
 	Route.get('/equipment-performance/:id/update', 'EquipmentPerformanceController.update').as('opr.equipment-performance.update')
+
+	//work Order Controller
+
+	Route.get('/work-orders/:id', 'WorkOrdersController.show').as('opr.equipment-worksorders.show')
 })
 	.prefix('operation')
 	.namespace('operation')

@@ -47,6 +47,18 @@ $(function () {
 				name: 'equip_name',
 			},
 			{
+				data: 'wo.code',
+				render: (data, type, row) => {
+					if (row.wo?.code) {
+						return `
+						<a href="/operation/work-orders/${row.wo.code}">${row.wo.code}</a>
+						`
+					} else {
+						return 'Not Set'
+					}
+				},
+			},
+			{
 				data: 'location',
 			},
 
@@ -245,10 +257,11 @@ $(function () {
 				$('#loader').show()
 			},
 			success: function (result) {
-				if (result.success) {
+				if (result?.success) {
 					swal('Okey!', result.message, 'success')
 					$('#form_id').trigger('reset')
 				} else {
+					console.log(result)
 					swal('Error', result?.type ? result.message : 'Something went wrong, Try Again.!!', result?.type ? 'warning' : 'error')
 				}
 			},

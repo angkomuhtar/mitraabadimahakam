@@ -1,8 +1,62 @@
 $(function () {
+	$('select').select2()
 	initDeafult()
 
 	$('body').on('click', 'button#bt-back', function () {
 		initDeafult()
+	})
+
+	$('body').on('click', 'button#upload-btn', function () {
+		$('#form-create').show()
+		$('div#list-content').hide()
+	})
+
+	$('body').on('submit', 'form#upload-timesheeet', function (e) {
+		e.preventDefault()
+		console.log(this)
+		// return
+		const formData = new FormData(this)
+
+		$.ajax({
+			async: true,
+			headers: { 'x-csrf-token': $('[name=_csrf]').val() },
+			url: '/operation/daily-timesheet/create',
+			method: 'POST',
+			data: formData,
+			dataType: 'json',
+			processData: false,
+			mimeType: 'multipart/form-data',
+			contentType: false,
+			beforeSend: function () {
+				$('#loader').show()
+			},
+			success: function (result) {
+				if (result.success) {
+					swal(
+						{
+							title: 'Okey!',
+							text: result.message,
+							type: 'success',
+						},
+						(isConfirm) => {
+							if (isConfirm) {
+								window.location.reload()
+							}
+						},
+					)
+				} else {
+					swal('Error', result?.type ? result.message : 'Something went wrong, Try Again.!!', result?.type ? 'warning' : 'error')
+				}
+			},
+			error: function (err) {
+				console.log('error upload >> ', JSON.stringify(err))
+				const { message } = err.responseJSON
+				swal('Opps,,,!', 'error when update data', 'error')
+			},
+			complete: function () {
+				$('#loader').hide()
+			},
+		})
 	})
 
 	$('body').on('click', 'button#bt-cancel-create', function (e) {
@@ -145,9 +199,9 @@ $(function () {
 			url: '/operation/daily-timesheet/list',
 			method: 'GET',
 			success: function (result) {
-				$('div#list-content').children().remove()
+				// $('div#list-content').children().remove()
 				$('div#list-content').html(result).show()
-				listNoBerkas()
+				// listNoBerkas()
 				// getAllSite()
 			},
 			error: function (err) {

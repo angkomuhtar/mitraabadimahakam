@@ -10,73 +10,134 @@ const MasEquipment = use('App/Models/MasEquipment')
 const EquipmentPerformance = use('App/Models/MamEquipmentPerformance')
 const _ = require('underscore')
 const DailyDowntime = use('App/Models/DailyDowntimeEquipment')
+const ViewBreakdown = use('App/Models/ViewBreakdown')
 const DailyChecklist = use('App/Models/DailyChecklist')
 
+function convertMinutes(minutes) {
+	const days = Math.floor(minutes / 1440)
+	const hours = Math.floor((minutes % 1440) / 60)
+	const remainingMinutes = minutes % 60
+	return `${days > 0 ? days + 'h, ' : ''} ${hours > 0 ? hours + 'j, ' : ''} ${remainingMinutes} m`
+	// return `${hours > 0 ? String(hours).padStart(2, '0') : '00'} : ${remainingMinutes > 0 ? String(remainingMinutes).padStart(2, '0') : '00'}`
+	return `${hours > 0 ? hours + 'j ' : ''} ${remainingMinutes > 0 ? remainingMinutes + 'm' : ''}`
+}
 class EquipmentPerformanceController {
 	async index({ view }) {
-		return view.render('operation.equipment-performance.index')
+		const unit = (await MasEquipment.query().where('aktif', 'Y').whereRaw('kode LIKE "ME%"').orWhereRaw('kode LIKE "MDT%"').orWhereRaw('kode LIKE "OHT%"').orderBy('kode').fetch()).toJSON()
+		const comp = await Database.from('sys_options').whereIn('group', ['COMPONENT', 'ALL']).where('status', 'Y').orderBy('urut')
+		const bd_type = await Database.from('sys_options').whereIn('group', ['BD TYPE', 'ALL']).where('status', 'Y').orderBy('urut')
+
+		return view.render('operation.equipment-performance.index', { unit, comp, bd_type })
 	}
 
 	async create({ view }) {
 		return view.render('operation.equipment-performance.create')
 	}
 
-	async list({ auth, request, view }) {
-		const equip = (await MasEquipment.query().whereRaw('kode LIKE "M%"').orWhereRaw('kode LIKE "OHT%"').orderBy('kode', 'asc').fetch()).toJSON()
-		console.log(equip)
-		const get_downtime = (
-			await DailyDowntime.query()
-				.where((e) => {
-					e.where(Database.raw('MONTH(breakdown_start)'), '1').where(Database.raw('YEAR(breakdown_start)'), '2023')
-					e.orWhere(Database.raw('MONTH(breakdown_finish)'), '1').where(Database.raw('YEAR(breakdown_finish)'), '2023')
-					e.orWhereNull('breakdown_finish')
-				})
-				.fetch()
-		).toJSON()
+	async list({ auth, request }) {
+		const req = request.all()
+		let start_date = moment().format('YYYY-MM-01 HH:mm:ss')
+		let end_date = moment().endOf('M').format('YYYY-MM-DD 23:59:59')
+		if (req.periode != '') {
+			start_date = moment(req.periode, 'MMM YYYY').format('YYYY-MM-01 HH:mm:ss')
+			end_date = moment(req.periode, 'MMM YYYY').endOf('M').format('YYYY-MM-DD 23:59:59')
+		}
+		console.log(start_date, end_date)
+		let Page = req.start == 0 ? 1 : req.start / req.length + 1
 
-		const hm_unit = await Database.select(Database.raw('SUM(used_smu) as HM'), 'unit_id').from('daily_checklists').where(Database.raw('MONTH(tgl)'), '1').where(Database.raw('YEAR(tgl)'), '2023').groupBy('unit_id')
+		const equip = MasEquipment.query().with('downtime', (build) => {
+			build
+				//
+				.whereBetween('breakdown_start', [start_date, end_date])
+				.orWhereBetween('breakdown_finish', [start_date, end_date])
+				.orWhere((e) => {
+					e.where('breakdown_start', '<=', start_date)
+					e.whereRaw('isNull(breakdown_finish)')
+				})
+		})
+
+		if (req.unit_number != 0) {
+			equip.where('id', req.unit_number)
+		} else {
+			equip.whereRaw('kode LIKE "ME%"').orWhereRaw('kode LIKE "MDT%"').orWhereRaw('kode LIKE "OHT%"')
+		}
+
+		let f_equip = (await equip.orderBy('kode', 'asc').paginate(Page, req.length)).toJSON()
+
+		const hm_unit = await Database.select(Database.raw('SUM(used_smu) as HM'), 'unit_id').from('daily_checklists').whereBetween('tgl', [start_date, end_date]).groupBy('unit_id')
 		let hm_unit_group = _.indexBy(hm_unit, (e) => {
 			return e.unit_id
 		})
-		let jam_kerja = moment('2023-01', 'YYYY-MM').daysInMonth() * 24
-		let breakdown_group = _.groupBy(get_downtime, function (e) {
-			return e.equip_id
-		})
-		// console.log(breakdown_group['597'])
+		let jam_kerja = moment('2023-04', 'YYYY-MM').daysInMonth() * 24 * 60
 
-		let data_equip = equip.map((data) => {
+		let data_equip = f_equip.data.map((data) => {
 			let tot_hours = 0
-			breakdown_group[`${data.id}`]?.map((ed) => {
-				tot_hours += ed.downtime_total
+			let sch = 0
+			let uns = 0
+			let ac = 0
+			let sch_h = 0
+			let uns_h = 0
+			let ac_h = 0
+			console.log(data.downtime)
+			data.downtime.map((ed) => {
+				let timeDiff = 0
+				if (ed.breakdown_finish) {
+					timeDiff = moment(ed.breakdown_finish).diff(moment(ed.breakdown_start), 'minutes')
+				} else {
+					timeDiff = moment(end_date).isSameOrBefore(moment()) ? moment(end_date).diff(moment(ed.breakdown_start), 'minutes') : moment().diff(moment(ed.breakdown_start), 'minutes')
+				}
+
+				if (ed.downtime_status == 'SCH') {
+					sch++
+					sch_h += timeDiff
+				}
+				if (ed.downtime_status == 'UNS') {
+					uns++
+					uns_h += timeDiff
+				}
+				if (ed.downtime_status == 'ac') {
+					ac++
+					ac_h += timeDiff
+				}
+
+				tot_hours += timeDiff
 			})
-			let jam_breakdown = Math.round(tot_hours / 60) <= jam_kerja ? Math.round(tot_hours / 60) : jam_kerja
-			let jam_operasi = hm_unit_group[`${data.id}`]?.HM || 0
-			let total_bd = breakdown_group[`${data.id}`]?.length | 0
+			console.log('totalHours', tot_hours)
+			let jam_breakdown = tot_hours <= jam_kerja ? tot_hours : jam_kerja
+			let jam_operasi = hm_unit_group[`${data.id}`]?.HM * 60 || 0
+			let total_bd = data.downtime.length
+			let mttr = isNaN(Math.round(jam_breakdown / total_bd)) ? 0 : Math.round(jam_breakdown / total_bd)
 			return {
 				...data,
-				downtime: jam_breakdown,
+				downtime: convertMinutes(jam_breakdown),
 				pa: (((jam_kerja - jam_breakdown) / jam_kerja) * 100).toFixed(2),
-				hm: jam_operasi,
+				hm: hm_unit_group[`${data.id}`]?.HM || 0,
 				ma: isNaN(((jam_operasi / (jam_operasi + jam_breakdown)) * 100).toFixed(2)) ? parseFloat(0).toFixed(2) : ((jam_operasi / (jam_operasi + jam_breakdown)) * 100).toFixed(2),
-				ua: ((jam_operasi / (jam_kerja - jam_breakdown)) * 100).toFixed(2),
+				ua: jam_kerja == jam_breakdown ? 0 : ((jam_operasi / (jam_kerja - jam_breakdown)) * 100).toFixed(2),
 				eu: ((jam_operasi / jam_kerja) * 100).toFixed(2),
-				mttr: Math.round(jam_breakdown / total_bd) | 0,
-				mtbs: Math.round(jam_operasi / total_bd) | 0,
+				mttr: convertMinutes(mttr),
+				mtbs: jam_operasi == 0 ? '0 m' : convertMinutes(Math.round(jam_operasi / total_bd)),
+				total_bd: total_bd,
+				mohh: jam_kerja / 60 + ' jam',
+				sch: sch,
+				uns: uns,
+				ac: ac,
+				ac_h: convertMinutes(ac_h),
+				sch_h: convertMinutes(parseInt(sch_h)),
+				uns_h: convertMinutes(uns_h),
+				tot_h: convertMinutes(tot_hours),
+				periode: req.periode || moment().format('MMM YYYY'),
 			}
 		})
 
-		data_equip = _.reject(data_equip, (e) => {
-			return e.ma == 0 && e.pa == 0
-		})
-
-		const req = request.all()
 		const user = await userValidate(auth)
 
-		if (!user) {
-			return view.render('401')
+		return {
+			draw: req.draw,
+			recordsTotal: f_equip.total,
+			recordsFiltered: f_equip.total,
+			data: data_equip,
 		}
-		const data = await EquipmentPerformanceHelpers.LIST(req)
-		return view.render('operation.equipment-performance.list', { list: data_equip })
 	}
 
 	async show({ auth, params, view }) {

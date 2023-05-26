@@ -11,7 +11,59 @@
         <div class="content-module" id="list-content" style="display:none;">
             @include('operation.daily-timesheet.list')
         </div>
-        <div class="content-module" id="form-create" style="display:none;"></div>
-        <div class="content-module" id="form-show" style="display:none;"></div>
+        <div class="content-module" id="form-create" style="display:none;">
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+                    <div class="white-box p-b-0">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form action="#" class="" id="upload-timesheeet" data-id="">
+                                    <div class="panel panel-default m-b-0">
+                                        <div class="panel-body">
+                                            {{ csrfField() }}
+                                            <div class="row b-all p-t-20 m-b-10">
+                                                <div class="col-md-4">
+                                                    <label for="tgl">Date Document</label>
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control initDate inp-timesheet" name="tgl" id="tgl" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="tgl">Site</label>
+                                                    <div class="form-group">
+                                                        <select class="form-control" name="site_id" id="site_id" required>
+                                                            <option value="5">Bukit Baiduri Energi</option>
+                                                            <option value="6">Arya Nugraha</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4" id="upload-file">
+                                                    <label for="tgl">Upload File</label>
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon"><i class="fa fa-file-excel-o"></i></span>
+                                                            <input type="file" class="form-control" name="file_u" id="file_u" required>
+                                                        </div>
+                                                        <p class="m-t-5 font-12 text-danger text-right"></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 text-right">
+                                                <button type="submit" class="btn btn-success waves-effect waves-light" id="search"> 
+                                                    <i class="fa fa-save"></i> <span>Save</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-module" id="form-show" style="display:none;">
+        </div>
     </div>
 @endsection

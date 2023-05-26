@@ -1,0 +1,102 @@
+@layout('_layouts.main')
+@section('content')
+    {{ script('ajax/opr-daily-downtime') }}
+    <div class="container-fluid">
+        <div class="row bg-title">
+            <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                <h4 class="page-title">Work Orders</h4>
+            </div>
+        </div>
+        <div class="content-module" id="list-content">
+            <div class="row">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button class="btn btn-outline btn-default waves-effect waves-light btn-sm" id="bt-back"> <i class="ti-arrow-left"></i> <span>Back</span></button>
+                        <div class="white-box p-b-0">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-wrapper collapse in">
+                                            <div class="panel-body">
+                                                <div class="row b-all p-t-20 m-b-20" id="div-row-form">
+                                                    <form action="" class="" id="fm-daily-downtime">
+                                                        {{ csrfField() }}
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label for="">Unit Number</label>
+                                                                <input type="text" readonly class="form-control" name="unit_number" value="{{wo.breakdown.equipment.kode}}" id="unit_number" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label for="tgl">Breakdown time</label>
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div class="input-group-addon"><i class="fa fa-calendar-o"></i></div>
+                                                                    <input type="text" readonly value="{{wo.breakdown.breakdown_time}}" class="form-control" id="start_time" name="start" required>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label for="tgl">Problem Report</label>
+                                                            <div class="form-group">
+                                                                <input type="text" readonly value="{{wo.breakdown.problem_reported}}" class="form-control" id="problem" name="problem" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label for="tgl">HM</label>
+                                                            <div class="form-group">
+                                                                <input type="text" readonly value="{{wo.breakdown.hour_meter}}" class="form-control" id="hm" name="hm" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label for="tgl">Location</label>
+                                                            <div class="form-group">
+                                                                <input type="text" readonly value="{{wo.breakdown.location}}" class="form-control" id="location" name="location">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <label for="tgl">PIC</label>
+                                                            <div class="form-group">
+                                                                <input type="text" class="form-control" id="pic" name="pic">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <label for="tgl">Desc Problem</label>
+                                                            <div class="form-group">
+                                                                <textarea class="form-control" id="desc" name="desc"></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-3">
+                                                            <label for="tgl">correction action</label>
+                                                            <div class="form-group">
+                                                                <textarea class="form-control" id="desc" name="desc"></textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-12 text-right m-b-30 m-t-30">
+                                                            <button type="reset" class="btn btn-default waves-effect waves-light bt-cancel" id="bt-cancel-create"> 
+                                                                <i class="fa fa-close"></i> <span>Cancel</span>
+                                                            </button>
+                                                            <button type="submit" class="btn btn-success waves-effect waves-light"> 
+                                                                <i class="fa fa-save"></i> <span>Save</span>
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="content-module" id="form-content" style="display:none;"></div>
+    </div>
+@endsection

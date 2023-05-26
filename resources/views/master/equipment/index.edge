@@ -8,8 +8,121 @@
                 <h4 class="page-title">Master Equipment</h4> 
             </div>
         </div>
-        @include('master.equipment.filter')
-        <div class="content-module" id="list-content"></div>
+        <div class="content-module" id="list-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="white-box">
+                        <div class="" id="content-list">
+                            <div class="row sales-report">
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    <button class="btn btn-outline btn-info waves-effect waves-light" id="create-form"> 
+                                        <i class="fa fa-plus m-r-5"></i> <span>Tambah Data</span>
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-sm-3 col-xs-12 text-right">
+                                    <button class="btn btn-info waves-effect waves-light" id="filter">
+                                        <span>Filter Data</span> 
+                                        <i class="ti-filter m-l-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row" id="filter-section" style="display:none">
+                                <div class="panel">
+                                    <div class="panel-body b-b">
+                                        {{ csrfField() }}
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Location</label>
+                                                    <select class="form-control" type="text" name="f_unit_number" id="f_unit_number">
+                                                        <option value="0">Select One</option>
+                                                        @each(item in site)
+                                                        <option value="{{item.id}}">{{item.kode}}</option>
+                                                        @endeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="tgl">Unit Code</label>
+                                                <div class="form-group">
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon"><i class="fa fa-truck"></i></div>
+                                                        <input type="text" class="form-control" id="f_code" name="f_code">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Type</label>
+                                                    <select class="form-control" type="text" name="f_type" id="f_type">
+                                                        <option value="0">Select One</option>
+                                                        @each(item in type)
+                                                            <option value="{{item.tipe}}">{{item.tipe}}</option>
+                                                        @endeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Brand</label>
+                                                    <select class="form-control" type="text" name="f_brand" id="f_brand">
+                                                        <option value="0">Select One</option>
+                                                        @each(item in brand)
+                                                            <option value="{{item.brand}}">{{item.brand}}</option>
+                                                        @endeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="">Model</label>
+                                                    <select class="form-control" type="text" name="f_model" id="f_model">
+                                                        <option value="0">Select One</option>
+                                                        @each(item in model)
+                                                            <option value="{{item.unit_model}}">{{item.unit_model}}</option>
+                                                        @endeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 text-right">
+                                                <button class="btn btn-default waves-effect waves-light bt-cancel" id="clear_filter"> 
+                                                    <i class="fa fa-close"></i> <span>Clear</span>
+                                                </button>
+                                                {{--  <button type="submit" class="btn btn-success waves-effect waves-light" id="search">   --}}
+                                                    {{--  <i class="fa fa-save"></i> <span>Search</span>  --}}
+                                                {{--  </button>  --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="">
+                                <table class="table table-hover" id="table-data">
+                                    <thead style="border-bottom: 2px solid;">
+                                        <tr>
+                                            <th class="sl v-middle text-center">ACT</th>
+                                            <th class="sl v-middle">Kode Equipment</th>
+                                            <th class="sl v-middle">No.Serial</th>
+                                            <th class="sl v-middle">Model</th>
+                                            <th class="sl v-middle">Brand</th>
+                                            <th class="sl v-middle">Qty.Cap</th>
+                                            <th class="sl v-middle">Fuel.Cap</th>
+                                            <th class="sl v-middle">Engine Model</th>
+                                            <th class="sl v-middle">Engine Number</th>
+                                            <th class="sl v-middle">Recived At</th>
+                                            <th class="sl v-middle" width="100px">Recived HM</th>
+                                            <th class="sl v-middle">is Owned</th>
+                                            <th class="sl v-middle text-center">Warranty</th>
+                                            {{--  <th class="sl v-middle text-center">Photo</th>  --}}
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="content-module" id="form-create" style="display:none;">
             @include('master.equipment.create')
         </div>

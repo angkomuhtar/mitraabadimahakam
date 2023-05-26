@@ -11,8 +11,8 @@ $(function () {
 				return $.extend({}, d, {
 					unit_number: $('#unit_number').val(),
 					comp: $('#comp').val(),
-					start: $('#start').val(),
-					end: $('#end').val(),
+					start_date: $('#start').val(),
+					end_date: $('#end').val(),
 					// bd_type: $('#bd_type').val(),
 				})
 			},
@@ -39,6 +39,7 @@ $(function () {
 			},
 			{
 				data: 'end',
+				name: 'bd_end',
 				render: function (data) {
 					return data ? moment(data).format('DD-MM-YYYY HH:mm') : 'Not Set'
 				},

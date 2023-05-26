@@ -3,9 +3,9 @@
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
 
-class DailyDowntimeEquipment extends Model {
+class ViewBreakdown extends Model {
 	static get table() {
-		return 'daily_downtime_equipment'
+		return 'view_breakdown'
 	}
 
 	static boot() {
@@ -40,4 +40,4 @@ class DailyDowntimeEquipment extends Model {
 	}
 }
 
-module.exports = DailyDowntimeEquipment
+module.exports = ViewBreakdown

@@ -75,12 +75,14 @@
                             <tr>
                                 <th class="sl" width="20">KODE</th>
                                 <th class="sl" width="20">Equip Name</th>
-                                <th class="sl" width="20">Type</th>
+                                {{--  <th class="sl" width="20">Type</th>  --}}
+                                <th class="sl" width="20">MOHH (Hours)</th>
                                 <th class="sl" width="20">Break Down (Hours)</th>
                                 <th class="sl" width="20">Hour Meter</th>
                                 <th class="sl" width="20">PA (%)</th>
                                 <th class="sl" width="20">MA (%)</th>
                                 <th class="sl" width="20">UA (%)</th>
+                                <th class="sl" width="20">Total BD </th>
                                 <th class="sl" width="20">MTTR </th>
                                 <th class="sl" width="20">MTBS </th>
                             </tr>
@@ -95,16 +97,18 @@
                                         {{item.kode}}
                                     </td>
                                     <td>
-                                        {{item.brand +' '+ item.unit_model}}
+                                        {{ item.unit_model}}
                                     </td>
-                                    <td>
-                                        {{item.tipe}}
-                                    </td>
+                                    {{--  <td>  --}}
+                                        {{--  {{item.tipe}}  --}}
+                                    {{--  </td>  --}}
+                                    <td>{{item.mohh}}</td>
                                     <td>{{item.downtime}}</td>
                                     <td>{{item.hm}}</td>
                                     <td>{{item.pa }} %</td>
                                     <td>{{item.ma }} %</td>
                                     <td>{{item.ua }} %</td>
+                                    <td>{{item.total_bd }}</td>
                                     <td>{{item.mttr }}</td>
                                     <td>{{item.mtbs }}</td>
                                 </tr>

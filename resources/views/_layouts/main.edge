@@ -141,8 +141,15 @@
     </div>
     <style>
         .dataTables_wrapper > .row:nth-child(2) {
-            /* overflow-y: auto;
-            margin: 10px 0;    */
+            overflow-y: auto;
+            margin: 10px 0;   
+        }
+        .dataTables_wrapper td.nowrap{
+            white-space: nowrap;
+        }
+
+        .form-control[readonly]{
+            background: #fefefe !important
         }
         marquee {
             margin-top: 5px;

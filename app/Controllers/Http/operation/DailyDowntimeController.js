@@ -8,6 +8,9 @@ const Helpers = use('Helpers')
 const MasEquipment = use('App/Models/MasEquipment')
 const fs = require('fs')
 const _ = require('underscore')
+const id = require('faker/lib/locales/id_ID')
+const DowntimeActivity = use('App/Models/DowntimeActivity')
+const MamWorkOrders = use('App/Models/MamWorkOrders')
 const SysOption = use('App/Models/SysOption')
 const DailyDowntimeEquipment = use('App/Models/DailyDowntimeEquipment')
 const Database = use('Database')
@@ -26,6 +29,7 @@ class DailyDowntimeController {
 		const comp = await Database.from('sys_options').whereIn('group', ['COMPONENT', 'ALL']).where('status', 'Y').orderBy('urut')
 		const bd_type = await Database.from('sys_options').whereIn('group', ['BD TYPE', 'ALL']).where('status', 'Y').orderBy('urut')
 		const user = await userValidate(auth)
+		const usr = (await auth.getUser()).toJSON()
 		// const data = (await Equipment.query().where('aktif', 'Y').fetch()).toJSON()
 		if (!user) {
 			return view.render('401')
@@ -33,7 +37,7 @@ class DailyDowntimeController {
 
 		if (request.ajax()) {
 			let Page = req.start == 0 ? 1 : req.start / req.length + 1
-			console.log('request>>', req, Page, req.start)
+			// console.log('request>>', req)
 			const downtime = DailyDowntimeEquipment.query()
 			if (req.unit_number != 0) {
 				downtime.where('equip_id', req.unit_number)
@@ -47,11 +51,11 @@ class DailyDowntimeController {
 			if (req.bd_type != 0) {
 				downtime.where('bd_type', req.bd_type)
 			}
-
+			console.log(moment(req.start_t, 'DD/MM/YYYY').format('YYYY-MM-DD hh:mm:ss'))
 			if (req.start_t) {
 				downtime.where((w) => {
 					w.where('breakdown_start', '>=', moment(req.start_t, 'DD/MM/YYYY').format('YYYY-MM-DD'))
-					w.orWhereNull('breakdown_finish')
+					// w.orWhereNull('breakdown_finish')
 				})
 			}
 
@@ -61,7 +65,7 @@ class DailyDowntimeController {
 					e.orWhereNull('breakdown_finish')
 				})
 			}
-			const list = (await downtime.with('equipment').with('comp_group').with('type_break').orderBy('created_at', 'desc').paginate(Page, req.length)).toJSON()
+			const list = (await downtime.with('equipment').with('wo').with('type_break').orderBy('breakdown_start', 'desc').paginate(Page, req.length)).toJSON()
 
 			return {
 				draw: req.draw,
@@ -70,7 +74,7 @@ class DailyDowntimeController {
 				data: list.data,
 			}
 		}
-		return view.render('operation.daily-downtime-equipment.index', { unit, comp, bd_type })
+		return view.render('operation.daily-downtime-equipment.index', { unit, comp, bd_type, usr })
 	}
 
 	async create({ view }) {
@@ -81,14 +85,14 @@ class DailyDowntimeController {
 	}
 
 	async uploadFile({ auth, params }) {
-		console.log(params.id)
+		// console.log(params.id)
 		let search = await DailyDowntimeEquipment.query()
 			.where('equip_id', params.id)
 			.where((w) => {
 				w.orWhereNull('breakdown_finish')
 			})
 			.first()
-		console.log(search.toJSON())
+		// console.log(search.toJSON())
 
 		if (search) {
 			return {
@@ -116,7 +120,7 @@ class DailyDowntimeController {
 			let code = `${unit.kode}.${moment(req.start, 'DD/MM/YYYY HH.mm').format('X')}`
 			let check = await DailyDowntimeEquipment.findBy('downtime_code', code)
 			let tot_hours = req.end ? moment(req.end, 'DD/MM/YYYY HH.mm').diff(moment(req.start, 'DD/MM/YYYY HH.mm'), 'minutes') : 0
-			console.log(req)
+			// console.log(req)
 			if (check) {
 				check.merge({
 					equip_id: unit.id,
@@ -161,6 +165,18 @@ class DailyDowntimeController {
 					hour_meter: req.hm,
 					created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
 				})
+
+				if (Insert) {
+					const wo = new MamWorkOrders()
+					wo.code = 'WO-' + String(Math.round(Math.random(1000) * 1000)).padStart(5, '0')
+					wo.desc = ''
+					wo.correction = ''
+					wo.pic = ''
+					wo.sts = '0'
+					wo.breakdown_code = code
+					await wo.save()
+				}
+
 				return {
 					success: true,
 					type: 'success',
@@ -169,14 +185,12 @@ class DailyDowntimeController {
 			}
 		} else {
 			var unit = await MasEquipment.pair('id', 'kode')
-			var option = await SysOption.pair('id', 'teks')
+			var option = await SysOption.query().whereIn('group', ['COMPONENT', 'ALL', 'BD TYPE']).pair('id', 'teks')
 			const validationOptions = {
 				types: ['application'],
 				extname: ['xls', 'xlsx'],
 			}
 			const reqFile = request.file('daily_downtime_upload', validationOptions)._files[0]
-			console.log(reqFile.extname)
-
 			if (!['xls', 'xlsx'].includes(reqFile.extname)) {
 				return {
 					success: false,
@@ -200,128 +214,203 @@ class DailyDowntimeController {
 				var pathData = Helpers.publicPath(`/upload/`)
 				var fileSource = `${pathData}${aliasName}`
 
-				try {
-					const xlsx = excelToJson({
-						sourceFile: fileSource,
-						sheets: ['Data'],
-						header: { rows: 2 },
-						columnToKey: {
-							A: 'code_unit',
-							B: 'bd_type',
-							C: 'model',
-							D: 'lokasi',
-							E: 'hm_num',
-							F: 'desc',
-							G: 'action',
-							H: 'start_time',
-							I: 'end_time',
-							J: 'total',
-							K: 'status',
-							L: 'comp_group',
-							M: 'downtime_code',
-						},
-					})
-					var dataXL = xlsx[Object.keys(xlsx)[0]]
-					let data_input = []
-
-					for (const data of dataXL) {
-						var id_unit = _.findKey(unit, function (e) {
-							return e === data.code_unit.replace(' ', '')
+				if (req.type_input == 'radio') {
+					try {
+						const xlsx = excelToJson({
+							sourceFile: fileSource,
+							sheets: ['Data'],
+							header: { rows: 2 },
+							columnToKey: {
+								A: 'lokasi',
+								B: 'code_unit',
+								C: 'model',
+								D: 'desc',
+								E: 'date_bd',
+								F: 'time_bd',
+								G: 'date_ready',
+								H: 'time_ready',
+								K: 'hour_meter',
+								L: 'status',
+							},
 						})
 
-						var comp = data?.comp_group
-							? _.findKey(option, function (e) {
-									return e === data.comp_group.replace(' ', '')
-							  })
-							: ''
+						var dataXL = xlsx[Object.keys(xlsx)[0]]
 
-						var bd_type = data?.bd_type
-							? _.findKey(option, function (e) {
-									return e === data.bd_type.replace(' ', '')
-							  })
-							: ''
+						for (const data of dataXL) {
+							var id_unit = _.findKey(unit, function (e) {
+								return e === data.code_unit.replace(' ', '')
+							})
 
-						console.log(bd_type)
-						let date_time_start = moment(data.start_time).add(1, 'minute').format('YYYY-MM-DD HH:mm')
-						let date_time_fix = data.end_time ? moment(data.end_time).add(1, 'minute').format('YYYY-MM-DD HH:mm') : null
-						let code = `${data.code_unit}.${moment(date_time_start).format('X')}`
-						let fixTime = data.end_time ? moment(date_time_fix).diff(moment(date_time_start), 'minutes', true) : 0
-						if (!id_unit) {
-							return {
-								success: false,
-								type: 'warning',
-								message: data.code_unit + ' tidak ditemukan	.!',
+							let bd_start = `${moment(data.date_bd).add(8, 'h').format('YYYY-MM-DD')} ${moment(data.time_bd).add(3, 'm').format('HH:mm:SS')}`
+							let bd_end = data.date_ready ? `${moment(data.date_ready).add(8, 'h').format('YYYY-MM-DD')} ${moment(data.time_ready).add(3, 'm').format('HH:mm:SS')}` : null
+							let code = `${data.code_unit}.${moment(bd_start).format('X')}`
+							let fixTime = data.date_ready ? moment(bd_end).diff(moment(bd_start), 'minutes', true) : 0
+							if (!id_unit) {
+								return {
+									success: false,
+									type: 'warning',
+									message: data.code_unit + ' tidak ditemukan	.!',
+								}
+							}
+							let check = await DailyDowntimeEquipment.query().where('equip_id', id_unit).where('breakdown_start', bd_start).orderBy('created_at', 'desc').first()
+							if (check) {
+								if (check.breakdown_finish != bd_end && bd_end != null) {
+									const update = await DailyDowntimeEquipment.query().where('id', check.id).update({
+										breakdown_finish: bd_end,
+										downtime_total: fixTime,
+										hour_meter: data.hour_meter,
+										status: data.status,
+									})
+								}
+							} else {
+								const Insert = await Database.table('daily_downtime_equipment').insert({
+									equip_id: id_unit,
+									site_id: req.site_id,
+									location: data.lokasi,
+									problem_reported: data.desc,
+									breakdown_start: bd_start,
+									breakdown_finish: bd_end,
+									downtime_total: fixTime,
+									downtime_code: code,
+									bd_type: 999,
+									status: data.status,
+									component_group: 999,
+									downtime_status: '-',
+									urut: 99,
+									hour_meter: data.hour_meter,
+									created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
+								})
+
+								if (Insert) {
+									const wo = new MamWorkOrders()
+									wo.code = 'WO-' + String(Insert[0]).padStart(5, '0')
+									wo.desc = ''
+									wo.correction = ''
+									wo.pic = ''
+									wo.sts = '0'
+									wo.breakdown_code = code
+									await wo.save()
+								}
 							}
 						}
-						const cek = await DailyDowntimeEquipment.findBy('downtime_code', code)
-						console.log({
-							equip_id: id_unit,
-							site_id: req.site_id,
-							location: data.lokasi | null,
-							problem_reported: data.desc,
-							corrective_action: data?.action | null,
-							breakdown_start: date_time_start,
-							breakdown_finish: date_time_fix,
-							downtime_total: fixTime,
-							downtime_code: code,
-							bd_type: bd_type | null,
-							status: data.status,
-							component_group: comp | null,
-							downtime_status: data.downtime_code,
-							urut: 1,
-							hour_meter: req.hm | 0,
-						})
-						if (cek) {
-							// const downtime = new DailyDowntimeEquipment()
-							cek.merge({
-								equip_id: id_unit,
-								site_id: req.site_id,
-								location: data.lokasi | null,
-								problem_reported: data.desc,
-								corrective_action: data?.action | '',
-								breakdown_start: date_time_start,
-								breakdown_finish: date_time_fix,
-								downtime_total: fixTime,
-								downtime_code: code,
-								bd_type: bd_type | '',
-								status: data.status,
-								component_group: comp | '',
-								downtime_status: data.downtime_code,
-								urut: 1,
-								hour_meter: req.hm | 0,
-							})
-							await cek.save()
-						} else {
-							const Insert = await DailyDowntimeEquipment.findOrCreate({
-								equip_id: id_unit,
-								site_id: req.site_id,
-								location: data.lokasi | null,
-								problem_reported: data.desc,
-								corrective_action: data?.action | '',
-								breakdown_start: date_time_start,
-								breakdown_finish: date_time_fix,
-								downtime_total: fixTime,
-								downtime_code: code,
-								bd_type: bd_type | '',
-								status: data.status,
-								component_group: comp | '',
-								downtime_status: data.downtime_code,
-								urut: 1,
-								hour_meter: req.hm | 0,
-							})
+
+						return {
+							success: true,
+							type: 'warning',
+							message: 'Data Berhasil di Update.!',
+						}
+					} catch (err) {
+						return {
+							success: false,
+							message: 'Failed when uploading daily downtime, please try again. \n Reason : ',
+							reason: err.message,
 						}
 					}
-					// if (data_input.length == 0) {
-					return {
-						success: false,
-						type: 'warning',
-						message: 'Data Berhasil di Update.!',
-					}
-				} catch (err) {
-					return {
-						success: false,
-						message: 'Failed when uploading daily downtime, please try again. \n Reason : ',
-						reason: err.message,
+				} else if (req.type_input == 'plan') {
+					try {
+						const xlsx = excelToJson({
+							sourceFile: fileSource,
+							sheets: ['Data'],
+							header: { rows: 2 },
+							columnToKey: {
+								A: 'code_unit',
+								B: 'type_bd',
+								C: 'model',
+								D: 'location',
+								E: 'HM',
+								F: 'problem',
+								G: 'action',
+								H: 'date',
+								I: 'start',
+								J: 'end',
+								K: 'total_time',
+								L: 'status',
+								M: 'comp_group',
+								N: 'dt_code',
+								O: 'PIC',
+							},
+						})
+
+						var dataXL = xlsx[Object.keys(xlsx)[0]]
+
+						for (const data of dataXL) {
+							var id_unit = _.findKey(unit, function (e) {
+								return e === data.code_unit.replace(' ', '')
+							})
+
+							let bd_start = `${moment(data.date).add(8, 'h').format('YYYY-MM-DD')} ${moment(data.start).add(3, 'm').format('HH:mm:SS')}`
+							let bd_end = `${moment(data.date).add(8, 'h').format('YYYY-MM-DD')} ${moment(data.end).add(3, 'm').format('HH:mm:SS')}` || null
+
+							if (!id_unit || !bd_start || !bd_end) {
+								console.log('no data ', data.code_unit)
+								continue
+							}
+
+							let check = await DailyDowntimeEquipment.query()
+								.where('equip_id', id_unit)
+								.where((e) => {
+									e.where('breakdown_start', '<=', bd_start)
+								})
+								.where((e) => {
+									e.where('breakdown_finish', '>=', bd_end)
+									e.orWhereNull('breakdown_finish')
+								})
+								.orderBy('breakdown_start', 'desc')
+								.first()
+							if (check) {
+								var bd_type = _.findKey(option, function (e) {
+									return e === data.type_bd.replace(' ', '')
+								})
+								var comp_group = _.findKey(option, function (e) {
+									return e === data.comp_group.replace(' ', '')
+								})
+
+								if (check.bd_type == bd_type && check.component_group == comp_group && check.downtime_status == data.dt_code) {
+									continue
+								}
+								const update = await DailyDowntimeEquipment.query().where('id', check.id).update({
+									bd_type: bd_type,
+									component_group: comp_group,
+									downtime_status: data.dt_code.toUpperCase(),
+									person_in_charge: data.PIC,
+								})
+
+								let check_da = await DowntimeActivity.query()
+									.where((e) => {
+										e.where('downtime_code', check.downtime_code)
+										e.where('start', bd_start)
+										e.where('end', bd_end)
+										e.where('comp_id', comp_group)
+									})
+									.first()
+
+								// console.log('check', check_da)
+								if (!check_da) {
+									const Insert = await Database.table('downtime_activity').insert({
+										downtime_code: check.downtime_code,
+										activity: data.action,
+										start: bd_start,
+										end: bd_end,
+										comp_id: comp_group,
+										sts: data.status == 'RFU' ? 'Y' : 'N',
+									})
+								}
+							} else {
+								console.log(id_unit, bd_start, bd_end, data.code_unit)
+							}
+						}
+						return {
+							success: false,
+							type: 'warning',
+							message: 'Data Berhasil di Update.!',
+						}
+					} catch (err) {
+						console.log(err)
+						return {
+							success: false,
+							message: 'Failed when uploading daily downtime, please try again. \n Reason : ',
+							reason: err.message,
+						}
 					}
 				}
 			} else {
@@ -331,211 +420,6 @@ class DailyDowntimeController {
 				}
 			}
 		}
-
-		// let user = null
-		// try {
-		// 	user = await auth.getUser()
-		// } catch (err) {
-		// 	return {
-		// 		error: true,
-		// 		message: err.message,
-		// 		validation: 'You are not authorized !',
-		// 	}
-		// }
-
-		// const fileName = req.current_file_name ? JSON.parse(req.current_file_name) : false
-
-		// var pathData = Helpers.publicPath(`/upload/`)
-		// const filePath = `${pathData}${fileName}`
-		// var unit = await MasEquipment.pair('id', 'kode')
-
-		// if (req.tipe && req.tipe === 'downtime') {
-		// 	try {
-		// 		const xlsx = excelToJson({
-		// 			sourceFile: filePath,
-		// 			sheets: ['Data'],
-		// 			header: { rows: 1 },
-		// 			columnToKey: {
-		// 				B: 'lokasi',
-		// 				C: 'code_unit',
-		// 				E: 'desc',
-		// 				F: 'start_date',
-		// 				G: 'start_time',
-		// 				H: 'end_date',
-		// 				I: 'end_time',
-		// 				J: 'total_jam_rusak',
-		// 				K: 'total_jam_rusak_shift',
-		// 				M: 'status',
-		// 				O: 'hm_num',
-		// 				P: 'shift',
-		// 			},
-		// 		})
-		// 		var dataXL = xlsx[Object.keys(xlsx)[0]]
-		// 		let data_input = []
-		// 		console.log(dataXL.length)
-
-		// 		for (const data of dataXL) {
-		// 			var id_unit = _.findKey(unit, function (e) {
-		// 				return e === data.code_unit.replace(' ', '')
-		// 			})
-		// 			let date_time_start = `${moment(data.start_date).add(1, 'days').format('YYYY-MM-DD')} ${moment(data.start_time).add(3, 'm').format('HH:mm:ss')}`
-		// 			let date_time_fix = data.end_date ? `${moment(data.end_date).add(1, 'days').format('YYYY-MM-DD')} ${moment(data.end_time).add(3, 'm').format('HH:mm:ss')}` : null
-		// 			// let date_time_start = moment(`${data.start_date} ${data.start_time}`, '')
-		// 			let code = `${data.code_unit}.${moment(date_time_start).format('X')}`
-		// 			let fixTime = moment(date_time_fix).diff(moment(date_time_start), 'minutes', true)
-
-		// 			if (!id_unit) {
-		// 				return {
-		// 					success: false,
-		// 					type: 'warning',
-		// 					message: data.code_unit + ' tidak ditemukan	.!',
-		// 				}
-		// 			}
-		// 			console.log(id_unit, data.code_unit)
-		// 			const cek = await DailyDowntimeEquipment.findBy('downtime_code', code)
-		// 			if (cek) {
-		// 				// const downtime = new DailyDowntimeEquipment()
-		// 				cek.merge({
-		// 					equip_id: id_unit,
-		// 					site_id: req.site_id,
-		// 					location: data.lokasi,
-		// 					problem_reported: data.desc,
-		// 					breakdown_start: date_time_start,
-		// 					breakdown_finish: date_time_fix,
-		// 					downtime_total: isNaN(fixTime) ? 0 : fixTime,
-		// 					downtime_code: code,
-		// 					status: data.status.toUpperCase(),
-		// 					urut: 1,
-		// 					hour_meter: data.hm_num,
-		// 				})
-		// 				await cek.save()
-		// 			} else {
-		// 				const Insert = await DailyDowntimeEquipment.findOrCreate({
-		// 					equip_id: id_unit,
-		// 					site_id: req.site_id,
-		// 					location: data.lokasi,
-		// 					problem_reported: data.desc,
-		// 					breakdown_start: date_time_start,
-		// 					breakdown_finish: date_time_fix,
-		// 					downtime_total: isNaN(fixTime) ? 0 : fixTime,
-		// 					downtime_code: code,
-		// 					status: data.status.toUpperCase(),
-		// 					urut: 1,
-		// 					hour_meter: data.hm_num,
-		// 				})
-		// 			}
-		// 		}
-		// 		// if (data_input.length == 0) {
-		// 		return {
-		// 			success: false,
-		// 			type: 'warning',
-		// 			message: 'Data Berhasil di Update.!',
-		// 		}
-		// 	} catch (err) {
-		// 		return {
-		// 			success: false,
-		// 			message: 'Failed when uploading daily downtime, please try again. \n Reason : ',
-		// 			reason: err.message,
-		// 		}
-		// 	}
-		// } else {
-		// 	// Equipment's Hour Meter Upload
-		// 	try {
-		// 		const xlsx = excelToJson({
-		// 			sourceFile: filePath,
-		// 			header: { rows: 1 },
-		// 			sheets: ['Data'],
-		// 			columnToKey: {
-		// 				B: 'date',
-		// 				C: 'shift',
-		// 				D: 'id_number',
-		// 				I: 'start_smu',
-		// 				J: 'end_smu',
-		// 			},
-		// 		})
-
-		// 		var dataX = xlsx[Object.keys(xlsx)[0]]
-		// 		console.log(dataX)
-		// 		var inputData = []
-
-		// 		for (const data of dataX) {
-		// 			console.log(data.start_smu)
-
-		// 			if (data.start_smu) {
-		// 				var key = _.findKey(unit, function (e) {
-		// 					return e === data.id_number.replace(' ', '')
-		// 				})
-		// 				if (!key) {
-		// 					return {
-		// 						success: false,
-		// 						type: 'warning',
-		// 						message: `kode equipment ${data.id_number} tidak ditemukan`,
-		// 					}
-		// 				}
-		// 				var date = moment(data.date).add(8, 'hours').format('YYYY-MM-DD')
-
-		// 				console.log(date, key, data.shift == 'DS' ? 1 : 2)
-		// 				var check = await DailyChecklist.query()
-		// 					.where((trx) => {
-		// 						trx.where('tgl', date)
-		// 						trx.where('unit_id', key)
-		// 						trx.where('shift_id', data.shift == 'DS' ? 1 : 2)
-		// 					})
-		// 					.first()
-		// 				var test = {
-		// 					user_chk: user.id,
-		// 					unit_id: key,
-		// 					shift_id: data.shift == 'DS' ? 1 : 2,
-		// 					tgl: date,
-		// 					description: 'hm upload from daily downtime',
-		// 					begin_smu: data.start_smu,
-		// 					end_smu: data.end_smu,
-		// 					used_smu: parseFloat(data.end_smu - data.start_smu).toFixed(2),
-		// 					approved_at: data.shift == 'DS' ? date + ' 07:01:00' : date + ' 19:01:00',
-		// 					finish_at: data.shift == 'DS' ? date + ' 19:00:00' : moment(date).add(1, 'days').format('YYYY-MM-DD') + ' 07:00:00',
-		// 					created_at: moment().format('YYYY-MM-DD HH:mm:ss'),
-		// 				}
-
-		// 				// duplicate data will update
-		// 				if (check) {
-		// 					// check.merge(test)
-		// 					// await check.save()
-		// 				} else {
-		// 					inputData.push(test)
-		// 				}
-		// 			}
-		// 		}
-
-		// 		const trx = await Database.beginTransaction()
-		// 		const insertData = await trx.insert(inputData).into('daily_checklists')
-		// 		if (insertData) {
-		// 			trx.commit()
-		// 			fs.unlink(filePath, (err) => {
-		// 				if (err) {
-		// 					console.log(`failed when deleting ${filePath} file`)
-		// 				}
-		// 				console.log(`${filePath} is deleted from directory`)
-		// 			})
-		// 			return {
-		// 				success: true,
-		// 				message: inputData.length + ' row data has been imported',
-		// 			}
-		// 		} else {
-		// 			trx.rollback()
-		// 		}
-		// 		return {
-		// 			success: false,
-		// 			type: 'warning',
-		// 			message: 'semua data telah diinput sebelumnya, pastikan data tgl dan data benar.!',
-		// 		}
-		// 	} catch (err) {
-		// 		return {
-		// 			success: false,
-		// 			message: 'Failed when uploading daily hour meter, please try again.',
-		// 			reason: err.message,
-		// 		}
-		// 	}
-		// }
 	}
 
 	async list({ auth, request, view }) {
