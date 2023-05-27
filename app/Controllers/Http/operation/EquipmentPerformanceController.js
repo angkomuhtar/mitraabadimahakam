@@ -65,10 +65,11 @@ class EquipmentPerformanceController {
 
 		let f_equip = (await equip.orderBy('kode', 'asc').paginate(Page, req.length)).toJSON()
 
-		const hm_unit = await Database.select(Database.raw('SUM(used_smu) as HM'), 'unit_id').from('daily_checklists').whereBetween('tgl', [start_date, end_date]).groupBy('unit_id')
+		const hm_unit = await Database.select(Database.raw('MAX(end_smu) as end'), Database.raw('MIN(begin_smu) as start'), 'unit_id').from('daily_checklists').whereBetween('tgl', [start_date, end_date]).groupBy('unit_id')
 		let hm_unit_group = _.indexBy(hm_unit, (e) => {
 			return e.unit_id
 		})
+		console.log('unit HM', hm_unit)
 		let jam_kerja = moment(start_date).daysInMonth() * 24 * 60
 
 		let data_equip = f_equip.data.map((data) => {
@@ -100,19 +101,19 @@ class EquipmentPerformanceController {
 					ac++
 					ac_h += timeDiff
 				}
-
 				tot_hours += timeDiff
 			})
-			// console.log('totalHours', tot_hours)
+
+			// console.log('ini yang ', hm_unit_group[`${data.id}`])
 			let jam_breakdown = tot_hours <= jam_kerja ? tot_hours : jam_kerja
-			let jam_operasi = hm_unit_group[`${data.id}`]?.HM * 60 || 0
+			let jam_operasi = (hm_unit_group[`${data.id}`]?.end - hm_unit_group[`${data.id}`]?.start) * 60 || 0
 			let total_bd = data.downtime.length
 			let mttr = isNaN(Math.round(jam_breakdown / total_bd)) ? 0 : Math.round(jam_breakdown / total_bd)
 			return {
 				...data,
 				downtime: convertMinutes(jam_breakdown),
 				pa: (((jam_kerja - jam_breakdown) / jam_kerja) * 100).toFixed(2),
-				hm: hm_unit_group[`${data.id}`]?.HM || 0,
+				hm: hm_unit_group[`${data.id}`]?.end - hm_unit_group[`${data.id}`]?.start || 0,
 				ma: isNaN(((jam_operasi / (jam_operasi + jam_breakdown)) * 100).toFixed(2)) ? parseFloat(0).toFixed(2) : ((jam_operasi / (jam_operasi + jam_breakdown)) * 100).toFixed(2),
 				ua: jam_kerja == jam_breakdown ? 0 : ((jam_operasi / (jam_kerja - jam_breakdown)) * 100).toFixed(2),
 				eu: ((jam_operasi / jam_kerja) * 100).toFixed(2),
