@@ -168,7 +168,7 @@ class DailyDowntimeController {
 
 				if (Insert) {
 					const wo = new MamWorkOrders()
-					wo.code = 'WO-' + String(Math.round(Math.random(1000) * 1000)).padStart(5, '0')
+					wo.code = 'WO-' + String(Math.round(Math.random() * 10000)).padStart(5, '0')
 					wo.desc = ''
 					wo.correction = ''
 					wo.pic = ''
@@ -283,7 +283,7 @@ class DailyDowntimeController {
 
 								if (Insert) {
 									const wo = new MamWorkOrders()
-									wo.code = 'WO-' + String(Insert[0]).padStart(5, '0')
+									wo.code = 'WO-' + String(Math.round(Math.random() * 10000)).padStart(5, '0')
 									wo.desc = ''
 									wo.correction = ''
 									wo.pic = ''
