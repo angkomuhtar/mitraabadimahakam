@@ -38,11 +38,12 @@ class EquipmentPerformanceController {
 		const req = request.all()
 		let start_date = moment().format('YYYY-MM-01 HH:mm:ss')
 		let end_date = moment().endOf('M').format('YYYY-MM-DD 23:59:59')
+		console.log(req.periode)
 		if (req.periode != '') {
-			start_date = moment(req.periode, 'MMM YYYY').format('YYYY-MM-01 HH:mm:ss')
-			end_date = moment(req.periode, 'MMM YYYY').endOf('M').format('YYYY-MM-DD 23:59:59')
+			start_date = moment(req.periode, 'MM YYYY').format('YYYY-MM-01 HH:mm:ss')
+			end_date = moment(req.periode, 'MM YYYY').endOf('M').format('YYYY-MM-DD 23:59:59')
 		}
-		console.log(start_date, end_date)
+		console.log(start_date, end_date, req.periode)
 		let Page = req.start == 0 ? 1 : req.start / req.length + 1
 
 		const equip = MasEquipment.query().with('downtime', (build) => {
@@ -68,7 +69,7 @@ class EquipmentPerformanceController {
 		let hm_unit_group = _.indexBy(hm_unit, (e) => {
 			return e.unit_id
 		})
-		let jam_kerja = moment('2023-04', 'YYYY-MM').daysInMonth() * 24 * 60
+		let jam_kerja = moment(start_date).daysInMonth() * 24 * 60
 
 		let data_equip = f_equip.data.map((data) => {
 			let tot_hours = 0
@@ -78,7 +79,7 @@ class EquipmentPerformanceController {
 			let sch_h = 0
 			let uns_h = 0
 			let ac_h = 0
-			console.log(data.downtime)
+			// console.log(data.downtime)
 			data.downtime.map((ed) => {
 				let timeDiff = 0
 				if (ed.breakdown_finish) {
@@ -102,7 +103,7 @@ class EquipmentPerformanceController {
 
 				tot_hours += timeDiff
 			})
-			console.log('totalHours', tot_hours)
+			// console.log('totalHours', tot_hours)
 			let jam_breakdown = tot_hours <= jam_kerja ? tot_hours : jam_kerja
 			let jam_operasi = hm_unit_group[`${data.id}`]?.HM * 60 || 0
 			let total_bd = data.downtime.length

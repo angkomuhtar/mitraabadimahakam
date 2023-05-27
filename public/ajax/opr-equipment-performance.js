@@ -124,7 +124,7 @@ $(function () {
 
 	$('#periode').datetimepicker({
 		viewMode: 'years',
-		format: 'MMM YYYY',
+		format: 'MM YYYY',
 	})
 
 	$('#periode').bind('dp.change', () => {
