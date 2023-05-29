@@ -38,12 +38,10 @@ class EquipmentPerformanceController {
 		const req = request.all()
 		let start_date = moment().format('YYYY-MM-01 HH:mm:ss')
 		let end_date = moment().endOf('M').format('YYYY-MM-DD 23:59:59')
-		console.log(req.periode)
 		if (req.periode != '') {
 			start_date = moment(req.periode, 'MM YYYY').format('YYYY-MM-01 HH:mm:ss')
 			end_date = moment(req.periode, 'MM YYYY').endOf('M').format('YYYY-MM-DD 23:59:59')
 		}
-		console.log(start_date, end_date, req.periode)
 		let Page = req.start == 0 ? 1 : req.start / req.length + 1
 
 		const equip = MasEquipment.query().with('downtime', (build) => {
@@ -69,7 +67,6 @@ class EquipmentPerformanceController {
 		let hm_unit_group = _.indexBy(hm_unit, (e) => {
 			return e.unit_id
 		})
-		console.log('unit HM', hm_unit)
 		let jam_kerja = moment(start_date).daysInMonth() * 24 * 60
 
 		let data_equip = f_equip.data.map((data) => {
@@ -80,7 +77,6 @@ class EquipmentPerformanceController {
 			let sch_h = 0
 			let uns_h = 0
 			let ac_h = 0
-			// console.log(data.downtime)
 			data.downtime.map((ed) => {
 				let timeDiff = 0
 				if (ed.breakdown_finish) {
@@ -104,7 +100,6 @@ class EquipmentPerformanceController {
 				tot_hours += timeDiff
 			})
 
-			// console.log('ini yang ', hm_unit_group[`${data.id}`])
 			let jam_breakdown = tot_hours <= jam_kerja ? tot_hours : jam_kerja
 			let jam_operasi = (hm_unit_group[`${data.id}`]?.end - hm_unit_group[`${data.id}`]?.start) * 60 || 0
 			let total_bd = data.downtime.length
@@ -128,7 +123,7 @@ class EquipmentPerformanceController {
 				sch_h: convertMinutes(parseInt(sch_h)),
 				uns_h: convertMinutes(uns_h),
 				tot_h: convertMinutes(tot_hours),
-				periode: req.periode || moment().format('MMM YYYY'),
+				periode: req.periode ? moment(req.periode, 'MM YYYY').format('MMM YYYY') : moment().format('MMM YYYY'),
 			}
 		})
 
@@ -217,8 +212,6 @@ class EquipmentPerformanceController {
 			})
 
 			await newEquipmentPerformance.save()
-
-			console.log(`---- equipment id ${equipment} saved to the monthly performance ----`)
 		}
 
 		return {

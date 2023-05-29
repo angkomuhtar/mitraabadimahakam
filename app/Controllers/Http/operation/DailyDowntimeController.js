@@ -37,7 +37,6 @@ class DailyDowntimeController {
 
 		if (request.ajax()) {
 			let Page = req.start == 0 ? 1 : req.start / req.length + 1
-			// console.log('request>>', req)
 			const downtime = DailyDowntimeEquipment.query()
 			if (req.unit_number != 0) {
 				downtime.where('equip_id', req.unit_number)
@@ -51,7 +50,6 @@ class DailyDowntimeController {
 			if (req.bd_type != 0) {
 				downtime.where('bd_type', req.bd_type)
 			}
-			console.log(moment(req.start_t, 'DD/MM/YYYY').format('YYYY-MM-DD hh:mm:ss'))
 			if (req.start_t) {
 				downtime.where((w) => {
 					w.where('breakdown_start', '>=', moment(req.start_t, 'DD/MM/YYYY').format('YYYY-MM-DD'))
@@ -85,14 +83,12 @@ class DailyDowntimeController {
 	}
 
 	async uploadFile({ auth, params }) {
-		// console.log(params.id)
 		let search = await DailyDowntimeEquipment.query()
 			.where('equip_id', params.id)
 			.where((w) => {
 				w.orWhereNull('breakdown_finish')
 			})
 			.first()
-		// console.log(search.toJSON())
 
 		if (search) {
 			return {
@@ -120,7 +116,6 @@ class DailyDowntimeController {
 			let code = `${unit.kode}.${moment(req.start, 'DD/MM/YYYY HH.mm').format('X')}`
 			let check = await DailyDowntimeEquipment.findBy('downtime_code', code)
 			let tot_hours = req.end ? moment(req.end, 'DD/MM/YYYY HH.mm').diff(moment(req.start, 'DD/MM/YYYY HH.mm'), 'minutes') : 0
-			// console.log(req)
 			if (check) {
 				check.merge({
 					equip_id: unit.id,
@@ -338,11 +333,13 @@ class DailyDowntimeController {
 								return e === data.code_unit.replace(' ', '')
 							})
 
+							if (data.date == '') {
+								continue
+							}
 							let bd_start = `${moment(data.date).add(8, 'h').format('YYYY-MM-DD')} ${moment(data.start).add(3, 'm').format('HH:mm:SS')}`
 							let bd_end = `${moment(data.date).add(8, 'h').format('YYYY-MM-DD')} ${moment(data.end).add(3, 'm').format('HH:mm:SS')}` || null
 
 							if (!id_unit || !bd_start || !bd_end) {
-								console.log('no data ', data.code_unit)
 								continue
 							}
 
@@ -362,18 +359,27 @@ class DailyDowntimeController {
 									return e === data.type_bd.replace(' ', '')
 								})
 								var comp_group = _.findKey(option, function (e) {
-									return e === data.comp_group.replace(' ', '')
+									return e === data?.comp_group?.replace(' ', '') || '999'
 								})
 
 								if (check.bd_type == bd_type && check.component_group == comp_group && check.downtime_status == data.dt_code) {
 									continue
 								}
-								const update = await DailyDowntimeEquipment.query().where('id', check.id).update({
-									bd_type: bd_type,
-									component_group: comp_group,
-									downtime_status: data.dt_code.toUpperCase(),
-									person_in_charge: data.PIC,
-								})
+								if (!comp_group) {
+									return {
+										success: false,
+										type: 'warning',
+										message: 'component group ' + data.comp_group + ' tidak ditemukan	.!',
+									}
+								}
+								const update = await DailyDowntimeEquipment.query()
+									.where('id', check.id)
+									.update({
+										bd_type: bd_type,
+										component_group: comp_group,
+										downtime_status: data?.dt_code?.toUpperCase() || '-',
+										person_in_charge: data.PIC,
+									})
 
 								let check_da = await DowntimeActivity.query()
 									.where((e) => {
@@ -384,7 +390,6 @@ class DailyDowntimeController {
 									})
 									.first()
 
-								// console.log('check', check_da)
 								if (!check_da) {
 									const Insert = await Database.table('downtime_activity').insert({
 										downtime_code: check.downtime_code,
@@ -408,7 +413,7 @@ class DailyDowntimeController {
 						console.log(err)
 						return {
 							success: false,
-							message: 'Failed when uploading daily downtime, please try again. \n Reason : ',
+							message: 'Failed when uploading daily downtime, please try again. Reason : ' + err.type == 'validation' ? err.message : '',
 							reason: err.message,
 						}
 					}
